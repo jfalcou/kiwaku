@@ -33,11 +33,11 @@ code, .rst-content tt, .rst-content code
     max-width: none !important;
 }
 
-/*.wy-side-nav-search
+.wy-side-nav-search
 {
-  background: #c16511ad;
+  background: #8d8690a8;
 }
-*/
+
 /* Put some space after Doxygen type properties */
 .rst-content dl:not(.docutils) .property
 {

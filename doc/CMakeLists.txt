@@ -59,7 +59,7 @@ add_custom_command( OUTPUT  ${SPHINX_INDEX_FILE}
                     ${CMAKE_CURRENT_SOURCE_DIR}/install.rst
                     ${CMAKE_CURRENT_SOURCE_DIR}/reference.rst
                     ${CMAKE_CURRENT_SOURCE_DIR}/_static/css/custom.css
-#                    ${CMAKE_CURRENT_SOURCE_DIR}/_static/logo.png
+                    ${CMAKE_CURRENT_SOURCE_DIR}/_static/logo.png
                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/conf.py
                     COMMENT "Generating documentation with Sphinx"
                   )
