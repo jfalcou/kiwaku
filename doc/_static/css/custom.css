@@ -1,0 +1,47 @@
+/*
+                               Copyright 2019 Joel FALCOU
+
+                   Distributed under the Boost Software License, Version 1.0.
+                        See accompanying file LICENSE.txt or copy at
+                            http://www.boost.org/LICENSE_1_0.txt
+*/
+
+/* Wrap sidebar content */
+div.sphinxsidebarwrapper
+{
+  word-wrap: break-word;
+}
+
+/* Color for code blocks */
+.highlight {
+    background: #e7f2fa;
+}
+
+/* No box around code inline */
+.rst-content tt.literal, .rst-content tt.literal, .rst-content code.literal
+{
+    color: #E74C3C;
+    border: none 0px;
+}
+
+code, .rst-content tt, .rst-content code
+{
+    background: inherit;
+}
+
+.wy-nav-content {
+    max-width: none !important;
+}
+
+/*.wy-side-nav-search
+{
+  background: #c16511ad;
+}
+*/
+/* Put some space after Doxygen type properties */
+.rst-content dl:not(.docutils) .property
+{
+    display: inline-block;
+    padding-left: 4px;
+    padding-right: 8px;
+}

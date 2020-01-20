@@ -1,0 +1,51 @@
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "@CMAKE_PROJECT_NAME@"
+PROJECT_NUMBER         = @CMAKE_PROJECT_VERSION@
+
+OUTPUT_DIRECTORY       = "@DOXYGEN_OUTPUT_DIR@"
+OUTPUT_LANGUAGE        = English
+
+FULL_PATH_NAMES        = NO
+SHORT_NAMES            = NO
+TAB_SIZE               = 2
+
+ALIASES                =
+
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+ENABLED_SECTIONS       =
+SHOW_USED_FILES        = NO
+SHOW_FILES             = NO
+
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
+WARN_AS_ERROR          = NO
+WARN_LOGFILE           =
+
+INPUT                  = "@DOXYGEN_INPUT_DIR@"
+INPUT_ENCODING         = UTF-8
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */detail/*
+EXAMPLE_PATH           = @DOXYGEN_EXAMPLE_DIR@
+EXAMPLE_RECURSIVE      = YES
+STRIP_CODE_COMMENTS    = YES
+
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+GENERATE_XML           = YES
+
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = NO
+EXPAND_ONLY_PREDEF     = YES
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           =
+INCLUDE_FILE_PATTERNS  =
+PREDEFINED             = DOXYGEN_ONLY
+EXPAND_AS_DEFINED      = YES
+SKIP_FUNCTION_MACROS   = YES
+INLINE_INHERITED_MEMB  = NO

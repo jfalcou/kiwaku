@@ -1,6 +1,3 @@
-# Prerequisites
-*.d
-
 # Compiled Object files
 *.slo
 *.lo
@@ -18,7 +15,6 @@
 
 # Fortran module files
 *.mod
-*.smod
 
 # Compiled Static libraries
 *.lai
@@ -30,3 +26,17 @@
 *.exe
 *.out
 *.app
+
+# Backup
+*~
+*_
+*#
+
+# Setup
+.idea/
+*.sublime-*
+
+# Potential local build repository
+*build*/
+Testing/
+doc/conf.py
