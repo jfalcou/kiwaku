@@ -7,7 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_HPP_INCLUDED
-#define KIWAKU_HPP_INCLUDED
+#ifndef KIWAKU_KIWAKU_HPP_INCLUDED
+#define KIWAKU_KIWAKU_HPP_INCLUDED
 
 #endif

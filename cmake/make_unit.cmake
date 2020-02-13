@@ -8,64 +8,68 @@
 include(add_target_parent)
 include(download)
 
-##===================================================================================================
+##==================================================================================================
+# Unit test Configuration
+##==================================================================================================
+add_library(unit_test_config INTERFACE)
+target_compile_features ( unit_test_config INTERFACE  cxx_std_20 )
+if( MSVC )
+  target_compile_options( unit_test_config INTERFACE /W3 /EHsc)
+else()
+  target_compile_options( unit_test_config INTERFACE -Wall -Werror -fconcepts)
+endif()
+
+##==================================================================================================
+## Turn a filename to a dot-separated target name
+##==================================================================================================
+function(source_to_target root ext filename testname)
+  string(REPLACE ".cpp" ".${ext}" base ${filename})
+  string(REPLACE "/"    "." base ${base})
+  string(REPLACE "\\"   "." base ${base})
+  SET(${testname} "${root}.${base}" PARENT_SCOPE)
+endfunction()
+
+function(setup_location test location)
+set_property( TARGET ${test}
+              PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${location}"
+            )
+if( CI_ENABLED )
+add_test( NAME ${test}
+          WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/${location}"
+          COMMAND $<TARGET_FILE:${test}> --no-color --pass
+        )
+else()
+add_test( NAME ${test}
+          WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/${location}"
+          COMMAND $<TARGET_FILE:${test}>
+        )
+endif()
+endfunction()
+
+##==================================================================================================
 ## Process a list of source files to generate corresponding test target
-##===================================================================================================
+##==================================================================================================
 function(make_unit root)
-
-  if( MSVC )
-    set( options /std:c++latest /W3 /EHsc)
-  else()
-    set( options -std=c++17 -Wall -Wno-missing-braces )
-  endif()
-
   foreach(file ${ARGN})
-
-    string(REPLACE ".cpp" ".unit" base ${file})
-    string(REPLACE "/"    "." base ${base})
-    string(REPLACE "\\"   "." base ${base})
-    set(test "${root}.${base}")
-
+    source_to_target( ${root} "unit" ${file} test)
     add_executable(${test} ${file})
-    target_compile_options  ( ${test} PRIVATE ${options} )
 
-    set_property( TARGET ${test}
-                  PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/unit"
-                )
+    add_target_parent(${test})
+    add_dependencies(unit ${test})
 
-    if( CI_ENABLED )
-    add_test( NAME ${test}
-              WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/unit"
-              COMMAND $<TARGET_FILE:${test}> --no-color --pass
-            )
-    else()
-    add_test( NAME ${test}
-              WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/unit"
-              COMMAND $<TARGET_FILE:${test}>
-            )
-    endif()
-
-    set_target_properties ( ${test} PROPERTIES
-                            EXCLUDE_FROM_DEFAULT_BUILD TRUE
-                            EXCLUDE_FROM_ALL TRUE
-                          )
+    setup_location( ${test} "unit")
+    target_link_libraries(${test} PUBLIC tts PUBLIC unit_test_config)
 
     target_include_directories( ${test}
                                 PUBLIC
-                                    $<INSTALL_INTERFACE:include>
-                                    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                                  $<INSTALL_INTERFACE:include>
+                                  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                                 PRIVATE
                                   ${tts_SOURCE_DIR}/include
                                   ${PROJECT_SOURCE_DIR}/test
                               )
 
-    target_link_libraries(${test} tts)
-
-    add_target_parent(${test})
-    add_dependencies(unit ${test})
-
   endforeach()
-
 endfunction()
 
 ##==================================================================================================
@@ -73,10 +77,7 @@ endfunction()
 ##==================================================================================================
 function(check_failure root)
   foreach(file ${ARGN})
-    string(REPLACE ".cpp" ".unit" base ${file})
-    string(REPLACE "/"    "." base ${base})
-    string(REPLACE "\\"   "." base ${base})
-    set(test "${root}.${base}")
+    source_to_test( ${root} ${file} test)
 
     if( MSVC )
       set( options /std:c++latest /W3 /EHsc)
@@ -86,7 +87,7 @@ function(check_failure root)
 
     set( test_lib "${test}_lib")
     add_library( ${test_lib} OBJECT EXCLUDE_FROM_ALL ${file})
-    target_compile_options  ( ${test_lib} PUBLIC ${options} )
+    target_link_libraries( ${test_lib} PUBLIC unit_test_config)
 
     add_test( NAME ${test}
               COMMAND ${CMAKE_COMMAND} --build . --target ${test_lib} --config $<CONFIGURATION>
@@ -106,9 +107,7 @@ function(check_failure root)
                                   ${PROJECT_SOURCE_DIR}/include
                               )
 
-    set_tests_properties( ${test}
-                          PROPERTIES WILL_FAIL TRUE
-                        )
+    set_tests_properties ( ${test} PROPERTIES WILL_FAIL TRUE)
 
     add_dependencies(unit ${test})
     add_target_parent(${test})

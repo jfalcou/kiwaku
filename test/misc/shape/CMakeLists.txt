@@ -5,8 +5,18 @@
 ##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
-include(make_unit)
+set ( SOURCES
+      compare.cpp
+      contain.cpp
+      convert.cpp
+      ctor.cpp
+      default.cpp
+      ndims.cpp
+      numel.cpp
+      of_shape.cpp
+      strictly_contain.cpp
+      tuple.cpp
+      # reshaping.cpp
+    )
 
-add_subdirectory(misc)
-add_subdirectory(container)
-
+make_unit("misc.shape" ${SOURCES})
