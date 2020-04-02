@@ -10,4 +10,7 @@
 #ifndef KIWAKU_KIWAKU_HPP_INCLUDED
 #define KIWAKU_KIWAKU_HPP_INCLUDED
 
+#include <kiwaku/shape.hpp>
+#include <kiwaku/misc/settings.hpp>
+
 #endif

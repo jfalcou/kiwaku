@@ -7,44 +7,35 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_DYNAMIC_SHAPE_HPP_INCLUDED
-#define KIWAKU_DETAIL_DYNAMIC_SHAPE_HPP_INCLUDED
+#ifndef KIWAKU_DETAIL_DYNAMIC_STRIDE_HPP_INCLUDED
+#define KIWAKU_DETAIL_DYNAMIC_STRIDE_HPP_INCLUDED
 
-#include <kiwaku/misc/shape.hpp>
-#include <kiwaku/misc/stride.hpp>
-#include <kiwaku/detail/dynamic_stride.hpp>
+#include <kiwaku/misc/unit_stride.hpp>
 #include <utility>
 #include <cstddef>
 
 namespace kwk::detail
 {
-  template<std::size_t Dimensions> struct dynamic_shape_option
+  template<std::size_t Dimensions> struct dynamic_stride_option
   {
     //==============================================================================================
     // NTTP Indirect interface
     //==============================================================================================
-    using shape_type  = shape<Dimensions>;
-    using stride_type = typename shape_type::stride_type;
-    using option_tag = shape_option;
+    using stride_type = unit_stride<Dimensions>;
+    using option_tag  = stride_option;
 
-    static constexpr bool is_dynamic_option = true;
-    static constexpr std::size_t static_size = Dimensions;
-
-    constexpr auto as_stride() const
-    {
-      return dynamic_stride_option<Dimensions>{};
-    }
+    static constexpr bool is_dynamic_option   = true;
+    static constexpr bool is_unit_stride      = true;
+    static constexpr std::size_t static_size  = Dimensions;
 
     //==============================================================================================
     // Pseudo-constructor
     //==============================================================================================
     template<typename... D>
-    constexpr auto operator()(D... s) const noexcept requires requires { shape_type{s...}; }
+    constexpr auto operator()(D... s) const noexcept requires requires { stride_type{s...}; }
     {
-      return shape_type{s...};
+      return stride_type{s...};
     }
-
-    constexpr std::ptrdiff_t numel() const noexcept { return -1;}
   };
 }
 

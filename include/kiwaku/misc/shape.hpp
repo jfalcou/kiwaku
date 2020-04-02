@@ -11,7 +11,7 @@
 #define KIWAKU_MISC_SHAPE_HPP_INCLUDED
 
 #include <kiwaku/misc/indexer.hpp>
-#include <kiwaku/misc/stride.hpp>
+#include <kiwaku/misc/unit_stride.hpp>
 #include <iterator>
 #include <utility>
 #include <cassert>
@@ -21,17 +21,20 @@
 
 namespace kwk
 {
+  struct shape_option {};
+
   template<std::size_t Dimensions>
   struct shape : private std::array<std::ptrdiff_t,Dimensions>
   {
     using storage_type  = std::array<std::ptrdiff_t,Dimensions>;
-    using stride_type   = stride<Dimensions>;
+    using stride_type   = unit_stride<Dimensions>;
 
     //==============================================================================================
     // NTTP Indirect interface
     //==============================================================================================
     using shape_type = shape<Dimensions>;
     static constexpr bool is_dynamic_option = false;
+    using option_tag = shape_option;
 
     //==============================================================================================
     // Dependent types
@@ -43,7 +46,7 @@ namespace kwk
     static constexpr std::ptrdiff_t static_count  = Dimensions;
 
     //==============================================================================================
-    // Constructors
+    // Default Constructor
     //==============================================================================================
     constexpr shape() noexcept
     {
@@ -51,9 +54,12 @@ namespace kwk
       if constexpr(static_size > 0ULL)  (*this)[0] = 0;
     }
 
+    //==============================================================================================
+    // Construct from some amount of integral values
+    //==============================================================================================
     template<typename... T>
     constexpr shape(T... s) noexcept
-              requires ( (std::is_integral_v<T> && ...) && sizeof...(T) <= static_size )
+    requires ((std::is_convertible_v<T,std::ptrdiff_t> && ...) && sizeof...(T)<=static_size)
             : storage_type{ static_cast<std::ptrdiff_t>(s)...}
     {
       if constexpr(sizeof...(T) < static_size)
@@ -63,7 +69,10 @@ namespace kwk
       }
     }
 
-    // Small shape are allowed implicitly in large one
+    //==============================================================================================
+    // Constructs from a shape with less dimensions.
+    // Small shape are allowed implicitly in large one and are completed with 1s.
+    //==============================================================================================
     template< std::size_t OtherDimensions>
     constexpr shape( shape<OtherDimensions> const& other ) noexcept
               requires( OtherDimensions <= static_size )
@@ -71,11 +80,14 @@ namespace kwk
       constexpr auto dz = std::min(OtherDimensions,static_size);
 
       std::size_t i = 0;
-      for(; i < dz;++i)         (*this)[i] = other[i];
+      for(; i < dz;++i)          (*this)[i] = other[i];
       for(; i < static_size;++i) (*this)[i] = 1;
     }
 
-    // Large shape are allowed only explicitly in small ones
+    //==============================================================================================
+    // Constructs from a shape with more dimensions.
+    // Large shape are allowed only explicitly in small ones as we need to convert data.
+    //==============================================================================================
     template<std::size_t OtherDimensions>
     explicit constexpr  shape( shape<OtherDimensions> const& other ) noexcept
                         requires( OtherDimensions > static_size )
@@ -163,6 +175,8 @@ namespace kwk
       }
     }
 
+    constexpr auto as_stride() const { return stride_type(*this); }
+
     //==============================================================================================
     // Storage access
     //==============================================================================================
@@ -183,6 +197,9 @@ namespace kwk
       return compare( other , [](auto a, auto b) { return a != b; },[](auto a) { return a != 1; } );
     }
 
+    //==============================================================================================
+    // Check if current shape contains (maybe strictly) all the extent of another one
+    //==============================================================================================
     template<std::size_t Dimensions2>
     constexpr bool contains( shape<Dimensions2> const& other) const noexcept
     {
@@ -239,13 +256,25 @@ namespace kwk
     }
   };
 
+  //================================================================================================
+  // Deduction guides
+  //================================================================================================
   template< typename... T> shape(T... s) -> shape<sizeof...(T)>;
 
+  //================================================================================================
+  // Imperative constructor
+  //================================================================================================
   template<typename... T> auto of_shape(T... s) -> decltype( shape{s...} )
   {
     return shape{s...};
   }
+}
 
+//==================================================================================================
+// Shape supports structured bindings.
+//==================================================================================================
+namespace kwk
+{
   template<std::size_t I, std::size_t Dimensions>
   constexpr auto get(shape<Dimensions> const& s) noexcept { return s[I]; }
 

@@ -12,6 +12,7 @@
 
 #include <kiwaku/misc/shape.hpp>
 #include <kiwaku/detail/dynamic_shape.hpp>
+#include <kiwaku/detail/dynamic_stride.hpp>
 
 namespace kwk
 {
