@@ -14,7 +14,6 @@
 #include <kiwaku/detail/view_span.hpp>
 #include <kiwaku/detail/view_shape.hpp>
 #include <iterator>
-#include <array>
 
 namespace kwk
 {
@@ -41,15 +40,13 @@ namespace kwk
         : shape_base(shp), span_base(external)
     {}
 
-    template<typename Seq>
-    view(Seq&& seq) noexcept
+    template<typename Seq> view(Seq&& seq) noexcept
         requires requires (Seq&& s) { std::forward<Seq>(s).data(); }
                       &&  ( !ShapeOption.is_dynamic_option )
       : shape_base(), span_base(std::forward<Seq>(seq).data())
      {}
 
-    template<typename Seq>
-    view(Seq&& seq, shape_type const& shp ) noexcept
+    template<typename Seq> view(Seq&& seq, shape_type const& shp ) noexcept
         requires requires (Seq&& s) { std::forward<Seq>(s).data(); }
                       &&  ( ShapeOption.is_dynamic_option )
       : shape_base(shp), span_base(std::forward<Seq>(seq).data())
@@ -86,7 +83,7 @@ namespace kwk
     // }
 
     // view( pointer external, shape_type const& shp, Stride const& str ) noexcept
-    //     : shape_base(shp,str), span_base(external, shp.numel())
+    //     : shape_base(shp,str), span_base(external)
     // {}
 
     auto reshape(shape_type const& shp) noexcept requires(ShapeOption.is_dynamic_option)
@@ -104,7 +101,7 @@ namespace kwk
                             >;
 
   template<typename C, typename S>
-  view(C const&,S const&) ->  view< std::remove_reference_t<decltype(*std::declval<C>().data())>
+  view(C const&,S const&) ->  view< std::remove_reference_t<decltype(*std::declval<C>().data())> const
                                   , _nD<S::static_size>
                                   >;
 }
