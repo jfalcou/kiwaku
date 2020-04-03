@@ -26,7 +26,12 @@ namespace kwk
     auto const distance = ui.end - ui.begin;
     assert( (distance<= s[i]) && "[kwk::unit_indexer] Out of range reindexing" );
 
-    return distance;
+    return distance + 1;
+  }
+
+  inline constexpr auto origin( unit_indexer const& id ) noexcept
+  {
+    return id.begin;
   }
 
   template<typename Shape>
@@ -36,6 +41,11 @@ namespace kwk
     assert( (distance<= s[i]) && "[kwk::indexer] Out of range reindexing" );
 
     return distance/id.step + 1;
+  }
+
+  inline constexpr auto origin( indexer const& id ) noexcept
+  {
+    return id.begin;
   }
 
   template<typename Shape>
@@ -64,6 +74,11 @@ namespace kwk
     return s[i];
   }
 
+  inline constexpr auto origin( complete_indexer const& ) noexcept
+  {
+    return 0;
+  }
+
   template<typename Indexer, typename Shape>
   constexpr auto reshape( Indexer const& n, std::ptrdiff_t i, Shape const& s ) noexcept
   {
@@ -71,9 +86,14 @@ namespace kwk
     return 1;
   }
 
-  inline constexpr complete_indexer  _    = {};
-  inline constexpr std::ptrdiff_t begin_  = -1;
-  inline constexpr std::ptrdiff_t end_    = -1;
+  template<typename Indexer> constexpr auto origin( Indexer const& n ) noexcept
+  {
+    return n;
+  }
+
+  inline constexpr complete_indexer _       = {};
+  inline constexpr std::ptrdiff_t   begin_  = -1;
+  inline constexpr std::ptrdiff_t   end_    = -1;
 }
 
 #endif
