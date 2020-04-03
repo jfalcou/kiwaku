@@ -36,6 +36,9 @@ namespace kwk::detail
     using parent::parent;
 
     explicit_(Type const& s) : parent(s) {}
+
+    constexpr parent const& base() const { return static_cast<parent const&>(*this); }
+    constexpr parent&       base()       { return static_cast<parent&>(*this);       }
   };
 }
 
