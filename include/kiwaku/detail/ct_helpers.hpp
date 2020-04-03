@@ -20,10 +20,23 @@ namespace kwk::detail
   template<auto Option, typename Yes, typename No>
   using has_contents = std::conditional_t<Option.is_dynamic_option, Yes, No>;
 
+  template<bool Cond, typename Yes, typename No>
+  using inherits_if = std::conditional_t<Cond, Yes, No>;
+
   //================================================================================================
   // Empty struct for EBO cases
   //================================================================================================
-  template<int N = -1> struct empty {};
+  struct empty {};
+
+  template<typename Type>
+  struct explicit_ : Type
+  {
+    using parent = Type;
+    static constexpr bool is_explicit = true;
+    using parent::parent;
+
+    explicit_(Type const& s) : parent(s) {}
+  };
 }
 
 #endif
