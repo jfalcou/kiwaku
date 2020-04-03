@@ -26,6 +26,7 @@ namespace kwk::detail
 
     static constexpr bool is_dynamic_option   = true;
     static constexpr bool is_unit_stride      = true;
+    static constexpr bool is_explicit         = false;
     static constexpr std::size_t static_size  = Dimensions;
 
     //==============================================================================================

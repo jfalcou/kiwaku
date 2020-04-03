@@ -10,6 +10,7 @@
 #ifndef KIWAKU_MISC_UNIT_STRIDE_HPP_INCLUDED
 #define KIWAKU_MISC_UNIT_STRIDE_HPP_INCLUDED
 
+#include <kiwaku/detail/ct_helpers.hpp>
 #include <iterator>
 #include <cassert>
 #include <cstddef>
@@ -20,6 +21,7 @@
 namespace kwk
 {
   struct stride_option {};
+  template<std::size_t Dimensions> struct shape;
 
   template<std::size_t Dimensions>
   struct unit_stride : private std::array<std::ptrdiff_t,Dimensions-1>
@@ -32,9 +34,8 @@ namespace kwk
     using stride_type = unit_stride<Dimensions>;
     using option_tag  = stride_option;
     static constexpr bool is_dynamic_option = false;
-
-    // TODO: Make it actually unit by not storing the 1
     static constexpr bool is_unit_stride    = true;
+    static constexpr bool is_explicit       = false;
 
     //==============================================================================================
     // Dependent types
@@ -49,9 +50,12 @@ namespace kwk
     //==============================================================================================
     // Constructors
     //==============================================================================================
-    template<typename Shape>
-    constexpr unit_stride(Shape const& shp) noexcept
-    requires (!std::is_convertible_v<Shape,std::ptrdiff_t>)
+    template<typename Stride>
+    constexpr unit_stride(detail::explicit_<Stride> const& str) noexcept
+            : storage_type( static_cast<storage_type const&>(str))
+    {}
+
+    constexpr unit_stride(shape<Dimensions> const& shp) noexcept
     {
       if constexpr(static_size > 1)
       {
@@ -110,14 +114,14 @@ namespace kwk
     template<typename I0, typename... Int>
     constexpr auto index(I0 i0, Int... is) const noexcept
     {
-      return i0 + linearize(std::make_index_sequence<sizeof...(Int)>(),is...);
+      return linearize(std::make_index_sequence<sizeof...(Int)>(),i0,is...);
     }
 
     private:
-    template<std::size_t... Idx, typename... Int>
-    constexpr auto linearize( std::index_sequence<Idx...> const&, Int... idx ) const noexcept
+    template<std::size_t... Idx, typename I0, typename... Int>
+    constexpr auto linearize( std::index_sequence<Idx...> const&, I0 i0, Int... idx ) const noexcept
     {
-      return ((idx * get<Idx+1>(*this)) + ...);
+      return ((idx * get<Idx+1>(*this)) + ... + i0);
     }
   };
 }

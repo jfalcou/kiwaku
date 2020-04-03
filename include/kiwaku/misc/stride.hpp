@@ -30,8 +30,9 @@ namespace kwk
     //==============================================================================================
     using stride_type = stride<Dimensions>;
     using option_tag  = stride_option;
-    static constexpr bool is_dynamic_option = false;
-    static constexpr bool is_unit_stride    = false;
+    static constexpr bool is_dynamic_option   = false;
+    static constexpr bool is_unit_stride      = false;
+    static constexpr bool is_explicit         = false;
 
     //==============================================================================================
     // Dependent types
@@ -46,8 +47,7 @@ namespace kwk
     //==============================================================================================
     // Constructors
     //==============================================================================================
-    template<typename Shape>
-    constexpr stride(Shape const& shp) noexcept
+    constexpr stride(shape<Dimensions> const& shp) noexcept
     {
       (*this)[0] = 1;
       if constexpr(static_size > 1)
@@ -56,6 +56,11 @@ namespace kwk
           (*this)[i] = (*this)[i-1] * shp[i-1];
       }
     }
+
+    template<typename Stride>
+    constexpr stride(detail::explicit_<Stride> const& str) noexcept
+            : storage_type( static_cast<storage_type const&>(str) )
+    {}
 
     //==============================================================================================
     // Construct from some amount of integral values
