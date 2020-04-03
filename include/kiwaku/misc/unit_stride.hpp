@@ -53,7 +53,10 @@ namespace kwk
     constexpr unit_stride(Shape const& shp) noexcept
     requires (!std::is_convertible_v<Shape,std::ptrdiff_t>)
     {
-      storage_type::operator[](0) = shp[1];
+      if constexpr(static_size > 1)
+      {
+        storage_type::operator[](0) = shp[1];
+      }
 
       if constexpr(static_size > 2)
       {
