@@ -8,6 +8,7 @@
 set ( SOURCES
       ctor.cpp
       value_ctor.cpp
+      copy_ctor.cpp
       index.cpp
     )
 

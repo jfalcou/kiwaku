@@ -47,35 +47,40 @@ namespace kwk
     static constexpr std::size_t    static_size   = Dimensions;
     static constexpr std::ptrdiff_t static_count  = Dimensions;
 
-    //==============================================================================================
-    // Constructors
-    //==============================================================================================
-    template<typename Stride>
-    constexpr unit_stride(detail::explicit_<Stride> const& str) noexcept
-            : storage_type( static_cast<storage_type const&>(str))
-    {}
+    template<std::size_t NewDims> using resize = unit_stride<NewDims>;
 
-    constexpr unit_stride(shape<Dimensions> const& shp) noexcept
+    //==============================================================================================
+    // Constrcut from a shape with same dimensions
+    //==============================================================================================
+    constexpr explicit unit_stride(shape<Dimensions> const& shp) noexcept
     {
       if constexpr(static_size > 1)
       {
-        storage_type::operator[](0) = shp[1];
-      }
-
-      if constexpr(static_size > 2)
-      {
-        for(std::size_t i = 1; i<static_size;++i)
-          storage_type::operator[](i) = storage_type::operator[](i-1) * shp[i+1];
+        storage(0) = shp[0];
+        for(std::size_t i = 1; i<static_size-1;++i)
+          storage(i) = storage(i-1) * shp[i];
       }
     }
+
+    //==============================================================================================
+    // Constrcut from a stride with at most the same dimensions
+    //==============================================================================================
+    template<std::size_t N>
+    constexpr explicit unit_stride(unit_stride<N> const& str) noexcept  requires( N <= Dimensions )
+    : storage_type{ [&]<std::size_t... I>( std::index_sequence<I...> const&, auto const& s)
+                    {
+                      return storage_type{s.storage(I)...};
+                    }(std::make_index_sequence<N-1>{}, str)
+                  }
+    {}
 
     //==============================================================================================
     // Construct from some amount of integral values
     //==============================================================================================
     template<typename... T>
-    constexpr unit_stride(T... s) noexcept
+    constexpr explicit unit_stride(T... s) noexcept
     requires ((std::is_convertible_v<T,std::ptrdiff_t> && ...) && sizeof...(T)<static_size)
-            : storage_type{ static_cast<std::ptrdiff_t>(s)...}
+            : storage_type{ static_cast<std::ptrdiff_t>(s)... }
     {}
 
     //==============================================================================================
@@ -84,17 +89,14 @@ namespace kwk
     static constexpr std::size_t    size()  noexcept { return static_size;  }
     static constexpr std::ptrdiff_t count() noexcept { return static_count; }
 
-    template<std::size_t I>
-    friend constexpr std::ptrdiff_t get(unit_stride<Dimensions> const& s) noexcept
+    constexpr std::ptrdiff_t storage(int i) const noexcept
     {
-      if    constexpr(I==0) return 1;
-      else  return static_cast<storage_type const&>(s)[I-1];
+      return storage_type::operator[](i);
     }
 
-    template<std::size_t I>
-    friend constexpr decltype(auto) get(unit_stride<Dimensions>& s) noexcept requires(I!=0)
+    constexpr std::ptrdiff_t& storage(int i) noexcept
     {
-      return static_cast<storage_type&>(s)[I-1];
+      return storage_type::operator[](i);
     }
 
     //==============================================================================================
@@ -112,7 +114,8 @@ namespace kwk
     // unit_stride interface
     //==============================================================================================
     template<typename I0, typename... Int>
-    constexpr auto index(I0 i0, Int... is) const noexcept
+    constexpr auto  index(I0 i0, Int... is) const noexcept
+                    requires((sizeof...(Int)+1) <= static_size)
     {
       return linearize(std::make_index_sequence<sizeof...(Int)>(),i0,is...);
     }
@@ -124,6 +127,24 @@ namespace kwk
       return ((idx * get<Idx+1>(*this)) + ... + i0);
     }
   };
+
+  //================================================================================================
+  // Deduction guides
+  //================================================================================================
+  template<std::size_t N> unit_stride(shape<N> const&) -> unit_stride<N>;
+
+  template<std::size_t I, std::size_t Dimensions>
+  constexpr std::ptrdiff_t get(unit_stride<Dimensions> const& s) noexcept requires(Dimensions>1)
+  {
+    if    constexpr(I==0) return 1;
+    else                  return s.storage(I-1);
+  }
+
+  template<std::size_t I>
+  constexpr std::ptrdiff_t get(unit_stride<1> const& s) noexcept requires(I==0)
+  {
+    return 1;
+  }
 }
 
 namespace std
