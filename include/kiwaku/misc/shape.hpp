@@ -33,8 +33,8 @@ namespace kwk
     // NTTP Indirect interface
     //==============================================================================================
     using shape_type = shape<Dimensions>;
-    static constexpr bool is_dynamic_option = false;
     using option_tag = shape_option;
+    static constexpr bool is_dynamic_option = false;
 
     //==============================================================================================
     // Dependent types
@@ -57,10 +57,22 @@ namespace kwk
     //==============================================================================================
     // Construct from some amount of integral values
     //==============================================================================================
+    template<typename T>
+    constexpr explicit shape(T s) noexcept
+              requires ((std::is_convertible_v<T,std::ptrdiff_t>))
+            : storage_type{ static_cast<std::ptrdiff_t>(s) }
+    {
+      if constexpr(static_size > 1 )
+      {
+        for(std::size_t i = 1;i<static_size;++i)
+          (*this)[i] = 1;
+      }
+    }
+
     template<typename... T>
-    constexpr shape(T... s) noexcept
+    constexpr explicit shape(T... s) noexcept
     requires ((std::is_convertible_v<T,std::ptrdiff_t> && ...) && sizeof...(T)<=static_size)
-            : storage_type{ static_cast<std::ptrdiff_t>(s)...}
+            : storage_type{ static_cast<std::ptrdiff_t>(s)... }
     {
       if constexpr(sizeof...(T) < static_size)
       {
@@ -259,7 +271,7 @@ namespace kwk
   //================================================================================================
   // Deduction guides
   //================================================================================================
-  template< typename... T> shape(T... s) -> shape<sizeof...(T)>;
+  template<typename... T> shape(T... s) -> shape<sizeof...(T)>;
 
   //================================================================================================
   // Imperative constructor
