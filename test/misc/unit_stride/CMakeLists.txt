@@ -5,6 +5,10 @@
 ##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
-add_subdirectory(shape)
-add_subdirectory(stride)
-add_subdirectory(unit_stride)
+set ( SOURCES
+      ctor.cpp
+      value_ctor.cpp
+      index.cpp
+    )
+
+make_unit("misc.unit_stride" ${SOURCES})

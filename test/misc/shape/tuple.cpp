@@ -14,7 +14,7 @@
 
 TTS_CASE( "Checks tuple API for kwk::shape - read only access")
 {
-  kwk::shape const _7d = {3,5,7,9,11,13,69};
+  kwk::shape const _7d{3,5,7,9,11,13,69};
   auto[d70,d71,d72,d73,d74,d75,d76] = _7d;
   TTS_EQUAL(d70, _7d[0]);
   TTS_EQUAL(d71, _7d[1]);

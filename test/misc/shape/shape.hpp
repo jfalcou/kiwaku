@@ -14,13 +14,6 @@
 #include <tts/tests/relation.hpp>
 #include <tts/tests/basic.hpp>
 
-template<int N>
-struct nD : std::integral_constant<int,N>
-{};
-
-template<typename N>
-using up_to = std::make_index_sequence<N::value>;
-
 template<typename Env, typename Shape>
 inline void test_0D(Env& runtime, Shape const& sh)
 {
@@ -33,7 +26,6 @@ inline void test_0D(Env& runtime, Shape const& sh)
   TTS_EQUAL(sh.data(), nullptr   );
 }
 
-template<int N> using int_ = std::integral_constant<int,N>;
 
 template<typename Env, typename Size, typename Shape>
 inline void test_nD(Env& runtime, Size const&, Shape const& sh)

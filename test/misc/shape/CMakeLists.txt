@@ -16,7 +16,6 @@ set ( SOURCES
       of_shape.cpp
       strictly_contain.cpp
       tuple.cpp
-      # reshaping.cpp
     )
 
 make_unit("misc.shape" ${SOURCES})

@@ -13,6 +13,15 @@
 #define TTS_USE_CUSTOM_DRIVER
 #include <tts/tts.hpp>
 
+template<int N>
+struct nD : std::integral_constant<int,N>
+{};
+
+template<typename N>
+using up_to = std::make_index_sequence<N::value>;
+
+template<int N> using int_ = std::integral_constant<int,N>;
+
 int main(int argc, char **argv)
 {
   std::cout << "[KIWAKU] - Assertions: ";
