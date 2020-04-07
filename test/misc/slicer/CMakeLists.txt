@@ -5,18 +5,8 @@
 ##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
-set ( SOURCES
-      as_stride.cpp
-      compare.cpp
-      contain.cpp
-      convert.cpp
-      ctor.cpp
-      default.cpp
-      ndims.cpp
-      numel.cpp
-      of_shape.cpp
-      strictly_contain.cpp
-      tuple.cpp
-    )
 
-make_unit("misc.shape" ${SOURCES})
+##==================================================================================================
+## Check if various slicer expression satisfy the proper concept
+##==================================================================================================
+make_unit("misc.slicer" concept.cpp)

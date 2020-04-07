@@ -10,19 +10,19 @@
 #ifndef KIWAKU_MISC_SHAPE_HPP_INCLUDED
 #define KIWAKU_MISC_SHAPE_HPP_INCLUDED
 
-#include <kiwaku/misc/indexer.hpp>
-#include <kiwaku/misc/unit_stride.hpp>
-#include <iterator>
+#include <kiwaku/detail/options/options.hpp>
+#include <kiwaku/misc/slicers.hpp>
+#include <kiwaku/misc/stride.hpp>
 #include <utility>
-#include <cassert>
 #include <cstddef>
 #include <iosfwd>
 #include <array>
 
 namespace kwk
 {
-  struct shape_option {};
-
+  //================================================================================================
+  // Shape type
+  //================================================================================================
   template<std::size_t Dimensions>
   struct shape : private std::array<std::ptrdiff_t,Dimensions>
   {
@@ -33,14 +33,14 @@ namespace kwk
     // NTTP Indirect interface
     //==============================================================================================
     using shape_type = shape<Dimensions>;
-    using option_tag = shape_option;
-    static constexpr bool is_dynamic_option = false;
+    using option_tag = detail::shape_tag;
+    static constexpr bool is_dynamic = false;
 
     //==============================================================================================
     // Dependent types
     //==============================================================================================
-    using reference               = typename storage_type::reference;
-    using const_reference         = typename storage_type::const_reference;
+    using reference       = typename storage_type::reference;
+    using const_reference = typename storage_type::const_reference;
 
     static constexpr std::size_t    static_size   = Dimensions;
     static constexpr std::ptrdiff_t static_count  = Dimensions;
@@ -125,31 +125,29 @@ namespace kwk
     using storage_type::front;
     using storage_type::back;
 
-    constexpr reference operator[](std::ptrdiff_t i) noexcept requires( static_size != 0 )
+    constexpr reference operator[](std::ptrdiff_t i) noexcept requires(static_size!=0)
     {
-      assert(i<static_count && "out of range indexing in dynamic shape.");
       return storage_type::operator[](i);
     }
 
-    constexpr const_reference operator[](std::ptrdiff_t i) const noexcept requires( static_size != 0 )
+    constexpr const_reference operator[](std::ptrdiff_t i) const noexcept requires(static_size!=0)
     {
-      assert(i<static_count && "out of range indexing in dynamic shape.");
       return storage_type::operator[](i);
     }
 
     //==============================================================================================
-    // Reshaping interface using indexer
+    // Reshaping interface using slicers
     //==============================================================================================
-    template<typename... Indexers> constexpr auto operator()(Indexers... is) const noexcept
+    template<typename... Slices> constexpr auto operator()(Slices... slices) const noexcept
     {
-      using that_t = shape<sizeof...(Indexers)>;
+      using that_t = shape<sizeof...(Slices)>;
       auto rs = [&]<std::size_t... I>(std::index_sequence<I...> const&, auto const& s)
       {
-        return that_t{reshape(is,I,s) ...};
+        return that_t{ detail::reshape(slices,I,s) ... };
       };
 
       that_t that{*this};
-      that = rs(std::make_index_sequence<sizeof...(Indexers)>{}, that);
+      that = rs(std::make_index_sequence<sizeof...(Slices)>{}, that);
 
       return that;
     }
@@ -187,6 +185,9 @@ namespace kwk
       }
     }
 
+    //==============================================================================================
+    // Convert shape to the equivalent unit stride
+    //==============================================================================================
     constexpr auto as_stride() const { return stride_type(*this); }
 
     //==============================================================================================
@@ -272,14 +273,6 @@ namespace kwk
   // Deduction guides
   //================================================================================================
   template<typename... T> shape(T... s) -> shape<sizeof...(T)>;
-
-  //================================================================================================
-  // Imperative constructor
-  //================================================================================================
-  template<typename... T> auto of_shape(T... s) -> decltype( shape{s...} )
-  {
-    return shape{s...};
-  }
 }
 
 //==================================================================================================

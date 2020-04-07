@@ -7,31 +7,29 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_SHAPE_HPP_INCLUDED
-#define KIWAKU_SHAPE_HPP_INCLUDED
+#ifndef KIWAKU_MISC_SETTINGS_HPP_INCLUDED
+#define KIWAKU_MISC_SETTINGS_HPP_INCLUDED
 
-#include <kiwaku/misc/shape.hpp>
-#include <kiwaku/detail/options/shape_option.hpp>
+#include <kiwaku/detail/options/settings_helpers.hpp>
 
 namespace kwk
 {
   //================================================================================================
-  // NTTP options
+  // Build an option pack from a list of settings
   //================================================================================================
-  inline constexpr auto _0D = detail::shape_option<0>{};
-  inline constexpr auto _1D = detail::shape_option<1>{};
-  inline constexpr auto _2D = detail::shape_option<2>{};
-  inline constexpr auto _3D = detail::shape_option<3>{};
-  inline constexpr auto _4D = detail::shape_option<4>{};
-
-  template<std::size_t N> inline constexpr auto _nD = detail::shape_option<N>{};
-
-  //================================================================================================
-  // Imperative constructor
-  //================================================================================================
-  template<typename... T> constexpr auto of_shape(T... s) -> decltype( shape{s...} )
+  template<typename... Os> constexpr auto settings(Os... opts) noexcept
   {
-    return shape{s...};
+    return detail::aggregator{detail::link<typename Os::option_tag>(opts)...};
+  }
+
+  //================================================================================================
+  // Retrieve an option from a settings or a single option
+  //================================================================================================
+  template<typename OptionTag, typename S, typename Default>
+  constexpr auto extract_settings(S const& s, Default const& d) noexcept
+  {
+    if constexpr(detail::is_option<S>::value)  return s(OptionTag{}, d);
+    else                                       return extract_settings<OptionTag>(settings(s), d);
   }
 }
 

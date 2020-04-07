@@ -7,31 +7,30 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_SHAPE_HPP_INCLUDED
-#define KIWAKU_SHAPE_HPP_INCLUDED
+#ifndef KIWAKU_SETTINGS_HPP_INCLUDED
+#define KIWAKU_SETTINGS_HPP_INCLUDED
 
-#include <kiwaku/misc/shape.hpp>
+#include <kiwaku/misc/settings.hpp>
 #include <kiwaku/detail/options/shape_option.hpp>
+#include <kiwaku/detail/options/stride_option.hpp>
 
-namespace kwk
+namespace kwk::options
 {
   //================================================================================================
-  // NTTP options
+  // Retrieve the shape from the settings. Use _2D by default.
   //================================================================================================
-  inline constexpr auto _0D = detail::shape_option<0>{};
-  inline constexpr auto _1D = detail::shape_option<1>{};
-  inline constexpr auto _2D = detail::shape_option<2>{};
-  inline constexpr auto _3D = detail::shape_option<3>{};
-  inline constexpr auto _4D = detail::shape_option<4>{};
-
-  template<std::size_t N> inline constexpr auto _nD = detail::shape_option<N>{};
-
-  //================================================================================================
-  // Imperative constructor
-  //================================================================================================
-  template<typename... T> constexpr auto of_shape(T... s) -> decltype( shape{s...} )
+  template<typename Settings>
+  constexpr auto shape(Settings const& s) noexcept
   {
-    return shape{s...};
+    return extract_settings<detail::shape_tag>( s, detail::shape_option<2>{} );
+  }
+
+  //================================================================================================
+  // Retrieve the stride from the settings. Use shape.as_stride() by default.
+  //================================================================================================
+  template<typename Settings> constexpr auto stride(Settings const& s) noexcept
+  {
+    return extract_settings<detail::stride_tag>( s, options::shape(s).as_stride() );
   }
 }
 

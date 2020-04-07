@@ -7,4 +7,4 @@
 ##==================================================================================================
 add_subdirectory(shape)
 add_subdirectory(stride)
-add_subdirectory(unit_stride)
+add_subdirectory(slicer)

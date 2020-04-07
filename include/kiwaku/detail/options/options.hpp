@@ -7,9 +7,13 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_KIWAKU_HPP_INCLUDED
-#define KIWAKU_KIWAKU_HPP_INCLUDED
+#ifndef KIWAKU_DETAIL_OPTIONS_OPTIONS_HPP_INCLUDED
+#define KIWAKU_DETAIL_OPTIONS_OPTIONS_HPP_INCLUDED
 
-#include <kiwaku/misc/slicers.hpp>
+namespace kwk::detail
+{
+  struct shape_tag  {};
+  struct stride_tag {};
+}
 
 #endif

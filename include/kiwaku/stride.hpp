@@ -7,31 +7,25 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_SHAPE_HPP_INCLUDED
-#define KIWAKU_SHAPE_HPP_INCLUDED
+#ifndef KIWAKU_STRIDE_HPP_INCLUDED
+#define KIWAKU_STRIDE_HPP_INCLUDED
 
-#include <kiwaku/misc/shape.hpp>
-#include <kiwaku/detail/options/shape_option.hpp>
+#include <kiwaku/misc/stride.hpp>
+#include <kiwaku/detail/options/stride_option.hpp>
 
 namespace kwk
 {
   //================================================================================================
-  // NTTP options
+  // Marker for unit stride
   //================================================================================================
-  inline constexpr auto _0D = detail::shape_option<0>{};
-  inline constexpr auto _1D = detail::shape_option<1>{};
-  inline constexpr auto _2D = detail::shape_option<2>{};
-  inline constexpr auto _3D = detail::shape_option<3>{};
-  inline constexpr auto _4D = detail::shape_option<4>{};
-
-  template<std::size_t N> inline constexpr auto _nD = detail::shape_option<N>{};
+  inline constexpr detail::unit_type const _1 = {};
 
   //================================================================================================
   // Imperative constructor
   //================================================================================================
-  template<typename... T> constexpr auto of_shape(T... s) -> decltype( shape{s...} )
+  template<typename... V> constexpr auto with_stride(V... v) noexcept
   {
-    return shape{s...};
+    return kwk::stride{v...};
   }
 }
 

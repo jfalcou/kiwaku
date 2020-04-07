@@ -24,15 +24,7 @@ endif()
 ## Options
 ##==================================================================================================
 option( KIWAKU_BUILD_TEST    "Build tests for kiwaku"     ON  )
-option( KIWAKU_BUILD_DOC     "Build doc for kiwaku"       ON  )
 option( KIWAKU_IS_DEPENDENT  "Dependent mode for kiwaku"  OFF )
-
-##==================================================================================================
-## Setup Documentation
-##==================================================================================================
-if( KIWAKU_BUILD_DOC )
-  add_subdirectory(doc)
-endif()
 
 ##==================================================================================================
 ## Setup Install target only if not used as dependent

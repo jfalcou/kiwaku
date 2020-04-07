@@ -13,10 +13,12 @@ include(download)
 ##==================================================================================================
 add_library(unit_test_config INTERFACE)
 target_compile_features ( unit_test_config INTERFACE  cxx_std_20 )
-if( MSVC )
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options( unit_test_config INTERFACE /W3 /EHsc)
-else()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options( unit_test_config INTERFACE -Wall -Werror -fconcepts)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  target_compile_options( unit_test_config INTERFACE -Wall -Werror)
 endif()
 
 ##==================================================================================================

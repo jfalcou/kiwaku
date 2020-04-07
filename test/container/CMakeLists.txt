@@ -6,17 +6,7 @@
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 set ( SOURCES
-      as_stride.cpp
-      compare.cpp
-      contain.cpp
-      convert.cpp
-      ctor.cpp
-      default.cpp
-      ndims.cpp
-      numel.cpp
-      of_shape.cpp
-      strictly_contain.cpp
-      tuple.cpp
+      static.1d.cpp
     )
 
-make_unit("misc.shape" ${SOURCES})
+make_unit("container.view" ${SOURCES})

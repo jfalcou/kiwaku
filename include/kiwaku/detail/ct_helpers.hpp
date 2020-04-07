@@ -15,11 +15,14 @@
 namespace kwk::detail
 {
   //================================================================================================
-  // Check for static content option
+  // Find the value type of anything with a .data()
   //================================================================================================
-  template<auto Option, typename Yes, typename No>
-  using has_contents = std::conditional_t<Option.is_dynamic_option, Yes, No>;
+  template<typename C>
+  using value_type_of = std::remove_cvref_t<decltype(*std::declval<C>().data())>;
 
+  //================================================================================================
+  // Select type for inheritance purpose
+  //================================================================================================
   template<bool Cond, typename Yes, typename No>
   using inherits_if = std::conditional_t<Cond, Yes, No>;
 
@@ -28,18 +31,34 @@ namespace kwk::detail
   //================================================================================================
   struct empty {};
 
-  template<typename Type>
-  struct explicit_ : Type
+  //================================================================================================
+  // for_each_args abstraction
+  //================================================================================================
+  template<typename Callable, typename... Args>
+  constexpr void for_each_args(Callable c, Args&&... args) noexcept
   {
-    using parent = Type;
-    static constexpr bool is_explicit = true;
-    using parent::parent;
+    (c(std::forward<Args>(args)),...);
+  }
 
-    explicit_(Type const& s) : parent(s) {}
+  //================================================================================================
+  // constexpr_for abstraction
+  //================================================================================================
+  template<std::size_t Begin, std::size_t End, typename Callable>
+  constexpr auto constexpr_for(Callable c) noexcept
+  {
+    return  []<typename Func,std::ptrdiff_t... Idx>
+            (std::integer_sequence<std::ptrdiff_t,Idx...> const&, Func f)
+            {
+              ((f( std::integral_constant<std::ptrdiff_t,Begin+Idx>{})),...);
+              return f;
+            }( std::make_integer_sequence<std::ptrdiff_t, End-Begin>(), c );
+  }
 
-    constexpr parent const& base() const { return static_cast<parent const&>(*this); }
-    constexpr parent&       base()       { return static_cast<parent&>(*this);       }
-  };
+  template<std::size_t Count, typename Callable>
+  constexpr auto constexpr_for(Callable c) noexcept
+  {
+    return constexpr_for<0,Count>(c);
+  }
 }
 
 #endif
