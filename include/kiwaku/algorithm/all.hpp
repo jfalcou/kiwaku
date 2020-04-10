@@ -10,33 +10,48 @@
 #ifndef KIWAKU_ALGORITHM_ALL_HPP_INCLUDED
 #define KIWAKU_ALGORITHM_ALL_HPP_INCLUDED
 
+#include <kiwaku/detail/ct_helpers.hpp>
+#include <cstddef>
+
 namespace kwk
 {
+  namespace detail
+  {
+    template<typename Check, typename Dim0>
+    constexpr bool all(Check c, Dim0 d0)
+    {
+      for(Dim0 i0=0;i0<d0;++i0)
+      {
+        if(!c(i0))
+          return false;
+      }
+
+      return true;
+    }
+
+    template<typename Check, typename Dim, typename... Dims>
+    constexpr bool all(Check c, Dim d0, Dims... ds)
+    {
+      return detail::all( [c,d0](auto... is)
+                          {
+                            for(Dim i0=0;i0<d0;++i0) if(!c(i0,is...)) return false;
+                            return true;
+                          }
+                          , ds...
+                        );
+    }
+  }
+
   //================================================================================================
   // n-Dimensionnal all algorithm
   //================================================================================================
-  template<typename Check, typename Dim0>
-  bool all(Check c, Dim0 d0)
+  template<typename Check, std::size_t Dimensions>
+  bool all(Check c, shape<Dimensions> const& shp)
   {
-    for(Dim0 i0=0;i0<d0;++i0)
+    return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      if(!c(i0))
-        return false;
-    }
-
-    return true;
-  }
-
-  template<typename Check, typename Dim, typename... Dims>
-  bool all(Check c, Dim d0, Dims... ds)
-  {
-    return kwk::all( [c,d0](auto... is)
-                    {
-                      for(Dim i0=0;i0<d0;++i0) if(!c(i0,is...)) return false;
-                      return true;
-                    }
-                    , ds...
-                  );
+      return detail::all(c, get<N>(shp)... );
+    }( std::make_index_sequence<Dimensions>{});
   }
 }
 
