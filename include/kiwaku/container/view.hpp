@@ -102,6 +102,12 @@ namespace kwk
     //==============================================================================================
     // Access data about pointer, shape, stride etc...
     //==============================================================================================
+    auto begin()        { return this->data(); }
+    auto begin() const  { return this->data(); }
+
+    auto end()        { return begin() + this->size(); }
+    auto end() const  { return begin() + this->size(); }
+
     using span_base::data;
     using access_base::shape;
     using access_base::stride;

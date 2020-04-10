@@ -156,10 +156,10 @@ namespace kwk::detail
       // All indexing starts with this base
       auto base = i0 + i1*shape_[0];
 
-      if constexpr(sizeof...(Is)>2)
+      if constexpr(sizeof...(Is)>0)
       {
-        return base + linearize ( std::make_index_sequence<sizeof...(Is)>()
-                                , static_const<parent const&>(*this)
+        return  base + linearize( std::make_index_sequence<sizeof...(Is)>()
+                                , static_cast<parent const&>(*this)
                                 , is...
                                 );
       }

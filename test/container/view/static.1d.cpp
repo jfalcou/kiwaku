@@ -12,6 +12,7 @@
 #include <kiwaku/algorithm/all.hpp>
 #include <tts/tests/relation.hpp>
 #include <tts/tests/basic.hpp>
+#include <algorithm>
 #include <vector>
 
 TTS_CASE( "Build a 1D view with constexpr shape settings from a C array" )
@@ -25,7 +26,8 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a C array" )
   TTS_EQUAL( view.count(), 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
-  TTS_EXPECT( kwk::all([&](auto i) { return view(i) == ref[i]; }, view.size()) );
+  TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
+  TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
 }
 
 TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer" )
@@ -39,7 +41,8 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer" )
   TTS_EQUAL( view.count(), 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
-  TTS_EXPECT( kwk::all([&](auto i) { return view(i) == ref[i]; }, view.size()) );
+  TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
+  TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
 }
 
 TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer to const" )
@@ -53,7 +56,8 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer to const
   TTS_EQUAL( view.count(), 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
-  TTS_EXPECT( kwk::all([&](auto i) { return view(i) == ref[i]; }, view.size()) );
+  TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
+  TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
 }
 
 TTS_CASE( "Build a 1D view with constexpr shape settings from a ContiguousSequence" )
@@ -67,7 +71,8 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a ContiguousSequen
   TTS_EQUAL( view.count(), 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
-  TTS_EXPECT( kwk::all([&](auto i) { return view(i) == ref[i]; }, view.size()) );
+  TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
+  TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
 }
 
 TTS_CASE( "Build a 1D view with constexpr shape settings from a const ContiguousSequence" )
@@ -81,5 +86,6 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a const Contiguous
   TTS_EQUAL( view.count(), 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
-  TTS_EXPECT( kwk::all([&](auto i) { return view(i) == ref[i]; }, view.size()) );
+  TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
+  TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
 }
