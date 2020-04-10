@@ -38,6 +38,8 @@ namespace kwk::detail
     view_span( pointer p )  noexcept : data_(p) {}
     pointer data() const noexcept { return data_; }
 
+    pointer reset(pointer ptr) noexcept { return std::exchange(data_, ptr); }
+
     protected:
     pointer data_;
   };
