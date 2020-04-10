@@ -12,8 +12,9 @@
 
 namespace kwk::detail
 {
-  struct shape_tag  {};
-  struct stride_tag {};
+  struct shape_tag    {};
+  struct stride_tag   {};
+  struct storage_tag  {};
 }
 
 #endif

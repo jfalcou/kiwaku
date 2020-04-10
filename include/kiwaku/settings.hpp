@@ -13,6 +13,7 @@
 #include <kiwaku/misc/settings.hpp>
 #include <kiwaku/detail/options/shape_option.hpp>
 #include <kiwaku/detail/options/stride_option.hpp>
+#include <kiwaku/detail/options/storage_option.hpp>
 
 namespace kwk::options
 {
@@ -31,6 +32,23 @@ namespace kwk::options
   template<typename Settings> constexpr auto stride(Settings const& s) noexcept
   {
     return extract_settings<detail::stride_tag>( s, options::shape(s).as_stride() );
+  }
+
+  //================================================================================================
+  // Retrieve the storage from the settings. Use heap_/stack_ by default depending on the shape
+  // dynamic or constexpr status
+  //================================================================================================
+  template<typename Settings> constexpr auto storage(Settings const& s) noexcept
+  {
+    using shape_type = decltype(options::shape(s));
+    if constexpr(shape_type::is_dynamic)
+    {
+      return extract_settings<detail::storage_tag>( s, heap_ );
+    }
+    else
+    {
+      return extract_settings<detail::storage_tag>( s, stack_ );
+    }
   }
 }
 
