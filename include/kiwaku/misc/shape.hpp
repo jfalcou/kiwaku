@@ -135,6 +135,11 @@ namespace kwk
       return storage_type::operator[](i);
     }
 
+    void swap( shape& other ) noexcept
+    {
+      storage_type::swap( static_cast<storage_type&>(other) );
+    }
+
     //==============================================================================================
     // Reshaping interface using slicers
     //==============================================================================================

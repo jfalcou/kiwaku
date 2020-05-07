@@ -49,6 +49,7 @@ namespace kwk::detail
     constexpr auto shape()                    const noexcept  { return Shape;         }
     constexpr auto stride()                   const noexcept  { return Stride;        }
 
+    using parent::swap;
     using parent::data;
     using parent::begin;
     using parent::end;

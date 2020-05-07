@@ -66,6 +66,13 @@ namespace kwk::detail
     constexpr stride_type     stride()                  const noexcept  { return {};          }
     constexpr auto            index(std::ptrdiff_t is)  const noexcept  { return is;          }
 
+    constexpr void reshape( shape_type const& s ) { shape_ = s; }
+
+    void swap( view_access& other ) noexcept
+    {
+      shape_.swap( other.shape_ );
+    }
+
     private:
     shape_type shape_;
   };
@@ -90,6 +97,8 @@ namespace kwk::detail
     constexpr auto            shape()         const noexcept  { return shape_;                  }
     constexpr decltype(auto)  stride()        const noexcept  { return stride_type{shape_[0]};  }
 
+    constexpr void reshape( shape_type const& s ) { shape_ = s; }
+
     constexpr std::ptrdiff_t index(std::ptrdiff_t i0, std::ptrdiff_t i1) const noexcept
     {
       return i0 + i1*this->shape_[0];
@@ -98,6 +107,12 @@ namespace kwk::detail
     constexpr std::ptrdiff_t index(std::ptrdiff_t i0) const noexcept
     {
       return i0;
+    }
+
+    void swap( view_access& other ) noexcept
+    {
+      shape_.swap( other.shape_ );
+      std::swap(numel_, other.numel_);
     }
 
     protected:
@@ -148,6 +163,8 @@ namespace kwk::detail
               }( std::make_index_sequence<Shape.static_size-2>(), shape_);
     }
 
+    constexpr void reshape( shape_type const& s ) { shape_ = s; }
+
     template<typename I0> constexpr std::ptrdiff_t index(I0 i0) const noexcept { return i0; }
 
     template<typename I0, typename I1, typename... Is>
@@ -167,6 +184,12 @@ namespace kwk::detail
       {
         return base;
       }
+    }
+
+    void swap( view_access& other ) noexcept
+    {
+      shape_.swap( other.shape_ );
+      std::swap(numel_, other.numel_);
     }
 
     protected:

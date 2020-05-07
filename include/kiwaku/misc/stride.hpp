@@ -112,6 +112,11 @@ namespace kwk
       }
     }
 
+    void swap( stride& other ) noexcept
+    {
+      storage_type::swap( static_cast<storage_type&>(other) );
+    }
+
     //==============================================================================================
     // indexing interface
     //==============================================================================================
@@ -183,6 +188,8 @@ namespace kwk
     // indexing interface
     //==============================================================================================
     constexpr auto index(std::ptrdiff_t is) const noexcept { return is; }
+
+    void swap( stride& other ) noexcept {}
 
     //==============================================================================================
     // I/O

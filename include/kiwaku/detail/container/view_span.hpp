@@ -40,6 +40,11 @@ namespace kwk::detail
 
     pointer reset(pointer ptr) noexcept { return std::exchange(data_, ptr); }
 
+    void swap( view_span& other ) noexcept
+    {
+      std::swap(data_, other.data_);
+    }
+
     protected:
     pointer data_;
   };
