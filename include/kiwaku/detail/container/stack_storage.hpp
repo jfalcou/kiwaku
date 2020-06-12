@@ -16,7 +16,7 @@
 namespace kwk::detail
 {
   template<typename Type, auto Shape, auto Stride>
-  struct stack_storage : private std::array<Type,Shape.numel()>
+  struct stack_storage
   {
     using parent          = std::array<Type,Shape.numel()>;
     using value_type      = typename parent::value_type;
@@ -33,13 +33,13 @@ namespace kwk::detail
     template<typename... Int>
     const_reference operator()(Int... is) const noexcept requires(std::is_integral_v<Int> && ...)
     {
-      return this->data()[ Stride.index(is...) ];
+      return storage_[ Stride.index(is...) ];
     }
 
     template<typename... Int>
     reference operator()(Int... is) noexcept requires(std::is_integral_v<Int> && ...)
     {
-      return this->data()[ Stride.index(is...) ];
+      return storage_[ Stride.index(is...) ];
     }
 
     constexpr std::size_t     size()          const noexcept  { return Shape.numel(); }
@@ -49,10 +49,21 @@ namespace kwk::detail
     constexpr auto shape()                    const noexcept  { return Shape;         }
     constexpr auto stride()                   const noexcept  { return Stride;        }
 
-    using parent::swap;
-    using parent::data;
-    using parent::begin;
-    using parent::end;
+    void swap(stack_storage& other)
+    {
+      storage_.swap(other.storage_);
+    }
+
+    auto data() const { return storage_.data(); }
+
+    auto begin()        { return storage_.begin(); }
+    auto begin() const  { return storage_.begin(); }
+
+    auto end()        { return storage_.end(); }
+    auto end() const  { return storage_.end(); }
+
+    private:
+    std::array<Type,Shape.numel()> storage_;
   };
 }
 

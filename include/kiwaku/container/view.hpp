@@ -114,14 +114,30 @@ namespace kwk
     using span_base::reset;
 
     //==============================================================================================
-    // Access data about pointer, shape, stride etc...
+    // Beginning of the data block
     //==============================================================================================
     auto begin()        { return this->data(); }
     auto begin() const  { return this->data(); }
 
-    auto end()        { return begin() + this->size(); }
-    auto end() const  { return begin() + this->size(); }
+    //==============================================================================================
+    // End of the data block
+    // For view with static shape, we need to check if begin() is not nullptr
+    //==============================================================================================
+    auto end()
+    {
+      if constexpr(is_dynamic)  return begin() + this->size();
+      else                      return begin() == nullptr ? begin() : begin() + this->size();
+    }
 
+    auto end() const
+    {
+      if constexpr(is_dynamic)  return begin() + this->size();
+      else                      return begin() == nullptr ? begin() : begin() + this->size();
+    }
+
+    //==============================================================================================
+    // Access data about pointer, shape, stride etc...
+    //==============================================================================================
     using span_base::data;
     using access_base::shape;
     using access_base::stride;

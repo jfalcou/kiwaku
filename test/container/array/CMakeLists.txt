@@ -7,6 +7,8 @@
 ##==================================================================================================
 set ( SOURCES
       sandbox.cpp
+      dynamic.1d.cpp
+      static.1d.cpp
     )
 
 make_unit("container.array" ${SOURCES})

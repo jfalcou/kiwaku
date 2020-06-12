@@ -11,7 +11,7 @@
 #define KIWAKU_DETAIL_CONTAINER_STORAGE_SELECTOR_HPP_INCLUDED
 
 #include <kiwaku/detail/container/stack_storage.hpp>
-#include <kiwaku/detail/container/heap_storage.hpp>
+#include <kiwaku/detail/container/dynamic_storage.hpp>
 #include <type_traits>
 
 namespace kwk::detail
@@ -24,10 +24,10 @@ namespace kwk::detail
     static constexpr auto stride        = options::stride(all_settings);
     static constexpr auto storage       = options::storage(all_settings);
 
-    static constexpr bool use_heap = storage.use_heap( shape.numel() * sizeof(Type) );
+    static constexpr bool use_allocator = storage.use_allocator( shape.numel() * sizeof(Type) );
 
-    using type = std::conditional_t < use_heap
-                                    , heap_storage<Type,Settings...>
+    using type = std::conditional_t < use_allocator
+                                    , dynamic_storage<Type,Settings...>
                                     , stack_storage<Type,shape,stride>
                                     >;
   };

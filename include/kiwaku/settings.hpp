@@ -35,7 +35,7 @@ namespace kwk::options
   }
 
   //================================================================================================
-  // Retrieve the storage from the settings. Use heap_/stack_ by default depending on the shape
+  // Retrieve the storage from the settings. Use dynamic_/stack_ by default depending on the shape
   // dynamic or constexpr status
   //================================================================================================
   template<typename Settings> constexpr auto storage(Settings const& s) noexcept
@@ -43,7 +43,7 @@ namespace kwk::options
     using shape_type = decltype(options::shape(s));
     if constexpr(shape_type::is_dynamic)
     {
-      return extract_settings<detail::storage_tag>( s, heap_ );
+      return extract_settings<detail::storage_tag>( s, dynamic_ );
     }
     else
     {

@@ -17,34 +17,34 @@ namespace kwk::detail
   struct adaptative_storage_option
   {
     using option_tag  = storage_tag;
-    constexpr bool use_heap(std::ptrdiff_t sz) const noexcept
+    constexpr bool use_allocator(std::ptrdiff_t sz) const noexcept
     {
-      // negative sz means we deals with a full dynamic shape - so we use the heap
-      return sz<0 || sz > heap_storage_threshold_;
+      // negative sz means we deals with a full dynamic shape - so we use an allocator
+      return sz<0 || sz > dynamic_storage_threshold_;
     }
 
-    std::ptrdiff_t heap_storage_threshold_;
+    std::ptrdiff_t dynamic_storage_threshold_;
   };
 
-  struct heap_storage_option
+  struct dynamic_storage_option
   {
     using option_tag  = storage_tag;
-    constexpr bool use_heap(std::ptrdiff_t) const noexcept { return true; }
+    constexpr bool use_allocator(std::ptrdiff_t) const noexcept { return true; }
     constexpr adaptative_storage_option operator()(std::ptrdiff_t t) noexcept { return {t}; }
   };
 
   struct stack_storage_option
   {
     using option_tag  = storage_tag;
-    constexpr bool use_heap(std::ptrdiff_t) const noexcept { return false; }
+    constexpr bool use_allocator(std::ptrdiff_t) const noexcept { return false; }
     constexpr adaptative_storage_option operator()(std::ptrdiff_t t) noexcept { return {t}; }
   };
 }
 
 namespace kwk
 {
-  inline constexpr auto heap_   = detail::heap_storage_option{};
-  inline constexpr auto stack_  = detail::stack_storage_option{};
+  inline constexpr auto dynamic_  = detail::dynamic_storage_option{};
+  inline constexpr auto stack_    = detail::stack_storage_option{};
 }
 
 #endif

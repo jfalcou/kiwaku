@@ -43,6 +43,8 @@ namespace kwk::detail
 
     template<typename... Int>
     constexpr std::ptrdiff_t index(Int... is) const noexcept { return Stride.index(is...); }
+
+    void swap( view_access& other ) noexcept {}
   };
 
   //================================================================================================
