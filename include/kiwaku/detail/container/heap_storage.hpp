@@ -57,21 +57,6 @@ namespace kwk::detail
 
     ~heap_storage() { delete[] parent::data(); }
 
-    // TODO : swap into view()
-    void swap( heap_storage& that ) noexcept
-    {
-      auto ptr = that.data();
-      auto old_ptr = parent::reset(ptr);
-      that.reset(old_ptr);
-
-      if constexpr(is_dynamic)
-      {
-        auto shp = shape();
-        parent::reshape(that.shape());
-        that.reshape(shp);
-      }
-    }
-
     heap_storage( heap_storage && that ) noexcept requires(is_dynamic) : heap_storage{}
     {
       swap(that);
@@ -80,6 +65,11 @@ namespace kwk::detail
     heap_storage( heap_storage && that ) noexcept requires(!is_dynamic) : heap_storage{}
     {
       swap(that);
+    }
+
+    void swap( heap_storage& that ) noexcept
+    {
+      parent::swap( static_cast<parent&>(that) );
     }
 
 
