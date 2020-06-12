@@ -22,9 +22,6 @@ TTS_CASE( "Default constructed 0D shape behavior")
   TTS_EQUAL(sh.numel()  , 0   );
   TTS_EQUAL(sh.count()  , 0   );
   TTS_EQUAL(sh.size()   , 0ULL);
-
-  TTS_EQUAL(sh.end() , sh.begin());
-  TTS_EQUAL(sh.data(), nullptr   );
 }
 
 TTS_CASE_TPL( "Default constructed shape behavior"
@@ -41,8 +38,4 @@ TTS_CASE_TPL( "Default constructed shape behavior"
   TTS_EQUAL(sh.front(), 0);
   if constexpr(T::value==1) TTS_EQUAL(sh.back() , 0);
   else                      TTS_EQUAL(sh.back() , 1);
-
-  TTS_NOT_EQUAL ( sh.begin(), nullptr );
-  TTS_EQUAL     (sh.end()  , sh.begin() + T::value );
-  TTS_NOT_EQUAL ( sh.data(), nullptr );
 }

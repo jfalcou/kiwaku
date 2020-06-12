@@ -23,8 +23,7 @@ namespace kwk
   //================================================================================================
   // Shape type
   //================================================================================================
-  template<std::size_t Dimensions>
-  struct shape : private std::array<std::ptrdiff_t,Dimensions>
+  template<std::size_t Dimensions> struct shape
   {
     using storage_type  = std::array<std::ptrdiff_t,Dimensions>;
     using stride_type   = unit_stride<Dimensions>;
@@ -50,8 +49,8 @@ namespace kwk
     //==============================================================================================
     constexpr shape() noexcept
     {
-      if constexpr(static_size > 1ULL)  for(auto& e : *this) e = 1;
-      if constexpr(static_size > 0ULL)  (*this)[0] = 0;
+      if constexpr(static_size > 1ULL)  for(auto& e : storage_) e = 1;
+      if constexpr(static_size > 0ULL)  storage_[0] = 0;
     }
 
     //==============================================================================================
@@ -60,24 +59,24 @@ namespace kwk
     template<typename T>
     constexpr explicit shape(T s) noexcept
               requires ((std::is_convertible_v<T,std::ptrdiff_t>))
-            : storage_type{ static_cast<std::ptrdiff_t>(s) }
+            : storage_{ static_cast<std::ptrdiff_t>(s) }
     {
       if constexpr(static_size > 1 )
       {
         for(std::size_t i = 1;i<static_size;++i)
-          (*this)[i] = 1;
+          storage_[i] = 1;
       }
     }
 
     template<typename... T>
     constexpr explicit shape(T... s) noexcept
     requires ((std::is_convertible_v<T,std::ptrdiff_t> && ...) && sizeof...(T)<=static_size)
-            : storage_type{ static_cast<std::ptrdiff_t>(s)... }
+            : storage_{ static_cast<std::ptrdiff_t>(s)... }
     {
       if constexpr(sizeof...(T) < static_size)
       {
         for(std::size_t i = sizeof...(T);i<static_size;++i)
-          (*this)[i] = 1;
+          storage_[i] = 1;
       }
     }
 
@@ -92,8 +91,8 @@ namespace kwk
       constexpr auto dz = std::min(OtherDimensions,static_size);
 
       std::size_t i = 0;
-      for(; i < dz;++i)          (*this)[i] = other[i];
-      for(; i < static_size;++i) (*this)[i] = 1;
+      for(; i < dz;++i)          storage_[i] = other[i];
+      for(; i < static_size;++i) storage_[i] = 1;
     }
 
     //==============================================================================================
@@ -107,8 +106,8 @@ namespace kwk
       constexpr auto dz = std::min(OtherDimensions,static_size);
 
       std::size_t i = 0;
-      for(; i < dz;++i)               (*this)[i] = other[i];
-      for(; i < OtherDimensions;++i)  storage_type::back() *= other[i];
+      for(; i < dz;++i)               storage_[i]      = other[i];
+      for(; i < OtherDimensions;++i)  storage_.back() *= other[i];
     }
 
     //==============================================================================================
@@ -117,27 +116,39 @@ namespace kwk
     static constexpr std::size_t    size()  noexcept { return static_size;  }
     static constexpr std::ptrdiff_t count() noexcept { return static_count; }
 
-    using storage_type::data;
-    using storage_type::begin;
-    using storage_type::end;
-    using storage_type::rbegin;
-    using storage_type::rend;
-    using storage_type::front;
-    using storage_type::back;
+    reference front() noexcept requires(static_size!=0)
+    {
+      return storage_.front();
+    }
+
+    constexpr const_reference front() const noexcept requires(static_size!=0)
+    {
+      return storage_.front();
+    }
+
+    reference back() noexcept requires(static_size!=0)
+    {
+      return storage_.back();
+    }
+
+    constexpr const_reference back() const noexcept requires(static_size!=0)
+    {
+      return storage_.back();
+    }
 
     constexpr reference operator[](std::ptrdiff_t i) noexcept requires(static_size!=0)
     {
-      return storage_type::operator[](i);
+      return storage_[i];
     }
 
     constexpr const_reference operator[](std::ptrdiff_t i) const noexcept requires(static_size!=0)
     {
-      return storage_type::operator[](i);
+      return storage_[i];
     }
 
     void swap( shape& other ) noexcept
     {
-      storage_type::swap( static_cast<storage_type&>(other) );
+      storage_.swap( other.storage_ );
     }
 
     //==============================================================================================
@@ -170,7 +181,7 @@ namespace kwk
       {
         for(int i=static_count-1;i>=0;--i)
         {
-          if( (*this)[i] != 1) return i+1;
+          if( storage_[i] != 1) return i+1;
         }
         return 0;
       }
@@ -185,7 +196,7 @@ namespace kwk
       else
       {
         std::ptrdiff_t n{1};
-        for(int i=0;i<static_count;i++) n *= (*this)[i];
+        for(int i=0;i<static_count;i++) n *= storage_[i];
         return n;
       }
     }
@@ -198,7 +209,7 @@ namespace kwk
     //==============================================================================================
     // Storage access
     //==============================================================================================
-    storage_type const& storage() const noexcept { return static_cast<storage_type const&>(*this); }
+    storage_type const& storage() const noexcept { return storage_; }
 
     //==============================================================================================
     // Comparisons
@@ -236,10 +247,12 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, shape const& s)
     {
       os << "[";
-      for(auto e : s) os << " " << e;
+      for(auto e : s.storage_) os << " " << e;
       os << " ]";
       return os;
     }
+
+    storage_type storage_;
 
     private:
     template<std::size_t Dimensions2, typename Comp, typename Check>
@@ -256,7 +269,7 @@ namespace kwk
         constexpr auto d = std::min(Dimensions, Dimensions2);
 
         for(std::size_t i=0;i<d;++i)
-          if( !comp((*this)[i], other[i]) ) return false;
+          if( !comp(storage_[i], other[i]) ) return false;
 
         if constexpr(Dimensions < Dimensions2)
         {
@@ -266,7 +279,7 @@ namespace kwk
         else if constexpr(Dimensions > Dimensions2)
         {
           for(std::size_t i=Dimensions2;i<Dimensions;++i)
-            if( check((*this)[i]) ) return false;
+            if( check(storage_[i]) ) return false;
         }
       }
 

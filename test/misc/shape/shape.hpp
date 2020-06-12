@@ -21,9 +21,6 @@ inline void test_0D(Env& runtime, Shape const& sh)
   TTS_EQUAL(sh.numel()  , 0   );
   TTS_EQUAL(sh.count()  , 0   );
   TTS_EQUAL(sh.size()   , 0ULL);
-
-  TTS_EQUAL(sh.end() , sh.begin());
-  TTS_EQUAL(sh.data(), nullptr   );
 }
 
 
@@ -35,9 +32,6 @@ inline void test_nD(Env& runtime, Size const&, Shape const& sh)
 
   TTS_EQUAL(sh.front(), 3             );
   TTS_EQUAL(sh.back() , 3*Size::value );
-
-  TTS_EQUAL     ( sh.end()  , sh.begin() + Size::value  );
-  TTS_NOT_EQUAL ( sh.data() , nullptr                   );
 }
 
 #endif

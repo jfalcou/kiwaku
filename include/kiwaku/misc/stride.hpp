@@ -23,7 +23,7 @@ namespace kwk
   template<std::size_t Dimensions> struct shape;
 
   template<std::size_t Dimensions, typename UnitIndices = detail::index_list<0>>
-  struct stride : private detail::stride_storage<Dimensions,UnitIndices>
+  struct stride
   {
     //==============================================================================================
     // NTTP Indirect interface
@@ -56,7 +56,7 @@ namespace kwk
       if constexpr(UnitIndices::contains(i))
         return std::integral_constant<std::ptrdiff_t,1>{};
       else
-        return storage_type::operator[](UnitIndices::template locate<Dimensions>(i));
+        return storage_[UnitIndices::template locate<Dimensions>(i)];
     }
 
     //==============================================================================================
@@ -65,12 +65,12 @@ namespace kwk
     template<typename... Values>
     constexpr stride(Values... v) noexcept
           requires( std::is_convertible_v<Values,std::ptrdiff_t> && ...)
-        : storage_type{}
+        : storage_{}
     {
       constexpr auto sz = sizeof...(Values);
 
-      // Filter out the non-dynamic strice values
-      auto ptr = this->data();
+      // Filter out the non-dynamic stride values
+      auto ptr = storage_.data();
       detail::for_each_args(  [&ptr](auto sv)
                               {
                                 using v_t = std::remove_cvref_t<decltype(sv)>;
@@ -87,7 +87,7 @@ namespace kwk
         (
           [&]<std::ptrdiff_t I>( std::integral_constant<std::ptrdiff_t,I> const&)
           {
-            storage_type::operator[](I) = storage_type::operator[](sz-1);
+            storage_[I] = storage_[sz-1];
           }
         );
       }
@@ -101,12 +101,12 @@ namespace kwk
     {
       if constexpr(static_size > 1)
       {
-        storage_type::operator[](0) = shp[0];
+        storage_[0] = shp[0];
         detail::constexpr_for<1,static_size-1>
         (
           [&]<std::ptrdiff_t I>( std::integral_constant<std::ptrdiff_t,I> const&)
           {
-            storage_type::operator[](I) = storage_type::operator[](I-1) * shp[I];
+            storage_[I] = storage_[I-1] * shp[I];
           }
         );
       }
@@ -114,7 +114,7 @@ namespace kwk
 
     void swap( stride& other ) noexcept
     {
-      storage_type::swap( static_cast<storage_type&>(other) );
+      storage_.swap( other.storage_ );
     }
 
     //==============================================================================================
@@ -144,6 +144,8 @@ namespace kwk
       os << "}]";
       return os;
     }
+
+    storage_type storage_;
   };
 
   //================================================================================================
