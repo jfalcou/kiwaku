@@ -7,11 +7,10 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_SETTINGS_HPP_INCLUDED
-#define KIWAKU_SETTINGS_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/misc/settings.hpp>
-#include <kiwaku/detail/options/shape_option.hpp>
+#include <kiwaku/detail/container/shape_helpers.hpp>
 #include <kiwaku/detail/options/stride_option.hpp>
 #include <kiwaku/detail/options/storage_option.hpp>
 
@@ -23,15 +22,17 @@ namespace kwk::options
   template<typename Settings>
   constexpr auto shape(Settings const& s) noexcept
   {
-    return extract_settings<detail::shape_tag>( s, detail::shape_option<2>{} );
+    using shaper_t = detail::shaper<detail::dynamic_size,detail::dynamic_size>;
+    return extract_settings<detail::shape_tag>( s, shaper_t{} );
   }
 
   //================================================================================================
   // Retrieve the stride from the settings. Use shape.as_stride() by default.
   //================================================================================================
-  template<typename Settings> constexpr auto stride(Settings const& s) noexcept
+  template<typename Settings, typename Default>
+  constexpr auto stride(Settings const& s, Default const& st) noexcept
   {
-    return extract_settings<detail::stride_tag>( s, options::shape(s).as_stride() );
+    return extract_settings<detail::stride_tag>( s, st.as_stride() );
   }
 
   //================================================================================================
@@ -41,7 +42,7 @@ namespace kwk::options
   template<typename Settings> constexpr auto storage(Settings const& s) noexcept
   {
     using shape_type = decltype(options::shape(s));
-    if constexpr(shape_type::is_dynamic)
+    if constexpr(!shape_type::is_fully_static)
     {
       return extract_settings<detail::storage_tag>( s, dynamic_ );
     }
@@ -51,5 +52,3 @@ namespace kwk::options
     }
   }
 }
-
-#endif

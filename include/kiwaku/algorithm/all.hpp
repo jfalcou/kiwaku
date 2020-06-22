@@ -7,8 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_ALGORITHM_ALL_HPP_INCLUDED
-#define KIWAKU_ALGORITHM_ALL_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <cstddef>
@@ -20,7 +19,7 @@ namespace kwk
     template<typename Check, typename Dim0>
     constexpr bool all(Check c, Dim0 d0)
     {
-      for(Dim0 i0=0;i0<d0;++i0)
+      for(std::ptrdiff_t i0=0;i0<d0;++i0)
       {
         if(!c(i0))
           return false;
@@ -34,7 +33,7 @@ namespace kwk
     {
       return detail::all( [c,d0](auto... is)
                           {
-                            for(Dim i0=0;i0<d0;++i0) if(!c(i0,is...)) return false;
+                            for(std::ptrdiff_t i0=0;i0<d0;++i0) if(!c(i0,is...)) return false;
                             return true;
                           }
                           , ds...
@@ -45,14 +44,12 @@ namespace kwk
   //================================================================================================
   // n-Dimensionnal all algorithm
   //================================================================================================
-  template<typename Check, std::size_t Dimensions>
-  bool all(Check c, shape<Dimensions> const& shp)
+  template<typename Check, auto Shaper>
+  bool all(Check c, shape<Shaper> const& shp)
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
       return detail::all(c, get<N>(shp)... );
-    }( std::make_index_sequence<Dimensions>{});
+    }( std::make_index_sequence<shape<Shaper>::static_size>{});
   }
 }
-
-#endif

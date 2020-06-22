@@ -19,7 +19,7 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a C array" )
 {
   float ref[7] = {1,2,3,4,5,6,7};
 
-  kwk::view<float,kwk::_1D(7)> view(ref);
+  kwk::view<float,kwk::extent[7]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)    );
   TTS_EQUAL( view.size() , 7ULL             );
@@ -34,7 +34,7 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer" )
 {
   float ref[] = {1,2,3,4,5,6,7};
 
-  kwk::view<float,kwk::_1D(7)> view(&ref[0]);
+  kwk::view<float,kwk::extent[7]> view(&ref[0]);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)    );
   TTS_EQUAL( view.size() , 7ULL             );
@@ -49,7 +49,7 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer to const
 {
   float const ref[] = {1,2,3,4,5,6,7};
 
-  kwk::view<float const,kwk::_1D(7)> view(&ref[0]);
+  kwk::view<float const,kwk::extent[7]> view(&ref[0]);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)    );
   TTS_EQUAL( view.size() , 7ULL             );
@@ -64,7 +64,7 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a ContiguousSequen
 {
   std::vector<float> ref = {1,2,3,4,5,6,7};
 
-  kwk::view<float,kwk::_1D(7)> view(ref);
+  kwk::view<float,kwk::extent[7]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)    );
   TTS_EQUAL( view.size() , 7ULL             );
@@ -79,7 +79,7 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a const Contiguous
 {
   std::vector<float> const ref = {1,2,3,4,5,6,7};
 
-  kwk::view<float const,kwk::_1D(7)> view(ref);
+  kwk::view<float const,kwk::extent[7]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)    );
   TTS_EQUAL( view.size() , 7ULL             );

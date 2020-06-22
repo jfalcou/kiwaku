@@ -7,8 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_CT_HELPERS_HPP_INCLUDED
-#define KIWAKU_DETAIL_CT_HELPERS_HPP_INCLUDED
+#pragma once
 
 #include <type_traits>
 
@@ -59,6 +58,72 @@ namespace kwk::detail
   {
     return constexpr_for<0,Count>(c);
   }
-}
 
-#endif
+  //================================================================================================
+  // Augmented static integer list for mapping known unit values
+  //================================================================================================
+  template<std::size_t... I> struct index_list
+  {
+    // How many indexes ?
+    static constexpr std::size_t size = sizeof...(I);
+
+    // is N in the set of known unit indexes ?
+    static constexpr bool contains(std::size_t N) noexcept
+    {
+      bool found[] = { (I==N)... };
+      for(auto f : found) if(f) return true;
+      return false;
+    }
+
+    // Aggregation of an index into an existing index_list
+    template<std::size_t J> using append = index_list<I...,J>;
+
+    // Find the actual dynamic index of a non-unit index
+    template<std::size_t Size> static constexpr std::size_t locate(std::size_t N) noexcept
+    {
+      // Build a bitmap of where the known values are
+      std::size_t idx[Size] = {};
+      ((idx[I] = 1), ...);
+
+      // Count how far you need to go to find an unknown
+      std::size_t pos = 0;
+      for(std::size_t i=0;i<N;++i) pos += (1-idx[i]);
+
+      return pos;
+    }
+  };
+
+  //================================================================================================
+  // Build a list of index in a type list where a target type is found
+  //================================================================================================
+  template<typename Target, std::size_t Index, typename Current, typename... Vs>
+  struct type_map_impl;
+
+  template<typename Target, std::size_t Index, typename Current>
+  struct type_map_impl<Target, Index, Current, Target>
+  {
+    using type = typename Current::template append<Index>;
+  };
+
+  template<typename Target, std::size_t Index, typename Current, typename Head>
+  struct type_map_impl<Target, Index, Current, Head>
+  {
+    using type = Current;
+  };
+
+  template<typename Target, std::size_t Index, typename Current, typename Head, typename... Tail>
+  struct  type_map_impl<Target, Index  , Current, Head, Tail...>
+        : type_map_impl<Target, Index+1,Current , Tail...>
+  {
+  };
+
+  template<typename Target, std::size_t Index, typename Current, typename... Tail>
+  struct  type_map_impl<Target, Index, Current, Target, Tail...>
+        : type_map_impl<Target, Index+1,typename Current::template append<Index>,Tail...>
+  {
+  };
+
+  template<typename Target, typename... Vs>
+  struct type_map : type_map_impl<Target, 0, index_list<>, Vs...>
+  {};
+}

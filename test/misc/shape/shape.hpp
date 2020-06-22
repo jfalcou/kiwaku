@@ -23,15 +23,14 @@ inline void test_0D(Env& runtime, Shape const& sh)
   TTS_EQUAL(sh.size()   , 0ULL);
 }
 
-
 template<typename Env, typename Size, typename Shape>
 inline void test_nD(Env& runtime, Size const&, Shape const& sh)
 {
   TTS_EQUAL(sh.count(), Size::value                           );
   TTS_EQUAL(sh.size() , static_cast<std::size_t>(Size::value) );
 
-  TTS_EQUAL(sh.front(), 3             );
-  TTS_EQUAL(sh.back() , 3*Size::value );
+  TTS_EQUAL(kwk::get<0>(sh)                   , 3             );
+  TTS_EQUAL(kwk::get<Shape::static_size-1>(sh), 3*Size::value );
 }
 
 #endif

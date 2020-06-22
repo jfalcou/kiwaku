@@ -7,26 +7,27 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_ALGORITHM_FOR_EACH_HPP_INCLUDED
-#define KIWAKU_ALGORITHM_FOR_EACH_HPP_INCLUDED
+#pragma once
 
 namespace kwk
 {
-  namespace kwk
+  namespace detail
   {
     //================================================================================================
-    // n-Dimensionnal for_each algorithm
+    // n-Dimensional for_each algorithm
     //================================================================================================
     template<typename Check, typename Dim0>
     consetxpr void for_each(Check c, Dim0 d0)
     {
-      for(Dim0 i0=0;i0<d0;++i0) c(i0);
+      for(std::ptrdiff_t i0=0;i0<d0;++i0) c(i0);
     }
 
     template<typename Check, typename Dim, typename... Dims>
     constexpr void for_each(Check c, Dim d0, Dims... ds)
     {
-      detail::for_each( [c,d0](auto... is) { for(Dim i0=0;i0<d0;++i0) c(i0,is...); }, ds... );
+      detail::for_each( [c,d0](auto... is) { for(std::ptrdiff_t i0=0;i0<d0;++i0) c(i0,is...); }
+                      , ds...
+                      );
     }
   }
 
@@ -42,5 +43,3 @@ namespace kwk
     }( std::make_index_sequence<Dimensions>{});
   }
 }
-
-#endif

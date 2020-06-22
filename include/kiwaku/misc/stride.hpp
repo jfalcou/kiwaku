@@ -7,8 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_MISC_STRIDE_HPP_INCLUDED
-#define KIWAKU_MISC_STRIDE_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/detail/container/stride_helpers.hpp>
 #include <kiwaku/detail/container/linearize.hpp>
@@ -20,7 +19,7 @@
 
 namespace kwk
 {
-  template<std::size_t Dimensions> struct shape;
+  template<auto Shaper> struct shape;
 
   template<std::size_t Dimensions, typename UnitIndices = detail::index_list<0>>
   struct stride
@@ -97,16 +96,17 @@ namespace kwk
     // Construct from a shape with same dimensions
     // Only possible if stride is unit on the inner dimension
     //==============================================================================================
-    constexpr explicit stride(shape<Dimensions> const& shp) noexcept requires(is_unit)
+    template<auto Shaper>
+    constexpr explicit stride(shape<Shaper> const& shp) noexcept requires(is_unit)
     {
       if constexpr(static_size > 1)
       {
-        storage_[0] = shp[0];
+        storage_[0] = shp.template get<0>();
         detail::constexpr_for<1,static_size-1>
         (
           [&]<std::ptrdiff_t I>( std::integral_constant<std::ptrdiff_t,I> const&)
           {
-            storage_[I] = storage_[I-1] * shp[I];
+            storage_[I] = storage_[I-1] * shp.template get<I>();
           }
         );
       }
@@ -216,7 +216,7 @@ namespace kwk
                                 , typename detail::index_map<std::remove_cvref_t<V>...>::type
                                 >;
 
-  template<std::size_t D> stride(shape<D> const&...) -> stride<D, detail::index_list<0>>;
+  template<auto Shaper> stride(shape<Shaper> const&...) -> stride<Shaper.size(), detail::index_list<0>>;
 
   //================================================================================================
   // Structured binding supports
@@ -244,5 +244,3 @@ namespace std
         : std::integral_constant<std::size_t,Dimensions>
   {};
 }
-
-#endif

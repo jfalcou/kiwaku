@@ -7,32 +7,41 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_SHAPE_HPP_INCLUDED
-#define KIWAKU_SHAPE_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/misc/shape.hpp>
-#include <kiwaku/detail/options/shape_option.hpp>
+#include <kiwaku/detail/container/shape_helpers.hpp>
 
 namespace kwk
 {
   //================================================================================================
   // NTTP options
   //================================================================================================
-  inline constexpr auto _0D = detail::shape_option<0>{};
-  inline constexpr auto _1D = detail::shape_option<1>{};
-  inline constexpr auto _2D = detail::shape_option<2>{};
-  inline constexpr auto _3D = detail::shape_option<3>{};
-  inline constexpr auto _4D = detail::shape_option<4>{};
+  inline constexpr detail::shaper extent = {};
 
-  template<std::size_t N> inline constexpr auto _nD = detail::shape_option<N>{};
+  // Dynamic pre-rendered dimension shaper
+  inline constexpr auto _0D = extent;
+  inline constexpr auto _1D = extent();
+  inline constexpr auto _2D = extent()();
+  inline constexpr auto _3D = extent()()();
+  inline constexpr auto _4D = extent()()()();
+
+  template<std::size_t N>
+  inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...> const&)
+                              {
+                                return detail::shaper<decltype(detail::dynamic_size(I))...>{};
+                              }(std::make_index_sequence<N>{});
 
   //================================================================================================
-  // Imperative constructor
+  // Deduction guides
   //================================================================================================
-  template<typename... T> constexpr auto of_shape(T... s) -> decltype( shape{s...} )
+  template<typename... T> shape(T... s) -> shape< _nD<sizeof...(T)> >;
+
+  //================================================================================================
+  // Imperative construction
+  //================================================================================================
+  template<typename... I> auto of_shape(I... i)
   {
-    return shape{s...};
+    return shape{i...};
   }
 }
-
-#endif

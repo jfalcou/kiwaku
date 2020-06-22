@@ -19,7 +19,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a C array" )
 {
   float ref[24] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float,kwk::_3D> view(ref,kwk::_3D(2,3,4));
+  kwk::view<float,kwk::_3D> view(ref,kwk::of_shape(2,3,4));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*3*2    );
   TTS_EQUAL( view.size() , 24ULL                );
@@ -42,7 +42,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a pointer" )
 {
   float ref[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float,kwk::_3D> view(&ref[0],kwk::_3D(2,3,4));
+  kwk::view<float,kwk::_3D> view(&ref[0],kwk::of_shape(2,3,4));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*3*2    );
   TTS_EQUAL( view.size() , 24ULL                );
@@ -60,7 +60,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a pointer to const
 {
   float const ref[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float const,kwk::_3D> view(&ref[0],kwk::_3D(2,3,4));
+  kwk::view<float const,kwk::_3D> view(&ref[0],kwk::of_shape(2,3,4));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*3*2    );
   TTS_EQUAL( view.size() , 24ULL                );
@@ -78,7 +78,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a ContiguousSequen
 {
   std::vector<float> ref = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float,kwk::_3D> view(ref,kwk::_3D(2,3,4));
+  kwk::view<float,kwk::_3D> view(ref,kwk::of_shape(2,3,4));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*3*2    );
   TTS_EQUAL( view.size() , 24ULL                );
@@ -96,7 +96,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a const Contiguous
 {
   std::vector<float> const ref = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float const,kwk::_3D> view(ref,kwk::_3D(2,3,4));
+  kwk::view<float const,kwk::_3D> view(ref,kwk::of_shape(2,3,4));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*3*2    );
   TTS_EQUAL( view.size() , 24ULL                );

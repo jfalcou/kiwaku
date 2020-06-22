@@ -16,18 +16,18 @@ TTS_CASE( "Checks tuple API for kwk::shape - read only access")
 {
   kwk::shape const _7d{3,5,7,9,11,13,69};
   auto[d70,d71,d72,d73,d74,d75,d76] = _7d;
-  TTS_EQUAL(d70, _7d[0]);
-  TTS_EQUAL(d71, _7d[1]);
-  TTS_EQUAL(d72, _7d[2]);
-  TTS_EQUAL(d73, _7d[3]);
-  TTS_EQUAL(d74, _7d[4]);
-  TTS_EQUAL(d75, _7d[5]);
-  TTS_EQUAL(d76, _7d[6]);
+  TTS_EQUAL(d70, _7d.get<0>());
+  TTS_EQUAL(d71, _7d.get<1>());
+  TTS_EQUAL(d72, _7d.get<2>());
+  TTS_EQUAL(d73, _7d.get<3>());
+  TTS_EQUAL(d74, _7d.get<4>());
+  TTS_EQUAL(d75, _7d.get<5>());
+  TTS_EQUAL(d76, _7d.get<6>());
 }
 
 TTS_CASE( "Checks tuple API for kwk::shape - write access")
 {
-  kwk::shape<3> _3d;
+  kwk::shape<kwk::_3D> _3d;
   auto&[d30,d31,d32] = _3d;
 
   d30 = 13;
