@@ -9,8 +9,6 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kiwaku/shape.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/basic.hpp>
 
 TTS_CASE( "Experimental Reverdy's shape" )
 {
@@ -33,4 +31,6 @@ TTS_CASE( "Experimental Reverdy's shape" )
 
   auto[s0,s1,s2] = sh;
   std::cout << s0 << " " << s1 << " " << s2 << "\n";
+
+  TTS_PASS("Done.");
 }

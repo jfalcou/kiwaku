@@ -10,9 +10,8 @@
 #include "test.hpp"
 #include <kiwaku/stride.hpp>
 #include <kiwaku/shape.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/sequence.hpp>
 #include <algorithm>
+#include <numeric>
 #include <vector>
 
 TTS_CASE( "1D index computation from unit stride" )

@@ -10,7 +10,6 @@
 #include "test.hpp"
 #include <kiwaku/misc/slicers.hpp>
 #include <kiwaku/concept/slicer.hpp>
-#include <tts/tests/basic.hpp>
 
 TTS_CASE( "kwk::_ is a contiguous, unit slicer" )
 {

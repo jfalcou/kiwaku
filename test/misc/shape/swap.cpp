@@ -9,8 +9,6 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kiwaku/shape.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/basic.hpp>
 
 TTS_CASE( "swap behavior on 1D shape" )
 {

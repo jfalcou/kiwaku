@@ -9,10 +9,6 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kiwaku/shape.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/basic.hpp>
-
-template<int N> using int_ = std::integral_constant<int,N>;
 
 TTS_CASE( "Default constructed 0D shape behavior")
 {

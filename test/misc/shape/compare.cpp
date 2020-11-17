@@ -9,7 +9,6 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kiwaku/shape.hpp>
-#include <tts/tests/basic.hpp>
 
 TTS_CASE( "Equality comparison between shapes" )
 {

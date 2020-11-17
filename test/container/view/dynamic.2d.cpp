@@ -10,8 +10,6 @@
 #include "test.hpp"
 #include <kiwaku/container/view.hpp>
 #include <kiwaku/algorithm/all.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/basic.hpp>
 #include <algorithm>
 #include <vector>
 

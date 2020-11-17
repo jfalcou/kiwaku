@@ -12,7 +12,7 @@
 
 TTS_CASE( "Building a 0D shape with kwk::shape{}" )
 {
-  test_0D(runtime, kwk::shape{});
+  test_0D(runtime, verbose, kwk::shape{});
 }
 
 TTS_CASE_TPL( "Building a nD shape with kwk::shape{a1,...,an}"
@@ -24,5 +24,5 @@ TTS_CASE_TPL( "Building a nD shape with kwk::shape{a1,...,an}"
               return kwk::shape{3*(1+Idx)...};
             };
 
-  test_nD(runtime, T{}, f(up_to<T>{}));
+  test_nD(runtime, verbose, T{}, f(up_to<T>{}));
 }

@@ -10,8 +10,6 @@
 #include "test.hpp"
 #include <kiwaku/stride.hpp>
 #include <kiwaku/shape.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/basic.hpp>
 
 TTS_CASE( "Convert a 1D shape to 1D stride" )
 {

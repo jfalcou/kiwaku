@@ -6,7 +6,6 @@
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 set ( SOURCES
-      sandbox.cpp
       dynamic.1d.cpp
       static.1d.cpp
     )

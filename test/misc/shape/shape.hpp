@@ -11,11 +11,9 @@
 #define SHAPE_SHAPE_HPP
 
 #include <kiwaku/shape.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/basic.hpp>
 
 template<typename Env, typename Shape>
-inline void test_0D(Env& runtime, Shape const& sh)
+inline void test_0D(Env& runtime, bool verbose, Shape const& sh)
 {
   TTS_EQUAL(sh.nbdims() , 0   );
   TTS_EQUAL(sh.numel()  , 0   );
@@ -24,7 +22,7 @@ inline void test_0D(Env& runtime, Shape const& sh)
 }
 
 template<typename Env, typename Size, typename Shape>
-inline void test_nD(Env& runtime, Size const&, Shape const& sh)
+inline void test_nD(Env& runtime, bool verbose, Size const&, Shape const& sh)
 {
   TTS_EQUAL(sh.count(), Size::value                           );
   TTS_EQUAL(sh.size() , static_cast<std::size_t>(Size::value) );
