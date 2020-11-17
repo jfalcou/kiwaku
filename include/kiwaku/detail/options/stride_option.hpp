@@ -11,7 +11,7 @@
 #define KIWAKU_DETAIL_OPTIONS_STRIDE_OPTION_HPP_INCLUDED
 
 #include <kiwaku/misc/stride.hpp>
-#include <kiwaku/detail/options/options.hpp>
+#include <kiwaku/detail/raberu.hpp>
 #include <utility>
 #include <cstddef>
 
@@ -23,7 +23,6 @@ namespace kwk::detail
     // NTTP Indirect interface
     //==============================================================================================
     using stride_type = stride<Dimensions, index_list<0>>;
-    using option_tag  = stride_tag;
 
     static constexpr bool is_dynamic          = true;
     static constexpr bool is_unit             = true;
@@ -39,6 +38,28 @@ namespace kwk::detail
       return stride_type{s...};
     }
   };
+
+  //================================================================================================
+  // RBR option global tag
+  //================================================================================================
+  struct stride_tag;
+}
+
+//================================================================================================
+// Register a RBR keyword
+//================================================================================================
+namespace kwk::option
+{
+  inline constexpr auto stride  = ::rbr::keyword<kwk::detail::stride_tag>;
+}
+
+namespace rbr
+{
+  //================================================================================================
+  // Register as RBR option
+  //================================================================================================
+  template<std::size_t D, typename IL>
+  struct tag<kwk::detail::stride_option<D,IL>> : tag<kwk::detail::stride_tag> {};
 }
 
 #endif

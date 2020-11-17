@@ -9,7 +9,6 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/detail/options/options.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
 //#include <kiwaku/misc/slicers.hpp>
 #include <kiwaku/misc/stride.hpp>

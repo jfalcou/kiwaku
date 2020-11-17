@@ -10,35 +10,24 @@
 #ifndef KIWAKU_DETAIL_OPTIONS_STORAGE_OPTION_HPP_INCLUDED
 #define KIWAKU_DETAIL_OPTIONS_STORAGE_OPTION_HPP_INCLUDED
 
-#include <kiwaku/detail/options/options.hpp>
+#include <kiwaku/detail/raberu.hpp>
 
 namespace kwk::detail
 {
-  struct adaptative_storage_option
-  {
-    using option_tag  = storage_tag;
-    constexpr bool use_allocator(std::ptrdiff_t sz) const noexcept
-    {
-      // negative sz means we deals with a full dynamic shape - so we use an allocator
-      return sz<0 || sz > dynamic_storage_threshold_;
-    }
-
-    std::ptrdiff_t dynamic_storage_threshold_;
-  };
-
   struct dynamic_storage_option
   {
-    using option_tag  = storage_tag;
-    constexpr bool use_allocator(std::ptrdiff_t) const noexcept { return true; }
-    constexpr adaptative_storage_option operator()(std::ptrdiff_t t) noexcept { return {t}; }
+    constexpr bool use_allocator() const noexcept { return true; }
   };
 
   struct stack_storage_option
   {
-    using option_tag  = storage_tag;
-    constexpr bool use_allocator(std::ptrdiff_t) const noexcept { return false; }
-    constexpr adaptative_storage_option operator()(std::ptrdiff_t t) noexcept { return {t}; }
+    constexpr bool use_allocator() const noexcept { return false; }
   };
+
+  //================================================================================================
+  // RBR option global tag
+  //================================================================================================
+  struct storage_tag;
 }
 
 namespace kwk
@@ -46,5 +35,23 @@ namespace kwk
   inline constexpr auto dynamic_  = detail::dynamic_storage_option{};
   inline constexpr auto stack_    = detail::stack_storage_option{};
 }
+
+//================================================================================================
+// Register a RBR keyword
+//================================================================================================
+namespace kwk::option
+{
+  inline constexpr auto storage  = ::rbr::keyword<kwk::detail::storage_tag>;
+}
+
+namespace rbr
+{
+  //================================================================================================
+  // Register as RBR option
+  //================================================================================================
+  template<> struct tag<kwk::detail::dynamic_storage_option>  : tag<kwk::detail::storage_tag> {};
+  template<> struct tag<kwk::detail::stack_storage_option>    : tag<kwk::detail::storage_tag> {};
+}
+
 
 #endif

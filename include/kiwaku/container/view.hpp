@@ -10,9 +10,7 @@
 #ifndef KIWAKU_CONTAINER_VIEW_HPP_INCLUDED
 #define KIWAKU_CONTAINER_VIEW_HPP_INCLUDED
 
-#include <kiwaku/detail/container/view_span.hpp>
-#include <kiwaku/detail/container/view_access.hpp>
-#include <kiwaku/settings.hpp>
+#include <kiwaku/detail/container/extractor.hpp>
 #include <kiwaku/stride.hpp>
 #include <kiwaku/shape.hpp>
 
@@ -20,25 +18,22 @@ namespace kwk
 {
   template<typename Type, auto... Settings>
   struct  view
-        : detail::view_access < kwk::shape<options::shape(settings(Settings...))>{}
-                              , options::stride ( settings(Settings...)
-                                                , kwk::shape<options::shape(settings(Settings...))>{}
-                                                )
-                              >
-        , detail::view_span<Type*>
+        : detail::settings_extractor<Type,Settings...>::access_base
+        , detail::settings_extractor<Type,Settings...>::span_base
   {
+    //==============================================================================================
+    // Constexpr options extractor
+    //==============================================================================================
+    using builder_t = detail::settings_extractor<Type,Settings...>;
+
     //==============================================================================================
     // Constexpr properties extracted from settings
     //==============================================================================================
-    static constexpr auto all_settings    = settings(Settings...);
-    static constexpr auto shape_settings  = kwk::shape<options::shape(all_settings)>{};
-    static constexpr auto stride_settings = options::stride(all_settings, shape_settings);
+    static constexpr bool is_dynamic      = builder_t::is_dynamic;
+    static constexpr bool is_fully_static = builder_t::is_fully_static;
 
-    static constexpr bool is_dynamic      = shape_settings.is_dynamic;
-    static constexpr bool is_fully_static = shape_settings.is_fully_static;
-
-    using span_base       = detail::view_span<Type*>;
-    using access_base     = detail::view_access<shape_settings, stride_settings>;
+    using span_base       = builder_t::span_base;;
+    using access_base     = builder_t::access_base;
     using shape_type      = typename access_base::shape_type;
     using stride_type     = typename access_base::stride_type;
 

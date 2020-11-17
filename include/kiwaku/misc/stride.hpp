@@ -11,11 +11,11 @@
 
 #include <kiwaku/detail/container/stride_helpers.hpp>
 #include <kiwaku/detail/container/linearize.hpp>
-#include <kiwaku/detail/options/options.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
+#include <kiwaku/detail/raberu.hpp>
 #include <cstddef>
 #include <utility>
-#include <iosfwd>
+#include <iostream>
 
 namespace kwk
 {
@@ -28,7 +28,6 @@ namespace kwk
     // NTTP Indirect interface
     //==============================================================================================
     using stride_type = stride<Dimensions, detail::index_list<0>>;
-    using option_tag  = detail::stride_tag;
     static constexpr bool is_dynamic  = false;
     static constexpr bool is_unit     = UnitIndices::contains(0);
     static constexpr bool is_explicit = false;
@@ -157,7 +156,6 @@ namespace kwk
     // NTTP Indirect interface
     //==============================================================================================
     using stride_type = stride<1, detail::index_list<0>>;
-    using option_tag  = detail::stride_tag;
     static constexpr bool is_dynamic  = false;
     static constexpr bool is_unit     = true;
     static constexpr bool is_explicit = false;
@@ -243,4 +241,21 @@ namespace std
   struct  tuple_size<kwk::stride<Dimensions,IL>>
         : std::integral_constant<std::size_t,Dimensions>
   {};
+}
+
+namespace kwk::detail
+{
+  //================================================================================================
+  // RBR option global tag
+  //================================================================================================
+  struct stride_tag;
+}
+
+namespace rbr
+{
+  //================================================================================================
+  // Register as RBR option
+  //================================================================================================
+  template<std::size_t D, typename IL>
+  struct tag<kwk::stride<D,IL>> : tag<kwk::detail::stride_tag> {};
 }

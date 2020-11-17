@@ -12,19 +12,19 @@
 
 #include <kiwaku/container/view.hpp>
 #include <cstddef>
+#include <memory>
 
 namespace kwk::detail
 {
   template<typename Type, auto... Settings>
   struct dynamic_storage : private kwk::view<Type,Settings...>
   {
-    using parent          = kwk::view<Type,Settings...>;
-    using value_type      = typename parent::value_type;
-    using reference       = typename parent::reference;
-    using const_reference = typename parent::const_reference;
-    // using shape_type      = decltype(Shape);
+    using parent            = kwk::view<Type,Settings...>;
+    using value_type        = typename parent::value_type;
+    using reference         = typename parent::reference;
+    using const_reference   = typename parent::const_reference;
     // using stride_type     = decltype(Stride);
-    using shape_type = typename parent::shape_type;
+    using shape_type        = typename parent::shape_type;
 
     static constexpr bool is_dynamic  = parent::is_dynamic;
 

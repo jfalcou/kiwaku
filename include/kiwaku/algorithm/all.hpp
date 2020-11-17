@@ -45,7 +45,7 @@ namespace kwk
   // n-Dimensionnal all algorithm
   //================================================================================================
   template<typename Check, auto Shaper>
-  bool all(Check c, shape<Shaper> const& shp)
+  constexpr bool all(Check c, shape<Shaper> const& shp)
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {

@@ -12,25 +12,28 @@
 
 #include <kiwaku/detail/container/stack_storage.hpp>
 #include <kiwaku/detail/container/dynamic_storage.hpp>
+#include <kiwaku/detail/options/storage_option.hpp>
 #include <type_traits>
 
 namespace kwk::detail
 {
   template<typename Type, auto... Settings>
-  struct storage_selector
+  struct storage_selector : settings_extractor<Type,Settings...>
   {
-    static constexpr auto all_settings  = settings(Settings...);
-    static constexpr auto shape         = options::shape(all_settings);
-    static constexpr auto stride        = options::stride(all_settings);
-    static constexpr auto storage       = options::storage(all_settings);
+    using base_t = settings_extractor<Type,Settings...>;
 
-    static constexpr bool use_allocator = storage.use_allocator( shape.numel() * sizeof(Type) );
+    static constexpr auto storage_ = []()
+    {
+      if constexpr(!base_t::shape_.is_fully_static) return base_t::opt_[option::storage | dynamic_];
+      else                                          return base_t::opt_[option::storage | stack_];
+    }();
+
+    static constexpr bool use_allocator = storage_.use_allocator();
 
     using type = std::conditional_t < use_allocator
                                     , dynamic_storage<Type,Settings...>
-                                    , stack_storage<Type,shape,stride>
+                                    , stack_storage<Type,base_t::shape_,base_t::stride_>
                                     >;
   };
 }
-
 #endif

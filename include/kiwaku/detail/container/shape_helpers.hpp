@@ -10,7 +10,6 @@
 #pragma once
 
 #include <kiwaku/detail/ct_helpers.hpp>
-#include <kiwaku/detail/options/options.hpp>
 #include <kiwaku/detail/options/stride_option.hpp>
 #include <type_traits>
 #include <cstddef>
@@ -31,16 +30,24 @@ namespace kwk::detail
     //==============================================================================================
     // NTTP Option tag
     //==============================================================================================
-    using option_tag  = detail::shape_tag;
+    static constexpr auto size_map() { return typename type_map<static_size, Ops...>::type{}; }
+    static constexpr bool is_fully_static   = size_map().size == sizeof...(Ops);
 
     //==============================================================================================
     // Main interface
     //==============================================================================================
     using type = shaper<Ops...>;
 
-    static constexpr auto size_map() { return typename type_map<static_size, Ops...>::type{}; }
-
     constexpr shaper() noexcept = default;
+
+    template <typename... X> constexpr auto append(X... x) const noexcept
+    {
+      return [&]<std::size_t... I>(std::index_sequence<I...> const&)
+      {
+        using that_t = std::array<std::ptrdiff_t, sizeof...(Ops) + sizeof...(X)>;
+        return that_t{{std::get<I>(data_)..., x...}};
+      }(std::index_sequence_for<Ops...>());
+    }
 
     template <typename... Args>
     constexpr shaper(shaper<Args...> other, std::ptrdiff_t i) noexcept : data_(other.append(i))
@@ -62,15 +69,6 @@ namespace kwk::detail
 
     constexpr std::ptrdiff_t at(std::size_t i) const noexcept { return data_[i]; }
 
-    template <typename... X> constexpr auto append(X... x) const noexcept
-    {
-      return [&]<std::size_t... I>(std::index_sequence<I...> const&)
-      {
-        using that_t = std::array<std::ptrdiff_t, sizeof...(Ops) + sizeof...(X)>;
-        return that_t{{std::get<I>(data_)..., x...}};
-      }(std::index_sequence_for<Ops...>());
-    }
-
     // Implementation details
     std::array<std::ptrdiff_t, sizeof...(Ops)> data_;
   };
@@ -78,19 +76,18 @@ namespace kwk::detail
   template<> struct shaper<>
   {
     //==============================================================================================
-    // NTTP Indirect interface
+    // NTTP Option tag
     //==============================================================================================
-    // using                           size_map      = decltype(Shaper.size_map());
-    // static constexpr std::size_t    static_size   = Shaper.size();
-    // static constexpr std::size_t    storage_size  = static_size - size_map::size;
-
-    // //using shape_type                  = shape2<shaper>;
-    // using option_tag                  = detail::shape_tag;
-    // static constexpr bool is_dynamic  = storage_size == static_size;
+    static constexpr auto size_map() { return index_list{}; }
+    static constexpr bool is_fully_static = true;
 
     using type = shaper<>;
 
-    static constexpr auto size_map() { return index_list{}; }
+    template <typename... X> constexpr auto append(X... x) const noexcept
+    {
+      using that_t = std::array<std::ptrdiff_t, sizeof...(X)>;
+      return that_t{{x...}};
+    }
 
     constexpr shaper() noexcept = default;
 
@@ -105,11 +102,27 @@ namespace kwk::detail
     }
 
     static constexpr std::size_t size() noexcept { return 0; }
-
-    template <typename... X> constexpr auto append(X... x) const noexcept
-    {
-      using that_t = std::array<std::ptrdiff_t, sizeof...(X)>;
-      return that_t{{x...}};
-    }
   };
+
+  //================================================================================================
+  // RBR option global tag
+  //================================================================================================
+  struct shape_tag;
+}
+
+//================================================================================================
+// Register a RBR keyword
+//================================================================================================
+namespace kwk::option
+{
+  inline constexpr auto shape  = ::rbr::keyword<kwk::detail::shape_tag>;
+}
+
+namespace rbr
+{
+  //================================================================================================
+  // Register as RBR option
+  //================================================================================================
+  template <typename... Ops>
+  struct tag<kwk::detail::shaper<Ops...>> : tag<kwk::detail::shape_tag> {};
 }
