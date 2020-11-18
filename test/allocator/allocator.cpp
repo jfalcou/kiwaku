@@ -9,12 +9,12 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kiwaku/allocator/heap.hpp>
-#include <kiwaku/allocator/stack.hpp>
+#include <kiwaku/allocator/shallow.hpp>
 #include <kiwaku/allocator/allocator.hpp>
 
 struct box
 {
-  box() : alloc(), data_(), size_() {}
+  box() noexcept : alloc(), data_(), size_() {}
 
   template<typename A>
   box ( kwk::elements n, A const& a)
@@ -28,7 +28,7 @@ struct box
     std::copy(that.begin(), that.end(), data());
   }
 
-  box( box&& that ) : box() { swap(that); }
+  box( box&& that )  noexcept : box() { swap(that); }
 
   box& operator=(box const& other)
   {
@@ -37,28 +37,28 @@ struct box
     return *this;
   }
 
-  box& operator=(box && other)
+  box& operator=(box && other) noexcept
   {
     box that(std::move(other));
     swap(that);
     return *this;
   }
 
-  float&  get(int i)        { return data()[i];  }
-  float   get(int i) const  { return data()[i];  }
+  float&  get(int i)        noexcept { return data()[i];  }
+  float   get(int i) const  noexcept { return data()[i];  }
 
-  float *       data()       { return static_cast<float*>(data_.data); }
-  float const*  data() const { return static_cast<float const*>(data_.data); }
+  float *       data()       noexcept { return static_cast<float*>(data_.data); }
+  float const*  data() const noexcept { return static_cast<float const*>(data_.data); }
 
-  float *       begin()       { return data(); }
-  float const*  begin() const { return data(); }
+  float *       begin()       noexcept { return data(); }
+  float const*  begin() const noexcept { return data(); }
 
-  float *       end()       { return begin() + size_; }
-  float const*  end() const { return begin() + size_; }
+  float *       end()       noexcept { return begin() + size_; }
+  float const*  end() const noexcept { return begin() + size_; }
 
   ~box() { if(size_ != 0) alloc.deallocate( data_ ); }
 
-  void swap(box& b)
+  void swap(box& b) noexcept
   {
     alloc.swap(b.alloc);
     data_.swap(b.data_);
@@ -74,8 +74,9 @@ TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
 {
   using namespace kwk::literals;
 
+  std::byte data[32];
   box b( 5_N, kwk::heap_allocator{} );
-  box c( 7_N, kwk::stack_allocator<32>{} );
+  box c( 7_N, kwk::make_shallow<32,16>(data) );
 
   for(int i=0;i<5;i++) b.get(i) = 1.f/(1+i);
   for(int i=0;i<7;i++) c.get(i) = 1.5f*(1+i);

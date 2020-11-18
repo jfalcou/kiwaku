@@ -8,7 +8,7 @@
 set ( SOURCES
       allocator.cpp
       heap.cpp
-      stack.cpp
+      shallow.cpp
     )
 
 make_unit("allocator" ${SOURCES})
