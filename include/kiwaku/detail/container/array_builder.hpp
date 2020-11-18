@@ -7,8 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_CONTAINER_STORAGE_SELECTOR_HPP_INCLUDED
-#define KIWAKU_DETAIL_CONTAINER_STORAGE_SELECTOR_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/detail/container/stack_storage.hpp>
 #include <kiwaku/detail/container/dynamic_storage.hpp>
@@ -18,9 +17,9 @@
 namespace kwk::detail
 {
   template<typename Type, auto... Settings>
-  struct storage_selector : settings_extractor<Type,Settings...>
+  struct array_builder : view_builder<Type,Settings...>
   {
-    using base_t = settings_extractor<Type,Settings...>;
+    using base_t = view_builder<Type,Settings...>;
 
     static constexpr auto storage_ = []()
     {
@@ -36,4 +35,3 @@ namespace kwk::detail
                                     >;
   };
 }
-#endif

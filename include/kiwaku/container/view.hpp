@@ -10,7 +10,7 @@
 #ifndef KIWAKU_CONTAINER_VIEW_HPP_INCLUDED
 #define KIWAKU_CONTAINER_VIEW_HPP_INCLUDED
 
-#include <kiwaku/detail/container/extractor.hpp>
+#include <kiwaku/detail/container/view_builder.hpp>
 #include <kiwaku/stride.hpp>
 #include <kiwaku/shape.hpp>
 
@@ -18,13 +18,13 @@ namespace kwk
 {
   template<typename Type, auto... Settings>
   struct  view
-        : detail::settings_extractor<Type,Settings...>::access_base
-        , detail::settings_extractor<Type,Settings...>::span_base
+        : detail::view_builder<Type,Settings...>::access_base
+        , detail::view_builder<Type,Settings...>::span_base
   {
     //==============================================================================================
     // Constexpr options extractor
     //==============================================================================================
-    using builder_t = detail::settings_extractor<Type,Settings...>;
+    using builder_t = detail::view_builder<Type,Settings...>;
 
     //==============================================================================================
     // Constexpr properties extracted from settings

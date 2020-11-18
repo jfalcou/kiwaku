@@ -17,7 +17,7 @@
 namespace kwk::detail
 {
   template<typename Type, auto... Settings>
-  struct  settings_extractor
+  struct  view_builder
   {
     using shaper_t = detail::shaper<detail::dynamic_size,detail::dynamic_size>;
 

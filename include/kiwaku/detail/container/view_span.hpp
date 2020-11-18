@@ -7,8 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_CONTAINER_VIEW_SPAN_HPP_INCLUDED
-#define KIWAKU_DETAIL_CONTAINER_VIEW_SPAN_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <iterator>
@@ -49,5 +48,3 @@ namespace kwk::detail
     pointer data_;
   };
 }
-
-#endif

@@ -49,10 +49,7 @@ namespace kwk::detail
     constexpr auto shape()                    const noexcept  { return Shape;         }
     constexpr auto stride()                   const noexcept  { return Stride;        }
 
-    void swap(stack_storage& other)
-    {
-      storage_.swap(other.storage_);
-    }
+    void swap(stack_storage& other) { storage_.swap(other.storage_); }
 
     auto data() const { return storage_.data(); }
 

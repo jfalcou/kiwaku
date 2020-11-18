@@ -8,14 +8,14 @@
 **/
 //==================================================================================================
 #pragma once
-#include <kiwaku/detail/container/storage_selector.hpp>
+#include <kiwaku/detail/container/array_builder.hpp>
 
 namespace kwk
 {
   template<typename Type, auto... Settings>
-  struct array : private detail::storage_selector<Type,Settings...>::type
+  struct array : private detail::array_builder<Type,Settings...>::type
   {
-    using storage                       = detail::storage_selector<Type,Settings...>;
+    using storage                       = detail::array_builder<Type,Settings...>;
     using parent                        = typename storage::type;
     static constexpr bool is_dynamic    = parent::is_dynamic;
     static constexpr bool use_allocator = storage::use_allocator;
