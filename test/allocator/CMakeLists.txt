@@ -5,8 +5,10 @@
 ##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
-include(make_unit)
+set ( SOURCES
+      allocator.cpp
+      heap.cpp
+      stack.cpp
+    )
 
-add_subdirectory(allocator)
-add_subdirectory(container)
-add_subdirectory(misc)
+make_unit("allocator" ${SOURCES})
