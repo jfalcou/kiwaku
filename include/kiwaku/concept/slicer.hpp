@@ -7,8 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_CONCEPT_SLICER_HPP_INCLUDED
-#define KIWAKU_CONCEPT_SLICER_HPP_INCLUDED
+#pragma once
 
 namespace kwk::concepts
 {
@@ -21,5 +20,3 @@ namespace kwk::concepts
   template<typename T>
   concept unit_slicer = detail::is_unit_slicer<std::remove_cvref_t<T>>::value;
 }
-
-#endif
