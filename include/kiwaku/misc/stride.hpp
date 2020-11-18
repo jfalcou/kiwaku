@@ -9,16 +9,46 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/detail/container/stride_helpers.hpp>
-#include <kiwaku/detail/container/linearize.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <kiwaku/detail/raberu.hpp>
+#include <array>
 #include <cstddef>
-#include <utility>
 #include <iostream>
+#include <type_traits>
+#include <utility>
 
 namespace kwk
 {
+  namespace detail
+  {
+    //==============================================================================================
+    // Build the static storage of a stride depending on # of dimensions and unit dimensions
+    //==============================================================================================
+    template<std::size_t Dimensions, typename UnitIndices>
+    using stride_storage = std::array<std::ptrdiff_t, Dimensions-UnitIndices::size>;
+
+    //==============================================================================================
+    // Type representing a unit stride
+    //==============================================================================================
+    using unit_type = std::integral_constant<std::ptrdiff_t,1>;
+
+    //==============================================================================================
+    // Compute an index_list from a pack of stride value types
+    //==============================================================================================
+    template<typename... Vs> struct index_map : type_map<unit_type, Vs...> {};
+
+    //==============================================================================================
+    // Recurring linearize pattern: used y stride and other components
+    //==============================================================================================
+    template<typename Data, std::size_t... Idx, typename... Is>
+    constexpr auto linearize( std::index_sequence<Idx...> const&, Data const& d, Is... is ) noexcept
+    {
+      using std::get;
+      if constexpr(sizeof...(Idx) > 0)  return ((is * get<Idx>(d)) + ...);
+      else                              return 0;
+    }
+  }
+
   template<auto Shaper> struct shape;
 
   template<std::size_t Dimensions, typename UnitIndices = detail::index_list<0>>
@@ -241,21 +271,4 @@ namespace std
   struct  tuple_size<kwk::stride<Dimensions,IL>>
         : std::integral_constant<std::size_t,Dimensions>
   {};
-}
-
-namespace kwk::detail
-{
-  //================================================================================================
-  // RBR option global tag
-  //================================================================================================
-  struct stride_tag;
-}
-
-namespace rbr
-{
-  //================================================================================================
-  // Register as RBR option
-  //================================================================================================
-  template<std::size_t D, typename IL>
-  struct tag<kwk::stride<D,IL>> : tag<kwk::detail::stride_tag> {};
 }

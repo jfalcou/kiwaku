@@ -9,9 +9,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/detail/container/stride_helpers.hpp>
-#include <kiwaku/detail/container/linearize.hpp>
-#include <kiwaku/detail/ct_helpers.hpp>
+#include <kiwaku/misc/stride.hpp>
 #include <array>
 
 namespace kwk::detail
