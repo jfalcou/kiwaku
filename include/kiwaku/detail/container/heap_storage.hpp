@@ -7,9 +7,11 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_CONTAINER_DYNAMIC_STORAGE_HPP_INCLUDED
-#define KIWAKU_DETAIL_CONTAINER_DYNAMIC_STORAGE_HPP_INCLUDED
+#ifndef KIWAKU_DETAIL_CONTAINER_HEAP_STORAGE_HPP_INCLUDED
+#define KIWAKU_DETAIL_CONTAINER_HEAP_STORAGE_HPP_INCLUDED
 
+#include <kiwaku/allocator/allocator.hpp>
+#include <kiwaku/allocator/heap.hpp>
 #include <kiwaku/container/view.hpp>
 #include <cstddef>
 #include <memory>
@@ -17,14 +19,14 @@
 namespace kwk::detail
 {
   template<typename Type, auto... Settings>
-  struct dynamic_storage : private kwk::view<Type,Settings...>
+  struct heap_storage : private kwk::view<Type,Settings...>
   {
     using parent            = kwk::view<Type,Settings...>;
     using value_type        = typename parent::value_type;
     using reference         = typename parent::reference;
     using const_reference   = typename parent::const_reference;
-    // using stride_type     = decltype(Stride);
     using shape_type        = typename parent::shape_type;
+    using stride_type       = typename parent::stride_type;
 
     static constexpr bool is_dynamic  = parent::is_dynamic;
 
@@ -45,17 +47,27 @@ namespace kwk::detail
     //  - set the view pointer to nullptr
     //  - if the storage substrate uses a dynamic shape, we need to default construct it
     //  - otherwise, we can directly allocate new data as we know the numel() of the shape
-    //    TODO: Replace new[] with a proper allocator interface call
     // In the case of a dynamic shape, we know we are noexcept as no allocation takes place.
     //==============================================================================================
-    dynamic_storage()  noexcept( is_dynamic )
-                  : parent{ [&]()
+    heap_storage()  noexcept requires(is_dynamic)
+                  : parent{nullptr, shape_type()}
+                  , allocator_(heap_allocator{})
+                  , capacity_{ bytes{0} }
+    {
+    }
+
+    heap_storage() requires(!is_dynamic)
+                  : parent( [&]()
                             {
-                              if constexpr(is_dynamic)  return  parent{nullptr, shape_type()};
-                              else                      return  parent{new Type[size()]};
+                              heap_allocator a;
+                              auto b = a.allocate( as_bytes<Type>(elements{count()}) );
+                              capacity_ = b.length;
+                              return static_cast<Type*>(b.data);
                             }()
-                          }
-    {}
+                          )
+                  , allocator_(heap_allocator{})
+    {
+    }
 
     //==============================================================================================
     // Copy constructor
@@ -64,7 +76,7 @@ namespace kwk::detail
     //  - then we perform a deep copy with strong exception guarantee
     // We perform a copy no matter what so we can't be noexcept.
     //==============================================================================================
-    dynamic_storage( dynamic_storage const& that )
+    heap_storage( heap_storage const& that )
                 : parent{ [&]()
                           {
                             if constexpr(is_dynamic)  return  parent{nullptr,that.shape()};
@@ -77,22 +89,29 @@ namespace kwk::detail
 
     //==============================================================================================
     // Destructor gonna destruct
-    // TODO: Replace delete[] with a proper allocator interface call
     //==============================================================================================
-    ~dynamic_storage() { delete[] parent::data(); }
+    ~heap_storage()
+    {
+      if(parent::data())
+      {
+        block b{parent::data(), capacity_};
+        allocator_.deallocate( b );
+      }
+    }
 
     //==============================================================================================
     // Move constructor
     //  - Set the parent view into a null state.
     //  - Swap with the incoming rvalue
     //==============================================================================================
-    dynamic_storage( dynamic_storage && that ) noexcept
+    heap_storage( heap_storage && that ) noexcept
                 : parent{ [&]()
                       {
                         if constexpr(is_dynamic)  return  parent{nullptr, shape_type()};
                         else                      return  parent{nullptr};
                       }()
                     }
+                , allocator_{}
     {
       swap(that);
     }
@@ -100,9 +119,9 @@ namespace kwk::detail
     //==============================================================================================
     // Move assignment operator - Use construct+swap
     //==============================================================================================
-    dynamic_storage& operator=( dynamic_storage const& other )
+    heap_storage& operator=( heap_storage const& other )
     {
-      dynamic_storage that{other};
+      heap_storage that{other};
       swap(that);
       return *this;
     }
@@ -110,23 +129,38 @@ namespace kwk::detail
     //==============================================================================================
     // Move assignment operator - Use construct+swap
     //==============================================================================================
-    dynamic_storage& operator=( dynamic_storage&& other )
+    heap_storage& operator=( heap_storage&& other )
     {
-      dynamic_storage that{ std::move(other) };
+      heap_storage that{ std::move(other) };
       swap(that);
       return *this;
     }
 
     //==============================================================================================
     // Construct from a shape
-    // TODO: Constructs from settings(...)
     //==============================================================================================
-    dynamic_storage(shape_type const& s) requires(is_dynamic) : parent{new Type[s.numel()], s} {}
+    heap_storage(shape_type const& s) requires(is_dynamic)
+                : parent( [&]()
+                          {
+                            heap_allocator a;
+                            auto b = a.allocate( as_bytes<Type>(elements{s.numel()}) );
+                            capacity_ = b.length;
+                            return static_cast<Type*>(b.data);
+                          }()
+                        , s
+                        )
+                  , allocator_(heap_allocator{})
+    {}
 
     //==============================================================================================
     // Swap - Asks parent to do the thing
     //==============================================================================================
-    void swap( dynamic_storage& that ) noexcept { parent::swap( static_cast<parent&>(that) ); }
+    void swap( heap_storage& that ) noexcept
+    {
+      parent::swap( static_cast<parent&>(that) );
+      allocator_.swap( that.allocator_ );
+      std::swap(capacity_,that.capacity_);
+    }
 
 /*
     template<typename SomeShape> void resize(SomeShape const& s)
@@ -137,20 +171,28 @@ namespace kwk::detail
 
     template<typename SomeShape> void reshape(SomeShape const& s)
     {
-      assert( s.numel() == view_.size() && "[dynamic_storage::reshape] - Incompatible shape");
+      assert( s.numel() == view_.size() && "[heap_storage::reshape] - Incompatible shape");
       view_ = view{storage_.data(),shape_type(s)};
     }
 */
 
     private:
 
-    void perform_copy(dynamic_storage const& that)
+    void perform_copy(heap_storage const& that)
     {
-      std::unique_ptr<Type[]> mem(new Type[that.size()]);
-      std::copy(that.begin(),that.end(),mem.get());
+      auto alloc  = that.allocator_;
+      auto b      = alloc.allocate( as_bytes<Type>(elements{that.capacity_}) );
 
+      std::unique_ptr<Type[]> mem( static_cast<Type*>(b.data) );
+      std::copy(that.begin(),that.end(),mem.get());
       parent::reset(mem.release());
+
+      allocator_.swap(alloc);
+      capacity_   = that.capacity_;
     }
+
+    allocator allocator_;
+    bytes     capacity_;
   };
 }
 

@@ -14,7 +14,7 @@
 
 namespace kwk::detail
 {
-  struct dynamic_storage_option
+  struct heap_storage_option
   {
     constexpr bool use_allocator() const noexcept { return true; }
   };
@@ -32,8 +32,8 @@ namespace kwk::detail
 
 namespace kwk
 {
-  inline constexpr auto dynamic_  = detail::dynamic_storage_option{};
-  inline constexpr auto stack_    = detail::stack_storage_option{};
+  inline constexpr auto heap_   = detail::heap_storage_option{};
+  inline constexpr auto stack_  = detail::stack_storage_option{};
 }
 
 //================================================================================================
@@ -49,8 +49,8 @@ namespace rbr
   //================================================================================================
   // Register as RBR option
   //================================================================================================
-  template<> struct tag<kwk::detail::dynamic_storage_option>  : tag<kwk::detail::storage_tag> {};
-  template<> struct tag<kwk::detail::stack_storage_option>    : tag<kwk::detail::storage_tag> {};
+  template<> struct tag<kwk::detail::heap_storage_option>   : tag<kwk::detail::storage_tag> {};
+  template<> struct tag<kwk::detail::stack_storage_option>  : tag<kwk::detail::storage_tag> {};
 }
 
 
