@@ -3,9 +3,10 @@
 # Kiwaku - Containers Well Made
 
 
-[![Kiwaku CI](https://github.com/jfalcou/kiwaku/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/jfalcou/kiwaku/actions/workflows/develop.yml)
+[![Kiwaku CI](https://github.com/jfalcou/kiwaku/actions/workflows/main.yml/badge.svg)](https://github.com/jfalcou/kiwaku/actions/workflows/main.yml)
 [![Licence](https://img.shields.io/github/license/jfalcou/kiwaku?style=plastic)](https://img.shields.io/github/license/jfalcou/kiwaku?style=plastic)
 [![Discord](https://img.shields.io/discord/692734675726237696?style=plastic)](https://discord.com/channels/692734675726237696/692735274291298424)
+
 
 C++20 and onward collection of high performance data containers and related tools
 
