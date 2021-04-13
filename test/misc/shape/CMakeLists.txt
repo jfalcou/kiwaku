@@ -15,10 +15,10 @@ set ( SOURCES
       ndims.cpp
       numel.cpp
       of_shape.cpp
+      partial.cpp
       strictly_contain.cpp
       swap.cpp
       tuple.cpp
-      experimental.cpp
     )
 
 make_unit("misc.shape" ${SOURCES})

@@ -19,9 +19,8 @@ namespace kwk
 {
   namespace detail
   {
-
     //==============================================================================================
-    // Discrimating types for shaper building
+    // Discriminating types for shaper building
     //==============================================================================================
     struct dynamic_size { dynamic_size(auto) {} };
     struct static_size  {};

@@ -9,8 +9,9 @@
 //==================================================================================================
 #pragma once
 
+#include <kiwaku/assert.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
-//#include <kiwaku/misc/slicers.hpp>
+#include <kiwaku/misc/slicers.hpp>
 #include <kiwaku/misc/stride.hpp>
 #include <utility>
 #include <cstddef>
@@ -63,6 +64,35 @@ namespace kwk
         for(std::size_t i = sizeof...(T);i<static_size;++i)
           storage_[i] = 1;
       }
+    }
+
+    //==============================================================================================
+    // Construct from some partial dynamic values for partially static shape
+    //==============================================================================================
+    template<std::same_as<detail::axis>... Extent>
+    constexpr shape(Extent... s) noexcept
+    requires( (sizeof...(Extent) <= static_size) && !is_fully_static )
+    {
+      // Fill with 1s wherever applicable
+      detail::constexpr_for<static_size>
+      ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+        {
+          if constexpr(!size_map::contains(I))
+            storage_[size_map::template locate<static_size>(I)] = 1;
+        }
+      );
+
+      // Fill the proper axis value with the corresponding size
+      auto const fill = [&](auto ext)
+      {
+        KIWAKU_ASSERT ( !size_map::contains(ext.dims)
+                      , "[kwk::shape] Semi-dynamic construction overwrite static extent"
+                      );
+
+        storage_[size_map::template locate<static_size>(ext.dims)] = ext.size;
+      };
+
+      (fill(s),...);
     }
 
     //==============================================================================================
