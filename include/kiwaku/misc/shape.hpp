@@ -25,9 +25,8 @@ namespace kwk
   template<auto Shaper> struct shape
   {
     using                           size_map      = decltype(Shaper.size_map());
-    static constexpr std::size_t    static_size   = Shaper.size();
-    static constexpr std::ptrdiff_t static_count  = Shaper.size();
-    static constexpr std::size_t    storage_size  = static_size - size_map::size;
+    static constexpr std::ptrdiff_t static_size   = Shaper.size();
+    static constexpr std::ptrdiff_t storage_size  = static_size - size_map::size;
 
     using storage_type  = std::array<std::ptrdiff_t,storage_size>;
     using stride_type   = unit_stride<static_size>;
@@ -103,7 +102,7 @@ namespace kwk
         }
       );
 
-      detail::constexpr_for<shape<OtherShaper>::static_count - dz>
+      detail::constexpr_for<shape<OtherShaper>::static_size - dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           storage_.back() *= other.template get<dz+I>();
@@ -114,8 +113,7 @@ namespace kwk
     //==============================================================================================
     // Sequence interface
     //==============================================================================================
-    static constexpr std::size_t    size()  noexcept { return static_size;  }
-    static constexpr std::ptrdiff_t count() noexcept { return static_count; }
+    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
 
     //==============================================================================================
     // Element access
@@ -165,7 +163,7 @@ namespace kwk
         return [&]<std::size_t...I>( std::index_sequence<I...> const&)
         {
           return std::max( { (this->get<I>() == 1 ? 0 : 1+I)... }) ;
-        }(std::make_index_sequence<static_count>());
+        }(std::make_index_sequence<static_size>());
       }
     }
 
@@ -179,7 +177,7 @@ namespace kwk
       {
         std::ptrdiff_t n{1};
 
-        detail::constexpr_for<static_count>
+        detail::constexpr_for<static_size>
         ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
           {
             n *= this->get<I>();
@@ -232,7 +230,7 @@ namespace kwk
     {
       os << "[";
 
-      detail::constexpr_for<static_count>
+      detail::constexpr_for<static_size>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           os << " " << s.template get<I>();

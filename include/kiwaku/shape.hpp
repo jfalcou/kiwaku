@@ -34,7 +34,7 @@ namespace kwk
       using type = shaper<Ops...>;
 
       static constexpr auto size_map()    { return typename type_map<static_size, Ops...>::type{}; }
-      static constexpr std::size_t size() { return sizeof...(Ops); }
+      static constexpr std::ptrdiff_t size() { return sizeof...(Ops); }
       static constexpr bool is_fully_static = size_map().size == sizeof...(Ops);
 
       constexpr shaper()  = default;
@@ -64,8 +64,8 @@ namespace kwk
     {
       using type = shaper<>;
 
-      static constexpr auto         size_map()  { return index_list{}; }
-      static constexpr std::size_t  size()      { return 0; }
+      static constexpr auto             size_map()  { return index_list{}; }
+      static constexpr std::ptrdiff_t   size()      { return 0; }
       static constexpr bool is_fully_static = true;
 
       constexpr shaper()  = default;

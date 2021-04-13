@@ -68,11 +68,8 @@ namespace kwk
     using storage_type    = detail::stride_storage<Dimensions,UnitIndices>;
     using value_type      = typename storage_type::value_type;
 
-    static constexpr std::size_t    size()  noexcept { return static_size;  }
-    static constexpr std::ptrdiff_t count() noexcept { return static_count; }
-
-    static constexpr std::size_t    static_size   = Dimensions;
-    static constexpr std::ptrdiff_t static_count  = Dimensions;
+    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
+    static constexpr std::ptrdiff_t static_size  = Dimensions;
 
     //==============================================================================================
     // Element access
@@ -195,11 +192,8 @@ namespace kwk
     //==============================================================================================
     using value_type = detail::unit_type;
 
-    static constexpr std::size_t    size()  noexcept { return 1ULL;  }
-    static constexpr std::ptrdiff_t count() noexcept { return 1; }
-
-    static constexpr std::size_t    static_size   = 1ULL;
-    static constexpr std::ptrdiff_t static_count  = 1;
+    static constexpr std::ptrdiff_t size() noexcept { return 1; }
+    static constexpr std::ptrdiff_t static_size  = 1;
 
     //==============================================================================================
     // Element access

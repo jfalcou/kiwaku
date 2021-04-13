@@ -12,20 +12,16 @@
 
 #include <kiwaku/shape.hpp>
 
-template<typename Env, typename Shape>
-inline void test_0D(Env& runtime, bool verbose, Shape const& sh)
+template<typename Shape> inline void test_0D(Shape const& sh)
 {
-  TTS_EQUAL(sh.nbdims() , 0   );
-  TTS_EQUAL(sh.numel()  , 0   );
-  TTS_EQUAL(sh.count()  , 0   );
-  TTS_EQUAL(sh.size()   , 0ULL);
+  TTS_EQUAL(sh.nbdims() , 0 );
+  TTS_EQUAL(sh.numel()  , 0 );
+  TTS_EQUAL(sh.size()   , 0 );
 }
 
-template<typename Env, typename Size, typename Shape>
-inline void test_nD(Env& runtime, bool verbose, Size const&, Shape const& sh)
+template<typename Size, typename Shape> inline void test_nD(Size const&, Shape const& sh)
 {
-  TTS_EQUAL(sh.count(), Size::value                           );
-  TTS_EQUAL(sh.size() , static_cast<std::size_t>(Size::value) );
+  TTS_EQUAL(sh.size(), Size::value  );
 
   TTS_EQUAL(kwk::get<0>(sh)                   , 3             );
   TTS_EQUAL(kwk::get<Shape::static_size-1>(sh), 3*Size::value );
