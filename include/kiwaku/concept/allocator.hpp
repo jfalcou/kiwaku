@@ -9,18 +9,15 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/allocator/block.hpp>
-#include <kiwaku/allocator/bytes.hpp>
 #include <concepts>
+#include <kiwaku/allocator/block.hpp>
 
 namespace kwk::concepts
 {
   template<typename A>
-  concept allocator = std::semiregular<A> && requires(A a, block& b)
+  concept allocator = std::semiregular<A> && requires(A a, block& b, std::ptrdiff_t n)
   {
-    { a.allocate(bytes{})      } -> std::same_as<block>;
-    { a.reallocate(b, bytes{}) } -> std::same_as<bool>;
-    { a.deallocate(b)          };
-    { a.expand(b, 0 )          } -> std::same_as<bool>;
+    { a.allocate(n)   } -> std::same_as<block>;
+    { a.deallocate(b) };
   };
 }
