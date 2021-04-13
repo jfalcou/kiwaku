@@ -12,7 +12,7 @@
 
 TTS_CASE( "Building a 0D shape with kwk::of_shape()" )
 {
-  test_0D(runtime, kwk::of_shape());
+  test_0D(kwk::of_shape());
 }
 
 TTS_CASE_TPL( "Building a nD shape with kwk::of_shape(a1,...,an)"
@@ -24,5 +24,5 @@ TTS_CASE_TPL( "Building a nD shape with kwk::of_shape(a1,...,an)"
               return kwk::of_shape(3*(1+Idx)...);
             };
 
-  test_nD(runtime, T{}, f(up_to<T>{}));
+  test_nD(T{}, f(up_to<T>{}));
 }

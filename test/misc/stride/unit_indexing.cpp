@@ -10,9 +10,8 @@
 #include "test.hpp"
 #include <kiwaku/stride.hpp>
 #include <kiwaku/shape.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/sequence.hpp>
 #include <algorithm>
+#include <numeric>
 #include <vector>
 
 TTS_CASE( "1D index computation from unit stride" )
@@ -51,8 +50,9 @@ TTS_CASE( "2D Index computation from unit stride" )
 
     TTS_AND_THEN( "we compute linear index from 2D positions" )
     {
-      for(auto j=0;j<sh[1];j++)
-       for(auto i=0;i<sh[0];i++)
+      auto[sh0,sh1] = sh;
+      for(auto j=0;j<sh1;j++)
+       for(auto i=0;i<sh0;i++)
         output.push_back( st.index(i,j) );
 
       TTS_ALL_EQUAL(output, ref);
@@ -82,8 +82,9 @@ TTS_CASE( "3D index computation from unit stride" )
 
     TTS_AND_THEN( "we compute linear index from 2D positions" )
     {
-      for(auto j=0;j<sh[1]*sh[2];j++)
-       for(auto i=0;i<sh[0];i++)
+      auto[sh0,sh1,sh2] = sh;
+      for(auto j=0;j<sh1*sh2;j++)
+       for(auto i=0;i<sh0;i++)
         output.push_back( st.index(i,j) );
 
       TTS_ALL_EQUAL(output, ref);
@@ -91,9 +92,10 @@ TTS_CASE( "3D index computation from unit stride" )
 
     TTS_AND_THEN( "we compute linear index from 3D positions" )
     {
-      for(auto k=0;k<sh[2];k++)
-       for(auto j=0;j<sh[1];j++)
-        for(auto i=0;i<sh[0];i++)
+      auto[sh0,sh1,sh2] = sh;
+      for(auto k=0;k<sh2;k++)
+       for(auto j=0;j<sh1;j++)
+        for(auto i=0;i<sh0;i++)
         output.push_back( st.index(i,j,k) );
 
       TTS_ALL_EQUAL(output, ref);
@@ -123,8 +125,9 @@ TTS_CASE( "4D index computation from unit stride" )
 
     TTS_AND_THEN( "we compute linear index from 2D positions" )
     {
-      for(auto j=0;j<sh[1]*sh[2]*sh[3];j++)
-       for(auto i=0;i<sh[0];i++)
+      auto[sh0,sh1,sh2,sh3] = sh;
+      for(auto j=0;j<sh1*sh2*sh3;j++)
+       for(auto i=0;i<sh0;i++)
         output.push_back( st.index(i,j) );
 
       TTS_ALL_EQUAL(output, ref);
@@ -132,9 +135,10 @@ TTS_CASE( "4D index computation from unit stride" )
 
     TTS_AND_THEN( "we compute linear index from 3D positions" )
     {
-      for(auto k=0;k<sh[2]*sh[3];k++)
-       for(auto j=0;j<sh[1];j++)
-        for(auto i=0;i<sh[0];i++)
+      auto[sh0,sh1,sh2,sh3] = sh;
+      for(auto k=0;k<sh2*sh3;k++)
+       for(auto j=0;j<sh1;j++)
+        for(auto i=0;i<sh0;i++)
         output.push_back( st.index(i,j,k) );
 
       TTS_ALL_EQUAL(output, ref);
@@ -142,10 +146,11 @@ TTS_CASE( "4D index computation from unit stride" )
 
     TTS_AND_THEN( "we compute linear index from 4D positions" )
     {
-      for(auto l=0;l<sh[3];l++)
-       for(auto k=0;k<sh[2];k++)
-        for(auto j=0;j<sh[1];j++)
-         for(auto i=0;i<sh[0];i++)
+      auto[sh0,sh1,sh2,sh3] = sh;
+      for(auto l=0;l<sh3;l++)
+       for(auto k=0;k<sh2;k++)
+        for(auto j=0;j<sh1;j++)
+         for(auto i=0;i<sh0;i++)
           output.push_back( st.index(i,j,k,l) );
 
       TTS_ALL_EQUAL(output, ref);

@@ -7,14 +7,17 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_OPTIONS_OPTIONS_HPP_INCLUDED
-#define KIWAKU_DETAIL_OPTIONS_OPTIONS_HPP_INCLUDED
+#pragma once
 
-namespace kwk::detail
+#include <concepts>
+#include <kiwaku/allocator/block.hpp>
+
+namespace kwk::concepts
 {
-  struct shape_tag    {};
-  struct stride_tag   {};
-  struct storage_tag  {};
+  template<typename A>
+  concept allocator = std::semiregular<A> && requires(A a, block& b, std::ptrdiff_t n)
+  {
+    { a.allocate(n)   } -> std::same_as<block>;
+    { a.deallocate(b) };
+  };
 }
-
-#endif

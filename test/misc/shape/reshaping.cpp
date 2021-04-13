@@ -10,7 +10,6 @@
 #include "test.hpp"
 #include <kiwaku/shape.hpp>
 #include <kiwaku/misc/indexer.hpp>
-#include <tts/tests/basic.hpp>
 
 TTS_CASE( "Computation of sub-shapes")
 {

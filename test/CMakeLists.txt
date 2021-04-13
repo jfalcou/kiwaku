@@ -7,5 +7,6 @@
 ##==================================================================================================
 include(make_unit)
 
+add_subdirectory(allocator)
 add_subdirectory(container)
 add_subdirectory(misc)

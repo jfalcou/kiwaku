@@ -6,7 +6,6 @@
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 include(add_target_parent)
-include(download)
 
 ##==================================================================================================
 # Unit test Configuration
@@ -16,7 +15,7 @@ target_compile_features ( unit_test_config INTERFACE  cxx_std_20 )
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options( unit_test_config INTERFACE /W3 /EHsc)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  target_compile_options( unit_test_config INTERFACE -Wall -Werror -fconcepts)
+  target_compile_options( unit_test_config INTERFACE -Wall -Werror)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_options( unit_test_config INTERFACE -Wall -Werror)
 endif()
@@ -60,7 +59,7 @@ function(make_unit root)
     add_dependencies(unit ${test})
 
     setup_location( ${test} "unit")
-    target_link_libraries(${test} PUBLIC tts PUBLIC unit_test_config)
+    target_link_libraries(${test} PUBLIC unit_test_config)
 
     target_include_directories( ${test}
                                 PUBLIC
@@ -75,60 +74,15 @@ function(make_unit root)
 endfunction()
 
 ##==================================================================================================
-## Create a test that succeed if its compilation fails
-##==================================================================================================
-function(check_failure root)
-  foreach(file ${ARGN})
-    source_to_test( ${root} ${file} test)
-
-    if( MSVC )
-      set( options /std:c++latest /W3 /EHsc)
-    else()
-      set( options -std=c++17 -Wall -Wno-missing-braces )
-    endif()
-
-    set( test_lib "${test}_lib")
-    add_library( ${test_lib} OBJECT EXCLUDE_FROM_ALL ${file})
-    target_link_libraries( ${test_lib} PUBLIC unit_test_config)
-
-    add_test( NAME ${test}
-              COMMAND ${CMAKE_COMMAND} --build . --target ${test_lib} --config $<CONFIGURATION>
-              WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/unit"
-            )
-
-    set_target_properties ( ${test_lib} PROPERTIES
-                            EXCLUDE_FROM_DEFAULT_BUILD TRUE
-                            EXCLUDE_FROM_ALL TRUE
-                            ${MAKE_UNIT_TARGET_PROPERTIES}
-                          )
-
-    target_include_directories( ${test_lib}
-                                PRIVATE
-                                  ${tts_SOURCE_DIR}/include
-                                  ${PROJECT_SOURCE_DIR}/test
-                                  ${PROJECT_SOURCE_DIR}/include
-                              )
-
-    set_tests_properties ( ${test} PROPERTIES WILL_FAIL TRUE)
-
-    add_dependencies(unit ${test})
-    add_target_parent(${test})
-
-  endforeach()
-endfunction()
-
-##==================================================================================================
 ## Setup TTS
 ##==================================================================================================
 set(TTS_BUILD_TEST    OFF CACHE INTERNAL "OFF")
-set(TTS_BUILD_DOC     OFF CACHE INTERNAL "OFF")
 set(TTS_IS_DEPENDENT  ON  CACHE INTERNAL "ON")
 
-download_project( PROJ                tts
-                  GIT_REPOSITORY      https://github.com/jfalcou/tts.git
-                  GIT_TAG             master
-                  "UPDATE_DISCONNECTED 1"
-                  QUIET
-                )
+include(FetchContent)
+FetchContent_Declare( tts
+                      GIT_REPOSITORY https://github.com/jfalcou/tts.git
+                      GIT_TAG develop
+                    )
 
-add_subdirectory(${tts_SOURCE_DIR} ${tts_BINARY_DIR})
+FetchContent_MakeAvailable(tts)

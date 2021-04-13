@@ -15,7 +15,11 @@
 
 namespace kwk::detail
 {
-  struct axis { std::ptrdiff_t dims; };
+  struct axis
+  {
+    axis& operator=(std::ptrdiff_t s) { size = s; return *this;}
+    std::ptrdiff_t dims, size;
+  };
 
   template<typename Shape>
   constexpr auto reshape( axis const& i, std::ptrdiff_t, Shape const& s ) noexcept

@@ -15,7 +15,9 @@ set ( SOURCES
       ndims.cpp
       numel.cpp
       of_shape.cpp
+      partial.cpp
       strictly_contain.cpp
+      swap.cpp
       tuple.cpp
     )
 

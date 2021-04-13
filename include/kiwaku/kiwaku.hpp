@@ -11,5 +11,6 @@
 #define KIWAKU_KIWAKU_HPP_INCLUDED
 
 #include <kiwaku/misc/slicers.hpp>
+#include <kiwaku/container/array.hpp>
 
 #endif

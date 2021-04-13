@@ -10,8 +10,6 @@
 #include "test.hpp"
 #include <kiwaku/container/view.hpp>
 #include <kiwaku/algorithm/all.hpp>
-#include <tts/tests/relation.hpp>
-#include <tts/tests/basic.hpp>
 #include <algorithm>
 #include <vector>
 
@@ -19,11 +17,10 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a C array" )
 {
   float ref[24] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float,kwk::_4D(4,1,3,2)> view(ref);
+  kwk::view<float,kwk::extent[4][1][3][2]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -40,11 +37,10 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a pointer" )
 {
   float ref[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float,kwk::_4D(4,1,3,2)> view(&ref[0]);
+  kwk::view<float,kwk::extent[4][1][3][2]> view(&ref[0]);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -61,11 +57,10 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a pointer to const
 {
   float const ref[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float const,kwk::_4D(4,1,3,2)> view(&ref[0]);
+  kwk::view<float const,kwk::extent[4][1][3][2]> view(&ref[0]);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -82,11 +77,10 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a ContiguousSequen
 {
   std::vector<float> ref = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float,kwk::_4D(4,1,3,2)> view(ref);
+  kwk::view<float,kwk::extent[4][1][3][2]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -103,11 +97,10 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a const Contiguous
 {
   std::vector<float> const ref = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
-  kwk::view<float const,kwk::_4D(4,1,3,2)> view(ref);
+  kwk::view<float const,kwk::extent[4][1][3][2]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );

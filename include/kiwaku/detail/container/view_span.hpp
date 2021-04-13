@@ -7,8 +7,7 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_CONTAINER_VIEW_SPAN_HPP_INCLUDED
-#define KIWAKU_DETAIL_CONTAINER_VIEW_SPAN_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <iterator>
@@ -40,9 +39,12 @@ namespace kwk::detail
 
     pointer reset(pointer ptr) noexcept { return std::exchange(data_, ptr); }
 
+    void swap( view_span& other ) noexcept
+    {
+      std::swap(data_, other.data_);
+    }
+
     protected:
     pointer data_;
   };
 }
-
-#endif

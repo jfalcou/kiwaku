@@ -7,10 +7,10 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_MISC_SHAPE_HPP_INCLUDED
-#define KIWAKU_MISC_SHAPE_HPP_INCLUDED
+#pragma once
 
-#include <kiwaku/detail/options/options.hpp>
+#include <kiwaku/assert.hpp>
+#include <kiwaku/detail/ct_helpers.hpp>
 #include <kiwaku/misc/slicers.hpp>
 #include <kiwaku/misc/stride.hpp>
 #include <utility>
@@ -23,118 +23,145 @@ namespace kwk
   //================================================================================================
   // Shape type
   //================================================================================================
-  template<std::size_t Dimensions>
-  struct shape : private std::array<std::ptrdiff_t,Dimensions>
+  template<auto Shaper> struct shape
   {
-    using storage_type  = std::array<std::ptrdiff_t,Dimensions>;
-    using stride_type   = unit_stride<Dimensions>;
+    using                           size_map      = decltype(Shaper.size_map());
+    static constexpr std::ptrdiff_t static_size   = Shaper.size();
+    static constexpr std::ptrdiff_t storage_size  = static_size - size_map::size;
+
+    using storage_type  = std::array<std::ptrdiff_t,storage_size>;
+    using stride_type   = unit_stride<static_size>;
 
     //==============================================================================================
     // NTTP Indirect interface
     //==============================================================================================
-    using shape_type = shape<Dimensions>;
-    using option_tag = detail::shape_tag;
-    static constexpr bool is_dynamic = false;
-
-    //==============================================================================================
-    // Dependent types
-    //==============================================================================================
-    using reference       = typename storage_type::reference;
-    using const_reference = typename storage_type::const_reference;
-
-    static constexpr std::size_t    static_size   = Dimensions;
-    static constexpr std::ptrdiff_t static_count  = Dimensions;
+    static constexpr bool is_dynamic        = storage_size >= 1;
+    static constexpr bool is_fully_dynamic  = storage_size == static_size;
+    static constexpr bool is_fully_static   = storage_size == 0;
 
     //==============================================================================================
     // Default Constructor
     //==============================================================================================
     constexpr shape() noexcept
     {
-      if constexpr(static_size > 1ULL)  for(auto& e : *this) e = 1;
-      if constexpr(static_size > 0ULL)  (*this)[0] = 0;
+      if constexpr(storage_size > 1ULL)  for(auto& e : storage_) e = 1;
+      if constexpr(storage_size > 0ULL)  storage_[0] = 0;
     }
 
     //==============================================================================================
     // Construct from some amount of integral values
     //==============================================================================================
-    template<typename T>
-    constexpr explicit shape(T s) noexcept
-              requires ((std::is_convertible_v<T,std::ptrdiff_t>))
-            : storage_type{ static_cast<std::ptrdiff_t>(s) }
-    {
-      if constexpr(static_size > 1 )
-      {
-        for(std::size_t i = 1;i<static_size;++i)
-          (*this)[i] = 1;
-      }
-    }
-
     template<typename... T>
-    constexpr explicit shape(T... s) noexcept
-    requires ((std::is_convertible_v<T,std::ptrdiff_t> && ...) && sizeof...(T)<=static_size)
-            : storage_type{ static_cast<std::ptrdiff_t>(s)... }
+    constexpr shape(T... s) noexcept
+    requires  (   (std::is_convertible_v<T,std::ptrdiff_t> && ...)
+              &&  (sizeof...(T) <= static_size)
+              &&  is_fully_dynamic
+              )
+            : storage_{ static_cast<std::ptrdiff_t>(s)... }
     {
       if constexpr(sizeof...(T) < static_size)
       {
         for(std::size_t i = sizeof...(T);i<static_size;++i)
-          (*this)[i] = 1;
+          storage_[i] = 1;
       }
+    }
+
+    //==============================================================================================
+    // Construct from some partial dynamic values for partially static shape
+    //==============================================================================================
+    template<std::same_as<detail::axis>... Extent>
+    constexpr shape(Extent... s) noexcept
+    requires( (sizeof...(Extent) <= static_size) && !is_fully_static )
+    {
+      // Fill with 1s wherever applicable
+      detail::constexpr_for<static_size>
+      ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+        {
+          if constexpr(!size_map::contains(I))
+            storage_[size_map::template locate<static_size>(I)] = 1;
+        }
+      );
+
+      // Fill the proper axis value with the corresponding size
+      auto const fill = [&](auto ext)
+      {
+        KIWAKU_ASSERT ( !size_map::contains(ext.dims)
+                      , "[kwk::shape] Semi-dynamic construction overwrite static extent"
+                      );
+
+        storage_[size_map::template locate<static_size>(ext.dims)] = ext.size;
+      };
+
+      (fill(s),...);
     }
 
     //==============================================================================================
     // Constructs from a shape with less dimensions.
     // Small shape are allowed implicitly in large one and are completed with 1s.
     //==============================================================================================
-    template< std::size_t OtherDimensions>
-    constexpr shape( shape<OtherDimensions> const& other ) noexcept
-              requires( OtherDimensions <= static_size )
+    template<auto OtherShaper>
+    constexpr shape( shape<OtherShaper> const& other ) noexcept
+              requires( OtherShaper.size() <= static_size && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherDimensions,static_size);
+      constexpr auto dz = std::min(OtherShaper.size(),static_size);
 
-      std::size_t i = 0;
-      for(; i < dz;++i)          (*this)[i] = other[i];
-      for(; i < static_size;++i) (*this)[i] = 1;
+      detail::constexpr_for<dz>
+      ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+        {
+          storage_[I] = other.template get<I>();
+        }
+      );
+
+      for(std::size_t i = dz; i < static_size;++i) storage_[i] = 1;
     }
 
     //==============================================================================================
     // Constructs from a shape with more dimensions.
     // Large shape are allowed only explicitly in small ones as we need to convert data.
     //==============================================================================================
-    template<std::size_t OtherDimensions>
-    explicit constexpr  shape( shape<OtherDimensions> const& other ) noexcept
-                        requires( OtherDimensions > static_size )
+    template<auto OtherShaper>
+    constexpr explicit  shape( shape<OtherShaper> const& other ) noexcept
+                        requires( OtherShaper.size() > static_size && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherDimensions,static_size);
+      constexpr auto dz = std::min(OtherShaper.size(),static_size);
 
-      std::size_t i = 0;
-      for(; i < dz;++i)               (*this)[i] = other[i];
-      for(; i < OtherDimensions;++i)  storage_type::back() *= other[i];
+      detail::constexpr_for<dz>
+      ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+        {
+          storage_[I] = other.template get<I>();
+        }
+      );
+
+      detail::constexpr_for<shape<OtherShaper>::static_size - dz>
+      ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+        {
+          storage_.back() *= other.template get<dz+I>();
+        }
+      );
     }
 
     //==============================================================================================
     // Sequence interface
     //==============================================================================================
-    static constexpr std::size_t    size()  noexcept { return static_size;  }
-    static constexpr std::ptrdiff_t count() noexcept { return static_count; }
+    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
 
-    using storage_type::data;
-    using storage_type::begin;
-    using storage_type::end;
-    using storage_type::rbegin;
-    using storage_type::rend;
-    using storage_type::front;
-    using storage_type::back;
-
-    constexpr reference operator[](std::ptrdiff_t i) noexcept requires(static_size!=0)
+    //==============================================================================================
+    // Element access
+    //==============================================================================================
+    template<std::size_t I> constexpr auto get() const noexcept
     {
-      return storage_type::operator[](i);
+      if constexpr(size_map::contains(I))
+        return std::integral_constant<std::ptrdiff_t,Shaper.at(I)>{};
+      else
+        return storage_[size_map::template locate<static_size>(I)];
     }
 
-    constexpr const_reference operator[](std::ptrdiff_t i) const noexcept requires(static_size!=0)
+    void swap( shape& other ) noexcept
     {
-      return storage_type::operator[](i);
+      storage_.swap( other.storage_ );
     }
 
+/*
     //==============================================================================================
     // Reshaping interface using slicers
     //==============================================================================================
@@ -151,7 +178,7 @@ namespace kwk
 
       return that;
     }
-
+*/
     //==============================================================================================
     // Shape interface
     //==============================================================================================
@@ -163,11 +190,10 @@ namespace kwk
       }
       else
       {
-        for(int i=static_count-1;i>=0;--i)
+        return [&]<std::size_t...I>( std::index_sequence<I...> const&)
         {
-          if( (*this)[i] != 1) return i+1;
-        }
-        return 0;
+          return std::max( { (this->get<I>() == 1 ? 0 : 1+I)... }) ;
+        }(std::make_index_sequence<static_size>());
       }
     }
 
@@ -180,7 +206,14 @@ namespace kwk
       else
       {
         std::ptrdiff_t n{1};
-        for(int i=0;i<static_count;i++) n *= (*this)[i];
+
+        detail::constexpr_for<static_size>
+        ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+          {
+            n *= this->get<I>();
+          }
+        );
+
         return n;
       }
     }
@@ -188,41 +221,36 @@ namespace kwk
     //==============================================================================================
     // Convert shape to the equivalent unit stride
     //==============================================================================================
-    constexpr auto as_stride() const { return stride_type(*this); }
-
-    //==============================================================================================
-    // Storage access
-    //==============================================================================================
-    storage_type const& storage() const noexcept { return static_cast<storage_type const&>(*this); }
+    constexpr auto as_stride() const { return stride(*this); }
 
     //==============================================================================================
     // Comparisons
     //==============================================================================================
-    template<std::size_t Dimensions2>
-    constexpr bool operator==( shape<Dimensions2> const& other) const noexcept
+    template<auto Shaper2>
+    constexpr bool operator==( shape<Shaper2> const& other) const noexcept
     {
-      return compare(other, [](auto a, auto b) { return a == b; },[](auto a) { return a != 1; } );
+      return compare( other , [](auto a, auto b) { return a == b; }, [](auto a) { return a == 1; } );
     }
 
-    template<std::size_t Dimensions2>
-    constexpr bool operator!=( shape<Dimensions2> const& other) const noexcept
+    template<auto Shaper2>
+    constexpr bool operator!=( shape<Shaper2> const& other) const noexcept
     {
-      return compare( other , [](auto a, auto b) { return a != b; },[](auto a) { return a != 1; } );
+      return compare( other , [](auto a, auto b) { return a != b; },[](auto a) { return a == 1; } );
     }
 
     //==============================================================================================
     // Check if current shape contains (maybe strictly) all the extent of another one
     //==============================================================================================
-    template<std::size_t Dimensions2>
-    constexpr bool contains( shape<Dimensions2> const& other) const noexcept
+    template<auto Shaper2>
+    constexpr bool contains( shape<Shaper2> const& other) const noexcept
     {
-      return compare( other , [](auto a, auto b) { return a>=b;}, [](auto) { return false; } );
+      return compare( other , [](auto a, auto b) { return a>=b;}, [](auto) { return true; } );
     }
 
-    template<std::size_t Dimensions2>
-    constexpr bool strictly_contains( shape<Dimensions2> const& other) const noexcept
+    template<auto Shaper2>
+    constexpr bool strictly_contains( shape<Shaper2> const& other) const noexcept
     {
-      return compare( other , [](auto a, auto b) { return a>b;}, [](auto) { return false; } );
+      return compare( other , [](auto a, auto b) { return a>b;}, [](auto) { return true; } );
     }
 
     //==============================================================================================
@@ -231,48 +259,67 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, shape const& s)
     {
       os << "[";
-      for(auto e : s) os << " " << e;
+
+      detail::constexpr_for<static_size>
+      ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+        {
+          os << " " << s.template get<I>();
+        }
+      );
+
       os << " ]";
       return os;
     }
 
+    storage_type storage_;
+
     private:
-    template<std::size_t Dimensions2, typename Comp, typename Check>
-    constexpr bool compare( shape<Dimensions2> const& other
+    template<auto Shaper2, typename Comp, typename Check>
+    constexpr bool compare( shape<Shaper2> const& other
                           , Comp const& comp, Check const& check
                           ) const noexcept
     {
-      if constexpr(Dimensions == Dimensions2)
+      constexpr auto other_size = shape<Shaper2>::static_size;
+
+      if constexpr( static_size == other_size )
       {
-        return comp(storage(),other.storage());
+        bool result = true;
+        return [&]<std::size_t... I>(std::index_sequence<I...> const&)
+        {
+          return (result && ... && comp(this->get<I>(),other.template get<I>()) ) ;
+        }(std::make_index_sequence<static_size>());
       }
       else
       {
-        constexpr auto d = std::min(Dimensions, Dimensions2);
+        constexpr auto d = std::min(static_size, other_size);
 
-        for(std::size_t i=0;i<d;++i)
-          if( !comp((*this)[i], other[i]) ) return false;
-
-        if constexpr(Dimensions < Dimensions2)
+        // Compute equality over common slice of shape
+        bool result = true;
+        [&]<std::size_t... I>(std::index_sequence<I...> const&)
         {
-          for(std::size_t i=Dimensions;i<Dimensions2;++i)
-            if( other[i] !=1 ) return false;
+          result = (result && ... && comp(this->get<I>(),other.template get<I>()) );
+        }(std::make_index_sequence<d>());
+
+        // Check that we have 1s everywhere in the other parts
+        if constexpr( static_size < other_size )
+        {
+          constexpr auto sz = other_size - static_size;
+          return [&]<std::size_t... I>(std::index_sequence<I...> const&)
+          {
+            return (result && ... && (other.template get<static_size+I>() == 1));
+          }(std::make_index_sequence<sz>());
         }
-        else if constexpr(Dimensions > Dimensions2)
+        else if constexpr( static_size > other_size )
         {
-          for(std::size_t i=Dimensions2;i<Dimensions;++i)
-            if( check((*this)[i]) ) return false;
+          constexpr auto sz = static_size - other_size;
+          return [&]<std::size_t... I>(std::index_sequence<I...> const&)
+          {
+            return (result && ... && check(this->template get<other_size+I>()));
+          }(std::make_index_sequence<sz>());
         }
       }
-
-      return true;
     }
   };
-
-  //================================================================================================
-  // Deduction guides
-  //================================================================================================
-  template<typename... T> shape(T... s) -> shape<sizeof...(T)>;
 }
 
 //==================================================================================================
@@ -280,25 +327,21 @@ namespace kwk
 //==================================================================================================
 namespace kwk
 {
-  template<std::size_t I, std::size_t Dimensions>
-  constexpr auto get(shape<Dimensions> const& s) noexcept { return s[I]; }
-
-  template<std::size_t I, std::size_t Dimensions>
-  auto& get(shape<Dimensions>& s) noexcept { return s[I]; }
+  template<std::size_t I, auto Shaper>
+  constexpr auto get(shape<Shaper> const& s) noexcept { return s.template get<I>(); }
 }
 
 namespace std
 {
-  template<std::size_t I, std::size_t Dim>
-  struct tuple_element<I, kwk::shape<Dim>>
+  template<std::size_t I, auto Shaper>
+  struct tuple_element<I, kwk::shape<Shaper>>
   {
     using type = std::ptrdiff_t;
   };
 
-  template<std::size_t Dim>
-  struct tuple_size<kwk::shape<Dim>> : std::integral_constant<std::size_t,Dim>
+  template<auto Shaper>
+  struct  tuple_size<kwk::shape<Shaper>>
+        : std::integral_constant<std::size_t,kwk::shape<Shaper>::static_size>
   {
   };
 }
-
-#endif

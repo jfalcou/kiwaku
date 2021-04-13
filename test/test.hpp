@@ -7,32 +7,27 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef TEST_TEST_HPP
-#define TEST_TEST_HPP
-
-#define TTS_USE_CUSTOM_DRIVER
-#include <tts/tts.hpp>
-
-template<int N>
-struct nD : std::integral_constant<int,N>
-{};
-
-template<typename N>
-using up_to = std::make_index_sequence<N::value>;
+#pragma once
+#include <type_traits>
+#include <utility>
 
 template<int N> using int_ = std::integral_constant<int,N>;
+template<int N> struct nD : std::integral_constant<int,N> {};
+template<typename N> using up_to = std::make_index_sequence<N::value>;
 
-int main(int argc, char **argv)
+#define TTS_MAIN
+#define TTS_CUSTOM_DRIVER_FUNCTION kwk_entry_point
+#include <tts/tts.hpp>
+
+int main(int argc, char const **argv)
 {
-  std::cout << "[KIWAKU] - Assertions: ";
+  std::cout << "[Kiwaku] - Assertions: ";
 #ifdef NDEBUG
   std::cout << "Disabled\n";
 #else
   std::cout << "Enabled\n";
 #endif
 
-  ::tts::env runtime(argc, argv, std::cout);
-  return ::tts::run(runtime, ::tts::detail::suite, 0, 0);
+  kwk_entry_point(argc, argv);
+  return tts::report(0,0);
 }
-
-#endif

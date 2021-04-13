@@ -7,29 +7,57 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_MISC_STRIDE_HPP_INCLUDED
-#define KIWAKU_MISC_STRIDE_HPP_INCLUDED
+#pragma once
 
-#include <kiwaku/detail/container/stride_helpers.hpp>
-#include <kiwaku/detail/container/linearize.hpp>
-#include <kiwaku/detail/options/options.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
+#include <kiwaku/detail/raberu.hpp>
+#include <array>
 #include <cstddef>
+#include <iostream>
+#include <type_traits>
 #include <utility>
-#include <iosfwd>
 
 namespace kwk
 {
-  template<std::size_t Dimensions> struct shape;
+  namespace detail
+  {
+    //==============================================================================================
+    // Build the static storage of a stride depending on # of dimensions and unit dimensions
+    //==============================================================================================
+    template<std::size_t Dimensions, typename UnitIndices>
+    using stride_storage = std::array<std::ptrdiff_t, Dimensions-UnitIndices::size>;
+
+    //==============================================================================================
+    // Type representing a unit stride
+    //==============================================================================================
+    using unit_type = std::integral_constant<std::ptrdiff_t,1>;
+
+    //==============================================================================================
+    // Compute an index_list from a pack of stride value types
+    //==============================================================================================
+    template<typename... Vs> struct index_map : type_map<unit_type, Vs...> {};
+
+    //==============================================================================================
+    // Recurring linearize pattern: used y stride and other components
+    //==============================================================================================
+    template<typename Data, std::size_t... Idx, typename... Is>
+    constexpr auto linearize( std::index_sequence<Idx...> const&, Data const& d, Is... is ) noexcept
+    {
+      using std::get;
+      if constexpr(sizeof...(Idx) > 0)  return ((is * get<Idx>(d)) + ...);
+      else                              return 0;
+    }
+  }
+
+  template<auto Shaper> struct shape;
 
   template<std::size_t Dimensions, typename UnitIndices = detail::index_list<0>>
-  struct stride : private detail::stride_storage<Dimensions,UnitIndices>
+  struct stride
   {
     //==============================================================================================
     // NTTP Indirect interface
     //==============================================================================================
     using stride_type = stride<Dimensions, detail::index_list<0>>;
-    using option_tag  = detail::stride_tag;
     static constexpr bool is_dynamic  = false;
     static constexpr bool is_unit     = UnitIndices::contains(0);
     static constexpr bool is_explicit = false;
@@ -40,11 +68,8 @@ namespace kwk
     using storage_type    = detail::stride_storage<Dimensions,UnitIndices>;
     using value_type      = typename storage_type::value_type;
 
-    static constexpr std::size_t    size()  noexcept { return static_size;  }
-    static constexpr std::ptrdiff_t count() noexcept { return static_count; }
-
-    static constexpr std::size_t    static_size   = Dimensions;
-    static constexpr std::ptrdiff_t static_count  = Dimensions;
+    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
+    static constexpr std::ptrdiff_t static_size  = Dimensions;
 
     //==============================================================================================
     // Element access
@@ -56,7 +81,7 @@ namespace kwk
       if constexpr(UnitIndices::contains(i))
         return std::integral_constant<std::ptrdiff_t,1>{};
       else
-        return storage_type::operator[](UnitIndices::template locate<Dimensions>(i));
+        return storage_[UnitIndices::template locate<Dimensions>(i)];
     }
 
     //==============================================================================================
@@ -65,12 +90,12 @@ namespace kwk
     template<typename... Values>
     constexpr stride(Values... v) noexcept
           requires( std::is_convertible_v<Values,std::ptrdiff_t> && ...)
-        : storage_type{}
+        : storage_{}
     {
       constexpr auto sz = sizeof...(Values);
 
-      // Filter out the non-dynamic strice values
-      auto ptr = this->data();
+      // Filter out the non-dynamic stride values
+      auto ptr = storage_.data();
       detail::for_each_args(  [&ptr](auto sv)
                               {
                                 using v_t = std::remove_cvref_t<decltype(sv)>;
@@ -87,7 +112,7 @@ namespace kwk
         (
           [&]<std::ptrdiff_t I>( std::integral_constant<std::ptrdiff_t,I> const&)
           {
-            storage_type::operator[](I) = storage_type::operator[](sz-1);
+            storage_[I] = storage_[sz-1];
           }
         );
       }
@@ -97,19 +122,25 @@ namespace kwk
     // Construct from a shape with same dimensions
     // Only possible if stride is unit on the inner dimension
     //==============================================================================================
-    constexpr explicit stride(shape<Dimensions> const& shp) noexcept requires(is_unit)
+    template<auto Shaper>
+    constexpr explicit stride(shape<Shaper> const& shp) noexcept requires(is_unit)
     {
       if constexpr(static_size > 1)
       {
-        storage_type::operator[](0) = shp[0];
+        storage_[0] = shp.template get<0>();
         detail::constexpr_for<1,static_size-1>
         (
           [&]<std::ptrdiff_t I>( std::integral_constant<std::ptrdiff_t,I> const&)
           {
-            storage_type::operator[](I) = storage_type::operator[](I-1) * shp[I];
+            storage_[I] = storage_[I-1] * shp.template get<I>();
           }
         );
       }
+    }
+
+    void swap( stride& other ) noexcept
+    {
+      storage_.swap( other.storage_ );
     }
 
     //==============================================================================================
@@ -139,6 +170,8 @@ namespace kwk
       os << "}]";
       return os;
     }
+
+    storage_type storage_;
   };
 
   //================================================================================================
@@ -150,7 +183,6 @@ namespace kwk
     // NTTP Indirect interface
     //==============================================================================================
     using stride_type = stride<1, detail::index_list<0>>;
-    using option_tag  = detail::stride_tag;
     static constexpr bool is_dynamic  = false;
     static constexpr bool is_unit     = true;
     static constexpr bool is_explicit = false;
@@ -160,11 +192,8 @@ namespace kwk
     //==============================================================================================
     using value_type = detail::unit_type;
 
-    static constexpr std::size_t    size()  noexcept { return 1ULL;  }
-    static constexpr std::ptrdiff_t count() noexcept { return 1; }
-
-    static constexpr std::size_t    static_size   = 1ULL;
-    static constexpr std::ptrdiff_t static_count  = 1;
+    static constexpr std::ptrdiff_t size() noexcept { return 1; }
+    static constexpr std::ptrdiff_t static_size  = 1;
 
     //==============================================================================================
     // Element access
@@ -183,6 +212,8 @@ namespace kwk
     // indexing interface
     //==============================================================================================
     constexpr auto index(std::ptrdiff_t is) const noexcept { return is; }
+
+    void swap( stride& other ) noexcept {}
 
     //==============================================================================================
     // I/O
@@ -207,7 +238,7 @@ namespace kwk
                                 , typename detail::index_map<std::remove_cvref_t<V>...>::type
                                 >;
 
-  template<std::size_t D> stride(shape<D> const&...) -> stride<D, detail::index_list<0>>;
+  template<auto Shaper> stride(shape<Shaper> const&...) -> stride<Shaper.size(), detail::index_list<0>>;
 
   //================================================================================================
   // Structured binding supports
@@ -235,5 +266,3 @@ namespace std
         : std::integral_constant<std::size_t,Dimensions>
   {};
 }
-
-#endif
