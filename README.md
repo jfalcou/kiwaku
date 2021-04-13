@@ -2,8 +2,12 @@
 
 # Kiwaku - Containers Well Made
 
-C++17 and onward collection of high performance data containers and related tools
 
+[![Kiwaku CI](https://github.com/jfalcou/kiwaku/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/jfalcou/kiwaku/actions/workflows/main.yml)
+[![Licence](https://img.shields.io/github/license/jfalcou/kiwaku?style=plastic)](https://img.shields.io/github/license/jfalcou/kiwaku?style=plastic)
+[![Discord](https://img.shields.io/discord/692734675726237696?style=plastic)](https://discord.com/channels/692734675726237696/692735274291298424)
+
+C++20 and onward collection of high performance data containers and related tools
 
 ## License
 
@@ -23,4 +27,3 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.```
-

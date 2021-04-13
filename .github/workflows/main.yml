@@ -1,0 +1,19 @@
+name: Kiwaku CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  gcc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch current branch
+        uses: actions/checkout@v2
+      - name: Testing OFW with g++
+        uses: ./.github/actions/run_tests
+        with:
+          compiler: 'g++-10'
