@@ -8,22 +8,18 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/allocator/heap.hpp>
-#include <kiwaku/allocator/shallow.hpp>
-#include <kiwaku/allocator/allocator.hpp>
+#include <kiwaku/allocator/heap_allocator.hpp>
+#include <kiwaku/allocator/shallow_allocator.hpp>
+#include <kiwaku/allocator/any_allocator.hpp>
 
 struct box
 {
   box() noexcept : alloc(), data_(), size_() {}
 
-  template<typename A>
-  box ( kwk::elements n, A const& a)
-      : alloc(a)
-      , data_(alloc.allocate(kwk::as_bytes<float>(n)))
-      , size_(n)
-  {}
+  template<kwk::concepts::allocator A>
+  box( std::ptrdiff_t n, A const& a) : alloc(a), data_(alloc.allocate(n)), size_(n) {}
 
-  box ( box const& that ) : box(that.size_, that.alloc)
+  box( box const& that ) : box(that.size_, that.alloc)
   {
     std::copy(that.begin(), that.end(), data());
   }
@@ -65,18 +61,16 @@ struct box
     std::swap(size_,b.size_);
   }
 
-  kwk::allocator alloc;
-  kwk::block     data_;
-  kwk::elements  size_;
+  kwk::any_allocator  alloc;
+  kwk::block          data_;
+  std::ptrdiff_t      size_;
 };
 
 TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
 {
-  using namespace kwk::literals;
-
   std::byte data[32];
-  box b( 5_N, kwk::heap_allocator{} );
-  box c( 7_N, kwk::make_shallow<32,16>(data) );
+  box b( 5, kwk::heap_allocator{} );
+  box c( 7, kwk::make_shallow<32,16>(data) );
 
   for(int i=0;i<5;i++) b.get(i) = 1.f/(1+i);
   for(int i=0;i<7;i++) c.get(i) = 1.5f*(1+i);

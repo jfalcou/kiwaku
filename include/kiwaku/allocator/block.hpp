@@ -9,7 +9,6 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/allocator/size.hpp>
 #include <utility>
 
 namespace kwk
@@ -29,14 +28,14 @@ namespace kwk
     void reset() noexcept
     {
       data    = nullptr;
-      length  = bytes{0};
+      length  = 0;
     }
 
-    explicit operator bool() const { return length != bytes{0}; }
+    explicit operator bool() const { return length != 0; }
     bool operator==(const block &rhs) const { return data == rhs.data && length == rhs.length; }
     bool operator!=(const block &rhs) const { return data != rhs.data || length != rhs.length; }
 
-    void  *data;
-    bytes length;
+    void*           data    = nullptr;
+    std::ptrdiff_t  length  = 0;
   };
 }

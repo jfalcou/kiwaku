@@ -11,9 +11,8 @@
 
 #include <kiwaku/assert.hpp>
 #include <kiwaku/allocator/block.hpp>
-#include <kiwaku/allocator/size.hpp>
+#include <kiwaku/detail/round.hpp>
 #include <cstring>
-#include <array>
 
 namespace kwk
 {
@@ -30,16 +29,16 @@ namespace kwk
                       : data_(o.data_), current_(data_)
     {}
 
-    [[nodiscard]] block allocate(bytes n) noexcept
+    [[nodiscard]] block allocate(std::ptrdiff_t n) noexcept
     {
       // empty allocation return empty blocks
-      if(!n) { return {nullptr, bytes{0}}; }
+      if(!n) { return {nullptr, 0}; }
 
-      auto const aligned_n = round_to(n,Alignment);
+      auto const aligned_n = detail::round_to(n,Alignment);
       auto const end       = data_ + max_capacity;
 
       // If there is not enough space, return empty block
-      if(aligned_n > (end - current_)) { return {nullptr, bytes{0}}; }
+      if(aligned_n > (end - current_)) { return {nullptr, 0}; }
 
       // Build block then push current pointer to the next slot
       block that{current_, aligned_n};
@@ -54,53 +53,8 @@ namespace kwk
       if( is_last(b) ) { current_ = static_cast<std::byte*>(b.data); }
     }
 
-    bool expand(block& b, std::ptrdiff_t delta) noexcept
-    {
-      if(!delta) return true;
-
-      bytes sz{b.length+delta};
-
-      if( is_last(b) )
-      {
-        //  When expanding the last block in the chain, we just re-adjust pointers
-        //  and don't perform copy of the old data
-        b.length = round_to(sz,Alignment);
-        current_ = static_cast<std::byte*>(b.data) + b.length;
-        return true;
-      }
-      else
-      {
-        //  If we reallocate for more space and we end up elsewhere, we reallocate with a copy
-        auto new_block = allocate(sz);
-
-        if(new_block)
-        {
-          ::memcpy(new_block.data, b.data, to_integer(b.length));
-          deallocate(b);
-          b = new_block;
-          return true;
-        }
-
-        return false;
-      }
-    }
-
-    bool reallocate(block & b, bytes n) noexcept
-    {
-      // Reallocating to 0 size is trivial
-      if(!n)
-      {
-        deallocate(b);
-        b.reset();
-        return true;
-      }
-
-      // If required, use expand
-      return (n >= b.length) ? expand(b, to_integer(n-b.length) ) : true;
-    }
-
-    inline void   reset()           noexcept { current_ = data_; }
-    inline bytes  capacity() const  noexcept { return bytes{data_ + max_capacity - current_}; }
+    inline void           reset()           noexcept { current_ = data_; }
+    inline std::ptrdiff_t capacity() const  noexcept { return data_ + max_capacity - current_; }
 
     inline bool owns(block const& b) const noexcept
     {
@@ -113,7 +67,7 @@ namespace kwk
     inline bool is_last(block const& b) const noexcept
     {
       auto const ptr = static_cast<std::byte*>(b.data);
-      return (ptr + round_to(b.length,Alignment)) == current_;
+      return (ptr + detail::round_to(b.length,Alignment)) == current_;
     }
 
     std::byte*  data_;

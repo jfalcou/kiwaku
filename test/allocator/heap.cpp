@@ -8,31 +8,28 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/allocator/heap.hpp>
+#include <kiwaku/allocator/heap_allocator.hpp>
 
 TTS_CASE( "Nullpotent Allocation/Deallocation through heap_allocator" )
 {
-  using namespace kwk::literals;
   kwk::heap_allocator a;
 
-  auto memory = a.allocate( 0_B );
+  auto memory = a.allocate( 0 );
 
   TTS_EQUAL ( memory.data   , nullptr );
-  TTS_EQUAL ( memory.length , 0_B     );
+  TTS_EQUAL ( memory.length , 0     );
 
   a.deallocate(memory);
 }
 
 TTS_CASE( "Allocation/Deallocation through heap_allocator" )
 {
-  using namespace kwk::literals;
   kwk::heap_allocator a;
 
-  auto memory = a.allocate( 64_B );
+  auto memory = a.allocate( 64 );
 
   TTS_NOT_EQUAL ( memory.data   , nullptr );
-  TTS_EQUAL     ( memory.length , 64_B    );
+  TTS_EQUAL     ( memory.length , 64      );
 
   a.deallocate(memory);
 }
-
