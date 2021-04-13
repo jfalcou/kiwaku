@@ -20,8 +20,7 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a C array" )
   kwk::view<float,kwk::extent[4][1][3][2]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -41,8 +40,7 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a pointer" )
   kwk::view<float,kwk::extent[4][1][3][2]> view(&ref[0]);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -62,8 +60,7 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a pointer to const
   kwk::view<float const,kwk::extent[4][1][3][2]> view(&ref[0]);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -83,8 +80,7 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a ContiguousSequen
   kwk::view<float,kwk::extent[4][1][3][2]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -104,8 +100,7 @@ TTS_CASE( "Build a 4D view with constexpr shape settings from a const Contiguous
   kwk::view<float const,kwk::extent[4][1][3][2]> view(ref);
 
   TTS_EQUAL( sizeof(view), sizeof(void*)          );
-  TTS_EQUAL( view.size() , 24ULL                  );
-  TTS_EQUAL( view.count(), 24                     );
+  TTS_EQUAL( view.size() , 24                     );
   TTS_EQUAL( view.shape(), kwk::of_shape(4,1,3,2) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );

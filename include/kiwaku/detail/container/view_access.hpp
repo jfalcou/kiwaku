@@ -31,8 +31,7 @@ namespace kwk::detail
     using shape_type  = std::remove_cvref_t<decltype(Shape)>;
     using stride_type = std::remove_cvref_t<decltype(Stride)>;
 
-    constexpr std::size_t     size()    const noexcept  { return Shape.numel(); }
-    constexpr std::ptrdiff_t  count()   const noexcept  { return Shape.numel(); }
+    constexpr std::ptrdiff_t  size()    const noexcept  { return Shape.numel(); }
     constexpr auto            shape()   const noexcept  { return Shape;         }
     constexpr auto            stride()  const noexcept  { return Stride;        }
 
@@ -55,8 +54,7 @@ namespace kwk::detail
 
     constexpr view_access( shape_type const& shp ) : shape_(shp) {}
 
-    constexpr std::size_t     size()                    const noexcept  { return count();         }
-    constexpr std::ptrdiff_t  count()                   const noexcept  { return get<0>(shape_);  }
+    constexpr std::ptrdiff_t  size()                    const noexcept  { return get<0>(shape_);  }
     constexpr auto            shape()                   const noexcept  { return shape_;          }
     constexpr stride_type     stride()                  const noexcept  { return {};              }
     constexpr auto            index(std::ptrdiff_t is)  const noexcept  { return is;              }
@@ -85,8 +83,7 @@ namespace kwk::detail
 
     constexpr view_access( shape_type const& shp ) : shape_(shp), numel_{shp.numel()} {}
 
-    constexpr std::size_t     size()    const noexcept  { return count();                     }
-    constexpr std::ptrdiff_t  count()   const noexcept  { return numel_;                      }
+    constexpr std::ptrdiff_t  size()    const noexcept  { return numel_;                      }
     constexpr auto            shape()   const noexcept  { return shape_;                      }
     constexpr decltype(auto)  stride()  const noexcept  { return stride_type{get<0>(shape_)}; }
 
@@ -140,8 +137,7 @@ namespace kwk::detail
       );
     }
 
-    constexpr std::size_t     size()    const noexcept  { return numel_;  }
-    constexpr std::ptrdiff_t  count()   const noexcept  { return numel_;  }
+    constexpr std::ptrdiff_t  size()    const noexcept  { return numel_;  }
     constexpr auto            shape()   const noexcept  { return shape_;  }
 
     constexpr auto            stride()  const noexcept

@@ -7,20 +7,22 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_OPTIONS_STORAGE_OPTION_HPP_INCLUDED
-#define KIWAKU_DETAIL_OPTIONS_STORAGE_OPTION_HPP_INCLUDED
+#pragma once
 
 #include <kiwaku/detail/raberu.hpp>
+#include <kiwaku/allocator/heap_allocator.hpp>
 
 namespace kwk::detail
 {
   struct heap_storage_option
   {
+    using allocator_type = heap_allocator;
     constexpr bool use_allocator() const noexcept { return true; }
   };
 
   struct stack_storage_option
   {
+    using allocator_type = void;
     constexpr bool use_allocator() const noexcept { return false; }
   };
 
@@ -52,6 +54,3 @@ namespace rbr
   template<> struct tag<kwk::detail::heap_storage_option>   : tag<kwk::detail::storage_tag> {};
   template<> struct tag<kwk::detail::stack_storage_option>  : tag<kwk::detail::storage_tag> {};
 }
-
-
-#endif

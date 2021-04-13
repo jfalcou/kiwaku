@@ -140,7 +140,6 @@ namespace kwk
     using access_base::shape;
     using access_base::stride;
     using access_base::size;
-    using access_base::count;
   };
 
   //================================================================================================

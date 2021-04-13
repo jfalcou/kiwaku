@@ -7,7 +7,11 @@
 ##==================================================================================================
 set ( SOURCES
       dynamic.1d.cpp
+      dynamic.2d.cpp
       static.1d.cpp
+      static.2d.cpp
+      static.3d.cpp
+      static.4d.cpp
     )
 
 make_unit("container.array" ${SOURCES})

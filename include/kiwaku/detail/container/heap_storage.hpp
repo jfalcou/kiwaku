@@ -7,19 +7,17 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef KIWAKU_DETAIL_CONTAINER_HEAP_STORAGE_HPP_INCLUDED
-#define KIWAKU_DETAIL_CONTAINER_HEAP_STORAGE_HPP_INCLUDED
+#pragma once
 
-#include <kiwaku/allocator/allocator.hpp>
-#include <kiwaku/allocator/heap.hpp>
+#include <kiwaku/allocator/block.hpp>
 #include <kiwaku/container/view.hpp>
 #include <cstddef>
-#include <memory>
 
 namespace kwk::detail
 {
-  template<typename Type, auto... Settings>
-  struct heap_storage : private kwk::view<Type,Settings...>
+  template<typename Type, typename Allocator, auto... Settings>
+  struct heap_storage : private Allocator
+                      , private kwk::view<Type,Settings...>
   {
     using parent            = kwk::view<Type,Settings...>;
     using value_type        = typename parent::value_type;
@@ -27,15 +25,16 @@ namespace kwk::detail
     using const_reference   = typename parent::const_reference;
     using shape_type        = typename parent::shape_type;
     using stride_type       = typename parent::stride_type;
+    using allocator_type    = Allocator;
 
-    static constexpr bool is_dynamic  = parent::is_dynamic;
+    static constexpr bool is_dynamic              = parent::is_dynamic;
+    static constexpr bool use_stateful_allocator  = allocator_type::is_stateful;
 
     //==============================================================================================
     // Interface from the view
     //==============================================================================================
     using parent::operator();
     using parent::size;
-    using parent::count;
     using parent::shape;
     using parent::stride;
     using parent::data;
@@ -50,24 +49,20 @@ namespace kwk::detail
     // In the case of a dynamic shape, we know we are noexcept as no allocation takes place.
     //==============================================================================================
     heap_storage()  noexcept requires(is_dynamic)
-                  : parent{nullptr, shape_type()}
-                  , allocator_(heap_allocator{})
-                  , capacity_{ bytes{0} }
-    {
-    }
+                  : Allocator{}, parent{nullptr, shape_type()}, capacity_{ 0 }
+    {}
 
     heap_storage() requires(!is_dynamic)
-                  : parent( [&]()
+                  : Allocator{}
+                  , parent( [&]()
                             {
-                              heap_allocator a;
-                              auto b = a.allocate( as_bytes<Type>(elements{count()}) );
+                              Allocator a;
+                              auto b = a.allocate( sizeof(Type) * size() );
                               capacity_ = b.length;
                               return static_cast<Type*>(b.data);
                             }()
                           )
-                  , allocator_(heap_allocator{})
-    {
-    }
+    {}
 
     //==============================================================================================
     // Copy constructor
@@ -77,7 +72,8 @@ namespace kwk::detail
     // We perform a copy no matter what so we can't be noexcept.
     //==============================================================================================
     heap_storage( heap_storage const& that )
-                : parent{ [&]()
+                : Allocator{}
+                , parent{ [&]()
                           {
                             if constexpr(is_dynamic)  return  parent{nullptr,that.shape()};
                             else                      return  parent{nullptr};
@@ -92,11 +88,8 @@ namespace kwk::detail
     //==============================================================================================
     ~heap_storage()
     {
-      if(parent::data())
-      {
-        block b{parent::data(), capacity_};
-        allocator_.deallocate( b );
-      }
+      block b{parent::data(), capacity_};
+      Allocator::deallocate( b );
     }
 
     //==============================================================================================
@@ -105,13 +98,13 @@ namespace kwk::detail
     //  - Swap with the incoming rvalue
     //==============================================================================================
     heap_storage( heap_storage && that ) noexcept
-                : parent{ [&]()
+                : Allocator{}
+                , parent{ [&]()
                       {
                         if constexpr(is_dynamic)  return  parent{nullptr, shape_type()};
                         else                      return  parent{nullptr};
                       }()
                     }
-                , allocator_{}
     {
       swap(that);
     }
@@ -140,16 +133,16 @@ namespace kwk::detail
     // Construct from a shape
     //==============================================================================================
     heap_storage(shape_type const& s) requires(is_dynamic)
-                : parent( [&]()
+                : Allocator{}
+                , parent( [&]()
                           {
-                            heap_allocator a;
-                            auto b = a.allocate( as_bytes<Type>(elements{s.numel()}) );
+                            Allocator a;
+                            auto b = a.allocate( sizeof(Type) * s.numel() );
                             capacity_ = b.length;
                             return static_cast<Type*>(b.data);
                           }()
                         , s
                         )
-                  , allocator_(heap_allocator{})
     {}
 
     //==============================================================================================
@@ -158,9 +151,12 @@ namespace kwk::detail
     void swap( heap_storage& that ) noexcept
     {
       parent::swap( static_cast<parent&>(that) );
-      allocator_.swap( that.allocator_ );
+      Allocator::swap( that.allocator() );
       std::swap(capacity_,that.capacity_);
     }
+
+    Allocator const&  allocator() const { return static_cast<Allocator const&>(*this);  }
+    Allocator&        allocator()       { return static_cast<Allocator&>(*this);        }
 
 /*
     template<typename SomeShape> void resize(SomeShape const& s)
@@ -180,20 +176,17 @@ namespace kwk::detail
 
     void perform_copy(heap_storage const& that)
     {
-      auto alloc  = that.allocator_;
-      auto b      = alloc.allocate( as_bytes<Type>(elements{that.capacity_}) );
+      auto alloc  = that.allocator();
+      auto b      = alloc.allocate( that.capacity_ );
 
       std::unique_ptr<Type[]> mem( static_cast<Type*>(b.data) );
       std::copy(that.begin(),that.end(),mem.get());
       parent::reset(mem.release());
 
-      allocator_.swap(alloc);
+      Allocator::swap(alloc);
       capacity_   = that.capacity_;
     }
 
-    allocator allocator_;
-    bytes     capacity_;
+    std::ptrdiff_t     capacity_;
   };
 }
-
-#endif

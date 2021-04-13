@@ -20,8 +20,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a C array" )
   kwk::view view(ref,kwk::of_shape(7));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*2  );
-  TTS_EQUAL( view.size() , 7ULL             );
-  TTS_EQUAL( view.count(), 7                );
+  TTS_EQUAL( view.size() , 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -35,8 +34,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a pointer" )
   kwk::view view(&ref[0],kwk::of_shape(7));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*2  );
-  TTS_EQUAL( view.size() , 7ULL             );
-  TTS_EQUAL( view.count(), 7                );
+  TTS_EQUAL( view.size() , 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -50,8 +48,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a pointer to const" 
   kwk::view<float const,kwk::_1D> view(&ref[0],kwk::of_shape(7));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*2  );
-  TTS_EQUAL( view.size() , 7ULL             );
-  TTS_EQUAL( view.count(), 7                );
+  TTS_EQUAL( view.size() , 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -65,8 +62,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a ContiguousSequence
   kwk::view view(ref,kwk::of_shape(7));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*2  );
-  TTS_EQUAL( view.size() , 7ULL             );
-  TTS_EQUAL( view.count(), 7                );
+  TTS_EQUAL( view.size() , 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
@@ -80,8 +76,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a const ContiguousSe
   kwk::view<float const,kwk::_1D> view(ref,kwk::of_shape(7));
 
   TTS_EQUAL( sizeof(view), sizeof(void*)*2  );
-  TTS_EQUAL( view.size() , 7ULL             );
-  TTS_EQUAL( view.count(), 7                );
+  TTS_EQUAL( view.size() , 7                );
   TTS_EQUAL( view.shape(), kwk::of_shape(7) );
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );

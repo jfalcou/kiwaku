@@ -46,7 +46,6 @@ namespace kwk
     auto as_view() const { return view{data(),shape()}; }
 
     using parent::size;
-    using parent::count;
     using parent::data;
     using parent::begin;
     using parent::end;

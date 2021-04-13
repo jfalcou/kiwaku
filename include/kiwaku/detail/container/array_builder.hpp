@@ -28,9 +28,10 @@ namespace kwk::detail
     }();
 
     static constexpr bool use_allocator = storage_.use_allocator();
+    using allocator_type                = typename decltype(storage_)::allocator_type;
 
     using type = std::conditional_t < use_allocator
-                                    , heap_storage<Type,Settings...>
+                                    , heap_storage<Type, allocator_type, Settings...>
                                     , stack_storage<Type,base_t::shape_,base_t::stride_>
                                     >;
   };

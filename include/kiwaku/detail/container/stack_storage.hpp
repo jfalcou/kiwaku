@@ -42,12 +42,10 @@ namespace kwk::detail
       return storage_[ Stride.index(is...) ];
     }
 
-    constexpr std::size_t     size()          const noexcept  { return Shape.numel(); }
-    constexpr std::ptrdiff_t  count()         const noexcept  { return Shape.numel(); }
-    constexpr std::size_t     size(int dim)   const noexcept  { return Shape[dim];    }
-    constexpr std::ptrdiff_t  count(int dim)  const noexcept  { return Shape[dim];    }
-    constexpr auto shape()                    const noexcept  { return Shape;         }
-    constexpr auto stride()                   const noexcept  { return Stride;        }
+    constexpr std::ptrdiff_t  size()        const noexcept  { return Shape.numel(); }
+    constexpr std::ptrdiff_t  size(int dim) const noexcept  { return Shape[dim];    }
+    constexpr auto shape()                  const noexcept  { return Shape;         }
+    constexpr auto stride()                 const noexcept  { return Stride;        }
 
     void swap(stack_storage& other) { storage_.swap(other.storage_); }
 
