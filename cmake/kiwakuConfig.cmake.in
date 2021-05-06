@@ -1,0 +1,18 @@
+##==================================================================================================
+##  KIWAKU - Containers Well Made
+##  Copyright 2020 Joel FALCOU
+##
+##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+##  SPDX-License-Identifier: MIT
+##==================================================================================================
+get_filename_component(kiwaku_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${kiwaku_CMAKE_DIR})
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
+if(NOT TARGET kiwaku::kiwaku)
+    include("${kiwaku_CMAKE_DIR}/kiwakuTargets.cmake")
+endif()
+
+set(KIWAKU_LIBRARIES kiwaku::kiwaku)
