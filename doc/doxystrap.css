@@ -390,6 +390,7 @@ img.footer {
 .paramname {
   font-style: italic;
   white-space: nowrap;
+  padding-right: 10px;
 }
 .paramname em {
   font-style: normal;
@@ -522,4 +523,9 @@ span.icon.badge {
 div.navtab {
   visibility: hidden !important;
   width: 0px !important;
+}
+
+dl.warning, dl.attention
+{
+  background-color: #fb000017 !important;
 }
