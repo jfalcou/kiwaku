@@ -4,6 +4,12 @@ h1, .h1, h2, .h2, h3, .h3{
   font-weight: 200 !important;
 }
 
+h4:after
+{
+    content:' ';
+    display:block;
+    border:0.1px solid #cccccc88;
+}
 /* Wrapper for page content to push down footer */
 #wrap {
   min-height: 100%;
@@ -176,9 +182,10 @@ span.lineno a:hover {
 }
 
 div.groupHeader {
-  margin-left: 16px;
-  margin-top: 12px;
-  font-weight: bold;
+    margin-left: -8px;
+    margin-top: 12px;
+    font-weight: bold;
+    font-size: larger;
 }
 
 div.groupText {
@@ -484,6 +491,11 @@ span.icon.badge {
   text-align: right;
 }
 
+div.summary
+{
+  width: 100% !important;
+}
+
 .ingroups .el {
   font-size: small;
   font-weight: bold;
@@ -519,7 +531,85 @@ span.icon.badge {
 
 /**************************** KIWAKU CSS ********************************/
 
+.nav-pills > .active > a, .nav-pills > .active > a:hover {
+  background-color: #6FA8DC !important;
+}
+
+a {
+  color: #0B5394 !important;
+}
+a:hover,
+a:focus {
+  color: #0B5394 !important;
+}
+
+td.navtabHL a, td.navtabHL a:visited {
+  color: #fff !important;
+  text-shadow: 0px 1px 1px rgb(1 1 1);
+}
+
+.btn-primary:focus, .btn-primary:hover {
+  background-color: #6FA8DC !important;
+}
+
+.btn-primary.focus, .btn-primary:focus {
+  color: #fff !important;
+  background-color: #084276 !important;
+  border-color: #084276 !important;
+}
+
+.btn-primary {
+  background-image: -webkit-linear-gradient(top,#6FA8DC 0,#6FA8DC 100%) !important;
+  background-image: -o-linear-gradient(top,#6FA8DC 0,#6FA8DC 100%) !important;
+  background-image: -webkit-gradient(linear,left top,left bottom,from(#6FA8DC),to(#6FA8DC)) !important;
+  background-color: #6FA8DC !important;
+  border-color: #6FA8DC !important;
+}
+
+.form-control:focus {
+  border-color: #084276 !important;
+  -webkit-box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgba(11, 11, 92, 0.6) !important;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px #08427691; !important
+}
+
+.label-info {
+  background-color: #084276 !important;
+}s
+
 div.navtab {
   visibility: hidden !important;
   width: 0px !important;
+}
+
+code {
+  font-size: 100% !important;
+  color: #3c763d !important;
+  background-color: #b6d7a83b !important;
+}
+
+.tparams .paramname {
+  padding-right: 10px !important;
+}
+
+div.ingroups {
+    font-size: 8pt;
+    width: 50%;
+    text-align: left;
+    margin-top: 1em;
+}
+
+#forkme_banner
+{
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  z-index: 10;
+  padding: 10px 50px 10px 10px;
+  color: #fff !important;
+  background: url(blacktocat.png) #084276 no-repeat 95% 50%;
+  font-weight: 500;
+  box-shadow: 0 0 10px rgb(0 0 0 / 50%);
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
 }

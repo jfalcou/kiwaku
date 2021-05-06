@@ -46,3 +46,24 @@ if( KIWAKU_BUILD_TEST )
   add_dependencies(tests unit)
   add_subdirectory(test)
 endif()
+
+##==================================================================================================
+## Add Doxygen building target
+##==================================================================================================
+find_package(Doxygen QUIET)
+
+if (DOXYGEN_FOUND)
+  message( STATUS "[kiwaku] Doxygen available")
+else (DOXYGEN_FOUND)
+  message( STATUS "[kiwaku] Doxygen need to be installed to generate the doxygen documentation")
+endif (DOXYGEN_FOUND)
+
+if (DOXYGEN_FOUND)
+  set(DOXYGEN_CONFIG ${PROJECT_SOURCE_DIR}/doc/Doxyfile)
+  add_custom_target ( doxygen
+                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIG}
+                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc
+                      COMMENT "[kiwaku] Generating API documentation with Doxygen"
+                      VERBATIM
+                    )
+endif (DOXYGEN_FOUND)
