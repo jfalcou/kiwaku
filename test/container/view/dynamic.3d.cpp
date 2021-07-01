@@ -33,7 +33,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a C array" )
                         , view.shape())
                         )
             );
-}
+};
 
 TTS_CASE( "Build a 3D view with constexpr shape settings from a pointer" )
 {
@@ -50,7 +50,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a pointer" )
                         , view.shape())
                         )
             );
-}
+};
 
 TTS_CASE( "Build a 3D view with constexpr shape settings from a pointer to const" )
 {
@@ -67,7 +67,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a pointer to const
                         , view.shape())
                         )
             );
-}
+};
 
 TTS_CASE( "Build a 3D view with constexpr shape settings from a ContiguousSequence" )
 {
@@ -84,7 +84,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a ContiguousSequen
                         , view.shape())
                         )
             );
-}
+};
 
 TTS_CASE( "Build a 3D view with constexpr shape settings from a const ContiguousSequence" )
 {
@@ -101,4 +101,4 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a const Contiguous
                         , view.shape())
                         )
             );
-}
+};

@@ -71,7 +71,7 @@ TTS_CASE( "Allocation/Deallocation through shallow_allocator" )
   }
 
   a.reset();
-}
+};
 
 TTS_CASE( "Checks memory retrieval by shallow_allocator" )
 {
@@ -126,4 +126,4 @@ TTS_CASE( "Checks memory retrieval by shallow_allocator" )
       TTS_EQUAL( a.capacity(), 64 );
     }
   }
-}
+};

@@ -19,7 +19,7 @@ TTS_CASE( "Building a 1D stride using with_stride" )
   TTS_EQUAL( kwk::with_stride(9).size()   , 1 );
   TTS_EQUAL( kwk::with_stride(9).get<0>() , 9 );
   TTS_EXPECT_NOT( kwk::with_stride(9).is_unit );
-}
+};
 
 TTS_CASE( "Building a 2D stride using with_stride" )
 {
@@ -37,7 +37,7 @@ TTS_CASE( "Building a 2D stride using with_stride" )
   TTS_EQUAL( kwk::with_stride(6, 18).get<0>() ,  6);
   TTS_EQUAL( kwk::with_stride(6, 18).get<1>() , 18);
   TTS_EXPECT_NOT( kwk::with_stride(6, 18).is_unit );
-}
+};
 
 TTS_CASE( "Building a 3D stride using with_stride" )
 {
@@ -64,7 +64,7 @@ TTS_CASE( "Building a 3D stride using with_stride" )
   TTS_EQUAL( kwk::with_stride(2,8,16).get<1>() , 8  );
   TTS_EQUAL( kwk::with_stride(2,8,16).get<2>() , 16 );
   TTS_EXPECT_NOT( kwk::with_stride(2,8,16).is_unit  );
-}
+};
 
 TTS_CASE( "Building a 4D stride using with_stride" )
 {
@@ -102,4 +102,4 @@ TTS_CASE( "Building a 4D stride using with_stride" )
   TTS_EQUAL( kwk::with_stride(2,8,16,32).get<2>() , 16);
   TTS_EQUAL( kwk::with_stride(2,8,16,32).get<3>() , 32);
   TTS_EXPECT_NOT( kwk::with_stride(2,8,16,32).is_unit );
-}
+};

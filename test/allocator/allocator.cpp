@@ -114,4 +114,4 @@ TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
   TTS_EQUAL ( d.get(2), 1.f/3 );
   TTS_EQUAL ( d.get(3), 1.f/4 );
   TTS_EQUAL ( d.get(4), 1.f/5 );
-}
+};

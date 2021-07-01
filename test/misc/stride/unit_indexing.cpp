@@ -26,7 +26,7 @@ TTS_CASE( "1D index computation from unit stride" )
   std::transform(ref.begin(),ref.end(), output.begin(), [&](auto e) { return st.index(e); } );
 
   TTS_ALL_EQUAL(output, ref);
-}
+};
 
 TTS_CASE( "2D Index computation from unit stride" )
 {
@@ -58,7 +58,7 @@ TTS_CASE( "2D Index computation from unit stride" )
       TTS_ALL_EQUAL(output, ref);
     }
   }
-}
+};
 
 TTS_CASE( "3D index computation from unit stride" )
 {
@@ -101,7 +101,7 @@ TTS_CASE( "3D index computation from unit stride" )
       TTS_ALL_EQUAL(output, ref);
     }
   }
-}
+};
 
 TTS_CASE( "4D index computation from unit stride" )
 {
@@ -156,5 +156,5 @@ TTS_CASE( "4D index computation from unit stride" )
       TTS_ALL_EQUAL(output, ref);
     }
   }
-}
+};
 

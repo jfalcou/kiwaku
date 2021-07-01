@@ -20,7 +20,7 @@ TTS_CASE( "Nullpotent Allocation/Deallocation through heap_allocator" )
   TTS_EQUAL ( memory.length , 0     );
 
   a.deallocate(memory);
-}
+};
 
 TTS_CASE( "Allocation/Deallocation through heap_allocator" )
 {
@@ -32,4 +32,4 @@ TTS_CASE( "Allocation/Deallocation through heap_allocator" )
   TTS_EQUAL     ( memory.length , 64      );
 
   a.deallocate(memory);
-}
+};

@@ -27,7 +27,7 @@ namespace kwk::detail
     return s[i.dims];
   }
 
-  inline constexpr auto origin( axis const& i ) noexcept
+  inline constexpr auto origin( axis const& ) noexcept
   {
     return 0;
   }

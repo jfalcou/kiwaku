@@ -17,7 +17,7 @@ template<typename N> using up_to = std::make_index_sequence<N::value>;
 
 #define TTS_MAIN
 #define TTS_CUSTOM_DRIVER_FUNCTION kwk_entry_point
-#include <tts/tts.hpp>
+#include "tts.hpp"
 
 int main(int argc, char const **argv)
 {
