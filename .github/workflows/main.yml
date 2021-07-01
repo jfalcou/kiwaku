@@ -13,7 +13,16 @@ jobs:
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v2
-      - name: Testing OFW with g++
+      - name: Testing KIWAKU with g++ 11
         uses: ./.github/actions/run_tests
         with:
-          compiler: 'g++-10'
+          compiler: 'g++-11'
+  clang:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch current branch
+        uses: actions/checkout@v2
+      - name: Testing KIWAKU with clang++ 12
+        uses: ./.github/actions/run_tests
+        with:
+          compiler: 'clang++-12'

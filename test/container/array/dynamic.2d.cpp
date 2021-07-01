@@ -16,7 +16,7 @@ TTS_CASE( "Dynamic storage, constexpr 2D shape array - Basic properties" )
   TTS_EQUAL( sizeof(a), sizeof(void*) + sizeof(std::ptrdiff_t));
   TTS_EQUAL( a.size() , 27                                    );
   TTS_EQUAL( a.shape(), kwk::of_shape(9,3)                    );
-}
+};
 
 TTS_CASE( "Dynamic storage, constexpr 2D shape array - Copy constructor" )
 {
@@ -27,7 +27,7 @@ TTS_CASE( "Dynamic storage, constexpr 2D shape array - Copy constructor" )
 
   kwk::array<float,kwk::extent[9][3],kwk::heap_> a = ref;
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};
 
 TTS_CASE( "Dynamic storage, constexpr 2D shape array - Move constructor" )
 {
@@ -44,7 +44,7 @@ TTS_CASE( "Dynamic storage, constexpr 2D shape array - Move constructor" )
 
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
   TTS_EQUAL( a.data()     , ref_data  );
-}
+};
 
 TTS_CASE( "Dynamic storage, constexpr 2D shape array - Assignment operator" )
 {
@@ -55,7 +55,7 @@ TTS_CASE( "Dynamic storage, constexpr 2D shape array - Assignment operator" )
 
   a = ref;
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};
 
 TTS_CASE( "Dynamic storage, constexpr 2D shape array - Move assignment operator" )
 {
@@ -73,7 +73,7 @@ TTS_CASE( "Dynamic storage, constexpr 2D shape array - Move assignment operator"
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
 
   TTS_EQUAL(a.data(), ref_data);
-}
+};
 
 TTS_CASE( "Dynamic storage, dynamic 2D shape array - Basic properties" )
 {
@@ -81,7 +81,7 @@ TTS_CASE( "Dynamic storage, dynamic 2D shape array - Basic properties" )
   TTS_EQUAL( sizeof(a), sizeof(a.as_view())+sizeof(a.size()));
   TTS_EQUAL( a.size() , 0                                   );
   TTS_EQUAL( a.shape(), kwk::of_shape(0)                    );
-}
+};
 
 TTS_CASE( "Dynamic storage, dynamic 2D shape array - Copy constructor" )
 {
@@ -92,7 +92,7 @@ TTS_CASE( "Dynamic storage, dynamic 2D shape array - Copy constructor" )
 
   kwk::array<float,kwk::_2D> a = ref;
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};
 
 TTS_CASE( "Dynamic storage, dynamic 2D shape array - Move constructor" )
 {
@@ -109,7 +109,7 @@ TTS_CASE( "Dynamic storage, dynamic 2D shape array - Move constructor" )
   kwk::array<float,kwk::_2D> a = std::move(ref2);
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
   TTS_EQUAL( a.data(), ref_data );
-}
+};
 
 TTS_CASE( "Dynamic storage, dynamic 2D shape array - Assignment operator" )
 {
@@ -120,7 +120,7 @@ TTS_CASE( "Dynamic storage, dynamic 2D shape array - Assignment operator" )
 
   a = ref;
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};
 
 TTS_CASE( "Dynamic storage, dynamic 2D shape array - Move assignment operator" )
 {
@@ -137,4 +137,4 @@ TTS_CASE( "Dynamic storage, dynamic 2D shape array - Move assignment operator" )
   a = std::move(ref2);
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
   TTS_EQUAL( a.data(), ref_data );
-}
+};

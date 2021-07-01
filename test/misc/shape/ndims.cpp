@@ -17,4 +17,4 @@ TTS_CASE( "nbdims behavior on nD shape" )
   TTS_EQUAL( (kwk::shape{4,2,1,1}.nbdims()), 2);
   TTS_EQUAL( (kwk::shape{4,1,1,1}.nbdims()), 1);
   TTS_EQUAL( (kwk::shape{1,1,1,1}.nbdims()), 0);
-}
+};

@@ -17,4 +17,4 @@ TTS_CASE( "numel behavior on nD shape" )
   TTS_EQUAL( (kwk::shape{4,2,1,1}.numel()), 8   );
   TTS_EQUAL( (kwk::shape{4,1,1,1}.numel()), 4   );
   TTS_EQUAL( (kwk::shape{1,1,1,1}.numel()), 1   );
-}
+};

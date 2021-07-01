@@ -31,5 +31,5 @@ TTS_CASE( "Computation of sub-shapes")
   std::cout << s(_(0,5,9),_(0,5,59)) << "\n";
   std::cout << s(_(0,3,9),_(0,3,19),_(0,3,29)) << "\n";
   std::cout << "\n";
-}
+};
 

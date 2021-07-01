@@ -27,7 +27,7 @@ TTS_CASE( "1D index computation" )
   std::transform(base.begin(),base.end(), output.begin(), [&](auto e) { return st.index(e); } );
 
   TTS_ALL_EQUAL(output, ref);
-}
+};
 
 TTS_CASE( "2D Index computation" )
 {
@@ -62,7 +62,7 @@ TTS_CASE( "2D Index computation" )
       TTS_ALL_EQUAL(output, ref);
     }
   }
-}
+};
 
 TTS_CASE( "3D index computation" )
 {
@@ -111,7 +111,7 @@ TTS_CASE( "3D index computation" )
       TTS_ALL_EQUAL(output, ref);
     }
   }
-}
+};
 
 TTS_CASE( "4D index computation" )
 {
@@ -177,4 +177,4 @@ TTS_CASE( "4D index computation" )
       TTS_ALL_EQUAL(output, ref);
     }
   }
-}
+};

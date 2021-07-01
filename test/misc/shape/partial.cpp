@@ -18,7 +18,7 @@ TTS_CASE( "1D partial shape constructor" )
   TTS_EQUAL(sh.size()       , 1 );
   TTS_EQUAL(sh.numel()       , 7 );
   TTS_EQUAL(kwk::get<0>(sh) , 7 );
-}
+};
 
 TTS_CASE( "2D partial shape constructor" )
 {
@@ -43,7 +43,7 @@ TTS_CASE( "2D partial shape constructor" )
   TTS_EQUAL(sh_sd.numel()      , 15 );
   TTS_EQUAL(kwk::get<0>(sh_sd) , 5  );
   TTS_EQUAL(kwk::get<1>(sh_sd) , 3  );
-}
+};
 
 TTS_CASE( "3D partial shape constructor" )
 {
@@ -103,4 +103,4 @@ TTS_CASE( "3D partial shape constructor" )
   TTS_EQUAL(kwk::get<0>(sh_ssd) , 5  );
   TTS_EQUAL(kwk::get<1>(sh_ssd) , 4  );
   TTS_EQUAL(kwk::get<2>(sh_ssd) , 3  );
-}
+};

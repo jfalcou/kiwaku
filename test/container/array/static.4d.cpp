@@ -16,7 +16,7 @@ TTS_CASE( "Automatic storage, constexpr 4D shape array - Basic properties" )
   TTS_EQUAL( sizeof(a), a.size()*sizeof(float)  );
   TTS_EQUAL( a.size() , 210                     );
   TTS_EQUAL( a.shape(), kwk::of_shape(3,5,7,2)  );
-}
+};
 
 TTS_CASE( "Automatic storage, constexpr 4D shape array - Copy constructor" )
 {
@@ -27,7 +27,7 @@ TTS_CASE( "Automatic storage, constexpr 4D shape array - Copy constructor" )
 
   kwk::array<float,kwk::extent[3][5][7][2]> a = ref;
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};
 
 TTS_CASE( "Automatic storage, constexpr 4D shape array - Move constructor" )
 {
@@ -39,7 +39,7 @@ TTS_CASE( "Automatic storage, constexpr 4D shape array - Move constructor" )
 
   kwk::array<float,kwk::extent[3][5][7][2]> a = std::move(ref2);
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};
 
 TTS_CASE( "Automatic storage, constexpr 4D shape array - Assignment operator" )
 {
@@ -50,7 +50,7 @@ TTS_CASE( "Automatic storage, constexpr 4D shape array - Assignment operator" )
 
   a = ref;
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};
 
 TTS_CASE( "Automatic storage, constexpr 4D shape array - Move constructor" )
 {
@@ -62,4 +62,4 @@ TTS_CASE( "Automatic storage, constexpr 4D shape array - Move constructor" )
 
   a = std::move(ref2);
   TTS_EXPECT( std::equal(ref.begin(),ref.end(),a.begin()) );
-}
+};

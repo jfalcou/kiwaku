@@ -13,11 +13,12 @@
 TTS_CASE( "Building a 0D shape with kwk::of_shape()" )
 {
   test_0D(kwk::of_shape());
-}
+};
 
 TTS_CASE_TPL( "Building a nD shape with kwk::of_shape(a1,...,an)"
             , nD<1>, nD<2>, nD<3>, nD<4>, nD<7>, nD<13>
             )
+<typename T>(::tts::type<T>)
 {
   auto f  = []<std::size_t... Idx>(std::index_sequence<Idx...> const&)
             {
@@ -25,4 +26,4 @@ TTS_CASE_TPL( "Building a nD shape with kwk::of_shape(a1,...,an)"
             };
 
   test_nD(T{}, f(up_to<T>{}));
-}
+};

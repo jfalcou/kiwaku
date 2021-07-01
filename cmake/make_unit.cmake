@@ -11,14 +11,21 @@ include(add_target_parent)
 # Unit test Configuration
 ##==================================================================================================
 add_library(unit_test_config INTERFACE)
-target_compile_features ( unit_test_config INTERFACE  cxx_std_20 )
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options( unit_test_config INTERFACE /W3 /EHsc)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  target_compile_options( unit_test_config INTERFACE -Wall -Werror)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options( unit_test_config INTERFACE -Wall -Werror)
+  target_compile_options( unit_test_config INTERFACE /W3 /EHsc /std:c++latest)
+else()
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  target_compile_options( unit_test_config INTERFACE -std=c++20 -Werror -Wall -Wextra -Wno-gnu-string-literal-operator-template)
+  else()
+  target_compile_options( unit_test_config INTERFACE -std=c++20 -Werror -Wall -Wextra)
+  endif()
 endif()
+
+target_include_directories( unit_test_config INTERFACE
+                            ${PROJECT_SOURCE_DIR}/test
+                            ${PROJECT_SOURCE_DIR}/include
+                          )
 
 ##==================================================================================================
 ## Turn a filename to a dot-separated target name
@@ -66,23 +73,8 @@ function(make_unit root)
                                   $<INSTALL_INTERFACE:include>
                                   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                                 PRIVATE
-                                  ${tts_SOURCE_DIR}/include
                                   ${PROJECT_SOURCE_DIR}/test
                               )
 
   endforeach()
 endfunction()
-
-##==================================================================================================
-## Setup TTS
-##==================================================================================================
-set(TTS_BUILD_TEST    OFF CACHE INTERNAL "OFF")
-set(TTS_IS_DEPENDENT  ON  CACHE INTERNAL "ON")
-
-include(FetchContent)
-FetchContent_Declare( tts
-                      GIT_REPOSITORY https://github.com/jfalcou/tts.git
-                      GIT_TAG develop
-                    )
-
-FetchContent_MakeAvailable(tts)
