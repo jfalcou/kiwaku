@@ -18,7 +18,7 @@ namespace kwk::detail
   struct slicer { std::ptrdiff_t begin, step, end; };
 
   template<typename Shape>
-  constexpr auto reshape( slicer const& i, std::ptrdiff_t, Shape const& s ) noexcept
+  constexpr auto reshape( slicer const& i, std::ptrdiff_t, Shape const&) noexcept
   {
     return (i.end - i.begin)/i.step + 1;
   }

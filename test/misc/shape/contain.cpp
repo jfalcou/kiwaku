@@ -79,4 +79,4 @@ TTS_CASE( "Does a shape contains another" )
   TTS_EXPECT_NOT( (kwk::shape{3,5,7,9})    .contains(kwk::shape{5,5,1,1}) );
   TTS_EXPECT_NOT( (kwk::shape{3,5,7,9})    .contains(kwk::shape{5,7,2,1}) );
   TTS_EXPECT_NOT( (kwk::shape{3,5,7,9})    .contains(kwk::shape{5,7,2,9}) );
-}
+};

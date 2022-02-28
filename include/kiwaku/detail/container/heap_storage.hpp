@@ -12,6 +12,7 @@
 #include <kiwaku/allocator/block.hpp>
 #include <kiwaku/container/view.hpp>
 #include <cstddef>
+#include <memory>
 
 namespace kwk::detail
 {

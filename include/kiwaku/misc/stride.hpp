@@ -13,7 +13,7 @@
 #include <kiwaku/detail/raberu.hpp>
 #include <array>
 #include <cstddef>
-#include <iostream>
+#include <ostream>
 #include <type_traits>
 #include <utility>
 
@@ -213,7 +213,7 @@ namespace kwk
     //==============================================================================================
     constexpr auto index(std::ptrdiff_t is) const noexcept { return is; }
 
-    void swap( stride& other ) noexcept {}
+    void swap( stride& ) noexcept {}
 
     //==============================================================================================
     // I/O

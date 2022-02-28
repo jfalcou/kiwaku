@@ -19,7 +19,7 @@ TTS_CASE( "swap behavior on 1D shape" )
 
   TTS_EQUAL(first , old_second);
   TTS_EQUAL(second, old_first );
-}
+};
 
 TTS_CASE( "swap behavior on 2D shape" )
 {
@@ -30,7 +30,7 @@ TTS_CASE( "swap behavior on 2D shape" )
 
   TTS_EQUAL(first , old_second);
   TTS_EQUAL(second, old_first );
-}
+};
 
 TTS_CASE( "swap behavior on 3D shape" )
 {
@@ -41,7 +41,7 @@ TTS_CASE( "swap behavior on 3D shape" )
 
   TTS_EQUAL(first , old_second);
   TTS_EQUAL(second, old_first );
-}
+};
 
 TTS_CASE( "swap behavior on 4D shape" )
 {
@@ -52,4 +52,4 @@ TTS_CASE( "swap behavior on 4D shape" )
 
   TTS_EQUAL(first , old_second);
   TTS_EQUAL(second, old_first );
-}
+};

@@ -25,7 +25,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a C array" )
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
   TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
-}
+};
 
 TTS_CASE( "Build a 1D view with runtime shape settings from a pointer" )
 {
@@ -39,7 +39,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a pointer" )
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
   TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
-}
+};
 
 TTS_CASE( "Build a 1D view with runtime shape settings from a pointer to const" )
 {
@@ -53,7 +53,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a pointer to const" 
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
   TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
-}
+};
 
 TTS_CASE( "Build a 1D view with runtime shape settings from a ContiguousSequence" )
 {
@@ -67,7 +67,7 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a ContiguousSequence
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
   TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
-}
+};
 
 TTS_CASE( "Build a 1D view with runtime shape settings from a const ContiguousSequence" )
 {
@@ -81,4 +81,4 @@ TTS_CASE( "Build a 1D view with runtime shape settings from a const ContiguousSe
 
   TTS_EXPECT( (std::equal( view.begin(), view.end(), &ref[0])) );
   TTS_EXPECT( (kwk::all ( [&](auto i) { return view(i) == ref[i]; }, view.shape())) );
-}
+};

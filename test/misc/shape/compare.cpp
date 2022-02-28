@@ -45,7 +45,7 @@ TTS_CASE( "Equality comparison between shapes" )
   TTS_EXPECT_NOT( (kwk::shape{3,5,7,9}) == (kwk::shape{3,5})      );
   TTS_EXPECT_NOT( (kwk::shape{3,5,7,9}) == (kwk::shape{3,5,7})    );
   TTS_EXPECT_NOT( (kwk::shape{3,5,7,9}) == (kwk::shape{3,5,7,2})  );
-}
+};
 
 TTS_CASE( "Inequality comparison between shapes" )
 {
@@ -82,4 +82,4 @@ TTS_CASE( "Inequality comparison between shapes" )
   TTS_EXPECT_NOT( (kwk::shape{3,5,7})   != (kwk::shape{3,5,7,1}) );
 
   TTS_EXPECT_NOT( (kwk::shape{3,5,7,9}) != (kwk::shape{3,5,7,9}) );
-}
+};

@@ -16,7 +16,7 @@
 namespace kwk::detail
 {
   template<typename Shape>
-  constexpr auto reshape( std::ptrdiff_t const& i, std::ptrdiff_t, Shape const& ) noexcept
+  constexpr auto reshape( std::ptrdiff_t const&, std::ptrdiff_t, Shape const& ) noexcept
   {
     return 1;
   }

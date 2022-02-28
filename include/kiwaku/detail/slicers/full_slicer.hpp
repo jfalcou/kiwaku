@@ -32,7 +32,7 @@ namespace kwk::detail
 
     constexpr auto operator[](std::ptrdiff_t d) const noexcept
     {
-      return axis{d};
+      return axis{d,0};
     }
   };
 
@@ -42,13 +42,13 @@ namespace kwk::detail
     return s[i];
   }
 
-  inline constexpr auto origin( full_slicer const& i ) noexcept
+  inline constexpr auto origin( full_slicer const& ) noexcept
   {
     return 0;
   }
 
   template<typename Stride>
-  inline auto restride( full_slicer const& id, std::ptrdiff_t i, Stride const& s) noexcept
+  inline auto restride( full_slicer const&, std::ptrdiff_t i, Stride const& s) noexcept
   {
     return s[i];
   }

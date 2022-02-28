@@ -32,8 +32,8 @@ namespace kwk
     static constexpr bool is_dynamic      = builder_t::is_dynamic;
     static constexpr bool is_fully_static = builder_t::is_fully_static;
 
-    using span_base       = builder_t::span_base;;
-    using access_base     = builder_t::access_base;
+    using span_base       = typename builder_t::span_base;;
+    using access_base     = typename builder_t::access_base;
     using shape_type      = typename access_base::shape_type;
     using stride_type     = typename access_base::stride_type;
 
