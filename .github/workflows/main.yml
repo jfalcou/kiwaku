@@ -7,22 +7,32 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   gcc:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v2
-      - name: Testing KIWAKU with g++ 11
-        uses: ./.github/actions/run_tests
+      - name: Testing Kiwaku with g++
+        uses: ./.github/actions/run_docker
         with:
-          compiler: 'g++-11'
+          compiler:   'g++'
+          cpu:        2
   clang:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v2
-      - name: Testing KIWAKU with clang++ 12
-        uses: ./.github/actions/run_tests
+      - name: Testing Kiwaku with clang++
+        uses: ./.github/actions/run_docker
         with:
-          compiler: 'clang++-12'
+          compiler: 'clang++'
+          cpu:      2
