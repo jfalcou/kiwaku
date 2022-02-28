@@ -33,34 +33,29 @@ TTS_CASE( "2D Index computation" )
 {
   kwk::stride st{2,6};
 
-  TTS_WHEN("we build a 2D stride")
+  std::vector<std::ptrdiff_t> ref;
+  std::vector<std::ptrdiff_t> output;
+
   {
-    std::vector<std::ptrdiff_t> ref;
-    std::vector<std::ptrdiff_t> output;
+    for(auto i=0;i<15;++i)
+      ref.push_back(2*i);
 
-    TTS_AND_THEN( "we compute linear index from 1D positions" )
-    {
-      for(auto i=0;i<15;++i)
-        ref.push_back(2*i);
+    for(auto i=0;i<15;++i)
+      output.push_back( st.index(i) );
 
-      for(auto i=0;i<15;++i)
-        output.push_back( st.index(i) );
+    TTS_ALL_EQUAL(output, ref);
+  }
 
-      TTS_ALL_EQUAL(output, ref);
-    }
+  {
+    for(auto j=0;j<5;++j)
+      for(auto i=0;i<3;++i)
+      ref.push_back(2*i + 6*j);
 
-    TTS_AND_THEN( "we compute linear index from 2D positions" )
-    {
-      for(auto j=0;j<5;++j)
-       for(auto i=0;i<3;++i)
-        ref.push_back(2*i + 6*j);
+    for(auto j=0;j<5;++j)
+      for(auto i=0;i<3;++i)
+      output.push_back( st.index(i,j) );
 
-      for(auto j=0;j<5;++j)
-       for(auto i=0;i<3;++i)
-        output.push_back( st.index(i,j) );
-
-      TTS_ALL_EQUAL(output, ref);
-    }
+    TTS_ALL_EQUAL(output, ref);
   }
 };
 
@@ -68,48 +63,43 @@ TTS_CASE( "3D index computation" )
 {
   kwk::stride st{2,6,30};
 
-  TTS_WHEN("we build a 3D stride")
+  std::vector<std::ptrdiff_t> ref;
+  std::vector<std::ptrdiff_t> output;
+
   {
-    std::vector<std::ptrdiff_t> ref;
-    std::vector<std::ptrdiff_t> output;
-    TTS_AND_THEN( "we compute linear index from 1D positions" )
-    {
-      for(auto i=0;i<60;++i)
-        ref.push_back(2*i);
+    for(auto i=0;i<60;++i)
+      ref.push_back(2*i);
 
-      for(auto i=0;i<60;++i)
-        output.push_back( st.index(i) );
+    for(auto i=0;i<60;++i)
+      output.push_back( st.index(i) );
 
-      TTS_ALL_EQUAL(output, ref);
-    }
+    TTS_ALL_EQUAL(output, ref);
+  }
 
-    TTS_AND_THEN( "we compute linear index from 2D positions" )
-    {
-      for(auto j=0;j<20;++j)
-       for(auto i=0;i<3;++i)
-        ref.push_back(2*i + 6*j);
+  {
+    for(auto j=0;j<20;++j)
+      for(auto i=0;i<3;++i)
+      ref.push_back(2*i + 6*j);
 
-      for(auto j=0;j<20;++j)
-       for(auto i=0;i<3;++i)
-        output.push_back( st.index(i,j) );
+    for(auto j=0;j<20;++j)
+      for(auto i=0;i<3;++i)
+      output.push_back( st.index(i,j) );
 
-      TTS_ALL_EQUAL(output, ref);
-    }
+    TTS_ALL_EQUAL(output, ref);
+  }
 
-    TTS_AND_THEN( "we compute linear index from 3D positions" )
-    {
-      for(auto k=0;k<4;++k)
-       for(auto j=0;j<5;++j)
-        for(auto i=0;i<3;++i)
-        ref.push_back(2*i + 6*j + 30*k);
+  {
+    for(auto k=0;k<4;++k)
+      for(auto j=0;j<5;++j)
+      for(auto i=0;i<3;++i)
+      ref.push_back(2*i + 6*j + 30*k);
 
-      for(auto k=0;k<4;++k)
-       for(auto j=0;j<5;++j)
-        for(auto i=0;i<3;++i)
-        output.push_back( st.index(i,j,k) );
+    for(auto k=0;k<4;++k)
+      for(auto j=0;j<5;++j)
+      for(auto i=0;i<3;++i)
+      output.push_back( st.index(i,j,k) );
 
-      TTS_ALL_EQUAL(output, ref);
-    }
+    TTS_ALL_EQUAL(output, ref);
   }
 };
 
@@ -117,64 +107,58 @@ TTS_CASE( "4D index computation" )
 {
   kwk::stride st{2,6,30,60};
 
-  TTS_WHEN("we build a 4D stride")
+  std::vector<std::ptrdiff_t> ref;
+  std::vector<std::ptrdiff_t> output;
+
   {
-    std::vector<std::ptrdiff_t> ref;
-    std::vector<std::ptrdiff_t> output;
-    TTS_AND_THEN( "we compute linear index from 1D positions" )
-    {
-      for(auto i=0;i<60;++i)
-        ref.push_back(2*i);
+    for(auto i=0;i<60;++i)
+      ref.push_back(2*i);
 
-      for(auto i=0;i<60;++i)
-        output.push_back( st.index(i) );
+    for(auto i=0;i<60;++i)
+      output.push_back( st.index(i) );
 
-      TTS_ALL_EQUAL(output, ref);
-    }
+    TTS_ALL_EQUAL(output, ref);
+  }
 
-    TTS_AND_THEN( "we compute linear index from 2D positions" )
-    {
-      for(auto j=0;j<20;++j)
-       for(auto i=0;i<3;++i)
-        ref.push_back(2*i + 6*j);
+  {
+    for(auto j=0;j<20;++j)
+      for(auto i=0;i<3;++i)
+      ref.push_back(2*i + 6*j);
 
-      for(auto j=0;j<20;++j)
-       for(auto i=0;i<3;++i)
-        output.push_back( st.index(i,j) );
+    for(auto j=0;j<20;++j)
+      for(auto i=0;i<3;++i)
+      output.push_back( st.index(i,j) );
 
-      TTS_ALL_EQUAL(output, ref);
-    }
+    TTS_ALL_EQUAL(output, ref);
+  }
 
-    TTS_AND_THEN( "we compute linear index from 3D positions" )
-    {
+  {
+    for(auto k=0;k<4;++k)
+      for(auto j=0;j<5;++j)
+      for(auto i=0;i<3;++i)
+      ref.push_back(2*i + 6*j + 30*k);
+
+    for(auto k=0;k<4;++k)
+      for(auto j=0;j<5;++j)
+      for(auto i=0;i<3;++i)
+      output.push_back( st.index(i,j,k) );
+
+    TTS_ALL_EQUAL(output, ref);
+  }
+
+  {
+    for(auto l=0;l<2;++l)
       for(auto k=0;k<4;++k)
-       for(auto j=0;j<5;++j)
+      for(auto j=0;j<5;++j)
         for(auto i=0;i<3;++i)
-        ref.push_back(2*i + 6*j + 30*k);
+        ref.push_back(2*i + 6*j + 30*k + 60*l);
 
+    for(auto l=0;l<2;++l)
       for(auto k=0;k<4;++k)
-       for(auto j=0;j<5;++j)
+      for(auto j=0;j<5;++j)
         for(auto i=0;i<3;++i)
-        output.push_back( st.index(i,j,k) );
+        output.push_back( st.index(i,j,k,l) );
 
-      TTS_ALL_EQUAL(output, ref);
-    }
-
-    TTS_AND_THEN( "we compute linear index from 4D positions" )
-    {
-      for(auto l=0;l<2;++l)
-       for(auto k=0;k<4;++k)
-        for(auto j=0;j<5;++j)
-         for(auto i=0;i<3;++i)
-          ref.push_back(2*i + 6*j + 30*k + 60*l);
-
-      for(auto l=0;l<2;++l)
-       for(auto k=0;k<4;++k)
-        for(auto j=0;j<5;++j)
-         for(auto i=0;i<3;++i)
-          output.push_back( st.index(i,j,k,l) );
-
-      TTS_ALL_EQUAL(output, ref);
-    }
+    TTS_ALL_EQUAL(output, ref);
   }
 };
