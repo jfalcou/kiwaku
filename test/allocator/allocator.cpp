@@ -1,11 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
-  Copyright 2020 Joel FALCOU
-
-  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+  Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #include "test.hpp"
 #include <kiwaku/allocator/heap_allocator.hpp>
@@ -17,7 +15,11 @@ struct box
   box() noexcept : alloc(), data_(), size_() {}
 
   template<kwk::concepts::allocator A>
-  box( std::ptrdiff_t n, A const& a) : alloc(a), data_(alloc.allocate(n)), size_(n) {}
+  box ( std::ptrdiff_t n, A a)
+      : alloc(std::move(a))
+      , data_(alloc.allocate(n*sizeof(float)))
+      , size_(n)
+  {}
 
   box( box const& that ) : box(that.size_, that.alloc)
   {
@@ -68,7 +70,7 @@ struct box
 
 TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
 {
-  std::byte data[32];
+  std::byte data[64];
   box b( 5, kwk::heap_allocator{} );
   box c( 7, kwk::make_shallow<32,16>(data) );
 

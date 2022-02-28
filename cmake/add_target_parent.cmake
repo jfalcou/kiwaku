@@ -1,11 +1,8 @@
 ##==================================================================================================
 ##  KIWAKU - Containers Well Made
-##  Copyright 2020 Joel FALCOU
-##
-##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
-
 function(add_target_parent target)
   string(REGEX REPLACE "[^.]+\\.([^.]+)$" "\\1" parent_target ${target})
   string(REGEX REPLACE "^.*\\.([^.]+)$" "\\1" suffix ${parent_target})

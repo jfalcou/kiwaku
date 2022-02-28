@@ -1,11 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
-  Copyright 2020 Joel FALCOU
-
-  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+  Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #include "test.hpp"
 #include <kiwaku/allocator/shallow_allocator.hpp>
