@@ -10,9 +10,14 @@ inputs:
     description: 'CPU Count'
     required: false
     default: '8'
+  options:  # Special options
+    description: 'Compiler options'
+    required: false
+    default: ''
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - ${{ inputs.compiler }}
     - ${{ inputs.cpu }}
+    - ${{ inputs.options }}
