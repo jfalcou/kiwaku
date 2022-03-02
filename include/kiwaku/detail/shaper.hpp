@@ -51,7 +51,7 @@ namespace kwk::detail
     std::array<SizeType, sizeof...(Ops)> data_;
   };
 
-  // Special case for 0D estent
+  // Special case for 0D extent
   template<typename SizeType> struct shaper<SizeType>
   {
     using size_type = SizeType;

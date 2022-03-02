@@ -18,8 +18,8 @@ namespace kwk::detail
   //==============================================================================================
   // Build the static storage of a stride depending on # of dimensions and unit dimensions
   //==============================================================================================
-  template<std::size_t Dimensions, typename UnitIndices>
-  using stride_storage = std::array<std::ptrdiff_t, Dimensions-UnitIndices::size>;
+  template<auto UnitIndices>
+  using stride_storage = std::array<std::ptrdiff_t, UnitIndices.static_size - UnitIndices.size>;
 
   //==============================================================================================
   // Type representing a unit stride
@@ -29,7 +29,19 @@ namespace kwk::detail
   //==============================================================================================
   // Compute an index_list from a pack of stride value types
   //==============================================================================================
-  template<typename... Vs> struct index_map : type_map<unit_type, Vs...> {};
+  template<typename V, typename... Vs> struct index_map
+  {
+    using map_type                    = typename type_map<unit_type, V, Vs...>::type;
+    static constexpr std::ptrdiff_t size        = map_type::size;
+    static constexpr std::ptrdiff_t static_size = sizeof...(Vs)+1;
+  };
+
+  template<std::size_t Dims> struct unit_index_map
+  {
+    using map_type                              = detail::index_list<0>;
+    static constexpr std::ptrdiff_t size        = map_type::size;
+    static constexpr std::ptrdiff_t static_size = Dims;
+  };
 
   //==============================================================================================
   // Convert indexes to linear position

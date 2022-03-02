@@ -222,7 +222,10 @@ namespace kwk
     //==============================================================================================
     // Convert shape to the equivalent unit stride
     //==============================================================================================
-    constexpr auto as_stride() const { return stride(*this); }
+    constexpr auto as_stride() const requires(static_size > 0)
+    {
+      return stride<detail::unit_index_map<static_size>{}>(*this);
+    }
 
     //==============================================================================================
     // Comparisons
