@@ -8,11 +8,11 @@
 #pragma once
 
 #include <kiwaku/components/slicers/axis.hpp>
+#include <kiwaku/components/stride.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <kiwaku/detail/assert.hpp>
 #include <kiwaku/detail/shaper.hpp>
 #include <kiwaku/detail/kumi.hpp>
-//#include <kiwaku/misc/stride.hpp>
 #include <utility>
 #include <cstddef>
 #include <ostream>
@@ -35,7 +35,7 @@ namespace kwk
                                             , std::array<size_type,storage_size>
                                             , empty_storage
                                             >;
-    // TODO using stride_type   = unit_stride<static_size>;
+    using stride_type   = unit_stride<static_size>;
 
     //==============================================================================================
     // NTTP Indirect interface
@@ -222,7 +222,7 @@ namespace kwk
     //==============================================================================================
     // Convert shape to the equivalent unit stride
     //==============================================================================================
-    // TODO constexpr auto as_stride() const { return stride(*this); }
+    constexpr auto as_stride() const { return stride(*this); }
 
     //==============================================================================================
     // Comparisons

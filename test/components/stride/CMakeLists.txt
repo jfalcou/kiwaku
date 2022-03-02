@@ -6,10 +6,10 @@
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 set ( SOURCES
+      ctor.cpp
       from_shape.cpp
       indexing.cpp
       unit_indexing.cpp
-      with_stride.cpp
     )
 
-make_unit("misc.stride" ${SOURCES})
+make_unit("components.stride" ${SOURCES})

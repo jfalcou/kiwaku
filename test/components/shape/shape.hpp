@@ -13,7 +13,7 @@ template<int N, typename Indexes = std::make_index_sequence<N>>  struct sizes;
 
 template<int N, std::size_t... I> struct sizes<N, std::index_sequence<I...>>
 {
-  using types_list = tts::types<std::integral_constant<std::size_t,I+1>...>;
+  using types_list = tts::types<std::integral_constant<std::ptrdiff_t,I+1>...>;
 };
 
 template<typename Shape> inline void test_0D(Shape const& sh)

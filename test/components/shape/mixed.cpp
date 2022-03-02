@@ -26,10 +26,10 @@ TTS_CASE( "1D mixed shape constructor" )
   TTS_EQUAL(get<0>(s2)          , 33 );
 
   auto s3 = kwk::extent(kwk::fixed<9>);
-  TTS_CONSTEXPR_EQUAL(sizeof(s3), 1 );
-  TTS_EQUAL(s3.size()           , 1 );
-  TTS_EQUAL(s3.numel()          , 9 );
-  TTS_EQUAL(get<0>(s3)          , 9 );
+  TTS_CONSTEXPR_EQUAL(sizeof(s3), 1ULL);
+  TTS_EQUAL(s3.size()           , 1   );
+  TTS_EQUAL(s3.numel()          , 9   );
+  TTS_EQUAL(get<0>(s3)          , 9   );
 
   auto s4 = kwk::extent_of<std::uint8_t>(11_c);
   TTS_CONSTEXPR_EQUAL(sizeof(s4), 1ULL);
