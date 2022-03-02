@@ -58,9 +58,13 @@ namespace kwk::detail
     // is N in the set of known unit indexes ?
     static constexpr bool contains(std::size_t N) noexcept
     {
-      bool found[] = { (I==N)... };
-      for(auto f : found) if(f) return true;
-      return false;
+      if constexpr(sizeof...(I) > 0)
+      {
+        bool found[] = { (I==N)... };
+        for(auto f : found) if(f) return true;
+        return false;
+      }
+      else return false;
     }
 
     // Aggregation of an index into an existing index_list

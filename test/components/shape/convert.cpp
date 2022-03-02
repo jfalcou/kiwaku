@@ -1,14 +1,12 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
-  Copyright 2020 Joel FALCOU
-
-  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+  Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/shape.hpp>
+#include <kiwaku/components/shape.hpp>
 
 TTS_CASE( "Small shape can be used to construct large shape" )
 {

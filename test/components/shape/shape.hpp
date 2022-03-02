@@ -1,16 +1,20 @@
 //==================================================================================================
 /**
   KIWAKU - Containers Well Made
-  Copyright 2020 Joel FALCOU
-
-  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+  Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#ifndef SHAPE_SHAPE_HPP
-#define SHAPE_SHAPE_HPP
+#pragma once
 
-#include <kiwaku/shape.hpp>
+#include <kiwaku/components/shape.hpp>
+
+template<int N, typename Indexes = std::make_index_sequence<N>>  struct sizes;
+
+template<int N, std::size_t... I> struct sizes<N, std::index_sequence<I...>>
+{
+  using types_list = tts::types<std::integral_constant<std::size_t,I+1>...>;
+};
 
 template<typename Shape> inline void test_0D(Shape const& sh)
 {
@@ -26,5 +30,3 @@ template<typename Size, typename Shape> inline void test_nD(Size const&, Shape c
   TTS_EQUAL(kwk::get<0>(sh)                   , 3             );
   TTS_EQUAL(kwk::get<Shape::static_size-1>(sh), 3*Size::value );
 }
-
-#endif

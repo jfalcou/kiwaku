@@ -3,9 +3,8 @@
 ##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
-include(make_unit)
+set ( SOURCES
+      fixed.cpp
+    )
 
-add_subdirectory(allocator)
-add_subdirectory(utility)
-##add_subdirectory(container)
-add_subdirectory(components)
+make_unit("utility" ${SOURCES})

@@ -1,16 +1,14 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
-  Copyright 2020 Joel FALCOU
-
-  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+  Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/shape.hpp>
+#include <kiwaku/components/shape.hpp>
 
-TTS_CASE( "Does a shape strictlycontains another" )
+TTS_CASE( "Does a shape strictly-contains another" )
 {
   TTS_EXPECT(  kwk::shape{3}       .strictly_contains(kwk::shape{2})       );
   TTS_EXPECT(  kwk::shape{3}       .strictly_contains(kwk::shape{2,1})     );

@@ -1,10 +1,8 @@
 ##==================================================================================================
 ##  KIWAKU - Containers Well Made
-##  Copyright 2020 Joel FALCOU
-##
-##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 add_subdirectory(shape)
-add_subdirectory(stride)
-add_subdirectory(slicer)
+# add_subdirectory(stride)
+# add_subdirectory(slicer)

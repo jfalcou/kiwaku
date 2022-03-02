@@ -1,19 +1,17 @@
 //==================================================================================================
 /**
   KIWAKU - Containers Well Made
-  Copyright 2020 Joel FALCOU
-
-  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+  Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/shape.hpp>
+#include <kiwaku/components/shape.hpp>
 
 TTS_CASE( "swap behavior on 1D shape" )
 {
-  kwk::shape first{4}     , second{2};
-  kwk::shape old_first{4} , old_second{2};
+  auto first      = kwk::extent(4) , second     = kwk::extent(2);
+  auto old_first  = kwk::extent(4) , old_second = kwk::extent(2);
 
   first.swap(second);
 
@@ -23,8 +21,8 @@ TTS_CASE( "swap behavior on 1D shape" )
 
 TTS_CASE( "swap behavior on 2D shape" )
 {
-  kwk::shape first{4,2}     , second{6,9};
-  kwk::shape old_first{4,2} , old_second{6,9};
+  auto first      = kwk::extent(4,7) , second     = kwk::extent(2,9);
+  auto old_first  = kwk::extent(4,7) , old_second = kwk::extent(2,9);
 
   first.swap(second);
 
@@ -34,8 +32,8 @@ TTS_CASE( "swap behavior on 2D shape" )
 
 TTS_CASE( "swap behavior on 3D shape" )
 {
-  kwk::shape first{13,3,7}     , second{1,66,4};
-  kwk::shape old_first{13,3,7} , old_second{1,66,4};
+  auto first      = kwk::extent(4,7,9) , second     = kwk::extent(2,9,3);
+  auto old_first  = kwk::extent(4,7,9) , old_second = kwk::extent(2,9,3);
 
   first.swap(second);
 
@@ -45,8 +43,8 @@ TTS_CASE( "swap behavior on 3D shape" )
 
 TTS_CASE( "swap behavior on 4D shape" )
 {
-  kwk::shape first{1,3,3,7}     , second{1,6,6,4};
-  kwk::shape old_first{1,3,3,7} , old_second{1,6,6,4};
+  auto first      = kwk::extent(4,7,9,8) , second     = kwk::extent(2,9,3,6);
+  auto old_first  = kwk::extent(4,7,9,8) , old_second = kwk::extent(2,9,3,6);
 
   first.swap(second);
 
