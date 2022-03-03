@@ -10,6 +10,23 @@
 #include <type_traits>
 #include <utility>
 
+// Faster than std::forward
+#define KWK_FWD(...) static_cast<decltype(__VA_ARGS__) &&>(__VA_ARGS__)
+
+// Force a function to be inline
+#if defined(KWK_NO_FORCEINLINE)
+#  define KWK_FORCEINLINE inline
+#else
+#  if defined(_MSC_VER)
+#    define KWK_FORCEINLINE __forceinline
+#  elif defined(__GNUC__) && __GNUC__ > 3
+#    define KWK_FORCEINLINE inline __attribute__((__always_inline__))
+#  else
+#    define KWK_FORCEINLINE inline
+#  endif
+#endif
+
+
 namespace kwk::detail
 {
   //================================================================================================
@@ -24,7 +41,7 @@ namespace kwk::detail
   template<typename Callable, typename... Args>
   constexpr void for_each_args(Callable c, Args&&... args) noexcept
   {
-    (c(std::forward<Args>(args)),...);
+    (c(KWK_FWD(args)),...);
   }
 
   //================================================================================================

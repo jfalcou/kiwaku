@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kiwaku/detail/ct_helpers.hpp>
 #include <kiwaku/concept/allocator.hpp>
 #include <kiwaku/allocator/block.hpp>
 #include <cstdlib>
@@ -84,7 +85,7 @@ namespace kwk
     **/
     template<typename T>
     any_allocator ( T&& other )
-                  : object(std::make_unique<model_t<std::decay_t<T>>>(std::forward<T>(other)))
+                  : object(std::make_unique<model_t<std::decay_t<T>>>(KWK_FWD(other)))
     {}
 
     /**
@@ -96,7 +97,7 @@ namespace kwk
     **/
     template<typename T> any_allocator& operator=(T&& other)
     {
-      any_allocator that(std::forward<T>(other));
+      any_allocator that(KWK_FWD(other));
       swap(that);
       return *this;
     }
@@ -120,7 +121,7 @@ namespace kwk
 
       @param  b kwk::block containing the memory to deallocate
     **/
-    void  deallocate(block& b)    { object->deallocate(b);      }
+    void  deallocate(block& b)    { object->deallocate(b); }
 
     private:
     std::unique_ptr<api_t> object;
