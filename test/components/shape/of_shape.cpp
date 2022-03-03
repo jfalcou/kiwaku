@@ -14,7 +14,7 @@ TTS_CASE_TPL( "Building a nD shape with kwk::of_shape(a1,...,an)", sizes<10>)
 {
   auto f  = []<std::size_t... Idx>(std::index_sequence<Idx...> const&)
             {
-              return kwk::extent(3*(1+Idx)...);
+              return kwk::of_size( 3*static_cast<std::ptrdiff_t>(1+Idx)...);
             };
 
   test_nD(T{}, f(up_to<T>{}));

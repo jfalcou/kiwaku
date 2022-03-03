@@ -28,8 +28,12 @@ namespace kwk
 
   namespace literals
   {
-    using kumi::literals::b10;
-
+    template<char... c> constexpr auto b10()
+    {
+      auto value = 0LL;
+      ((value = value * 10 + (c - '0')), ...);
+      return value;
+    }
     /**
       @ingroup utility
       @brief User-defined literal suffix for compile-time constant

@@ -10,8 +10,8 @@
 
 TTS_CASE( "swap behavior on 1D shape" )
 {
-  auto first      = kwk::extent(4) , second     = kwk::extent(2);
-  auto old_first  = kwk::extent(4) , old_second = kwk::extent(2);
+  auto first      = kwk::of_size(4) , second     = kwk::of_size(2);
+  auto old_first  = kwk::of_size(4) , old_second = kwk::of_size(2);
 
   first.swap(second);
 
@@ -21,8 +21,8 @@ TTS_CASE( "swap behavior on 1D shape" )
 
 TTS_CASE( "swap behavior on 2D shape" )
 {
-  auto first      = kwk::extent(4,7) , second     = kwk::extent(2,9);
-  auto old_first  = kwk::extent(4,7) , old_second = kwk::extent(2,9);
+  auto first      = kwk::of_size(4,7) , second     = kwk::of_size(2,9);
+  auto old_first  = kwk::of_size(4,7) , old_second = kwk::of_size(2,9);
 
   first.swap(second);
 
@@ -32,8 +32,8 @@ TTS_CASE( "swap behavior on 2D shape" )
 
 TTS_CASE( "swap behavior on 3D shape" )
 {
-  auto first      = kwk::extent(4,7,9) , second     = kwk::extent(2,9,3);
-  auto old_first  = kwk::extent(4,7,9) , old_second = kwk::extent(2,9,3);
+  auto first      = kwk::of_size(4,7,9) , second     = kwk::of_size(2,9,3);
+  auto old_first  = kwk::of_size(4,7,9) , old_second = kwk::of_size(2,9,3);
 
   first.swap(second);
 
@@ -43,8 +43,8 @@ TTS_CASE( "swap behavior on 3D shape" )
 
 TTS_CASE( "swap behavior on 4D shape" )
 {
-  auto first      = kwk::extent(4,7,9,8) , second     = kwk::extent(2,9,3,6);
-  auto old_first  = kwk::extent(4,7,9,8) , old_second = kwk::extent(2,9,3,6);
+  auto first      = kwk::of_size(4,7,9,8) , second     = kwk::of_size(2,9,3,6);
+  auto old_first  = kwk::of_size(4,7,9,8) , old_second = kwk::of_size(2,9,3,6);
 
   first.swap(second);
 

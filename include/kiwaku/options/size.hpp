@@ -17,12 +17,13 @@ namespace kwk
   struct size_ : rbr::any_keyword<size_>
   {
     // Single integral -> 1D shape
-    template<std::integral T> auto operator=(T s) const noexcept
+    template<std::convertible_to<std::ptrdiff_t> T>
+    auto operator=(T s) const noexcept
     {
-      return (*this = extent(s));
+      return (*this = of_size(s));
     }
 
-    // Extent from extent(...)
+    // Extent from of_size(...)
     template<auto Shaper> auto operator=(shape<Shaper> const& s) const noexcept
     {
       return rbr::option<size_,shape<Shaper>>{s};

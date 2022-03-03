@@ -79,9 +79,8 @@ namespace kwk::detail
 namespace kwk
 {
   // Dynamic pre-rendered dimension shaper
-  inline constexpr auto shape_  = detail::shaper<std::ptrdiff_t>{};
-  inline constexpr auto _0D     = shape_;
-  inline constexpr auto _1D     = _0D();
+  inline constexpr auto extent  = detail::shaper<std::ptrdiff_t>{};
+  inline constexpr auto _1D     = extent();
   inline constexpr auto _2D     = _1D();
   inline constexpr auto _3D     = _2D();
   inline constexpr auto _4D     = _3D();

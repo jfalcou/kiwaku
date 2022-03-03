@@ -27,7 +27,7 @@ namespace kwk::detail
       return slicer{b,s,e};
     }
 
-    constexpr auto operator[](std::ptrdiff_t d) const noexcept
+    constexpr auto operator[](std::size_t d) const noexcept
     {
       return axis{d,0};
     }

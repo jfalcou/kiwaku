@@ -92,7 +92,7 @@ namespace kwk
       auto const fill = [&](auto ext)
       {
         KIWAKU_ASSERT ( !size_map::contains(ext.dims)
-                      , "[kwk::shape] Semi-dynamic construction overwrite static extent"
+                      , "[kwk::shape] Semi-dynamic construction overwrite static shape"
                       );
 
         storage_[size_map::template locate<static_size>(ext.dims)] = static_cast<size_type>(ext.size);
@@ -244,7 +244,7 @@ namespace kwk
     }
 
     //==============================================================================================
-    // Check if current shape contains (maybe strictly) all the extent of another one
+    // Check if current shape contains (maybe strictly) all the shape of another one
     //==============================================================================================
     template<auto Shaper2>
     constexpr bool contains( shape<Shaper2> const& other) const noexcept
@@ -384,7 +384,7 @@ namespace kwk
   }
 
   template<typename SizeType, typename... Ds>
-  constexpr auto extent(Ds... ds) noexcept
+  constexpr auto of_size(Ds... ds) noexcept
   {
     // Compute the necessary constructor parameters
     std::size_t i = -1;
@@ -410,9 +410,10 @@ namespace kwk
                       );
   }
 
-  template<typename D0, typename... Ds> constexpr auto extent(D0 d0, Ds... ds) noexcept
+  template<typename... T> struct foo{};
+  template<typename D0, typename... Ds> constexpr auto of_size(D0 d0, Ds... ds) noexcept
   {
     using type_t = std::common_type_t<detail::to_int_t<D0>, detail::to_int_t<Ds>...>;
-    return extent<type_t, D0, Ds...>(d0, ds...);
+    return of_size<type_t, D0, Ds...>(d0, ds...);
   }
 }

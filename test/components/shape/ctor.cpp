@@ -9,12 +9,6 @@
 #include <kiwaku/components/shape.hpp>
 #include "components/shape/shape.hpp"
 
-TTS_CASE( "Default constructed 0D shape behavior")
-{
-  test_0D(kwk::shape<kwk::_0D>());
-  test_0D(kwk::shape{});
-};
-
 TTS_CASE_TPL( "Default constructed shape behavior", sizes<10>)
 <typename T>(::tts::type<T>)
 {

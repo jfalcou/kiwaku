@@ -9,5 +9,5 @@
 
 #include <kiwaku/allocator.hpp>
 #include <kiwaku/components.hpp>
-#include <kiwaku/concepts.hpp>
+#include <kiwaku/concept.hpp>
 #include <kiwaku/options.hpp>
