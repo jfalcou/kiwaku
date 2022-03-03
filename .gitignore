@@ -45,3 +45,4 @@
 *build*/
 Testing/
 doc/conf.py
+.vscode/*

@@ -13,6 +13,7 @@
 
 namespace kwk
 {
+#if !defined(KWK_USE_DOXYGEN)
   struct size_ : rbr::any_keyword<size_>
   {
     // Single integral -> 1D shape
@@ -33,6 +34,11 @@ namespace kwk
       return os << "Shape: " << s;
     }
   };
+#endif
 
+  /**
+    @ingroup  options
+    @brief    Multi-dimensional size for container
+   **/
   inline constexpr size_ size = {};
 }

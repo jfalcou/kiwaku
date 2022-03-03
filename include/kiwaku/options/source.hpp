@@ -11,6 +11,7 @@
 
 namespace kwk
 {
+#if !defined(KWK_USE_DOXYGEN)
   struct data_source : rbr::any_keyword<data_source>
   {
     // Raw pointers
@@ -33,6 +34,11 @@ namespace kwk
       return os << "Source: " << ptr << " (" << rbr::detail::type_name<Ptr>() << ')';
     }
   };
+#endif
 
+  /**
+    @ingroup  options
+    @brief    Data source for kwk::view
+   **/
   inline constexpr data_source source = {};
 }

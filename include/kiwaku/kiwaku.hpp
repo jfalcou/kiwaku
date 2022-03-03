@@ -6,3 +6,8 @@
 */
 //==================================================================================================
 #pragma once
+
+#include <kiwaku/allocator.hpp>
+#include <kiwaku/components.hpp>
+#include <kiwaku/concepts.hpp>
+#include <kiwaku/options.hpp>

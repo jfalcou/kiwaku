@@ -11,8 +11,20 @@ namespace kwk
 {
   //================================================================================================
   /**
-    @defgroup options Container's Settings
-    @brief  Settings used by **KIWAKU** to define containers' properties
+    @defgroup utility Miscellaneous helper
+    @brief Quality of Life helpers
+
+    This module defines various functions, types and variables for improving Quality of Life when
+    using **KIWAKU** in user's code.
+  **/
+  //================================================================================================
+
+  //================================================================================================
+  /**
+    @defgroup options Options
+    @brief  Containers properties settings
+
+    This module defines the keywords usable to specify a container's list of properties.
   **/
   //================================================================================================
 }
