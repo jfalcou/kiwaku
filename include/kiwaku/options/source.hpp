@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kiwaku/detail/raberu.hpp>
+#include <kiwaku/components/pointers.hpp>
 
 namespace kwk
 {
@@ -18,20 +19,20 @@ namespace kwk
     template<typename Ptr> auto operator=(Ptr p) const noexcept
     requires(std::is_pointer_v<Ptr>)
     {
-      return rbr::option<data_source,Ptr>{p};
+      return rbr::option<data_source,direct<Ptr>>{direct{p}};
     }
 
     // ContiguousRange with .data()
     template<typename Range> auto operator=(Range&& r) const noexcept
     requires requires(Range&& r) { r.data(); }
     {
-      return rbr::option<data_source,decltype(r.data())>{r.data()};
+      return (*this = r.data());
     }
 
     // Display
     template<typename Ptr> std::ostream& show(std::ostream& os, Ptr ptr) const
     {
-      return os << "Source: " << ptr << " (" << rbr::detail::type_name<Ptr>() << ')';
+      return os << "Source: " << ptr.get() << " (" << rbr::detail::type_name<Ptr>() << ')';
     }
   };
 #endif
