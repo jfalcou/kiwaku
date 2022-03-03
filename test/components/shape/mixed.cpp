@@ -14,16 +14,22 @@ TTS_CASE( "1D mixed shape constructor" )
   using namespace kwk::literals;
 
   auto s1 = kwk::extent(7);
-  TTS_CONSTEXPR_EQUAL(sizeof(s1), sizeof(std::ptrdiff_t) );
+  TTS_CONSTEXPR_EQUAL(sizeof(s1), sizeof(7) );
   TTS_EQUAL(s1.size()           , 1 );
   TTS_EQUAL(s1.numel()          , 7 );
   TTS_EQUAL(get<0>(s1)          , 7 );
 
-  auto s2 = kwk::extent_of<std::int16_t>(33);
+  auto s2 = kwk::extent<std::int16_t>(33);
   TTS_CONSTEXPR_EQUAL(sizeof(s2), sizeof(std::int16_t) );
   TTS_EQUAL(s2.size()           , 1  );
   TTS_EQUAL(s2.numel()          , 33 );
   TTS_EQUAL(get<0>(s2)          , 33 );
+
+  auto s2d = kwk::extent(std::int16_t{33});
+  TTS_CONSTEXPR_EQUAL(sizeof(s2d), sizeof(std::int16_t) );
+  TTS_EQUAL(s2d.size()           , 1  );
+  TTS_EQUAL(s2d.numel()          , 33 );
+  TTS_EQUAL(get<0>(s2d)          , 33 );
 
   auto s3 = kwk::extent(kwk::fixed<9>);
   TTS_CONSTEXPR_EQUAL(sizeof(s3), 1ULL);
@@ -31,7 +37,13 @@ TTS_CASE( "1D mixed shape constructor" )
   TTS_EQUAL(s3.numel()          , 9   );
   TTS_EQUAL(get<0>(s3)          , 9   );
 
-  auto s4 = kwk::extent_of<std::uint8_t>(11_c);
+  auto s3d = kwk::extent(kwk::fixed<std::int16_t{9}>);
+  TTS_CONSTEXPR_EQUAL(sizeof(s3d), 1ULL);
+  TTS_EQUAL(s3d.size()           , 1   );
+  TTS_EQUAL(s3d.numel()          , 9   );
+  TTS_EQUAL(get<0>(s3d)          , 9   );
+
+  auto s4 = kwk::extent<std::uint8_t>(11_c);
   TTS_CONSTEXPR_EQUAL(sizeof(s4), 1ULL);
   TTS_EQUAL(s4.size()           , 1   );
   TTS_EQUAL(s4.numel()          , 11  );
@@ -44,13 +56,13 @@ TTS_CASE( "2D partial shape constructor" )
 
   auto s1 = kwk::extent(7,9);
 
-  TTS_CONSTEXPR_EQUAL(sizeof(s1), 2*sizeof(std::ptrdiff_t) );
+  TTS_CONSTEXPR_EQUAL(sizeof(s1), 2*sizeof(7) );
   TTS_EQUAL(s1.size()           , 2   );
   TTS_EQUAL(s1.numel()          , 63  );
   TTS_EQUAL(get<0>(s1)          , 7   );
   TTS_EQUAL(get<1>(s1)          , 9   );
 
-  auto s2 = kwk::extent_of<std::int16_t>(9,3);
+  auto s2 = kwk::extent<std::int16_t>(9,3);
 
   TTS_CONSTEXPR_EQUAL(sizeof(s2), 2*sizeof(std::int16_t) );
   TTS_EQUAL(s2.size()           , 2   );
@@ -66,7 +78,7 @@ TTS_CASE( "2D partial shape constructor" )
   TTS_EQUAL(get<0>(s3)          , 5   );
   TTS_EQUAL(get<1>(s3)          , 8   );
 
-  auto s4 = kwk::extent_of<std::int16_t>(5, 9_c);
+  auto s4 = kwk::extent<std::int16_t>(5, 9_c);
 
   TTS_CONSTEXPR_EQUAL(sizeof(s4), sizeof(std::int16_t) );
   TTS_EQUAL(s4.size()           , 2   );
@@ -89,14 +101,14 @@ TTS_CASE( "3D partial shape constructor" )
 
   auto s1 = kwk::extent(7,9,11);
 
-  TTS_CONSTEXPR_EQUAL(sizeof(s1), 3*sizeof(std::ptrdiff_t) );
+  TTS_CONSTEXPR_EQUAL(sizeof(s1), 3*sizeof(7) );
   TTS_EQUAL(s1.size()           , 3   );
   TTS_EQUAL(s1.numel()          , 693 );
   TTS_EQUAL(get<0>(s1)          , 7   );
   TTS_EQUAL(get<1>(s1)          , 9   );
   TTS_EQUAL(get<2>(s1)          , 11  );
 
-  auto s2 = kwk::extent_of<std::int16_t>(9,3,7);
+  auto s2 = kwk::extent<std::int16_t>(9,3,7);
 
   TTS_CONSTEXPR_EQUAL(sizeof(s2), 3*sizeof(std::int16_t) );
   TTS_EQUAL(s2.size()           , 3   );
@@ -150,7 +162,7 @@ TTS_CASE( "3D partial shape constructor" )
   TTS_EQUAL(get<1>(s7)          , 9   );
   TTS_EQUAL(get<2>(s7)          , 11  );
 
-  auto s8 = kwk::extent_of<std::int16_t>(7_c,9,11_c);
+  auto s8 = kwk::extent<std::int16_t>(7_c,9,11_c);
 
   TTS_CONSTEXPR_EQUAL(sizeof(s8), sizeof(std::int16_t) );
   TTS_EQUAL(s8.size()           , 3   );

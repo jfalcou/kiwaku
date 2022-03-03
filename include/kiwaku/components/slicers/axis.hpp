@@ -14,8 +14,9 @@ namespace kwk::detail
 {
   struct axis
   {
-    axis& operator=(std::ptrdiff_t s) { size = s; return *this;}
-    std::ptrdiff_t dims, size;
+    axis& operator=(std::size_t s) { size = s; return *this;}
+    std::size_t     dims;
+    std::ptrdiff_t  size;
   };
 
   template<typename Shape>

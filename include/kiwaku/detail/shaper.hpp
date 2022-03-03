@@ -55,7 +55,7 @@ namespace kwk::detail
   template<typename SizeType> struct shaper<SizeType>
   {
     using size_type = SizeType;
-    using type = shaper<SizeType>;
+    using type      = shaper<SizeType>;
 
     static constexpr auto             size_map()  { return index_list{}; }
     static constexpr std::ptrdiff_t   size()      { return 0; }
@@ -72,6 +72,8 @@ namespace kwk::detail
     constexpr shaper<SizeType,dyn_> operator()()           const { return {*this, 0}; }
     constexpr shaper<SizeType,fix_> operator[](SizeType i) const { return {*this, i}; }
   };
+
+  template<int U> struct to_dyn_ { using type = detail::dyn_; };
 }
 
 namespace kwk
@@ -84,12 +86,12 @@ namespace kwk
   inline constexpr auto _3D     = _2D();
   inline constexpr auto _4D     = _3D();
 
-  template<int U> struct to_dyn_ { using type = detail::dyn_; };
-
   // Dynamic N-dimension shaper
   template<std::size_t N>
   inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...> const&) constexpr
                               {
-                                return detail::shaper<std::ptrdiff_t, typename to_dyn_<I>::type...>{};
+                                return detail::shaper < std::ptrdiff_t
+                                                      , typename detail::to_dyn_<I>::type...
+                                                      >{};
                               }(std::make_index_sequence<N>{});
 }

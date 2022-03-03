@@ -12,6 +12,13 @@
 
 namespace kwk
 {
+  namespace detail
+  {
+    template<typename T>      struct  to_int { using type = T; };
+    template<typename T, T N> struct  to_int<std::integral_constant<T,N>> { using type = T; };
+    template<typename T>      using   to_int_t = typename to_int<T>::type;
+  }
+
   /**
     @ingroup utility
     @brief Provides a short-cut to define a `std::integral_constant`instance from a literal integer

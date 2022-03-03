@@ -9,6 +9,7 @@
 
 #include <kiwaku/components/slicers/axis.hpp>
 #include <kiwaku/components/stride.hpp>
+#include <kiwaku/options/fixed.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <kiwaku/detail/assert.hpp>
 #include <kiwaku/detail/shaper.hpp>
@@ -383,16 +384,16 @@ namespace kwk
   }
 
   template<typename SizeType, typename... Ds>
-  constexpr auto extent_of(Ds... ds) noexcept
+  constexpr auto extent(Ds... ds) noexcept
   {
     // Compute the necessary constructor parameters
-    int   i = -1;
+    std::size_t i = -1;
     auto  v = kumi::fold_right
               ( [&]<typename T>(auto acc, T m)
                 {
                   i++;
                   if constexpr(std::integral<T>)
-                    return push_back(acc, detail::axis{i,static_cast<SizeType>(m)});
+                    return push_back(acc, detail::axis{i,static_cast<std::ptrdiff_t>(m)});
                   else
                     return acc;
                 }
@@ -409,8 +410,9 @@ namespace kwk
                       );
   }
 
-  template<typename... Ds> constexpr auto extent(Ds... ds) noexcept
+  template<typename D0, typename... Ds> constexpr auto extent(D0 d0, Ds... ds) noexcept
   {
-    return extent_of<std::ptrdiff_t>(ds...);
+    using type_t = std::common_type_t<detail::to_int_t<D0>, detail::to_int_t<Ds>...>;
+    return extent<type_t, D0, Ds...>(d0, ds...);
   }
 }
