@@ -20,13 +20,13 @@ namespace kwk
     template<std::convertible_to<std::ptrdiff_t> T>
     auto operator=(T s) const noexcept
     {
-      return (*this = of_size(s));
+      return of_size(s);
     }
 
     // Extent from of_size(...)
     template<auto Shaper> auto operator=(shape<Shaper> const& s) const noexcept
     {
-      return rbr::option<size_,shape<Shaper>>{s};
+      return s;
     }
 
     // Display
@@ -39,7 +39,7 @@ namespace kwk
 
   /**
     @ingroup  options
-    @brief    Multi-dimensional size for container
+    @brief    Keyword for accessing shape options
    **/
   inline constexpr size_ size = {};
 }

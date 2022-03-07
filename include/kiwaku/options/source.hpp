@@ -15,14 +15,16 @@ namespace kwk
   struct data_source : rbr::any_keyword<data_source>
   {
     // Raw pointers
-    template<typename Ptr> auto operator=(Ptr p) const noexcept
+    template<typename Ptr>
+    constexpr auto operator=(Ptr p) const noexcept
     requires(std::is_pointer_v<Ptr>)
     {
       return rbr::option<data_source,Ptr>{p};
     }
 
     // ContiguousRange with .data()
-    template<typename Range> auto operator=(Range&& r) const noexcept
+    template<typename Range>
+    constexpr auto operator=(Range&& r) const noexcept
     requires requires(Range&& r) { r.data(); }
     {
       return (*this = r.data());
@@ -31,7 +33,7 @@ namespace kwk
     // Display
     template<typename Ptr> std::ostream& show(std::ostream& os, Ptr ptr) const
     {
-      return os << "Source: " << ptr.get() << " (" << rbr::detail::type_name<Ptr>() << ')';
+      return os << "Source: " << ptr << " (" << rbr::detail::type_name<Ptr>() << ')';
     }
   };
 #endif

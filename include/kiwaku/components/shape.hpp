@@ -21,6 +21,8 @@
 
 namespace kwk
 {
+  struct size_;
+
   //================================================================================================
   // Shape type
   //================================================================================================
@@ -44,6 +46,11 @@ namespace kwk
     static constexpr bool is_dynamic        = storage_size >= 1;
     static constexpr bool is_fully_dynamic  = storage_size == static_size;
     static constexpr bool is_fully_static   = storage_size == 0;
+
+    using stored_value_type = shape<Shaper>;
+    using keyword_type      = size_;
+
+    constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     //==============================================================================================
     // Default Constructor
