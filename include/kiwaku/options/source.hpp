@@ -8,6 +8,9 @@
 #pragma once
 
 #include <kiwaku/detail/raberu.hpp>
+#include <kiwaku/options/source/ptr_source.hpp>
+#include <kiwaku/options/source/range_source.hpp>
+#include <kiwaku/concept/range.hpp>
 
 namespace kwk
 {
@@ -15,25 +18,23 @@ namespace kwk
   struct data_source : rbr::any_keyword<data_source>
   {
     // Raw pointers
-    template<typename Ptr>
-    constexpr auto operator=(Ptr p) const noexcept
-    requires(std::is_pointer_v<Ptr>)
+    template<typename Ptr> constexpr auto operator=(Ptr* p) const noexcept
     {
-      return rbr::option<data_source,Ptr>{p};
+      return ptr_source{p};
     }
 
     // ContiguousRange with .data()
-    template<typename Range>
-    constexpr auto operator=(Range&& r) const noexcept
-    requires requires(Range&& r) { r.data(); }
+    template<kwk::concepts::contiguous_range R> constexpr auto operator=(R&& r) const noexcept
     {
-      return (*this = r.data());
+      return range_source{r.data(), r.end() - r.begin()};
     }
 
     // Display
-    template<typename Ptr> std::ostream& show(std::ostream& os, Ptr ptr) const
+    template<typename Src> std::ostream& show(std::ostream& os, Src src) const
     {
-      return os << "Source: " << ptr << " (" << rbr::detail::type_name<Ptr>() << ')';
+      return os << "Source: " << src.as_span().get()
+                              << " (" << rbr::detail::type_name<Src>() << ") "
+                              << " - shape: " << src.default_shape();
     }
   };
 #endif
