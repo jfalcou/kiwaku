@@ -428,6 +428,13 @@ namespace rbr
   template<typename Settings, auto Keyword, typename Default = unknown_key>
   using get_type_t = typename get_type<Settings,Keyword,Default>::type;
 
+  template<auto Keyword, concepts::option... Opts>
+  struct fetch : get_type<settings<Opts...>,Keyword>
+  {};
+
+  template<auto Keyword, concepts::option... Opts>
+  using fetch_t = typename fetch<Keyword,Opts...>::type;
+
   // Merge settings
   template<concepts::option... K1s, concepts::option... K2s>
   constexpr auto merge(settings<K1s...> const& opts, settings<K2s...> const& defs) noexcept
