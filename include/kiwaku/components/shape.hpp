@@ -417,7 +417,6 @@ namespace kwk
                       );
   }
 
-  template<typename... T> struct foo{};
   template<typename D0, typename... Ds> constexpr auto of_size(D0 d0, Ds... ds) noexcept
   {
     using type_t = std::common_type_t<detail::to_int_t<D0>, detail::to_int_t<Ds>...>;
