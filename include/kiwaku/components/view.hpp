@@ -28,6 +28,14 @@ namespace kwk
     constexpr view(rbr::settings<Opts...> const& params)
             : span_type{ params[kwk::source].as_span() }
     {}
+
+    constexpr auto settings() const noexcept
+    {
+      return rbr::merge ( rbr::settings(kwk::source = span_type::data())
+                        , rbr::settings(Os...)
+                        );
+    }
+
   };
 
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
