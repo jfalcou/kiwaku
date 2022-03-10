@@ -9,30 +9,44 @@
 
 #include <kiwaku/detail/raberu.hpp>
 #include <kiwaku/options/source/ptr_source.hpp>
+#include <kiwaku/options/source/array_source.hpp>
 #include <kiwaku/options/source/range_source.hpp>
 #include <kiwaku/concept/range.hpp>
+#include <array>
 
 namespace kwk
 {
 #if !defined(KWK_USE_DOXYGEN)
   struct data_source : rbr::any_keyword<data_source>
   {
-    // Raw pointers
-    template<typename Ptr> constexpr auto operator=(Ptr* p) const noexcept
+    // Options passthrough
+    constexpr auto operator=(rbr::concepts::option auto const& o) const noexcept { return o; }
+
+    template<concepts::contiguous_static_range Array>
+    constexpr auto operator=( Array&& a) const noexcept
     {
-      return ptr_source{p};
+      using a_t = std::remove_cvref_t<Array>;
+      return array_source < detail::value_type_of<a_t>
+                          , detail::static_size_v<a_t>
+                          >{std::data(KWK_FWD(a))};
     }
 
     // ContiguousRange with .data()
-    template<kwk::concepts::contiguous_range R> constexpr auto operator=(R&& r) const noexcept
+    constexpr auto operator=(concepts::contiguous_range auto&& r) const noexcept
     {
-      return range_source{r.data(), r.end() - r.begin()};
+      return range_source{std::data(KWK_FWD(r)), std::size(KWK_FWD(r))};
+    }
+
+    // Raw pointers
+    constexpr auto operator=(concepts::pointer auto&& p) const noexcept
+    {
+      return ptr_source{KWK_FWD(p)};
     }
 
     // Display
     template<typename Src> std::ostream& show(std::ostream& os, Src src) const
     {
-      return os << "Source: " << src.as_span().get()
+      return os << "Source: " << src.as_span().data()
                               << " (" << rbr::detail::type_name<Src>() << ") "
                               << " - shape: " << src.default_shape();
     }
@@ -41,7 +55,7 @@ namespace kwk
 
   /**
     @ingroup  options
-    @brief    Data source for kwk::view
-   **/
+    @brief    Data source setting for kwk::view
+  **/
   inline constexpr data_source source = {};
 }
