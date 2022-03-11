@@ -155,7 +155,15 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
  <a href="structkwk_1_1shape.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;auto Shaper&gt;<br />
-struct kwk::shape&lt; Shaper &gt;</div><dl class="tparams"><dt>Template Parameters</dt><dd>
+struct kwk::shape&lt; Shaper &gt;</div><p ><a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> defines and optimally stores a set of integral values representing the size of a container along a fixed number of dimensions (or <a class="el" href="glossary.html#glossary-rank">Rank</a>). Those sizes can be either specified at runtime or at compile-time. <a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> then provides an interface to query informations about those dimensions, sizes and compare shapes.</p>
+<p ><a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> can be defined in two ways:</p>
+<ul>
+<li><p class="startli">using the kwk::of_size function. This is the main process of building a size to pass to the constructor of containers as it leverages all the minutiae of defining the <a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> type in itself.</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> s3 = kwk::of_size(5,5,5);  <span class="comment">// 3D shape with dynamic rank</span></div>
+</div><!-- fragment --></li>
+</ul>
+<p >For most usage, <a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> is to be used as a whole. Acces to individual size along a given dimension is possible via a tuple-like access API based on compile-time indexes.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Shaper</td><td>An instance of an extent descriptor </td></tr>
   </table>

@@ -28,6 +28,24 @@ namespace kwk
     @ingroup containers
     @brief  N-dimensional shape
 
+    kwk::shape defines and optimally stores a set of integral values representing the size of a
+    container along a fixed number of dimensions (or @ref glossary-rank). Those sizes can be either
+    specified at runtime or at compile-time. kwk::shape then provides an interface to query
+    informations about those dimensions, sizes and compare shapes.
+
+    kwk::shape can be defined in two ways:
+
+      - using the kwk::of_size function. This is the main process of building a size to pass to
+        the constructor of containers as it leverages all the minutiae of defining the kwk::shape
+        type in itself.
+
+        @code
+        auto s3 = kwk::of_size(5,5,5);  // 3D shape with dynamic rank
+        @endcode
+
+    For most usage, kwk::shape is to be used as a whole. Acces to individual size along a given
+    dimension is possible via a tuple-like access API based on compile-time indexes.
+
     @tparam Shaper An instance of an extent descriptor
   **/
   //================================================================================================
