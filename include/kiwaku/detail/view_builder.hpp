@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/components/view/view_span.hpp>
+#include <kiwaku/container/view/view_span.hpp>
 #include <kiwaku/detail/raberu.hpp>
 #include <kiwaku/options.hpp>
 

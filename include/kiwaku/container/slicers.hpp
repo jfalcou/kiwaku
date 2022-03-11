@@ -7,11 +7,11 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/components/slicers/single_slice.hpp>
-#include <kiwaku/components/slicers/full_slicer.hpp>
-#include <kiwaku/components/slicers/unit_slicer.hpp>
-#include <kiwaku/components/slicers/slicer.hpp>
-#include <kiwaku/components/slicers/axis.hpp>
+#include <kiwaku/container/slicers/single_slice.hpp>
+#include <kiwaku/container/slicers/full_slicer.hpp>
+#include <kiwaku/container/slicers/unit_slicer.hpp>
+#include <kiwaku/container/slicers/slicer.hpp>
+#include <kiwaku/container/slicers/axis.hpp>
 #include <cstddef>
 
 namespace kwk

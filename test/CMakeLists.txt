@@ -7,5 +7,4 @@ include(make_unit)
 
 add_subdirectory(allocator)
 add_subdirectory(utility)
-##add_subdirectory(container)
-add_subdirectory(components)
+add_subdirectory(container)

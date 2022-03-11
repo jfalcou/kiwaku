@@ -6,7 +6,7 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/components/shape.hpp>
+#include <kiwaku/container/shape.hpp>
 #include <kiwaku/options/fixed.hpp>
 
 TTS_CASE( "1D mixed shape constructor" )

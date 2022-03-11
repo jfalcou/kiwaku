@@ -8,8 +8,8 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/components/stride.hpp>
-#include <kiwaku/components/shape.hpp>
+#include <kiwaku/container/stride.hpp>
+#include <kiwaku/container/shape.hpp>
 
 TTS_CASE( "Convert a 1D shape to 1D stride" )
 {

@@ -7,9 +7,9 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/components/slicers/unit_slicer.hpp>
-#include <kiwaku/components/slicers/slicer.hpp>
-#include <kiwaku/components/slicers/axis.hpp>
+#include <kiwaku/container/slicers/unit_slicer.hpp>
+#include <kiwaku/container/slicers/slicer.hpp>
+#include <kiwaku/container/slicers/axis.hpp>
 #include <type_traits>
 #include <cstddef>
 

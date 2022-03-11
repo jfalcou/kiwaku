@@ -11,9 +11,10 @@ namespace kwk
 {
   //================================================================================================
   /**
-    @defgroup components Container's Components
+    @defgroup containers Containers
   **/
   //================================================================================================
 }
-#include <kiwaku/components/shape.hpp>
-#include <kiwaku/components/slicers.hpp>
+#include <kiwaku/container/shape.hpp>
+#include <kiwaku/container/slicers.hpp>
+#include <kiwaku/container/view.hpp>

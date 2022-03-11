@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/components/shape.hpp>
+#include <kiwaku/container/shape.hpp>
 #include <kiwaku/detail/raberu.hpp>
 #include <concepts>
 

@@ -6,7 +6,7 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/components/shape.hpp>
+#include <kiwaku/container/shape.hpp>
 
 TTS_CASE( "swap behavior on 1D shape" )
 {

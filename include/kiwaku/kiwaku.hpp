@@ -8,6 +8,6 @@
 #pragma once
 
 #include <kiwaku/allocator.hpp>
-#include <kiwaku/components.hpp>
+#include <kiwaku/container.hpp>
 #include <kiwaku/concept.hpp>
 #include <kiwaku/options.hpp>

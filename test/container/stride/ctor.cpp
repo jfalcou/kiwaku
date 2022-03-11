@@ -6,7 +6,7 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/components/stride.hpp>
+#include <kiwaku/container/stride.hpp>
 
 TTS_CASE( "Building a 1D stride using stride" )
 {

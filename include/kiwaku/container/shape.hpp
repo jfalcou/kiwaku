@@ -7,8 +7,8 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/components/slicers/axis.hpp>
-#include <kiwaku/components/stride.hpp>
+#include <kiwaku/container/slicers/axis.hpp>
+#include <kiwaku/container/stride.hpp>
 #include <kiwaku/options/fixed.hpp>
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <kiwaku/detail/assert.hpp>

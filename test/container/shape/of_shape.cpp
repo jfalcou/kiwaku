@@ -7,7 +7,7 @@
 //==================================================================================================
 
 #include "test.hpp"
-#include "components/shape/shape.hpp"
+#include "container/shape/shape.hpp"
 
 TTS_CASE_TPL( "Building a nD shape with kwk::of_shape(a1,...,an)", sizes<10>)
 <typename T>(::tts::type<T>)
