@@ -1,4 +1,4 @@
-# Doxyfile 1.8.20
+# Doxyfile 1.9.4
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -30,7 +30,7 @@ EXTRACT_ALL            = NO
 ALWAYS_DETAILED_SEC    = NO
 EXTRACT_PRIVATE        = NO
 EXTRACT_STATIC         = NO
-EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_CLASSES  = NO
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
 HIDE_UNDOC_MEMBERS     = NO
@@ -55,7 +55,7 @@ SHOW_FILES             = NO
 SHOW_NAMESPACES        = YES
 QUIET                  = NO
 WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_UNDOCUMENTED   = NO
 INPUT                  = ../include
 INPUT                 += .
 RECURSIVE              = YES
@@ -63,6 +63,7 @@ EXCLUDE                = ../include/kiwaku/detail
 EXCLUDE_SYMBOLS        = detail
 EXCLUDE_SYMBOLS       += rbr
 EXCLUDE_SYMBOLS       += std
+EXCLUDE_SYMBOLS       += kumi
 EXAMPLE_PATH           = ../test
 
 #---------------------------------------------------------------------------
@@ -105,6 +106,4 @@ INCLUDE_PATH           = ../include
 PREDEFINED             = KWK_USE_DOXYGEN
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
-CLASS_DIAGRAMS         = NO
-
 GENERATE_LATEX         = NO

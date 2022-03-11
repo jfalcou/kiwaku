@@ -1,0 +1,220 @@
+<!-- HTML header for doxygen 1.8.20-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="generator" content="Doxygen 1.9.4"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Kiwaku: kwk::view_span::reset</title>
+  <!--<link href="tabs.css" rel="stylesheet" type="text/css"/> REMOVED BY DOXYSTRAP -->
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="dynsections.js"></script>
+  <script type="text/javascript" src="godbolt.js"></script>
+  <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js"></script>
+  <link href="doxygen.css" rel="stylesheet" type="text/css" />
+  <link href="doxystrap.css" rel="stylesheet" type="text/css"/>
+  <!-- DOXYSTRAP BLOCK CHANGE BEGIN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+  <script type="text/javascript" src="doxystrap.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- Custom input to switch branches -->
+  <script>
+    function switchBranchAction() {
+      var branch = document.getElementById("branch_input").value;
+      var form = this;
+      window.location.href = window.location.hostname + '/en/' + branch;
+    }
+  </script>
+  <!-- DOXYSTRAP BLOCK CHANGE END -->
+</head>
+<body>
+  <!-- DOXYSTRAP BLOCK CHANGE BEGIN -->
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+      <!--GITHUB RIBBON-->
+      <a id="forkme_banner" href="https://github.com/jfalcou/kiwaku">View on GitHub</a>
+      <!--GITHUB RIBBON-->
+        <a href="index.html" class="navbar-brand">Kiwaku 0.1-beta</a>
+      </div>
+    </div>
+  </nav>
+  <!-- DOXYSTRAP BLOCK CHANGE END -->
+  <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+    <!-- DOXYSTRAP BLOCK CHANGE BEGIN -->
+    <div class="content" id="content">
+      <div class="container">
+        <div id="titlearea">
+          <table cellspacing="0" cellpadding="0">
+            <tbody>
+              <tr style="height: 56px;">
+                <td id="projectlogo"><a href="index.html"><img alt="Logo" src="logo.png" /></a>
+                </td>
+                <td id="projectalign" style="padding-left: 0.5em;">
+                  <div id="projectname">Kiwaku
+                    &#160;<span id="projectnumber">0.1-beta</span>
+                  </div>
+                  <!-- BEGIN PROJECT_BRIEF--><div id="projectbrief">Containers Well Made</div><!--END PROJECT_BRIEF -->
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 panel " style="padding-bottom: 15px;">
+            <div style="margin-bottom: 15px;">
+              <!-- DOXYSTRAP BLOCK CHANGE END -->
+              <!-- end header part -->
+<!-- Generated by Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Search','.html');
+/* @license-end */
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Index</span></a></li>
+      <li><a href="pages.html"><span>Documentation</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>References</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.svg"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1view__span.html">view_span</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="contents">
+<table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+   <td valign="top">
+      <div class="navtab">
+        <table>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#adfc582f6e7dc6c3c0c6b972d5665dec0">begin</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#a479f685b72a2ca9d9d9d02f7d772ebfe">begin</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#aa2366cf9abe47363505ac020223b9a3e">cbegin</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#afa361f3eca88cf1f49b13d42bafe2ff3">const_iterator</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#aba5d8abf9f9788a695a61f1d3d682890">const_pointer</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#ab970ff639eb7a97176c90511ef736660">const_reference</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#a03318f1153e44df2a30d46eae7757653">iterator</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#ae8ff8d7883d9be32bf3d721ebb05c678">pointer</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#afd34bf6aeefb2ceb9a47dac469a3101f">reference</a></td></tr>
+          <tr><td class="navtabHL"><a class="navtab" href="structkwk_1_1view__span_ad9c5f224bd8fd6b5c95b811ab8c91840.html#ad9c5f224bd8fd6b5c95b811ab8c91840">reset</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span_afa1932d3ef95cb243abdbd014607b35b.html#afa1932d3ef95cb243abdbd014607b35b">swap</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#a0b573929408792a2c6bc461853a24ca0">value_type</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#ab042f58157008049953cb5baa258af20">view_span</a></td></tr>
+        </table>
+      </div>
+   </td>
+   <td valign="top" class="mempage">
+<a id="ad9c5f224bd8fd6b5c95b811ab8c91840" name="ad9c5f224bd8fd6b5c95b811ab8c91840"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9c5f224bd8fd6b5c95b811ab8c91840">&#9670;&nbsp;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Source &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structkwk_1_1view__span.html#ae8ff8d7883d9be32bf3d721ebb05c678">pointer</a> <a class="el" href="structkwk_1_1view__span.html">kwk::view_span</a>&lt; Source &gt;::reset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1view__span.html#ae8ff8d7883d9be32bf3d721ebb05c678">pointer</a>&#160;</td>
+          <td class="paramname"><em>ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replaces the managed pointer. </p>
+<p >Given <code>current_ptr</code>, the pointer that was managed by <code>*this</code>, performs the following actions, in this order:</p>
+<ul>
+<li>Saves a copy of the current pointer <code>old_ptr = current_ptr</code></li>
+<li>Overwrites the current pointer with the argument <code>current_ptr = ptr</code></li>
+<li>Returns the copy of the previous current pointer</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>pointer to a new pointer to manage </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The previous pointer value </dd></dl>
+
+</div>
+</div>
+    </td>
+  </tr>
+</table>
+</div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.20-->
+<!-- start footer part -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+<hr class="footer"/>
+</body>
+</html>
