@@ -5,20 +5,19 @@
     <tab type="mainpage" visible="yes" title="Index"/>
     <tab type="pages" visible="yes" title="Documentation">
       <tab type="pages" visible="yes" title="Documentation"/>
-<!--
       <tab type="user" visible="yes" title="Getting Started" url="about.html"/>
       <tab type="user" visible="yes" title="Tutorials" url="tutorials.html"/>
       <tab type="user" visible="yes" title="Rationale" url="rationale.html"/>
+<!--
       <tab type="user" visible="yes" title="Contributing" url="kwk-dev.html"/>
     -->
 </tab>
     <tab type="modules" visible="yes" title="Modules">
       <tab type="modules" visible="yes" title="Modules"  intro=""/>
-<!--      <tab type="user" visible="yes" title="Types &amp; Wrappers" url="group__simd.html"  intro=""/>
-      <tab type="user" visible="yes" title="Functions" url="@ref functions"  intro=""/>
-      <tab type="user" visible="yes" title="Constants" url="@ref constant"  intro=""/>
-      <tab type="user" visible="yes" title="Traits" url="@ref traits"  intro=""/>
--->
+      <tab type="user" visible="yes" title="Containers" url="@ref containers"  intro=""/>
+      <tab type="user" visible="yes" title="Options" url="@ref options"  intro=""/>
+      <tab type="user" visible="yes" title="Memory" url="@ref memory"  intro=""/>
+      <tab type="user" visible="yes" title="Utilities" url="@ref utility"  intro=""/>
     </tab>
     <tab type="namespaces" visible="yes" title="References">
       <tab type="namespaces" visible="yes" title="" intro=""/>

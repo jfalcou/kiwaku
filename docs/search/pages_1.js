@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['glossary_0',['Glossary',['../glossary.html',1,'']]]
+  ['changelog_0',['Changelog',['../changelog.html',1,'about']]]
 ];

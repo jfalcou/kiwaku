@@ -25,7 +25,7 @@ namespace kwk
 
   //================================================================================================
   /**
-    @ingroup components
+    @ingroup containers
     @brief  N-dimensional shape
 
     @tparam Shaper An instance of an extent descriptor

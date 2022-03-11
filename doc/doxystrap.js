@@ -17,6 +17,10 @@ $( document ).ready(function() {
   $('li > a[href="hierarchy.html"] > span').before("<i class='fa fa-sitemap'></i> ");
   $('li > a[href="inherits.html"] > span').before("<i class='fa fa-sitemap'></i> ");
   $('li > a[href="functions.html"] > span').before("<i class='fa fa-list'></i> ");
+  $('li > a[href="group__memory.html"] > span').before("<i class='fa fa-bar-chart'></i> ");
+  $('li > a[href="group__containers.html"] > span').before("<i class='fa fa-table'></i> ");
+  $('li > a[href="group__options.html"] > span').before("<i class='fa fa-gears'></i> ");
+  $('li > a[href="group__utility.html"] > span').before("<i class='fa fa-wrench'></i> ");
   $('img[src="ftv2ns.png"]').replaceWith('<span class="label label-danger">N</span> ');
   $('img[src="ftv2cl.png"]').replaceWith('<span class="label label-danger">C</span> ');
 

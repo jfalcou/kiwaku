@@ -25,9 +25,16 @@
 var menudata={children:[
 {text:"Index",url:"index.html"},
 {text:"Documentation",url:"pages.html",children:[
-{text:"Documentation",url:"pages.html"}]},
+{text:"Documentation",url:"pages.html"},
+{text:"Getting Started",url:"about.html"},
+{text:"Tutorials",url:"tutorials.html"},
+{text:"Rationale",url:"rationale.html"}]},
 {text:"Modules",url:"modules.html",children:[
-{text:"Modules",url:"modules.html"}]},
+{text:"Modules",url:"modules.html"},
+{text:"Containers",url:"group__containers.html"},
+{text:"Options",url:"group__options.html"},
+{text:"Memory",url:"group__memory.html"},
+{text:"Utilities",url:"group__utility.html"}]},
 {text:"References",url:"namespaces.html",children:[
 {text:"Namespace List",url:"namespaces.html"},
 {text:"Concepts",url:"concepts.html"},

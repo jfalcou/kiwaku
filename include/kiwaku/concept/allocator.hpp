@@ -14,8 +14,6 @@ namespace kwk::concepts
 {
   //================================================================================================
   /**
-    @ingroup concept
-
     @brief Allocator concept
 
     A **KIWAKU** Allocator is a @semiregular, @swappable type which provides:
