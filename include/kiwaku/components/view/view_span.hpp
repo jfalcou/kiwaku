@@ -13,7 +13,7 @@ namespace kwk
 {
   //================================================================================================
   /**
-    @ingroup components
+    @ingroup utility
     @brief Span-like kwk::view base class
 
     SCARY base class gathering all types and member functions pertaining to the upkeep, access and

@@ -24,20 +24,32 @@ namespace kwk
   struct size_;
 
   //================================================================================================
-  // Shape type
+  /**
+    @ingroup components
+    @brief  N-dimensional shape
+
+    @tparam Shaper An instance of an extent descriptor
+  **/
   //================================================================================================
   template<auto Shaper> struct shape
   {
     using                           size_map      = decltype(Shaper.size_map());
+
+    /// Number of dimensions
     static constexpr std::ptrdiff_t static_size   = Shaper.size();
     static constexpr std::ptrdiff_t storage_size  = static_size - size_map::size;
 
     struct empty_storage {};
+
+    /// Type of dimensions' size
     using size_type     = typename decltype(Shaper)::size_type;
-    using storage_type  = std::conditional_t< (storage_size!=0)
+
+    using storage_t     = std::conditional_t< (storage_size!=0)
                                             , std::array<size_type,storage_size>
                                             , empty_storage
                                             >;
+
+    /// Associated kwk::stride type
     using stride_type   = unit_stride<static_size>;
 
     //==============================================================================================
@@ -53,7 +65,11 @@ namespace kwk
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     //==============================================================================================
-    // Default Constructor
+    /**
+      @brief Default constructor
+
+      A default-constructed kwk::shape contains 0 element on its innermost dimension.
+    **/
     //==============================================================================================
     constexpr shape() noexcept
     {
@@ -62,7 +78,17 @@ namespace kwk
     }
 
     //==============================================================================================
-    // Construct from some amount of integral values
+    /**
+      @brief Constructor from set of integral values
+
+      Initializes current kwk::shape with the value in the variadic pack `s`.
+
+      This constructor will not take part in overload resolution if the number of values exceed
+      shape's number of dimensions, if the shape is not dynamic or if any value is not convertible
+      to kwk::shape::size_type.
+
+      @param  s Variadic pack of dimensions' size
+    **/
     //==============================================================================================
     template<typename... T>
     constexpr shape(T... s) noexcept
@@ -153,9 +179,7 @@ namespace kwk
       );
     }
 
-    //==============================================================================================
-    // Sequence interface
-    //==============================================================================================
+    /// Number of dimensions
     static constexpr std::ptrdiff_t size() noexcept { return static_size; }
 
     //==============================================================================================
@@ -169,6 +193,7 @@ namespace kwk
         return storage_[size_map::template locate<static_size>(I)];
     }
 
+    /// Swap shape's contents
     void swap( shape& other ) noexcept
     {
       storage_.swap( other.storage_ );
@@ -193,43 +218,42 @@ namespace kwk
     }
 */
     //==============================================================================================
-    // Shape interface
+    /**
+      @brief Number of non-trivial dimensions
+
+      Computes the number of non-trivial dimensions, i.e dimension with size equals to 1 and that
+      doesn't participate to the shape's extent.
+    **/
     //==============================================================================================
     constexpr std::ptrdiff_t nbdims() const noexcept
     {
-      if constexpr(static_size == 0)
+      if constexpr(static_size == 0)  return 0;
+      else  return [&]<std::size_t...I>( std::index_sequence<I...> const&)
       {
-        return 0;
-      }
-      else
-      {
-        return [&]<std::size_t...I>( std::index_sequence<I...> const&)
-        {
-          size_type m = this->get<0>() == 1 ? 0 : 1;
-          ((m = std::max(m, size_type(this->get<I>() == 1 ? 0 : 1+I))),...);
-          return m;
-        }(std::make_index_sequence<static_size>());
-      }
+        size_type m = this->get<0>() == 1 ? 0 : 1;
+        ((m = std::max(m, size_type(this->get<I>() == 1 ? 0 : 1+I))),...);
+        return m;
+      }(std::make_index_sequence<static_size>());
     }
 
+    //==============================================================================================
+    /**
+      @brief Number of elements
+
+      Computes the number of elements storable in current kwk::shape, i.e the product of all
+      dimensions' size.
+    **/
+    //==============================================================================================
     constexpr std::ptrdiff_t numel() const noexcept
     {
-      if constexpr(static_size == 0)
-      {
-        return 0;
-      }
-      else
-      {
-        return [&]<std::size_t...I>( std::index_sequence<I...> const&)
-        {
-          return (size_type{1} * ... * this->get<I>());
-        }(std::make_index_sequence<static_size>());
-      }
+      if constexpr(static_size == 0) return 0;
+      else return [&]<std::size_t...I>( std::index_sequence<I...> const&)
+          {
+            return (size_type{1} * ... * this->get<I>());
+          }(std::make_index_sequence<static_size>());
     }
 
-    //==============================================================================================
-    // Convert shape to the equivalent unit stride
-    //==============================================================================================
+    /// Conversion to kwk::stride
     constexpr auto as_stride() const requires(static_size > 0)
     {
       return stride<detail::unit_index_map<static_size>{}>(*this);
@@ -265,9 +289,7 @@ namespace kwk
       return compare( other , [](auto a, auto b) { return a>b;}, [](auto) { return true; } );
     }
 
-    //==============================================================================================
-    // I/O
-    //==============================================================================================
+    /// Stream insertion operator
     friend std::ostream& operator<<(std::ostream& os, shape const& s)
     {
       os << "[";
@@ -283,9 +305,9 @@ namespace kwk
       return os;
     }
 
-    storage_type storage_;
-
     private:
+    storage_t storage_;
+
     template<auto Shaper2, typename Comp, typename Check>
     constexpr bool compare( shape<Shaper2> const& other
                           , Comp const& comp, Check const& check
