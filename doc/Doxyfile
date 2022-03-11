@@ -11,7 +11,7 @@ PROJECT_LOGO           = logo.png
 OUTPUT_DIRECTORY       = ../docs
 CREATE_SUBDIRS         = NO
 BRIEF_MEMBER_DESC      = YES
-REPEAT_BRIEF           = YES
+REPEAT_BRIEF           = NO
 ABBREVIATE_BRIEF       = "The $name class" \
                          "The $name widget" \
                          "The $name file" \
