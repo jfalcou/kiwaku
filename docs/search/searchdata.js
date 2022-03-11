@@ -8,7 +8,7 @@ var indexSectionsWithContent =
   5: "ciprsv",
   6: "o",
   7: "cmo",
-  8: "cg",
+  8: "cgk",
   9: "k"
 };
 

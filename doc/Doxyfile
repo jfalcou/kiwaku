@@ -3,36 +3,76 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = "Kiwaku"
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = Kiwaku
 PROJECT_NUMBER         = 0.1-beta
 PROJECT_BRIEF          = "Containers Well Made"
 PROJECT_LOGO           = logo.png
 OUTPUT_DIRECTORY       = ../docs
 CREATE_SUBDIRS         = NO
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+ABBREVIATE_BRIEF       = "The $name class" \
+                         "The $name widget" \
+                         "The $name file" \
+                         is \
+                         provides \
+                         specifies \
+                         contains \
+                         represents \
+                         a \
+                         an \
+                         the
+ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = YES
 FULL_PATH_NAMES        = YES
 STRIP_FROM_PATH        =
 STRIP_FROM_INC_PATH    = ../include
+SHORT_NAMES            = NO
+JAVADOC_AUTOBRIEF      = NO
+JAVADOC_BANNER         = NO
+QT_AUTOBRIEF           = NO
+MULTILINE_CPP_IS_BRIEF = NO
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = YES
 TAB_SIZE               = 2
-ALIASES                = semiregular="<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>"
-ALIASES               += regular="<a href=\"https://en.cppreference.com/w/cpp/concepts/regular\">Regular</a>"
-ALIASES               += swappable="<a href=\"https://en.cppreference.com/w/cpp/concepts/swappable\">Swappable</a>"
+ALIASES                = "semiregular=<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>" \
+                         "regular=<a href=\"https://en.cppreference.com/w/cpp/concepts/regular\">Regular</a>" \
+                         "swappable=<a href=\"https://en.cppreference.com/w/cpp/concepts/swappable\">Swappable</a>"
+OPTIMIZE_OUTPUT_FOR_C  = NO
+OPTIMIZE_OUTPUT_JAVA   = NO
+OPTIMIZE_FOR_FORTRAN   = NO
+OPTIMIZE_OUTPUT_VHDL   = NO
+OPTIMIZE_OUTPUT_SLICE  = NO
+EXTENSION_MAPPING      =
 MARKDOWN_SUPPORT       = YES
+TOC_INCLUDE_HEADINGS   = 5
+AUTOLINK_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = NO
+CPP_CLI_SUPPORT        = NO
+SIP_SUPPORT            = NO
+IDL_PROPERTY_SUPPORT   = YES
+DISTRIBUTE_GROUP_DOC   = NO
+GROUP_NESTED_COMPOUNDS = NO
+SUBGROUPING            = YES
+INLINE_GROUPED_CLASSES = NO
+INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
+LOOKUP_CACHE_SIZE      = 0
 NUM_PROC_THREADS       = 1
 
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
 EXTRACT_ALL            = NO
-ALWAYS_DETAILED_SEC    = NO
 EXTRACT_PRIVATE        = NO
+EXTRACT_PRIV_VIRTUAL   = NO
+EXTRACT_PACKAGE        = NO
 EXTRACT_STATIC         = NO
 EXTRACT_LOCAL_CLASSES  = NO
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
+RESOLVE_UNNAMED_PARAMS = YES
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
@@ -41,69 +81,181 @@ INTERNAL_DOCS          = NO
 CASE_SENSE_NAMES       = YES
 HIDE_SCOPE_NAMES       = NO
 HIDE_COMPOUND_REFERENCE= NO
+SHOW_HEADERFILE        = YES
 SHOW_INCLUDE_FILES     = YES
 SHOW_GROUPED_MEMB_INC  = YES
+FORCE_LOCAL_INCLUDES   = NO
+INLINE_INFO            = YES
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = NO
 SORT_MEMBERS_CTORS_1ST = YES
 SORT_GROUP_NAMES       = YES
+SORT_BY_SCOPE_NAME     = NO
+STRICT_PROTO_MATCHING  = NO
 GENERATE_TODOLIST      = NO
 GENERATE_TESTLIST      = NO
 GENERATE_BUGLIST       = NO
 GENERATE_DEPRECATEDLIST= YES
 ENABLED_SECTIONS       =
+MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = NO
 SHOW_FILES             = NO
 SHOW_NAMESPACES        = YES
+FILE_VERSION_FILTER    =
+LAYOUT_FILE            =
+CITE_BIB_FILES         =
+
+#---------------------------------------------------------------------------
+# Configuration options related to warning and progress messages
+#---------------------------------------------------------------------------
 QUIET                  = NO
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = NO
-INPUT                  = ../include
-INPUT                 += .
+WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = YES
+WARN_NO_PARAMDOC       = YES
+WARN_AS_ERROR          = NO
+WARN_FORMAT            = "$file:$line: $text"
+WARN_LOGFILE           =
+
+#---------------------------------------------------------------------------
+# Configuration options related to the input files
+#---------------------------------------------------------------------------
+INPUT                  = ../include \
+                         .
+
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.cpp  \
+                         *.ipp  \
+                         *.hpp  \
+                         *.md
 RECURSIVE              = YES
 EXCLUDE                = ../include/kiwaku/detail
-EXCLUDE_SYMBOLS        = detail
-EXCLUDE_SYMBOLS       += rbr
-EXCLUDE_SYMBOLS       += std
-EXCLUDE_SYMBOLS       += kumi
+EXCLUDE_SYMLINKS       = NO
+EXCLUDE_PATTERNS       =
+EXCLUDE_SYMBOLS        = detail \
+                         rbr \
+                         std \
+                         kumi
 EXAMPLE_PATH           = ../test
+EXAMPLE_PATTERNS       = *
+EXAMPLE_RECURSIVE      = NO
+IMAGE_PATH             =
+INPUT_FILTER           =
+FILTER_PATTERNS        =
+FILTER_SOURCE_FILES    = NO
+FILTER_SOURCE_PATTERNS =
+USE_MDFILE_AS_MAINPAGE = index.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
 #---------------------------------------------------------------------------
 SOURCE_BROWSER         = NO
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = YES
+REFERENCED_BY_RELATION = NO
+REFERENCES_RELATION    = NO
+REFERENCES_LINK_SOURCE = YES
+SOURCE_TOOLTIPS        = YES
+USE_HTAGS              = NO
 VERBATIM_HEADERS       = NO
 
-#---------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 # Configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
 ALPHABETICAL_INDEX     = YES
+IGNORE_PREFIX          =
 
 #---------------------------------------------------------------------------
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
 HTML_OUTPUT            = ./
+HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = doxystrap-header.html
 HTML_FOOTER            = doxystrap-footer.html
+HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = doxystrap.css
-HTML_EXTRA_FILES       =  doxystrap.js \
-                          godbolt.js   \
-                          blacktocat.png \
-                          .nojekyll
-HTML_TIMESTAMP         = YES
+HTML_EXTRA_FILES       = doxystrap.js \
+                         godbolt.js \
+                         blacktocat.png \
+                         .nojekyll
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+HTML_TIMESTAMP         = NO
 HTML_DYNAMIC_MENUS     = NO
 HTML_DYNAMIC_SECTIONS  = NO
+HTML_INDEX_NUM_ENTRIES = 100
+GENERATE_DOCSET        = NO
+DOCSET_FEEDNAME        = "Doxygen generated docs"
+DOCSET_FEEDURL         =
+DOCSET_BUNDLE_ID       = org.doxygen.Project
+DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
+DOCSET_PUBLISHER_NAME  = Publisher
+GENERATE_HTMLHELP      = NO
+GENERATE_QHP           = NO
+GENERATE_ECLIPSEHELP   = NO
+DISABLE_INDEX          = NO
+GENERATE_TREEVIEW      = NO
+FULL_SIDEBAR           = NO
 ENUM_VALUES_PER_LINE   = 4
-
+TREEVIEW_WIDTH         = 250
+EXT_LINKS_IN_WINDOW    = NO
+OBFUSCATE_EMAILS       = YES
+HTML_FORMULA_FORMAT    = png
+FORMULA_FONTSIZE       = 10
+FORMULA_TRANSPARENT    = YES
+FORMULA_MACROFILE      =
 USE_MATHJAX            = YES
+MATHJAX_VERSION        = MathJax_2
 MATHJAX_FORMAT         = HTML-CSS
 MATHJAX_RELPATH        = https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1
 MATHJAX_EXTENSIONS     =
+MATHJAX_CODEFILE       =
 SEARCHENGINE           = YES
+SERVER_BASED_SEARCH    = NO
+EXTERNAL_SEARCH        = NO
+SEARCHENGINE_URL       =
+SEARCHDATA_FILE        = searchdata.xml
+EXTERNAL_SEARCH_ID     =
+EXTRA_SEARCH_MAPPINGS  =
 
+#---------------------------------------------------------------------------
+# Configuration options related to the LaTeX output
+#---------------------------------------------------------------------------
+GENERATE_LATEX         = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the preprocessor
+#---------------------------------------------------------------------------
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = ../include
+INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = KWK_USE_DOXYGEN
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
-GENERATE_LATEX         = NO
+TAGFILES               =
+
+#---------------------------------------------------------------------------
+# Configuration options related to the dot tool
+#---------------------------------------------------------------------------
+DIA_PATH               =
+HIDE_UNDOC_RELATIONS   = YES
+HAVE_DOT               = NO
+CLASS_GRAPH            = NO
+COLLABORATION_GRAPH    = NO
+GROUP_GRAPHS           = NO
+UML_LOOK               = NO
+DOT_UML_DETAILS        = NO
+DOT_WRAP_THRESHOLD     = 17
+TEMPLATE_RELATIONS     = NO
+INCLUDE_GRAPH          = NO
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+GRAPHICAL_HIERARCHY    = YES
+DIRECTORY_GRAPH        = NO
+DIR_GRAPH_MAX_DEPTH    = 1
