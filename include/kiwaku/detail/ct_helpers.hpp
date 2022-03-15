@@ -52,7 +52,7 @@ namespace kwk::detail
   // Find the value type of anything with a .data()
   //================================================================================================
   template<typename C>
-  using value_type_of = std::remove_cvref_t<decltype(*std::begin(std::declval<C&>()))>;
+  using value_type_of = std::remove_reference_t<decltype(*std::begin(std::declval<C&>()))>;
 
   //================================================================================================
   // for_each_args abstraction

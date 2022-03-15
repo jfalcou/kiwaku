@@ -12,12 +12,12 @@ namespace kwk
 {
   struct data_source;
 
-  template<typename T> struct range_source
+  template<typename T, typename Size> struct range_source
   {
-    using stored_value_type = range_source<T>;
+    using stored_value_type = range_source<T,Size>;
     using keyword_type      = data_source;
 
-    constexpr range_source(T* p = nullptr, std::ptrdiff_t s = 0) : data_(p), size_(s) {}
+    constexpr range_source(T* p = nullptr, Size s = 0) : data_(p), size_(s) {}
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
@@ -30,10 +30,10 @@ namespace kwk
 
     using span_type         = range_span;
 
-    constexpr auto as_span()        const noexcept { return range_span{data_}; }
-    constexpr auto default_shape()  const noexcept { return shape<_1D>(size_); }
+    constexpr auto as_span()        const noexcept { return range_span{data_};    }
+    constexpr auto default_shape()  const noexcept { return of_size<Size>(size_); }
 
-    T*              data_;
-    std::ptrdiff_t  size_;
+    T*    data_;
+    Size  size_;
   };
 }

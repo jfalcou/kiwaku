@@ -8,4 +8,4 @@
 add_subdirectory(shape)
 add_subdirectory(stride)
 # add_subdirectory(array)
-# add_subdirectory(view)
+add_subdirectory(view)

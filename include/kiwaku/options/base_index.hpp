@@ -56,7 +56,7 @@ namespace kwk
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
   };
 
-  struct base_index_ : rbr::any_keyword<base_index_>
+  struct base_index_ : rbr::as_keyword<base_index_>
   {
     template<std::ptrdiff_t Base>
     constexpr auto operator=(index_<Base> const& s) const noexcept { return s; }
@@ -72,7 +72,7 @@ namespace kwk
     }
 
     template<std::ptrdiff_t... N>
-    std::ostream& show(std::ostream& os, indexes_<N...> const& s) const
+    std::ostream& show(std::ostream& os, indexes_<N...> const& ) const
     {
       os << "Base Indexes: {";
       ((os << " " << std::showpos << N),...);

@@ -171,6 +171,36 @@ namespace rbr
     Value contents;
   };
 
+  // Base class for custom keyword
+  template<typename Keyword> struct as_keyword
+  {
+    using tag_type  = Keyword;
+    template<typename T> static constexpr bool accept()
+    {
+      if constexpr( requires(Keyword) { Keyword::accept(); } ) return Keyword::accept();
+      else return true;
+    }
+
+    template<typename V> std::ostream& show(std::ostream& os, V const& v) const
+    {
+      if constexpr(  requires(Keyword t) { t.show(os,v); } ) Keyword{}.show(os,v);
+      else os << '[' << detail::type_name<Keyword>() << ']';
+
+      return os << " : " << v << " (" << detail::type_name<V>() << ')';
+    }
+
+    template<typename Type>
+    constexpr auto operator|(Type&& v) const noexcept requires( accept<Type>() )
+    {
+      return detail::type_or_<Keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
+    }
+
+    template<typename Func> constexpr auto operator|(call<Func>&& v) const noexcept
+    {
+      return detail::type_or_<Keyword,call<Func>>{RBR_FWD(v)};
+    }
+  };
+
   // checked_keyword implementation
   template<typename Tag, typename Traits> struct checked_keyword
   {

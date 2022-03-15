@@ -51,16 +51,16 @@ namespace kwk
     using const_iterator  = const_pointer;
 
     /// Constructs a kwk::view_span from any source
-    view_span(Source src) : Source(src) {}
+    constexpr view_span(Source src) : Source(src) {}
 
     /// Returns an iterator to the beginning
-    iterator        begin()         { return Source::data(); }
+    constexpr iterator        begin()         { return Source::data(); }
 
     /// Returns an iterator to the beginning
-    const_iterator  begin()   const { return Source::data(); }
+    constexpr const_iterator  begin()   const { return Source::data(); }
 
     /// Returns a const iterator to the beginning
-    const_iterator  cbegin()  const { return Source::data(); }
+    constexpr const_iterator  cbegin()  const { return Source::data(); }
 
     /**
       @brief Replaces the managed pointer.
@@ -75,7 +75,7 @@ namespace kwk
       @param  ptr pointer to a new pointer to manage
       @return The previous pointer value
     **/
-    pointer reset(pointer ptr) noexcept { return std::exchange(Source::data, ptr); }
+    constexpr pointer reset(pointer ptr) noexcept { return std::exchange(Source::data, ptr); }
 
     /**
       @brief Swap contents of two compatible kwk::view_span
@@ -84,10 +84,8 @@ namespace kwk
       `std::same_as<base_t, typename OtherSource::base_t>` evaluates to `false`.
     **/
     template<typename OtherSource>
-    void swap( view_span<OtherSource>& other ) noexcept
-#if !defined(KWK_USE_DOXYGEN)
+    constexpr void swap( view_span<OtherSource>& other ) noexcept
     requires( std::same_as<base_t, typename OtherSource::base_t> )
-#endif
     {
       std::swap(Source::data, other.data);
     }

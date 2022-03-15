@@ -28,5 +28,5 @@ template<typename Size, typename Shape> inline void test_nD(Size const&, Shape c
   TTS_EQUAL(sh.size(), Size::value  );
 
   TTS_EQUAL(kwk::get<0>(sh)                   , 3            );
-  TTS_EQUAL(kwk::get<Shape::static_size-1>(sh), 3*Size::value);
+  TTS_EQUAL(kwk::get<Shape::static_nbdims-1>(sh), 3*Size::value);
 }

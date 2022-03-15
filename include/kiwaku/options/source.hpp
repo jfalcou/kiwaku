@@ -17,7 +17,7 @@
 namespace kwk
 {
 #if !defined(KWK_USE_DOXYGEN)
-  struct data_source : rbr::any_keyword<data_source>
+  struct data_source : rbr::as_keyword<data_source>
   {
     // Options passthrough
     constexpr auto operator=(rbr::concepts::option auto const& o) const noexcept { return o; }
@@ -25,7 +25,7 @@ namespace kwk
     template<concepts::contiguous_static_range Array>
     constexpr auto operator=( Array&& a) const noexcept
     {
-      using a_t = std::remove_cvref_t<Array>;
+      using a_t = std::remove_reference_t<Array>;
       return array_source < detail::value_type_of<a_t>
                           , detail::static_size_v<a_t>
                           >{std::data(KWK_FWD(a))};

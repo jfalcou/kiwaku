@@ -14,7 +14,7 @@
 namespace kwk
 {
 #if !defined(KWK_USE_DOXYGEN)
-  struct size_ : rbr::any_keyword<size_>
+  struct size_ : rbr::as_keyword<size_>
   {
     // Single integral -> 1D shape
     template<std::convertible_to<std::ptrdiff_t> T>
@@ -34,6 +34,17 @@ namespace kwk
     {
       return os << "Shape: " << s;
     }
+
+    // template<typename Type>
+    // constexpr auto operator|(Type&& v) const noexcept requires( accept<Type>() )
+    // {
+    //   return rbr::detail::type_or_<size_,std::remove_cvref_t<Type>>{KWK_FWD(v)};
+    // }
+
+    // template<typename Func> constexpr auto operator|(rbr::call<Func>&& v) const noexcept
+    // {
+    //   return rbr::detail::type_or_<size_,rbr::call<Func>>{KWK_FWD(v)};
+    // }
   };
 #endif
 

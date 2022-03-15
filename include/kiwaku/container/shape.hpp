@@ -24,38 +24,57 @@ namespace kwk
   struct size_;
 
   //================================================================================================
-  /**
-    @ingroup containers
-    @brief  N-dimensional shape
-
-    kwk::shape defines and optimally stores a set of integral values representing the size of a
-    container along a fixed number of dimensions (or @ref glossary-rank). Those sizes can be either
-    specified at runtime or at compile-time. kwk::shape then provides an interface to query
-    informations about those dimensions, sizes and compare shapes.
-
-    kwk::shape can be defined in two ways:
-
-      - using the kwk::of_size function. This is the main process of building a size to pass to
-        the constructor of containers as it leverages all the minutiae of defining the kwk::shape
-        type in itself.
-
-        @code
-        auto s3 = kwk::of_size(5,5,5);  // 3D shape with dynamic rank
-        @endcode
-
-    For most usage, kwk::shape is to be used as a whole. Acces to individual size along a given
-    dimension is possible via a tuple-like access API based on compile-time indexes.
-
-    @tparam Shaper An instance of an extent descriptor
-  **/
+  //! @ingroup containers
+  //! @brief  Fixed rank shape with mixeed size capability
+  //!
+  //! <hr/>
+  //! **Required header**:
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!  #include<kiwaku/container/shape.hpp>
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //! <hr/>
+  //!
+  //! kwk::shape defines and optimally stores a set of integral values representing the size of a
+  //! container along a fixed number of dimensions (or @ref glossary-rank). Those sizes can be
+  //! either specified at runtime or at compile-time. kwk::shape then provides an interface to
+  //! query informations about those dimensions, sizes and compare shapes.
+  //!
+  //! kwk::shape can be defined in two ways:
+  //!
+  //! - using the kwk::of_size function. This is the main process of building a size to pass to
+  //!   the constructor of containers as it leverages all the minutiae of defining the kwk::shape
+  //!   type in itself.
+  //!
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!   kwk::shape s1 = kwk::of_size(kwk::fixed<5>);                   // Rank 1 shape with static size
+  //!   kwk::shape s2 = kwk::of_size(n, m);                            // Rank 2 shape with dynamic sizes
+  //!   kwk::shape s3 = kwk::of_size(kwk::fixed<2>,kwk::fixed<2>, n);  // Rank 3 shape with mixed sizes
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //!   <br/>
+  //!
+  //! - defining the layout of the kwk::shape and manually intializing it. The description of the
+  //!   kwk::shape layout is done with the kwk::extent object or one of the pre-defined layouts.
+  //!
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!   kwk::shape< kwk::extent[5] >      s1;             // Rank 1 shape with static size
+  //!   kwk::shape< kwk::_2D >            s2(n, m);       // Rank 2 shape with dynamic sizes
+  //!   kwk::shape< kwk::extent[2][2]() > s3( _[2] = n);  // Rank 3 shape with mixed sizes
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //!
+  //!
+  //!
+  //! For most usage, kwk::shape is to be used as a whole. Acces to individual size along a given
+  //! dimension is possible via a tuple-like access API based on compile-time indexes.
+  //!
+  //! @tparam Shaper An instance of an shape descriptor
   //================================================================================================
   template<auto Shaper> struct shape
   {
     using                           size_map      = decltype(Shaper.size_map());
 
     /// Number of dimensions
-    static constexpr std::ptrdiff_t static_size   = Shaper.size();
-    static constexpr std::ptrdiff_t storage_size  = static_size - size_map::size;
+    static constexpr std::ptrdiff_t static_nbdims = Shaper.size();
+    static constexpr std::ptrdiff_t storage_size  = static_nbdims - size_map::size;
 
     struct empty_storage {};
 
@@ -68,13 +87,13 @@ namespace kwk
                                             >;
 
     /// Associated kwk::stride type
-    using stride_type   = unit_stride<static_size>;
+    using stride_type   = unit_stride<static_nbdims>;
 
     //==============================================================================================
     // NTTP Indirect interface
     //==============================================================================================
     static constexpr bool is_dynamic        = storage_size >= 1;
-    static constexpr bool is_fully_dynamic  = storage_size == static_size;
+    static constexpr bool is_fully_dynamic  = storage_size == static_nbdims;
     static constexpr bool is_fully_static   = storage_size == 0;
 
     using stored_value_type = shape<Shaper>;
@@ -111,14 +130,14 @@ namespace kwk
     template<typename... T>
     constexpr shape(T... s) noexcept
     requires  (   (std::is_convertible_v<T,size_type> && ...)
-              &&  (sizeof...(T) <= static_size)
+              &&  (sizeof...(T) <= static_nbdims)
               &&  is_fully_dynamic
               )
             : storage_{ static_cast<size_type>(s)... }
     {
-      if constexpr(sizeof...(T) < static_size)
+      if constexpr(sizeof...(T) < static_nbdims)
       {
-        for(std::size_t i = sizeof...(T);i<static_size;++i)
+        for(std::size_t i = sizeof...(T);i<static_nbdims;++i)
           storage_[i] = 1;
       }
     }
@@ -128,14 +147,14 @@ namespace kwk
     //==============================================================================================
     template<std::same_as<detail::axis>... Extent>
     constexpr shape(Extent... s) noexcept
-    requires( (sizeof...(Extent) <= static_size) && !is_fully_static )
+    requires( (sizeof...(Extent) <= static_nbdims) && !is_fully_static )
     {
       // Fill with 1s wherever applicable
-      detail::constexpr_for<static_size>
+      detail::constexpr_for<static_nbdims>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           if constexpr(!size_map::contains(I))
-            storage_[size_map::template locate<static_size>(I)] = 1;
+            storage_[size_map::template locate<static_nbdims>(I)] = 1;
         }
       );
 
@@ -146,7 +165,7 @@ namespace kwk
                       , "[kwk::shape] Semi-dynamic construction overwrite static shape"
                       );
 
-        storage_[size_map::template locate<static_size>(ext.dims)] = static_cast<size_type>(ext.size);
+        storage_[size_map::template locate<static_nbdims>(ext.dims)] = static_cast<size_type>(ext.size);
       };
 
       (fill(s),...);
@@ -158,9 +177,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShaper>
     constexpr shape( shape<OtherShaper> const& other ) noexcept
-              requires( OtherShaper.size() <= static_size && is_fully_dynamic)
+              requires( OtherShaper.size() <= static_nbdims && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherShaper.size(),static_size);
+      constexpr auto dz = std::min(OtherShaper.size(),static_nbdims);
 
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
@@ -169,7 +188,7 @@ namespace kwk
         }
       );
 
-      for(std::size_t i = dz; i < static_size;++i) storage_[i] = 1;
+      for(std::size_t i = dz; i < static_nbdims;++i) storage_[i] = 1;
     }
 
     //==============================================================================================
@@ -178,9 +197,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShaper>
     constexpr explicit  shape( shape<OtherShaper> const& other ) noexcept
-                        requires( OtherShaper.size() > static_size && is_fully_dynamic)
+                        requires( OtherShaper.size() > static_nbdims && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherShaper.size(),static_size);
+      constexpr auto dz = std::min(OtherShaper.size(),static_nbdims);
 
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
@@ -189,7 +208,7 @@ namespace kwk
         }
       );
 
-      detail::constexpr_for<shape<OtherShaper>::static_size - dz>
+      detail::constexpr_for<shape<OtherShaper>::static_nbdims - dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           storage_.back() *= other.template get<dz+I>();
@@ -198,7 +217,7 @@ namespace kwk
     }
 
     /// Number of dimensions
-    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
+    static constexpr std::ptrdiff_t size() noexcept { return static_nbdims; }
 
     //==============================================================================================
     // Element access
@@ -208,7 +227,7 @@ namespace kwk
       if constexpr(size_map::contains(I))
         return std::integral_constant<size_type,Shaper.at(I)>{};
       else
-        return storage_[size_map::template locate<static_size>(I)];
+        return storage_[size_map::template locate<static_nbdims>(I)];
     }
 
     /// Swap shape's contents
@@ -245,13 +264,13 @@ namespace kwk
     //==============================================================================================
     constexpr std::ptrdiff_t nbdims() const noexcept
     {
-      if constexpr(static_size == 0)  return 0;
+      if constexpr(static_nbdims == 0)  return 0;
       else  return [&]<std::size_t...I>( std::index_sequence<I...> const&)
       {
         size_type m = this->get<0>() == 1 ? 0 : 1;
         ((m = std::max(m, size_type(this->get<I>() == 1 ? 0 : 1+I))),...);
         return m;
-      }(std::make_index_sequence<static_size>());
+      }(std::make_index_sequence<static_nbdims>());
     }
 
     //==============================================================================================
@@ -264,17 +283,17 @@ namespace kwk
     //==============================================================================================
     constexpr std::ptrdiff_t numel() const noexcept
     {
-      if constexpr(static_size == 0) return 0;
+      if constexpr(static_nbdims == 0) return 0;
       else return [&]<std::size_t...I>( std::index_sequence<I...> const&)
           {
             return (size_type{1} * ... * this->get<I>());
-          }(std::make_index_sequence<static_size>());
+          }(std::make_index_sequence<static_nbdims>());
     }
 
     /// Conversion to kwk::stride
-    constexpr auto as_stride() const requires(static_size > 0)
+    constexpr auto as_stride() const requires(static_nbdims > 0)
     {
-      return stride<detail::unit_index_map<static_size>{}>(*this);
+      return stride<detail::unit_index_map<static_nbdims>{}>(*this);
     }
 
     //==============================================================================================
@@ -312,7 +331,7 @@ namespace kwk
     {
       os << "[";
 
-      detail::constexpr_for<static_size>
+      detail::constexpr_for<static_nbdims>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           os << " " << s.template get<I>();
@@ -323,27 +342,28 @@ namespace kwk
       return os;
     }
 
-    private:
     storage_t storage_;
+
+    private:
 
     template<auto Shaper2, typename Comp, typename Check>
     constexpr bool compare( shape<Shaper2> const& other
                           , Comp const& comp, Check const& check
                           ) const noexcept
     {
-      constexpr auto other_size = shape<Shaper2>::static_size;
+      constexpr auto other_size = shape<Shaper2>::static_nbdims;
 
-      if constexpr( static_size == other_size )
+      if constexpr( static_nbdims == other_size )
       {
         bool result = true;
         return [&]<std::size_t... I>(std::index_sequence<I...> const&)
         {
           return (result && ... && comp(this->get<I>(),other.template get<I>()) ) ;
-        }(std::make_index_sequence<static_size>());
+        }(std::make_index_sequence<static_nbdims>());
       }
       else
       {
-        constexpr auto d = std::min(static_size, other_size);
+        constexpr auto d = std::min(static_nbdims, other_size);
 
         // Compute equality over common slice of shape
         bool result = true;
@@ -353,17 +373,17 @@ namespace kwk
         }(std::make_index_sequence<d>());
 
         // Check that we have 1s everywhere in the other parts
-        if constexpr( static_size < other_size )
+        if constexpr( static_nbdims < other_size )
         {
-          constexpr auto sz = other_size - static_size;
+          constexpr auto sz = other_size - static_nbdims;
           return [&]<std::size_t... I>(std::index_sequence<I...> const&)
           {
-            return (result && ... && (other.template get<static_size+I>() == 1));
+            return (result && ... && (other.template get<static_nbdims+I>() == 1));
           }(std::make_index_sequence<sz>());
         }
-        else if constexpr( static_size > other_size )
+        else if constexpr( static_nbdims > other_size )
         {
-          constexpr auto sz = static_size - other_size;
+          constexpr auto sz = static_nbdims - other_size;
           return [&]<std::size_t... I>(std::index_sequence<I...> const&)
           {
             return (result && ... && check(this->template get<other_size+I>()));
@@ -399,7 +419,7 @@ namespace std
 
   template<auto Shaper>
   struct  tuple_size<kwk::shape<Shaper>>
-        : std::integral_constant<std::size_t,kwk::shape<Shaper>::static_size>
+        : std::integral_constant<std::size_t,kwk::shape<Shaper>::static_nbdims>
   {
   };
 }
@@ -430,6 +450,13 @@ namespace kwk
     }
   }
 
+  //================================================================================================
+  //! @brief Generates a kwk::shape from a list of sizes
+  //!
+  //!
+  //! @tparam SizeType  Integral type used to store sizes. If unspecified, `std::ptrdiff_t` is used.
+  //! @param  ds        Variadic pack of sizes
+  //================================================================================================
   template<typename SizeType, typename... Ds>
   constexpr auto of_size(Ds... ds) noexcept
   {

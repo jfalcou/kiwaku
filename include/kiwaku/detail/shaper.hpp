@@ -1,9 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #pragma once
 
@@ -78,14 +78,68 @@ namespace kwk::detail
 
 namespace kwk
 {
-  // Dynamic pre-rendered dimension shaper
-  inline constexpr auto extent  = detail::shaper<std::ptrdiff_t>{};
+  //================================================================================================
+  //! @var    extent
+  //! @brief  kwk::shape descriptor helper
+  //!
+  //! <hr/>
+  //! **Required header**:
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!  #include<kiwaku/container/shape.hpp>
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //! <hr/>
+  //!
+  //! kwk::extent is used to define the layout of a kwk::shape in terms of rank and potential
+  //! compile-time sizes.
+  //!
+  //! kwk::extent supports two member functions:
+  //!   - `operator()()`        that specifies that a given dimension is known at runtime
+  //!   - `operator[](auto N)`  that specifies that a given dimension has a compile-time value of N
+  //!
+  //! Both of these operators can be chained as needed to describe a given shape.
+  //!
+  //! Usage of kwk::extent is advised when one wants to properly type a given shape.
+  //! Other usage of shape descriptors are usually abstracted away via kwk::of_size.
+  //!
+  //! @groupheader{Associated variables}
+  //!
+  //! Some pre-made descriptor are provided for common cases:
+  //!
+  //!  - `kwk::_1D`     : Dynamic rank 1 kwk::shape descriptor
+  //!  - `kwk::_2D`     : Dynamic rank 2 kwk::shape descriptor
+  //!  - `kwk::_3D`     : Dynamic rank 3 kwk::shape descriptor
+  //!  - `kwk::_4D`     : Dynamic rank 4 kwk::shape descriptor
+  //!  - `kwk::_nD<N>`  : Dynamic rank N kwk::shape descriptor
+  //!
+  //! @groupheader{Examples}
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //! #include<kiwaku/container/shape.hpp>
+  //!
+  //! // Shape descriptors with runtime sizes
+  //! kwk::shape< kwk::extent()   > d1(6, 8); // Rank 1 shape with runtime size 6 x 8
+  //! kwk::shape< kwk::extent()() > d2;       // Rank 2 shape with runtime size 0 x 1
+  //!
+  //! // Shape descriptors with compile-time sizes
+  //! kwk::shape< kwk::extent[4]    > s1;   // Rank 1 shape with compile-time size 4
+  //! kwk::shape< kwk::extent[2][2] > s2;   // Rank 2 shape with compile-time sizes 2 x 2
+  //!
+  //! // Shape descriptor mixing runtime and compile-time sizes
+  //! kwk::shape< kwk::extent[3]()[3]() > h;  // Rank 4 shape with size 3 x 1 x 3 x 1
+  //!
+  //! // Pre-made descriptors
+  //! kwk::shape< kwk::_2D    > p1; // Rank 2 shape with default runtime size
+  //! kwk::shape< kwk::_nD<7> > p2; // Rank 7 shape with default runtime size
+  //! kwk::shape< kwk::_3D[3] > h;  // Rank 4 shape with size 0 x 1 x 1 x 3
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //!
+  //================================================================================================
+  inline constexpr detail::shaper<std::ptrdiff_t> extent  = {};
+
   inline constexpr auto _1D     = extent();
   inline constexpr auto _2D     = _1D();
   inline constexpr auto _3D     = _2D();
   inline constexpr auto _4D     = _3D();
 
-  // Dynamic N-dimension shaper
   template<std::size_t N>
   inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...> const&) constexpr
                               {
