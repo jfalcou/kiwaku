@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ptr_5fsource_0',['ptr_source',['../structkwk_1_1ptr__source.html',1,'kwk']]]
+  ['view_5fspan_0',['view_span',['../structkwk_1_1view__span.html',1,'kwk']]]
 ];

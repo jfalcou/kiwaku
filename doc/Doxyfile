@@ -36,9 +36,10 @@ MULTILINE_CPP_IS_BRIEF = NO
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = YES
 TAB_SIZE               = 2
-ALIASES                = "semiregular=<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>" \
-                         "regular=<a href=\"https://en.cppreference.com/w/cpp/concepts/regular\">Regular</a>" \
-                         "swappable=<a href=\"https://en.cppreference.com/w/cpp/concepts/swappable\">Swappable</a>"
+ALIASES                =  "semiregular=<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>" \
+                          "regular=<a href=\"https://en.cppreference.com/w/cpp/concepts/regular\">Regular</a>" \
+                          "swappable=<a href=\"https://en.cppreference.com/w/cpp/concepts/swappable\">Swappable</a>" \
+                          "groupheader{1}=<h2 class=\"groupheader\"> \1 </h2>"
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
@@ -73,8 +74,8 @@ EXTRACT_LOCAL_CLASSES  = NO
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
 RESOLVE_UNNAMED_PARAMS = YES
-HIDE_UNDOC_MEMBERS     = NO
-HIDE_UNDOC_CLASSES     = NO
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_CLASSES     = YES
 HIDE_FRIEND_COMPOUNDS  = NO
 HIDE_IN_BODY_DOCS      = NO
 INTERNAL_DOCS          = NO
@@ -130,7 +131,7 @@ FILE_PATTERNS          = *.cpp  \
                          *.hpp  \
                          *.md
 RECURSIVE              = YES
-EXCLUDE                = ../include/kiwaku/detail
+EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        = detail \

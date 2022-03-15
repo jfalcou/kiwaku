@@ -140,7 +140,6 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
@@ -151,52 +150,50 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </div><!--header-->
 <div class="contents">
 
-<p>N-dimensional shape.  
+<p>Fixed rank shape with mixeed size capability.  
  <a href="structkwk_1_1shape.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;auto Shaper&gt;<br />
-struct kwk::shape&lt; Shaper &gt;</div><p ><a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> defines and optimally stores a set of integral values representing the size of a container along a fixed number of dimensions (or <a class="el" href="glossary.html#glossary-rank">Rank</a>). Those sizes can be either specified at runtime or at compile-time. <a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> then provides an interface to query informations about those dimensions, sizes and compare shapes.</p>
-<p ><a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> can be defined in two ways:</p>
+struct kwk::shape&lt; Shaper &gt;</div><hr  />
+<p> <b>Required header</b>: </p><div class="fragment"><div class="line"><span class="preprocessor">#include&lt;kiwaku/container/shape.hpp&gt;</span></div>
+</div><!-- fragment --> <hr  />
+<p ><a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixeed size capability.">kwk::shape</a> defines and optimally stores a set of integral values representing the size of a container along a fixed number of dimensions (or <a class="el" href="glossary.html#glossary-rank">Rank</a>). Those sizes can be either specified at runtime or at compile-time. <a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixeed size capability.">kwk::shape</a> then provides an interface to query informations about those dimensions, sizes and compare shapes.</p>
+<p ><a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixeed size capability.">kwk::shape</a> can be defined in two ways:</p>
 <ul>
-<li><p class="startli">using the kwk::of_size function. This is the main process of building a size to pass to the constructor of containers as it leverages all the minutiae of defining the <a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> type in itself.</p>
-<div class="fragment"><div class="line"><span class="keyword">auto</span> s3 = kwk::of_size(5,5,5);  <span class="comment">// 3D shape with dynamic rank</span></div>
+<li><p class="startli">using the <a class="el" href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d" title="Generates a kwk::shape from a list of sizes.">kwk::of_size</a> function. This is the main process of building a size to pass to the constructor of containers as it leverages all the minutiae of defining the <a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixeed size capability.">kwk::shape</a> type in itself.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a> s1 = <a class="code hl_function" href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">kwk::of_size</a>(kwk::fixed&lt;5&gt;);                   <span class="comment">// Rank 1 shape with static size</span></div>
+<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a> s2 = <a class="code hl_function" href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">kwk::of_size</a>(n, m);                            <span class="comment">// Rank 2 shape with dynamic sizes</span></div>
+<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a> s3 = <a class="code hl_function" href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">kwk::of_size</a>(kwk::fixed&lt;2&gt;,kwk::fixed&lt;2&gt;, n);  <span class="comment">// Rank 3 shape with mixed sizes</span></div>
+<div class="ttc" id="anamespacekwk_a53305b69e29bdf55072efcacbd18609d_html_a53305b69e29bdf55072efcacbd18609d"><div class="ttname"><a href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">kwk::of_size</a></div><div class="ttdeci">constexpr auto of_size(Ds... ds) noexcept</div><div class="ttdoc">Generates a kwk::shape from a list of sizes.</div><div class="ttdef"><b>Definition:</b> shape.hpp:460</div></div>
+<div class="ttc" id="astructkwk_1_1shape_html"><div class="ttname"><a href="structkwk_1_1shape.html">kwk::shape</a></div><div class="ttdoc">Fixed rank shape with mixeed size capability.</div><div class="ttdef"><b>Definition:</b> shape.hpp:72</div></div>
+</div><!-- fragment --><p> <br  />
+</p>
+</li>
+<li><p class="startli">defining the layout of the <a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixeed size capability.">kwk::shape</a> and manually intializing it. The description of the <a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixeed size capability.">kwk::shape</a> layout is done with the <a class="el" href="namespacekwk_a0e22375561086d17560bc1123dcdd3c7.html#a0e22375561086d17560bc1123dcdd3c7" title="kwk::shape descriptor helper">kwk::extent</a> object or one of the pre-defined layouts.</p>
+<div class="fragment"><div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::extent[5] &gt;</a>      s1;             <span class="comment">// Rank 1 shape with static size</span></div>
+<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::_2D &gt;</a>            s2(n, m);       <span class="comment">// Rank 2 shape with dynamic sizes</span></div>
+<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a>&lt; <a class="code hl_variable" href="namespacekwk_a0e22375561086d17560bc1123dcdd3c7.html#a0e22375561086d17560bc1123dcdd3c7">kwk::extent</a>[2][2]() &gt; s3( _[2] = n);  <span class="comment">// Rank 3 shape with mixed sizes</span></div>
+<div class="ttc" id="anamespacekwk_a0e22375561086d17560bc1123dcdd3c7_html_a0e22375561086d17560bc1123dcdd3c7"><div class="ttname"><a href="namespacekwk_a0e22375561086d17560bc1123dcdd3c7.html#a0e22375561086d17560bc1123dcdd3c7">kwk::extent</a></div><div class="ttdeci">constexpr detail::shaper&lt; std::ptrdiff_t &gt; extent</div><div class="ttdoc">kwk::shape descriptor helper</div><div class="ttdef"><b>Definition:</b> shaper.hpp:134</div></div>
 </div><!-- fragment --></li>
 </ul>
-<p >For most usage, <a class="el" href="structkwk_1_1shape.html" title="N-dimensional shape.">kwk::shape</a> is to be used as a whole. Acces to individual size along a given dimension is possible via a tuple-like access API based on compile-time indexes.</p>
+<p >For most usage, <a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixeed size capability.">kwk::shape</a> is to be used as a whole. Acces to individual size along a given dimension is possible via a tuple-like access API based on compile-time indexes.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Shaper</td><td>An instance of an extent descriptor </td></tr>
+    <tr><td class="paramname">Shaper</td><td>An instance of an shape descriptor </td></tr>
   </table>
   </dd>
 </dl>
 </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1shape_1_1empty__storage.html">empty_storage</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac33ea81b54320570d0db3e914892fced"><td class="memItemLeft" align="right" valign="top"><a id="ac33ea81b54320570d0db3e914892fced" name="ac33ea81b54320570d0db3e914892fced"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>size_map</b> = decltype(Shaper.size_map())</td></tr>
-<tr class="separator:ac33ea81b54320570d0db3e914892fced"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab378b4291aba2eff564028d8e59f3083"><td class="memItemLeft" align="right" valign="top"><a id="ab378b4291aba2eff564028d8e59f3083" name="ab378b4291aba2eff564028d8e59f3083"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>size_type</b> = typename decltype(Shaper)::size_type</td></tr>
 <tr class="memdesc:ab378b4291aba2eff564028d8e59f3083"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of dimensions' size. <br /></td></tr>
 <tr class="separator:ab378b4291aba2eff564028d8e59f3083"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4c5b9d7c43cfb380cf6c7c715fe061a"><td class="memItemLeft" align="right" valign="top"><a id="ad4c5b9d7c43cfb380cf6c7c715fe061a" name="ad4c5b9d7c43cfb380cf6c7c715fe061a"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>storage_t</b> = std::conditional_t&lt;(storage_size!=0), std::array&lt; <a class="el" href="structkwk_1_1shape.html#ab378b4291aba2eff564028d8e59f3083">size_type</a>, storage_size &gt;, <a class="el" href="structkwk_1_1shape_1_1empty__storage.html">empty_storage</a> &gt;</td></tr>
-<tr class="separator:ad4c5b9d7c43cfb380cf6c7c715fe061a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12d3958117e33401284c8383fb2d59ab"><td class="memItemLeft" align="right" valign="top"><a id="a12d3958117e33401284c8383fb2d59ab" name="a12d3958117e33401284c8383fb2d59ab"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>stride_type</b> = <a class="el" href="structkwk_1_1stride.html">unit_stride</a>&lt; <a class="el" href="structkwk_1_1shape.html#ac35bc19ba7e5cd6e2aad8c17565bbff3">static_size</a> &gt;</td></tr>
-<tr class="memdesc:a12d3958117e33401284c8383fb2d59ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Associated <a class="el" href="structkwk_1_1stride.html">kwk::stride</a> type. <br /></td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>stride_type</b> = unit_stride&lt; <a class="el" href="structkwk_1_1shape.html#ac35bc19ba7e5cd6e2aad8c17565bbff3">static_size</a> &gt;</td></tr>
+<tr class="memdesc:a12d3958117e33401284c8383fb2d59ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Associated kwk::stride type. <br /></td></tr>
 <tr class="separator:a12d3958117e33401284c8383fb2d59ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affb36ea5168b0cf4df29c7991b615508"><td class="memItemLeft" align="right" valign="top"><a id="affb36ea5168b0cf4df29c7991b615508" name="affb36ea5168b0cf4df29c7991b615508"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>stored_value_type</b> = <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt;</td></tr>
-<tr class="separator:affb36ea5168b0cf4df29c7991b615508"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae01d32599dbe7ba482e874c39d5211c2"><td class="memItemLeft" align="right" valign="top"><a id="ae01d32599dbe7ba482e874c39d5211c2" name="ae01d32599dbe7ba482e874c39d5211c2"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>keyword_type</b> = size_</td></tr>
-<tr class="separator:ae01d32599dbe7ba482e874c39d5211c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -211,24 +208,9 @@ Static Public Attributes</h2></td></tr>
 static constexpr std::ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><b>static_size</b> = Shaper.size()</td></tr>
 <tr class="memdesc:ac35bc19ba7e5cd6e2aad8c17565bbff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of dimensions. <br /></td></tr>
 <tr class="separator:ac35bc19ba7e5cd6e2aad8c17565bbff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d67f0ba7ea365beec8768ee380d8e08"><td class="memItemLeft" align="right" valign="top"><a id="a9d67f0ba7ea365beec8768ee380d8e08" name="a9d67f0ba7ea365beec8768ee380d8e08"></a>
-static constexpr std::ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><b>storage_size</b> = <a class="el" href="structkwk_1_1shape.html#ac35bc19ba7e5cd6e2aad8c17565bbff3">static_size</a> - size_map::size</td></tr>
-<tr class="separator:a9d67f0ba7ea365beec8768ee380d8e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b356ea8e781a2c521f61d09e4e3efc6"><td class="memItemLeft" align="right" valign="top"><a id="a6b356ea8e781a2c521f61d09e4e3efc6" name="a6b356ea8e781a2c521f61d09e4e3efc6"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_dynamic</b> = storage_size &gt;= 1</td></tr>
-<tr class="separator:a6b356ea8e781a2c521f61d09e4e3efc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a409b86d709d6fe5e0b4bcbaee7025c"><td class="memItemLeft" align="right" valign="top"><a id="a4a409b86d709d6fe5e0b4bcbaee7025c" name="a4a409b86d709d6fe5e0b4bcbaee7025c"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_fully_dynamic</b> = storage_size == <a class="el" href="structkwk_1_1shape.html#ac35bc19ba7e5cd6e2aad8c17565bbff3">static_size</a></td></tr>
-<tr class="separator:a4a409b86d709d6fe5e0b4bcbaee7025c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a862dcfa26ebbe584006e5ad2f40731a0"><td class="memItemLeft" align="right" valign="top"><a id="a862dcfa26ebbe584006e5ad2f40731a0" name="a862dcfa26ebbe584006e5ad2f40731a0"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_fully_static</b> = storage_size == 0</td></tr>
-<tr class="separator:a862dcfa26ebbe584006e5ad2f40731a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6a024e2ad5199362dbf437da698203a2"><td class="memItemLeft" align="right" valign="top"><a id="a6a024e2ad5199362dbf437da698203a2" name="a6a024e2ad5199362dbf437da698203a2"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (keyword_type const &amp;) const noexcept</td></tr>
-<tr class="separator:a6a024e2ad5199362dbf437da698203a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29c84619679d5eed14057493fd18efc9"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1shape_a29c84619679d5eed14057493fd18efc9.html#a29c84619679d5eed14057493fd18efc9">shape</a> () noexcept</td></tr>
 <tr class="memdesc:a29c84619679d5eed14057493fd18efc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="structkwk_1_1shape_a29c84619679d5eed14057493fd18efc9.html#a29c84619679d5eed14057493fd18efc9">More...</a><br /></td></tr>
 <tr class="separator:a29c84619679d5eed14057493fd18efc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,25 +219,6 @@ requires ( (std::is_convertible_v&lt;T,<a class="el" href="structkwk_1_1shape.ht
 <tr class="memitem:aef8cbacac719d6e7d6d164ba83fccfa3"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structkwk_1_1shape_aef8cbacac719d6e7d6d164ba83fccfa3.html#aef8cbacac719d6e7d6d164ba83fccfa3">shape</a> (T... s) noexcept</td></tr>
 <tr class="memdesc:aef8cbacac719d6e7d6d164ba83fccfa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor from set of integral values.  <a href="structkwk_1_1shape_aef8cbacac719d6e7d6d164ba83fccfa3.html#aef8cbacac719d6e7d6d164ba83fccfa3">More...</a><br /></td></tr>
 <tr class="separator:aef8cbacac719d6e7d6d164ba83fccfa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adae402436a66785a2c5d6823978bb45d"><td class="memTemplParams" colspan="2"><a id="adae402436a66785a2c5d6823978bb45d" name="adae402436a66785a2c5d6823978bb45d"></a>
-template&lt;std::same_as&lt; detail::axis &gt;... Extent&gt; <br />
-requires ( (sizeof...(Extent) &lt;= <a class="el" href="structkwk_1_1shape.html#ac35bc19ba7e5cd6e2aad8c17565bbff3">static_size</a>) &amp;&amp; !is_fully_static )</td></tr>
-<tr class="memitem:adae402436a66785a2c5d6823978bb45d"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>shape</b> (Extent... s) noexcept</td></tr>
-<tr class="separator:adae402436a66785a2c5d6823978bb45d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00524cb2bed114eb28bc885eb9dc7c44"><td class="memTemplParams" colspan="2"><a id="a00524cb2bed114eb28bc885eb9dc7c44" name="a00524cb2bed114eb28bc885eb9dc7c44"></a>
-template&lt;auto OtherShaper&gt; <br />
-requires ( OtherShaper.size() &lt;= <a class="el" href="structkwk_1_1shape.html#ac35bc19ba7e5cd6e2aad8c17565bbff3">static_size</a> &amp;&amp; is_fully_dynamic)</td></tr>
-<tr class="memitem:a00524cb2bed114eb28bc885eb9dc7c44"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>shape</b> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; OtherShaper &gt; const &amp;other) noexcept</td></tr>
-<tr class="separator:a00524cb2bed114eb28bc885eb9dc7c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a542d5fe8904dd81c7e4ed96154bea2f3"><td class="memTemplParams" colspan="2"><a id="a542d5fe8904dd81c7e4ed96154bea2f3" name="a542d5fe8904dd81c7e4ed96154bea2f3"></a>
-template&lt;auto OtherShaper&gt; <br />
-requires ( OtherShaper.size() &gt; <a class="el" href="structkwk_1_1shape.html#ac35bc19ba7e5cd6e2aad8c17565bbff3">static_size</a> &amp;&amp; is_fully_dynamic)</td></tr>
-<tr class="memitem:a542d5fe8904dd81c7e4ed96154bea2f3"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>shape</b> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; OtherShaper &gt; const &amp;other) noexcept</td></tr>
-<tr class="separator:a542d5fe8904dd81c7e4ed96154bea2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee57394c67c4f58490e1f8fc5fa5939a"><td class="memTemplParams" colspan="2"><a id="aee57394c67c4f58490e1f8fc5fa5939a" name="aee57394c67c4f58490e1f8fc5fa5939a"></a>
-template&lt;std::size_t I&gt; </td></tr>
-<tr class="memitem:aee57394c67c4f58490e1f8fc5fa5939a"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> () const noexcept</td></tr>
-<tr class="separator:aee57394c67c4f58490e1f8fc5fa5939a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0531c0b3471d7fb2f21b41237a18f2f6"><td class="memItemLeft" align="right" valign="top"><a id="a0531c0b3471d7fb2f21b41237a18f2f6" name="a0531c0b3471d7fb2f21b41237a18f2f6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="el" href="structkwk_1_1shape.html">shape</a> &amp;other) noexcept</td></tr>
 <tr class="memdesc:a0531c0b3471d7fb2f21b41237a18f2f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap shape's contents. <br /></td></tr>
@@ -268,24 +231,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="e
 <tr class="separator:aa8081bc51b6238e76bd96e3fa05030e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33b6433d9e878c5e56564e089bed6138"><td class="memItemLeft" align="right" valign="top"><a id="a33b6433d9e878c5e56564e089bed6138" name="a33b6433d9e878c5e56564e089bed6138"></a>
 constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>as_stride</b> () const</td></tr>
-<tr class="memdesc:a33b6433d9e878c5e56564e089bed6138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversion to <a class="el" href="structkwk_1_1stride.html">kwk::stride</a>. <br /></td></tr>
+<tr class="memdesc:a33b6433d9e878c5e56564e089bed6138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversion to kwk::stride. <br /></td></tr>
 <tr class="separator:a33b6433d9e878c5e56564e089bed6138"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01ee082ede543e19ffd0c360e3f6757e"><td class="memTemplParams" colspan="2"><a id="a01ee082ede543e19ffd0c360e3f6757e" name="a01ee082ede543e19ffd0c360e3f6757e"></a>
-template&lt;auto Shaper2&gt; </td></tr>
-<tr class="memitem:a01ee082ede543e19ffd0c360e3f6757e"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper2 &gt; const &amp;other) const noexcept</td></tr>
-<tr class="separator:a01ee082ede543e19ffd0c360e3f6757e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa24dbc64a0300e3b3ca05887f615d753"><td class="memTemplParams" colspan="2"><a id="aa24dbc64a0300e3b3ca05887f615d753" name="aa24dbc64a0300e3b3ca05887f615d753"></a>
-template&lt;auto Shaper2&gt; </td></tr>
-<tr class="memitem:aa24dbc64a0300e3b3ca05887f615d753"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator!=</b> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper2 &gt; const &amp;other) const noexcept</td></tr>
-<tr class="separator:aa24dbc64a0300e3b3ca05887f615d753"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a878744b396b84342fe0564a6608d0dbc"><td class="memTemplParams" colspan="2"><a id="a878744b396b84342fe0564a6608d0dbc" name="a878744b396b84342fe0564a6608d0dbc"></a>
-template&lt;auto Shaper2&gt; </td></tr>
-<tr class="memitem:a878744b396b84342fe0564a6608d0dbc"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>contains</b> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper2 &gt; const &amp;other) const noexcept</td></tr>
-<tr class="separator:a878744b396b84342fe0564a6608d0dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4982c82a7ebb7fa970fa55ce029823ac"><td class="memTemplParams" colspan="2"><a id="a4982c82a7ebb7fa970fa55ce029823ac" name="a4982c82a7ebb7fa970fa55ce029823ac"></a>
-template&lt;auto Shaper2&gt; </td></tr>
-<tr class="memitem:a4982c82a7ebb7fa970fa55ce029823ac"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>strictly_contains</b> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper2 &gt; const &amp;other) const noexcept</td></tr>
-<tr class="separator:a4982c82a7ebb7fa970fa55ce029823ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>

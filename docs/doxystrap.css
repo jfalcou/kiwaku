@@ -598,6 +598,12 @@ div.ingroups {
     margin-top: 1em;
 }
 
+.compoundTemplParams {
+    color: #4665A2;
+    font-size: 120%;
+    line-height: 120%;
+}
+
 #forkme_banner
 {
   display: block;

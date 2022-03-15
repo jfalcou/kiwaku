@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['heap_5fallocator_0',['heap_allocator',['../structkwk_1_1heap__allocator.html',1,'kwk']]]
+  ['shallow_5fallocator_0',['shallow_allocator',['../structkwk_1_1shallow__allocator.html',1,'kwk']]],
+  ['shape_1',['shape',['../structkwk_1_1shape.html',1,'kwk']]]
 ];
