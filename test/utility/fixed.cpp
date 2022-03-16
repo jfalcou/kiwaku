@@ -17,7 +17,6 @@ TTS_CASE( "fixed<N> behavior - Explicit usage" )
 
 TTS_CASE( "fixed<N> behavior - Literal API" )
 {
-
   TTS_CONSTEXPR_EQUAL ( kwk::fixed<0>.value                     , 0 );
   TTS_CONSTEXPR_EQUAL ( kwk::fixed<short(-1)>.value             , short(-1) );
   TTS_CONSTEXPR_EQUAL ( kwk::fixed<0x1234567812345678ULL>.value , 0x1234567812345678ULL );

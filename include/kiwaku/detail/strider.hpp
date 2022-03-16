@@ -36,7 +36,7 @@ namespace kwk::detail
     using map_type                              = typename type_map<unit_type, V, Vs...>::type;
     static constexpr std::ptrdiff_t size        = map_type::size;
     static constexpr std::ptrdiff_t static_size = sizeof...(Vs)+1;
-    static constexpr bool is_explicit           = true;
+    static constexpr bool is_implicit           = false;
     static constexpr bool is_unit               = map_type::contains(0);
   };
 
@@ -46,7 +46,7 @@ namespace kwk::detail
     using map_type                              = detail::index_list<0>;
     static constexpr std::ptrdiff_t size        = map_type::size;
     static constexpr std::ptrdiff_t static_size = Dims;
-    static constexpr bool is_explicit           = false;
+    static constexpr bool is_implicit           = true;
     static constexpr bool is_unit               = true;
   };
 
