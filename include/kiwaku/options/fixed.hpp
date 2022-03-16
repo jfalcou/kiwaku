@@ -48,7 +48,7 @@ namespace kwk
     `std::integral_constant<signed short,-999>`.
   **/
   template<auto N>
-  inline constexpr std::integral_constant<decltype(detail::clamp<N>()),detail::clamp<N>()> fixed = {};
+  inline constexpr auto fixed = std::integral_constant<decltype(detail::clamp<N>()),detail::clamp<N>()>{};
 
   namespace literals
   {
