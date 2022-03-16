@@ -65,6 +65,10 @@ namespace kwk
       span_type::swap( static_cast<span_type&>(other) );
     }
 
+    //==============================================================================================
+    //! @name Indexing operations
+    //! @{
+    //==============================================================================================
     template<std::integral... Is> const_reference operator()(Is... is) const noexcept
     {
       return span_type::data()[ access_type::index(is...) ];
@@ -74,6 +78,9 @@ namespace kwk
     {
       return span_type::data()[ access_type::index(is...) ];
     }
+    //==============================================================================================
+    //! @}
+    //==============================================================================================
   };
 
   /// Retrieve size along the Ith dimension
@@ -83,6 +90,10 @@ namespace kwk
     return get<I>(v.shape());
   }
 
+  //================================================================================================
+  //! @name Deduction guides
+  //! @{
+  //================================================================================================
 
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
@@ -92,5 +103,9 @@ namespace kwk
   template<rbr::concepts::option... O>
   view(rbr::settings<O...> const&)
       -> view<typename rbr::fetch_t<kwk::source,O...>::span_type::base_type, O{}...>;
+
+  //================================================================================================
+  //! @}
+  //================================================================================================
 }
 

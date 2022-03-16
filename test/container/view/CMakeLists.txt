@@ -8,7 +8,7 @@ set ( SOURCES
       static.2d.cpp
       static.3d.cpp
       static.4d.cpp
-      # dynamic.1d.cpp
+      dynamic.1d.cpp
       # dynamic.2d.cpp
       # dynamic.3d.cpp
       # dynamic.4d.cpp

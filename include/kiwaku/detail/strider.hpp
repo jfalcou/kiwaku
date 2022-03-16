@@ -9,6 +9,7 @@
 
 #include <kiwaku/detail/ct_helpers.hpp>
 #include <type_traits>
+#include <cstdint>
 #include <cstddef>
 #include <utility>
 #include <array>

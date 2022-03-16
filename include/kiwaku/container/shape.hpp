@@ -90,7 +90,7 @@ namespace kwk
     using stride_type   = unit_stride<size_type, static_nbdims>;
 
     //==============================================================================================
-    // NTTP Indirect interface
+    // Info dump
     //==============================================================================================
     static constexpr bool is_dynamic        = storage_size >= 1;
     static constexpr bool is_fully_dynamic  = storage_size == static_nbdims;
