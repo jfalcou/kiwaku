@@ -13,7 +13,7 @@
 
 TTS_CASE( "1D index computation" )
 {
-  kwk::stride  st{2};
+  auto  st = kwk::with_stride(2);
 
   std::vector<std::ptrdiff_t> base(13);
   std::vector<std::ptrdiff_t> ref(13);
@@ -29,7 +29,7 @@ TTS_CASE( "1D index computation" )
 
 TTS_CASE( "2D Index computation" )
 {
-  kwk::stride st{2,6};
+  auto  st = kwk::with_stride(2,6);
 
   std::vector<std::ptrdiff_t> ref;
   std::vector<std::ptrdiff_t> output;
@@ -59,7 +59,7 @@ TTS_CASE( "2D Index computation" )
 
 TTS_CASE( "3D index computation" )
 {
-  kwk::stride st{2,6,30};
+  auto  st = kwk::with_stride(2,6,30);
 
   std::vector<std::ptrdiff_t> ref;
   std::vector<std::ptrdiff_t> output;
@@ -103,7 +103,7 @@ TTS_CASE( "3D index computation" )
 
 TTS_CASE( "4D index computation" )
 {
-  kwk::stride st{2,6,30,60};
+  auto  st = kwk::with_stride(2,6,30,60);
 
   std::vector<std::ptrdiff_t> ref;
   std::vector<std::ptrdiff_t> output;

@@ -9,6 +9,7 @@
 
 #include <kiwaku/detail/strider.hpp>
 #include <kiwaku/detail/kumi.hpp>
+#include <kiwaku/options/fixed.hpp>
 #include <ostream>
 #include <concepts>
 
@@ -20,22 +21,18 @@ namespace kwk
   struct stride
   {
     //==============================================================================================
-    // Sequence interface
+    // Info dump
     //==============================================================================================
-    using storage_type    = detail::stride_storage<Strider>;
-    using value_type      = typename storage_type::value_type;
+    using strider_type  = decltype(Strider);
+    using stride_map    = typename strider_type::map_type;
+    using value_type    = typename strider_type::size_type;
+    using storage_type  = detail::stride_storage<value_type,Strider>;
 
-    static constexpr std::ptrdiff_t static_size  = Strider.static_size;
-    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
+    static constexpr auto is_unit     = strider_type::is_unit;
+    static constexpr auto is_explicit = strider_type::is_explicit;
+    static constexpr auto static_size = strider_type::static_size;
 
-    //==============================================================================================
-    // NTTP Indirect interface
-    //==============================================================================================
-    using stride_type = stride<Strider>;
-    using stride_map  = typename decltype(Strider)::map_type;
-    static constexpr bool is_dynamic  = false;
-    static constexpr bool is_unit     = stride_map::contains(0);
-    static constexpr bool is_explicit = false;
+    static constexpr auto size() noexcept { return static_size; }
 
     //==============================================================================================
     // Element access
@@ -45,7 +42,7 @@ namespace kwk
       constexpr auto i = std::min<std::ptrdiff_t>(I,static_size-1);
 
       if constexpr(stride_map::contains(i))
-        return std::integral_constant<std::ptrdiff_t,1>{};
+        return std::integral_constant<value_type,1>{};
       else
         return storage_[stride_map::template locate<static_size>(i)];
     }
@@ -53,7 +50,7 @@ namespace kwk
     //==============================================================================================
     // Construct from some amount of integral values
     //==============================================================================================
-    template<std::convertible_to<std::ptrdiff_t>... Values>
+    template<std::convertible_to<value_type>... Values>
     constexpr stride(Values... v) noexcept : storage_{}
     {
       // Filter out the non-dynamic stride values
@@ -70,7 +67,7 @@ namespace kwk
       {
         detail::constexpr_for<sizeof...(Values),static_size-1>
         (
-          [&]<std::ptrdiff_t I>( std::integral_constant<std::ptrdiff_t,I> const&)
+          [&]<std::size_t I>( std::integral_constant<std::size_t,I> const&)
           {
             storage_[I] = storage_[sizeof...(Values)-1];
           }
@@ -103,11 +100,9 @@ namespace kwk
     //==============================================================================================
     // indexing interface
     //==============================================================================================
-    template<typename... Is>
+    template<std::convertible_to<value_type>... Is>
     constexpr auto  index(Is... is) const noexcept
-                    requires(  (  sizeof...(Is) <= Strider.static_size)
-                            && (  std::is_convertible_v<Is,std::ptrdiff_t> && ...)
-                            )
+                    requires( (  sizeof...(Is) <= Strider.static_size) )
     {
       return detail::linearize(std::make_index_sequence<sizeof...(Is)>(),*this,is...);
     }
@@ -134,66 +129,74 @@ namespace kwk
   //================================================================================================
   // Specialization for 1D unit stride
   //================================================================================================
-  template<> struct stride<detail::unit_index_map<1>{}>
+  template<auto Strider>
+  requires( !Strider.is_explicit && Strider.static_size == 1)
+  struct stride<Strider>
   {
     //==============================================================================================
-    // NTTP Indirect interface
+    // Info dump
     //==============================================================================================
-    using stride_type = stride<detail::unit_index_map<1>{}>;
-    static constexpr bool is_dynamic  = false;
-    static constexpr bool is_unit     = true;
-    static constexpr bool is_explicit = false;
+    using strider_type  = decltype(Strider);
+    using stride_map    = typename strider_type::map_type;
+    using value_type    = typename strider_type::size_type;
+    using storage_type  = detail::stride_storage<value_type,Strider>;
 
-    //==============================================================================================
-    // Sequence interface
-    //==============================================================================================
-    using value_type = detail::unit_type;
+    static constexpr auto is_unit     = strider_type::is_unit;
+    static constexpr auto is_explicit = strider_type::is_explicit;
+    static constexpr auto static_size = strider_type::static_size;
 
-    static constexpr std::ptrdiff_t size() noexcept { return 1; }
-    static constexpr std::ptrdiff_t static_size  = 1;
+    static constexpr auto size() noexcept { return static_size; }
 
     //==============================================================================================
     // Element access
     //==============================================================================================
     template<std::size_t I> constexpr detail::unit_type get() const noexcept
     {
-      return detail::unit_type{};
+      return {};
     }
 
     //==============================================================================================
-    // Construct from some amount of integral values
+    // Construct from whatever
     //==============================================================================================
     template<typename... Values> constexpr stride(Values&&...) noexcept {}
 
     //==============================================================================================
     // indexing interface
     //==============================================================================================
-    constexpr auto index(std::ptrdiff_t is) const noexcept { return is; }
+    constexpr auto index(std::convertible_to<value_type> auto is) const noexcept { return is; }
 
     void swap( stride& ) noexcept {}
 
     //==============================================================================================
     // I/O
     //==============================================================================================
-    friend std::ostream& operator<<(std::ostream& os, stride<detail::unit_index_map<1>{}> const&)
+    friend std::ostream& operator<<(std::ostream& os, stride const&)
     {
       return os << "[{ 1 }]";
     }
   };
 
   //================================================================================================
-  // Deduction guide
+  // Generator
   //================================================================================================
-  template<typename... V>
-  stride(V const&...) -> stride<detail::index_map<V...>{}>;
+  template<typename T, typename... S> constexpr auto with_stride(S... s)
+  {
+    return stride< detail::index_map<T,S...>{} >{s...};
+  }
+
+  template<typename... S> constexpr auto with_stride(S... s)
+  {
+    using type_t = std::common_type_t<detail::to_int_t<S>...>;
+    return with_stride<type_t,S...>(s...);
+  }
 
   //================================================================================================
   // Unit stride helpers
   //================================================================================================
-  template<std::size_t Dimensions>
-  using unit_stride = stride<detail::unit_index_map<Dimensions>{}>;
+  template<typename T, std::size_t Dimensions>
+  using unit_stride = stride<detail::implicit_index_map<T, Dimensions>{}>;
 
-  inline constexpr detail::unit_type const _1 = {};
+  inline constexpr detail::unit_type const unit_ = {};
 
   //================================================================================================
   // Structured binding supports

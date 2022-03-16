@@ -12,7 +12,7 @@
 #include <array>
 #include <vector>
 
-TTS_CASE( "Build a 3D view from a C array" )
+TTS_CASE( "Build a 4D view from a C array" )
 {
   using namespace kwk::literals;
 
@@ -53,7 +53,7 @@ TTS_CASE( "Build a 3D view from a C array" )
           TTS_EQUAL(w(i0,i1,i2,i3), ref[i0+kwk::dim<0>(w)*(i1+kwk::dim<1>(w)*(i2+kwk::dim<2>(w)*i3))]);
 };
 
-TTS_CASE( "Build a 3D view from std::array" )
+TTS_CASE( "Build a 4D view from std::array" )
 {
   using namespace kwk::literals;
 
@@ -95,7 +95,7 @@ TTS_CASE( "Build a 3D view from std::array" )
           TTS_EQUAL(w(i0,i1,i2,i3), ref[i0+kwk::dim<0>(w)*(i1+kwk::dim<1>(w)*(i2+kwk::dim<2>(w)*i3))]);
 };
 
-TTS_CASE( "Build a 3D view with constexpr shape settings from a ContiguousRange" )
+TTS_CASE( "Build a 4D view with constexpr shape settings from a ContiguousRange" )
 {
   using namespace kwk::literals;
 
@@ -138,7 +138,7 @@ TTS_CASE( "Build a 3D view with constexpr shape settings from a ContiguousRange"
 };
 
 
-TTS_CASE( "Build a 3D view with constexpr shape settings from a pointer" )
+TTS_CASE( "Build a 4D view with constexpr shape settings from a pointer" )
 {
   using namespace kwk::literals;
 

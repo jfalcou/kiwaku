@@ -18,35 +18,41 @@ namespace kwk::detail
   //==============================================================================================
   // Build the static storage of a stride depending on # of dimensions and unit dimensions
   //==============================================================================================
-  template<auto UnitIndices>
-  using stride_storage = std::array<std::ptrdiff_t, UnitIndices.static_size - UnitIndices.size>;
+  template<typename T, auto UnitIndices>
+  using stride_storage = std::array<T, UnitIndices.static_size - UnitIndices.size>;
 
   //==============================================================================================
   // Type representing a unit stride
   //==============================================================================================
-  using unit_type = std::integral_constant<std::ptrdiff_t,1>;
+  using unit_type = std::integral_constant<std::uint8_t,1>;
 
   //==============================================================================================
   // Compute an index_list from a pack of stride value types
   //==============================================================================================
-  template<typename V, typename... Vs> struct index_map
+  template<typename T, typename V, typename... Vs> struct index_map
   {
-    using map_type                    = typename type_map<unit_type, V, Vs...>::type;
+    using size_type                             = T;
+    using map_type                              = typename type_map<unit_type, V, Vs...>::type;
     static constexpr std::ptrdiff_t size        = map_type::size;
     static constexpr std::ptrdiff_t static_size = sizeof...(Vs)+1;
+    static constexpr bool is_explicit           = true;
+    static constexpr bool is_unit               = map_type::contains(0);
   };
 
-  template<std::size_t Dims> struct unit_index_map
+  template<typename T,std::size_t Dims> struct implicit_index_map
   {
+    using size_type                             = T;
     using map_type                              = detail::index_list<0>;
     static constexpr std::ptrdiff_t size        = map_type::size;
     static constexpr std::ptrdiff_t static_size = Dims;
+    static constexpr bool is_explicit           = false;
+    static constexpr bool is_unit               = true;
   };
 
   //==============================================================================================
   // Convert indexes to linear position
   //==============================================================================================
-  template<typename Data, std::size_t... Idx, typename... Is>
+  template<typename Data, std::size_t... Idx, std::integral... Is>
   constexpr auto linearize( std::index_sequence<Idx...> const&, Data const& d, Is... is ) noexcept
   {
     using std::get;

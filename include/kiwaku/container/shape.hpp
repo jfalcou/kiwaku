@@ -87,7 +87,7 @@ namespace kwk
                                             >;
 
     /// Associated kwk::stride type
-    using stride_type   = unit_stride<static_nbdims>;
+    using stride_type   = unit_stride<size_type, static_nbdims>;
 
     //==============================================================================================
     // NTTP Indirect interface
@@ -291,10 +291,7 @@ namespace kwk
     }
 
     /// Conversion to kwk::stride
-    constexpr auto as_stride() const requires(static_nbdims > 0)
-    {
-      return stride<detail::unit_index_map<static_nbdims>{}>(*this);
-    }
+    constexpr auto as_stride() const requires(static_nbdims > 0) { return stride_type(*this); }
 
     //==============================================================================================
     // Comparisons
