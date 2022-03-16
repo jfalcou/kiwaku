@@ -37,14 +37,13 @@ namespace kwk
     template<rbr::concepts::option... Opts>
     constexpr view(rbr::settings<Opts...> const& params)
             : access_type { params }
-            , span_type{ params[kwk::source].as_span() }
+            , span_type{ params[source].as_span() }
     {}
 
     constexpr auto settings() const noexcept
     {
-      return rbr::merge ( rbr::settings ( kwk::source = span_type::data()
-                                        , kwk::size   = access_type::shape()
-                                        )
+      return rbr::merge ( rbr::settings ( source = span_type::data()
+                                        , size   = access_type::shape())
                         , rbr::settings(Os...)
                         );
     }

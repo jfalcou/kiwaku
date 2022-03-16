@@ -224,10 +224,8 @@ namespace kwk
     //==============================================================================================
     template<std::size_t I> constexpr auto get() const noexcept
     {
-      if constexpr(size_map::contains(I))
-        return std::integral_constant<size_type,Shaper.at(I)>{};
-      else
-        return storage_[size_map::template locate<static_nbdims>(I)];
+      if constexpr(size_map::contains(I)) return Shaper.at(I);
+      else return storage_[size_map::template locate<static_nbdims>(I)];
     }
 
     /// Swap shape's contents

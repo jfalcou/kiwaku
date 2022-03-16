@@ -29,7 +29,7 @@ namespace kwk
     using storage_type  = detail::stride_storage<value_type,Strider>;
 
     static constexpr auto is_unit     = strider_type::is_unit;
-    static constexpr auto is_explicit = strider_type::is_explicit;
+    static constexpr auto is_implicit = strider_type::is_implicit;
     static constexpr auto static_size = strider_type::static_size;
 
     static constexpr auto size() noexcept { return static_size; }
@@ -130,7 +130,7 @@ namespace kwk
   // Specialization for 1D unit stride
   //================================================================================================
   template<auto Strider>
-  requires( !Strider.is_explicit && Strider.static_size == 1)
+  requires( Strider.is_implicit && Strider.static_size == 1)
   struct stride<Strider>
   {
     //==============================================================================================
@@ -142,7 +142,7 @@ namespace kwk
     using storage_type  = detail::stride_storage<value_type,Strider>;
 
     static constexpr auto is_unit     = strider_type::is_unit;
-    static constexpr auto is_explicit = strider_type::is_explicit;
+    static constexpr auto is_implicit = strider_type::is_implicit;
     static constexpr auto static_size = strider_type::static_size;
 
     static constexpr auto size() noexcept { return static_size; }

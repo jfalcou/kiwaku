@@ -29,7 +29,7 @@ namespace kwk
 
     template<rbr::concepts::option... Opts>
     constexpr   view_access(rbr::settings<Opts...> const& opts)
-              : shape_( opts[kwk::size | opts[kwk::source].default_shape()])
+              : shape_( opts[kwk::size | opts[source].default_shape()])
               , stride_( shape_.as_stride() )
     {}
 
@@ -79,7 +79,6 @@ namespace kwk
     constexpr auto index(Is... is) const noexcept { return Stride.index(is...); }
   };
 
-
   //================================================================================================
   // Optimization : runtime 1D shape + unit/implicit stride
   // Expected sizeof : sizeof(void*) + sizeof(shape[0])
@@ -94,7 +93,7 @@ namespace kwk
 
     template<rbr::concepts::option... Opts>
     constexpr   view_access(rbr::settings<Opts...> const& opts)
-              : shape_( opts[kwk::size | opts[kwk::source].default_shape()])
+              : shape_( opts[kwk::size | opts[source].default_shape()])
     {}
 
     constexpr auto        size()                    const noexcept  { return get<0>(shape_);  }
@@ -110,5 +109,38 @@ namespace kwk
     }
 
     shape_type shape_;
+  };
+
+  //================================================================================================
+  // Optimization : runtime 2D shape + unit & implicit stride
+  // Expected sizeof : sizeof(void*) + sizeof(shape)
+  //================================================================================================
+  template<auto Shape, auto Stride>
+  requires(   !Shape.is_fully_static  && Shape.size() == 2
+          &&  Stride.is_unit          && Stride.is_implicit
+          )
+  struct  view_access<Shape, Stride>
+  {
+    using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
+    using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
+    static constexpr auto static_nbdims = shape_type::static_nbdims;
+
+    template<rbr::concepts::option... Opts>
+    constexpr   view_access(rbr::settings<Opts...> const& opts)
+              : shape_( opts[kwk::size | opts[source].default_shape()])
+    {}
+
+    constexpr std::ptrdiff_t  size()    const noexcept  { return shape_.numel();              }
+    constexpr auto            shape()   const noexcept  { return shape_;                      }
+    constexpr decltype(auto)  stride()  const noexcept  { return stride_type{get<0>(shape_)}; }
+
+    constexpr void reshape( shape_type const& s ) { shape_ = s; }
+
+    constexpr auto index(auto i0)           const noexcept { return i0; }
+    constexpr auto index(auto i0, auto i1)  const noexcept { return i0 + i1*get<0>(shape_); }
+
+    constexpr void swap( view_access& other ) noexcept { shape_.swap( other.shape_ ); }
+
+    shape_type  shape_;
   };
 }
