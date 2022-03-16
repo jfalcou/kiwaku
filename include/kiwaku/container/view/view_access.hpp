@@ -16,8 +16,7 @@ namespace kwk
   //================================================================================================
   // Rank N general cases
   //================================================================================================
-  template<auto Shape, auto Stride> struct view_access;
-  /*
+  template<auto Shape, auto Stride> struct view_access
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
@@ -32,6 +31,9 @@ namespace kwk
               : shape_( opts[kwk::size | opts[source].default_shape()])
               , stride_( shape_.as_stride() )
     {}
+
+    constexpr auto index(auto i0)     const noexcept { return i0*get<0>(stride_);   }
+    constexpr auto index(auto... is)  const noexcept { return stride_.index(is...); }
 
     constexpr void reshape( shape_type const& s ) noexcept
     {
@@ -53,7 +55,7 @@ namespace kwk
 
     shape_type    shape_;
     stride_type   stride_;
-  };*/
+  };
 
   //================================================================================================
   // Rank N shape is fully static: no contents, only computation

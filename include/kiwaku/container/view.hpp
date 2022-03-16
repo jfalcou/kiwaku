@@ -15,8 +15,8 @@
 namespace kwk
 {
   template<typename Type, auto... Os>
-  struct  view  : detail::view_builder<Type,Os...>::access_type
-                , detail::view_builder<Type,Os...>::span_type
+  struct  view  : detail::view_builder<Type,Os...>::span_type
+                , detail::view_builder<Type,Os...>::access_type
   {
     using span_type   = typename detail::view_builder<Type,Os...>::span_type;
     using access_type = typename detail::view_builder<Type,Os...>::access_type;
@@ -36,8 +36,8 @@ namespace kwk
 
     template<rbr::concepts::option... Opts>
     constexpr view(rbr::settings<Opts...> const& params)
-            : access_type { params }
-            , span_type{ params[source].as_span() }
+            : span_type{ params[source].as_span() }
+            , access_type { params }
     {}
 
     constexpr auto settings() const noexcept

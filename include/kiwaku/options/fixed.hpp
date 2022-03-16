@@ -39,7 +39,13 @@ namespace kwk
 
   /**
     @ingroup utility
-    @brief Provides a short-cut to define a `std::integral_constant`instance from a literal integer
+    @brief Provides a short-cut to define a `std::integral_constant` instance from a literal integer
+
+    The underlying type is computed from the actual value to be the smallest fitting type.
+    This means, for example, that kwk::fixed<123> is an instance of
+	  `std::integral_constant<unsigned char,123>`. When negative values are used, signed integral
+    types are selected, i.e kwk::fixed<-999> is an instance of
+    `std::integral_constant<signed short,-999>`.
   **/
   template<auto N>
   inline constexpr std::integral_constant<decltype(detail::clamp<N>()),detail::clamp<N>()> fixed = {};
