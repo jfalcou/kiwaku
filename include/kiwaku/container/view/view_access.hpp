@@ -33,10 +33,7 @@ namespace kwk
     {}
 
     constexpr auto index(auto i0)     const noexcept { return i0*get<0>(stride_);   }
-    constexpr auto index(auto... is)  const noexcept
-    {
-      return stride_.index(is...);
-    }
+    constexpr auto index(auto... is)  const noexcept { return stride_.index(is...); }
 
     constexpr void reshape( shape_type const& s ) noexcept
     {

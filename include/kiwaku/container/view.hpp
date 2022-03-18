@@ -73,12 +73,16 @@ namespace kwk
     //! @name Indexing operations
     //! @{
     //==============================================================================================
-    template<std::integral... Is> const_reference operator()(Is... is) const noexcept
+    template<std::integral... Is>
+    requires(sizeof...(Is) <= static_nbdims)
+    const_reference operator()(Is... is) const noexcept
     {
       return span_type::data()[ access_type::index(is...) ];
     }
 
-    template<std::integral... Is> reference operator()(Is... is) noexcept
+    template<std::integral... Is>
+    requires(sizeof...(Is) <= static_nbdims)
+    reference operator()(Is... is) noexcept
     {
       return span_type::data()[ access_type::index(is...) ];
     }
