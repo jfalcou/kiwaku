@@ -31,5 +31,6 @@ namespace kwk
 
 #include <kiwaku/options/base_index.hpp>
 #include <kiwaku/options/fixed.hpp>
+#include <kiwaku/options/label.hpp>
 #include <kiwaku/options/source.hpp>
 #include <kiwaku/options/size.hpp>

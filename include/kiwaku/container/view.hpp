@@ -17,9 +17,11 @@ namespace kwk
   template<typename Type, auto... Os>
   struct  view  : detail::view_builder<Type,Os...>::span_type
                 , detail::view_builder<Type,Os...>::access_type
+                , detail::view_builder<Type,Os...>::meta_type
   {
-    using span_type   = typename detail::view_builder<Type,Os...>::span_type;
-    using access_type = typename detail::view_builder<Type,Os...>::access_type;
+    using span_type     = typename detail::view_builder<Type,Os...>::span_type;
+    using access_type   = typename detail::view_builder<Type,Os...>::access_type;
+    using meta_type     = typename detail::view_builder<Type,Os...>::meta_type;
 
     using iterator          = typename span_type::iterator;
     using const_iterator    = typename span_type::const_iterator;
@@ -36,14 +38,17 @@ namespace kwk
 
     template<rbr::concepts::option... Opts>
     constexpr view(rbr::settings<Opts...> const& params)
-            : span_type{ params[source].as_span() }
+            : span_type{ params[source | ptr_source<Type>{} ].as_span() }
             , access_type { params }
+            , meta_type { params }
     {}
 
     constexpr auto settings() const noexcept
     {
       return rbr::merge ( rbr::settings ( source = span_type::data()
-                                        , size   = access_type::shape())
+                                        , size   = access_type::shape()
+                                        , label  = meta_type::label_
+                                        )
                         , rbr::settings(Os...)
                         );
     }
