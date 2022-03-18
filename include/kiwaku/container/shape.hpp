@@ -172,12 +172,27 @@ namespace kwk
     }
 
     //==============================================================================================
+    // Constructs from a shape with same setup but different base type
+    //==============================================================================================
+    template<auto OtherShaper>
+    constexpr shape( shape<OtherShaper> const& other ) noexcept
+    requires( OtherShaper.size() == Shaper.size() && OtherShaper.is_compatible(Shaper))
+    {
+      detail::constexpr_for<size()>
+      ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
+        {
+          storage_[I] = other.storage_[I];
+        }
+      );
+    }
+
+    //==============================================================================================
     // Constructs from a shape with less dimensions.
     // Small shape are allowed implicitly in large one and are completed with 1s.
     //==============================================================================================
     template<auto OtherShaper>
     constexpr shape( shape<OtherShaper> const& other ) noexcept
-              requires( OtherShaper.size() <= static_nbdims && is_fully_dynamic)
+              requires( OtherShaper.size() < static_nbdims && is_fully_dynamic)
     {
       constexpr auto dz = std::min(OtherShaper.size(),static_nbdims);
 
@@ -218,6 +233,16 @@ namespace kwk
 
     /// Number of dimensions
     static constexpr std::ptrdiff_t size() noexcept { return static_nbdims; }
+
+    /// Assignment operators
+    template<auto OtherShaper>
+    constexpr shape& operator=( shape<OtherShaper> const& other ) noexcept
+    requires( OtherShaper.size() <= static_nbdims)
+    {
+      shape that(other);
+      swap(that);
+      return *this;
+    }
 
     //==============================================================================================
     // Element access

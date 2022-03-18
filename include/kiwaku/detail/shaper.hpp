@@ -41,6 +41,21 @@ namespace kwk::detail
       }(std::index_sequence_for<Ops...>());
     }
 
+    template<typename SizeType2,typename... Ops2>
+    constexpr bool is_compatible(shaper<SizeType2,Ops2...> other) const noexcept
+    {
+      if constexpr((std::same_as<Ops,Ops2> && ...))
+      {
+        for(std::size_t i=0;i<data_.size();++i)
+        {
+          if(data_[i] != other.data_[i]) return false;
+        }
+
+        return true;
+      }
+      else  return false;
+    }
+
     template <typename... Args>
     constexpr shaper(shaper<Args...> other, SizeType i)  : data_(other.append(i))
     {}
@@ -68,6 +83,9 @@ namespace kwk::detail
       using that_t = std::array<SizeType, sizeof...(X)>;
       return that_t{{x...}};
     }
+
+    template<typename SizeType2>
+    constexpr bool is_compatible(shaper<SizeType2>) const noexcept { return true; }
 
     constexpr shaper<SizeType,dyn_> operator()()           const { return {*this, 0}; }
     constexpr shaper<SizeType,fix_> operator[](SizeType i) const { return {*this, i}; }
