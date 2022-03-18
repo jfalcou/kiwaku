@@ -34,3 +34,4 @@ namespace kwk
 #include <kiwaku/options/label.hpp>
 #include <kiwaku/options/source.hpp>
 #include <kiwaku/options/size.hpp>
+#include <kiwaku/options/strides.hpp>

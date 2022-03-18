@@ -7,39 +7,32 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/container/shape.hpp>
+#include <kiwaku/container/stride.hpp>
 #include <kiwaku/detail/raberu.hpp>
 #include <concepts>
 
 namespace kwk
 {
 #if !defined(KWK_USE_DOXYGEN)
-  struct size_ : rbr::as_keyword<size_>
+  struct strides_ : rbr::as_keyword<strides_>
   {
-    // Single integral -> 1D shape
-    template<std::convertible_to<std::ptrdiff_t> T>
-    auto operator=(T s) const noexcept
-    {
-      return of_size(s);
-    }
-
     // Extent from of_size(...)
-    template<auto Shaper> auto operator=(shape<Shaper> const& s) const noexcept
+    template<auto Strider> auto operator=(stride<Strider> const& s) const noexcept
     {
       return s;
     }
 
     // Display
-    template<typename Shape> std::ostream& show(std::ostream& os, Shape const& s) const
+    template<typename Strides> std::ostream& show(std::ostream& os, Strides const& s) const
     {
-      return os << "Shape: " << s;
+      return os << "Strides: " << s;
     }
   };
 #endif
 
   /**
     @ingroup  options
-    @brief    Keyword for specifying shape options
+    @brief    Keyword for specifying strides options
    **/
-  inline constexpr size_ size = {};
+  inline constexpr strides_ strides = {};
 }

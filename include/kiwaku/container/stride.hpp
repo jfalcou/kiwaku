@@ -15,6 +15,7 @@
 
 namespace kwk
 {
+  struct strides_;
   template<auto Shaper> struct shape;
 
   template<auto Strider>
@@ -33,6 +34,11 @@ namespace kwk
     static constexpr auto static_size = strider_type::static_size;
 
     static constexpr auto size() noexcept { return static_size; }
+
+    using stored_value_type = stride<Strider>;
+    using keyword_type      = strides_;
+
+    constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     //==============================================================================================
     // Element access
@@ -62,14 +68,15 @@ namespace kwk
                             , v...
                             );
 
+      constexpr std::ptrdiff_t sz = sizeof...(Values);
       // Repeat last stride for when the data are missing
-      if constexpr(sizeof...(Values) < static_size-1)
+      if constexpr(sz < static_size-2)
       {
-        detail::constexpr_for<sizeof...(Values),static_size-1>
+        detail::constexpr_for<sz,static_size-2>
         (
           [&]<std::size_t I>( std::integral_constant<std::size_t,I> const&)
           {
-            storage_[I] = storage_[sizeof...(Values)-1];
+            storage_[I] = storage_[sz-1];
           }
         );
       }
@@ -146,6 +153,11 @@ namespace kwk
     static constexpr auto static_size = strider_type::static_size;
 
     static constexpr auto size() noexcept { return static_size; }
+
+    using stored_value_type = stride<Strider>;
+    using keyword_type      = strides_;
+
+    constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     //==============================================================================================
     // Element access

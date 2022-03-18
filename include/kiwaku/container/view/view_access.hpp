@@ -28,12 +28,15 @@ namespace kwk
 
     template<rbr::concepts::option... Opts>
     constexpr   view_access(rbr::settings<Opts...> const& opts)
-              : shape_( opts[kwk::size | opts[source].default_shape()])
-              , stride_( shape_.as_stride() )
+              : shape_ ( opts[kwk::size | opts[source].default_shape()])
+              , stride_( opts[strides  | shape_.as_stride() ] )
     {}
 
     constexpr auto index(auto i0)     const noexcept { return i0*get<0>(stride_);   }
-    constexpr auto index(auto... is)  const noexcept { return stride_.index(is...); }
+    constexpr auto index(auto... is)  const noexcept
+    {
+      return stride_.index(is...);
+    }
 
     constexpr void reshape( shape_type const& s ) noexcept
     {
@@ -134,7 +137,7 @@ namespace kwk
 
     constexpr std::ptrdiff_t  size()    const noexcept  { return shape_.numel();              }
     constexpr auto            shape()   const noexcept  { return shape_;                      }
-    constexpr decltype(auto)  stride()  const noexcept  { return stride_type{get<0>(shape_)}; }
+    constexpr auto            stride()  const noexcept  { return stride_type{unit_,get<0>(shape_)}; }
 
     constexpr void reshape( shape_type const& s ) { shape_ = s; }
 
