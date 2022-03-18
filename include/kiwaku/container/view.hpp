@@ -19,9 +19,9 @@ namespace kwk
                 , detail::view_builder<Type,Os...>::access_type
                 , detail::view_builder<Type,Os...>::meta_type
   {
+    using meta_type     = typename detail::view_builder<Type,Os...>::meta_type;
     using span_type     = typename detail::view_builder<Type,Os...>::span_type;
     using access_type   = typename detail::view_builder<Type,Os...>::access_type;
-    using meta_type     = typename detail::view_builder<Type,Os...>::meta_type;
 
     using iterator          = typename span_type::iterator;
     using const_iterator    = typename span_type::const_iterator;
@@ -45,9 +45,9 @@ namespace kwk
 
     constexpr auto settings() const noexcept
     {
-      return rbr::merge ( rbr::settings ( source = span_type::data()
-                                        , size   = access_type::shape()
-                                        , label  = meta_type::label_
+      return rbr::merge ( rbr::settings ( source  = span_type::data()
+                                        , size    = access_type::shape()
+                                        , strides = access_type::stride()
                                         )
                         , rbr::settings(Os...)
                         );
@@ -91,7 +91,8 @@ namespace kwk
   template<std::size_t I, typename T, auto... Os>
   constexpr auto dim(view<T,Os...> const& v) noexcept
   {
-    return get<I>(v.shape());
+    if constexpr(I<view<T,Os...>::static_nbdims) return get<I>(v.shape());
+    else return 1;
   }
 
   //================================================================================================

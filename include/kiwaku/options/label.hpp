@@ -21,12 +21,6 @@ namespace kwk
       return rbr::option<label_,T>{std::move(s)};
     }
 
-    // Small lie for optimization purpose
-    auto operator=(rbr::unknown_key) const noexcept
-    {
-      return rbr::option<label_,rbr::unknown_key>{};
-    }
-
     template<typename Label> std::ostream& show(std::ostream& os, Label const& l) const
     {
       os << "Label: ";
