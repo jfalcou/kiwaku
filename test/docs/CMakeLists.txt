@@ -3,9 +3,10 @@
 ##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
-include(make_unit)
+set ( SOURCES
+      shape/compatible.cpp
+      shape/odd_sized.cpp
+      shape/mixed.cpp
+    )
 
-add_subdirectory(allocator)
-add_subdirectory(container)
-add_subdirectory(docs)
-add_subdirectory(utility)
+make_unit("docs" ${SOURCES})

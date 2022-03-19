@@ -1,9 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #pragma once
 
@@ -25,7 +25,7 @@ namespace kwk
 
   //================================================================================================
   //! @ingroup containers
-  //! @brief  Fixed rank shape with mixeed size capability
+  //! @brief  Fixed rank shape with mixed size capability
   //!
   //! <hr/>
   //! **Required header**:
@@ -61,8 +61,6 @@ namespace kwk
   //!   kwk::shape< kwk::extent[2][2]() > s3( _[2] = n);  // Rank 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
-  //!
-  //!
   //! For most usage, kwk::shape is to be used as a whole. Acces to individual size along a given
   //! dimension is possible via a tuple-like access API based on compile-time indexes.
   //!
@@ -70,17 +68,16 @@ namespace kwk
   //================================================================================================
   template<auto Shaper> struct shape
   {
-    using                           size_map      = decltype(Shaper.size_map());
+    using size_map      = decltype(Shaper.size_map());
 
-    /// Number of dimensions
+    /// @ref glossary-rank of the eve::shape
     static constexpr std::ptrdiff_t static_nbdims = Shaper.size();
-    static constexpr std::ptrdiff_t storage_size  = static_nbdims - size_map::size;
-
-    struct empty_storage {};
 
     /// Type of dimensions' size
     using size_type     = typename decltype(Shaper)::size_type;
 
+    struct empty_storage {};
+    static constexpr std::ptrdiff_t storage_size  = static_nbdims - size_map::size;
     using storage_t     = std::conditional_t< (storage_size!=0)
                                             , std::array<size_type,storage_size>
                                             , empty_storage
@@ -89,43 +86,45 @@ namespace kwk
     /// Associated kwk::stride type
     using stride_type   = unit_stride<size_type, static_nbdims>;
 
-    //==============================================================================================
-    // Info dump
-    //==============================================================================================
+    /// Indicates that the shape has at least one dimension specified at runtime
     static constexpr bool is_dynamic        = storage_size >= 1;
+
+    /// Indicates that the shape's dimensions are all specified at runtime
     static constexpr bool is_fully_dynamic  = storage_size == static_nbdims;
+
+    /// Indicates that the shape's dimensions are all specified compile-time
     static constexpr bool is_fully_static   = storage_size == 0;
 
+    //==============================================================================================
+    // shape is its self option keyword
+    //==============================================================================================
     using stored_value_type = shape<Shaper>;
     using keyword_type      = size_;
 
-    constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     //==============================================================================================
-    /**
-      @brief Default constructor
-
-      A default-constructed kwk::shape contains 0 element on its innermost dimension.
-    **/
+    //! @brief Default constructor
+    //!
+    //! A default-constructed kwk::shape contains 0 element on its innermost dimension.
+    //! All other dimensions are set to 1.
     //==============================================================================================
-    constexpr shape() noexcept
+    KWK_FORCEINLINE constexpr shape() noexcept
     {
       if constexpr(storage_size > 1ULL)  for(auto& e : storage_) e = 1;
       if constexpr(storage_size > 0ULL)  storage_[0] = 0;
     }
 
     //==============================================================================================
-    /**
-      @brief Constructor from set of integral values
-
-      Initializes current kwk::shape with the value in the variadic pack `s`.
-
-      This constructor will not take part in overload resolution if the number of values exceed
-      shape's number of dimensions, if the shape is not dynamic or if any value is not convertible
-      to kwk::shape::size_type.
-
-      @param  s Variadic pack of dimensions' size
-    **/
+    //! @brief Constructor from set of integral values
+    //!
+    //! Initializes current kwk::shape with a variadic list of integral values.
+    //!
+    //! This constructor will not take part in overload resolution if the number of values exceed
+    //! shape's rank, if the shape is not fully dynamic or if any value is not convertible
+    //! to kwk::shape::size_type.
+    //!
+    //! @param  s Variadic list of dimensions' size
     //==============================================================================================
     template<typename... T>
     constexpr shape(T... s) noexcept
@@ -136,59 +135,97 @@ namespace kwk
             : storage_{ static_cast<size_type>(s)... }
     {
       if constexpr(sizeof...(T) < static_nbdims)
-      {
         for(std::size_t i = sizeof...(T);i<static_nbdims;++i)
           storage_[i] = 1;
-      }
     }
 
     //==============================================================================================
-    // Construct from some partial dynamic values for partially static shape
+    //! @brief Construct from a subset of runtime dimension values
+    //!
+    //! This constructor takes a variadic list of arguments specifying the size specified for a
+    //! given runtime dimension. Those sizes are passed by using the `kwk::_` dimension specifier.
+    //!
+    //! Passing a dimension specifier to overwrite one of the compile-time dimensions is undefined
+    //! behavior.
+    //!
+    //! This constructor will not take part in overload resolution if the shape is fully static.
+    //!
+    //! @groupheader{Example}
+    //! @godbolt{docs/shape/mixed.cpp}
+    //!
+    //! @param s  Variadic list of dimension/size association
     //==============================================================================================
     template<std::same_as<detail::axis>... Extent>
     constexpr shape(Extent... s) noexcept
     requires( (sizeof...(Extent) <= static_nbdims) && !is_fully_static )
     {
-      // Fill with 1s wherever applicable
+      // Default fillings
       detail::constexpr_for<static_nbdims>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           if constexpr(!size_map::contains(I))
-            storage_[size_map::template locate<static_nbdims>(I)] = 1;
+          {
+            if constexpr(I==0)  storage_[size_map::template locate<static_nbdims>(I)] = 0;
+            else                storage_[size_map::template locate<static_nbdims>(I)] = 1;
+          }
         }
       );
 
       // Fill the proper axis value with the corresponding size
-      auto const fill = [&](auto ext)
+      auto const fill = [&](auto e)
       {
-        KIWAKU_ASSERT ( !size_map::contains(ext.dims)
+        KIWAKU_ASSERT ( !size_map::contains(e.dims)
                       , "[kwk::shape] Semi-dynamic construction overwrite static shape"
                       );
 
-        storage_[size_map::template locate<static_nbdims>(ext.dims)] = static_cast<size_type>(ext.size);
+        storage_[size_map::template locate<static_nbdims>(e.dims)] = static_cast<size_type>(e.size);
       };
 
       (fill(s),...);
     }
 
     //==============================================================================================
-    // Constructs from a shape with same setup but different base type
+    //! @brief Constructs from a shape with compatible layout
+    //!
+    //! Constructs a kwk::shape from another one with compatible layout but potentially different
+    //! size_type.
+    //!
+    //! Two kwk::shapes have compatible layout if they have the same @ref glossary-rank and if each
+    //! dimension of the constructed kwk::shape can hold its equivalent from the source shape, i.e
+    //! it's runtime specified or, if it's compile-time specified, has the same value than its source.
+    //!
+    //! This constructor doesn not participate in overload resolution if shape's ranks are not equal.
+    //!
+    //! @groupheader{Example}
+    //! @godbolt{docs/shape/compatible.cpp}
+    //!
+    //! @param other  Source kwk::shape to copy
     //==============================================================================================
     template<auto OtherShaper>
     constexpr shape( shape<OtherShaper> const& other ) noexcept
-    requires( OtherShaper.size() == Shaper.size() && OtherShaper.is_compatible(Shaper))
+    requires( OtherShaper.size() == Shaper.size() && Shaper.is_compatible(OtherShaper))
     {
       detail::constexpr_for<size()>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
-          storage_[I] = other.storage_[I];
+          constexpr auto idx = size_map::template locate<static_nbdims>(I);
+          if constexpr( idx < storage_size ) storage_[idx] = other.template get<I>();
         }
       );
     }
 
     //==============================================================================================
-    // Constructs from a shape with less dimensions.
-    // Small shape are allowed implicitly in large one and are completed with 1s.
+    //! @brief Constructs from a shape with a lower rank
+    //!
+    //! Constructs a kwk::shape from a shape with higher ranks, filling the missing sizes with 1
+    //!
+    //! This constructor does not participate in overload resolution of the shape is not fully
+    //! specified at runtime.
+    //!
+    //! @groupheader{Example}
+    //! @godbolt{docs/shape/odd_sized.cpp}
+    //!
+    //! @param other  Shape to copy
     //==============================================================================================
     template<auto OtherShaper>
     constexpr shape( shape<OtherShaper> const& other ) noexcept
@@ -207,8 +244,18 @@ namespace kwk
     }
 
     //==============================================================================================
-    // Constructs from a shape with more dimensions.
-    // Large shape are allowed only explicitly in small ones as we need to convert data.
+    //! @brief Constructs from a shape with a higher rank
+    //!
+    //! Constructs a kwk::shape from a shape with higher ranks, compacting the extra-dimensions into
+    //! the last.
+    //!
+    //! This constructor does not participate in overload resolution of the shape is not fully
+    //! specified at runtime.
+    //!
+    //! @groupheader{Example}
+    //! @godbolt{docs/shape/odd_sized.cpp}
+    //!
+    //! @param other  Shape to copy
     //==============================================================================================
     template<auto OtherShaper>
     constexpr explicit  shape( shape<OtherShaper> const& other ) noexcept
@@ -237,7 +284,7 @@ namespace kwk
     /// Assignment operators
     template<auto OtherShaper>
     constexpr shape& operator=( shape<OtherShaper> const& other ) noexcept
-    requires( OtherShaper.size() <= static_nbdims)
+    requires( OtherShaper.size() < static_nbdims || Shaper.is_compatible(OtherShaper) )
     {
       shape that(other);
       swap(that);

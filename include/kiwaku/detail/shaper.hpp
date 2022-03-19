@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <cstddef>
 #include <array>
+#include <utility>
 
 namespace kwk::detail
 {
@@ -41,19 +42,19 @@ namespace kwk::detail
       }(std::index_sequence_for<Ops...>());
     }
 
-    template<typename SizeType2,typename... Ops2>
-    constexpr bool is_compatible(shaper<SizeType2,Ops2...> other) const noexcept
+    template<typename ST2,typename... O2>
+    constexpr bool is_compatible(shaper<ST2,O2...> o) const noexcept
     {
-      if constexpr((std::same_as<Ops,Ops2> && ...))
+      if constexpr(sizeof...(O2) != sizeof...(Ops))  return false;
+      else
       {
-        for(std::size_t i=0;i<data_.size();++i)
+        return [&]<std::size_t... I>( std::index_sequence<I...>)
         {
-          if(data_[i] != other.data_[i]) return false;
-        }
-
-        return true;
+          return  ((( std::same_as<Ops,dyn_>
+                  ||  (std::same_as<Ops,fix_> && std::same_as<O2,fix_> && data_[I] == o.data_[I])
+                  )) && ...);
+        }( std::make_index_sequence<sizeof...(Ops)>{});
       }
-      else  return false;
     }
 
     template <typename... Args>
