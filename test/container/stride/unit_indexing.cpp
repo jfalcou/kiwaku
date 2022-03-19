@@ -6,8 +6,8 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/container/stride.hpp>
-#include <kiwaku/container/shape.hpp>
+#include <kwk/container/stride.hpp>
+#include <kwk/container/shape.hpp>
 #include <algorithm>
 #include <numeric>
 #include <vector>

@@ -6,7 +6,7 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/options/fixed.hpp>
+#include <kwk/options/fixed.hpp>
 
 TTS_CASE( "fixed<N> behavior - Explicit usage" )
 {

@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kiwaku/container/shape.hpp>
+#include <kwk/container/shape.hpp>
 
 template<int N, typename Indexes = std::make_index_sequence<N>>  struct sizes;
 

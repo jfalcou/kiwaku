@@ -8,7 +8,7 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/container/array.hpp>
+#include <kwk/container/array.hpp>
 
 TTS_CASE( "Dynamic storage, constexpr 1D shape array - Basic properties" )
 {

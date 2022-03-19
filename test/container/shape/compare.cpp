@@ -6,7 +6,7 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/container/shape.hpp>
+#include <kwk/container/shape.hpp>
 
 TTS_CASE( "Equality comparison between shapes" )
 {

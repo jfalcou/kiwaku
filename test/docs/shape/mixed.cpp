@@ -5,7 +5,7 @@
   SPDX-License-Identifier: MIT
 */
 //==================================================================================================
-#include <kiwaku/kwk.hpp>
+#include <kwk/kwk.hpp>
 #include <iostream>
 
 int main()

@@ -6,7 +6,7 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/container/shape.hpp>
+#include <kwk/container/shape.hpp>
 #include "container/shape/shape.hpp"
 
 TTS_CASE_TPL( "Default constructed shape behavior", sizes<10>)

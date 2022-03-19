@@ -8,8 +8,8 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/misc/slicers.hpp>
-#include <kiwaku/concept/slicer.hpp>
+#include <kwk/misc/slicers.hpp>
+#include <kwk/concept/slicer.hpp>
 
 TTS_CASE( "kwk::_ is a contiguous, unit slicer" )
 {

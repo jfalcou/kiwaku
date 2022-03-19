@@ -6,7 +6,7 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/allocator/shallow_allocator.hpp>
+#include <kwk/allocator/shallow_allocator.hpp>
 
 TTS_CASE( "Allocation/Deallocation through shallow_allocator" )
 {

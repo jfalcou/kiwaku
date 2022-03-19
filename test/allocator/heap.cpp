@@ -6,7 +6,7 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/allocator/heap_allocator.hpp>
+#include <kwk/allocator/heap_allocator.hpp>
 
 TTS_CASE( "Nullpotent Allocation/Deallocation through heap_allocator" )
 {

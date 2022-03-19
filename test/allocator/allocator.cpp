@@ -6,9 +6,9 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kiwaku/allocator/heap_allocator.hpp>
-#include <kiwaku/allocator/shallow_allocator.hpp>
-#include <kiwaku/allocator/any_allocator.hpp>
+#include <kwk/allocator/heap_allocator.hpp>
+#include <kwk/allocator/shallow_allocator.hpp>
+#include <kwk/allocator/any_allocator.hpp>
 
 struct box
 {
