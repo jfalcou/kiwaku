@@ -20,7 +20,7 @@ namespace kwk
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_nbdims = shape_type::static_nbdims;
+    static constexpr auto static_rank = shape_type::static_rank;
 
     constexpr auto  size()    const noexcept  { return shape_.numel(); }
     constexpr auto  shape()   const noexcept  { return shape_;         }
@@ -66,7 +66,7 @@ namespace kwk
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_nbdims = shape_type::static_nbdims;
+    static constexpr auto static_rank = shape_type::static_rank;
 
     constexpr auto  size()    const noexcept  { return Shape.numel(); }
     constexpr auto  shape()   const noexcept  { return Shape;         }
@@ -91,7 +91,7 @@ namespace kwk
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_nbdims = shape_type::static_nbdims;
+    static constexpr auto static_rank = shape_type::static_rank;
 
     template<rbr::concepts::option... Opts>
     constexpr   view_access(rbr::settings<Opts...> const& opts)
@@ -125,7 +125,7 @@ namespace kwk
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_nbdims = shape_type::static_nbdims;
+    static constexpr auto static_rank = shape_type::static_rank;
 
     template<rbr::concepts::option... Opts>
     constexpr   view_access(rbr::settings<Opts...> const& opts)

@@ -71,26 +71,26 @@ namespace kwk
     using size_map      = decltype(Shaper.size_map());
 
     /// @ref glossary-rank of the eve::shape
-    static constexpr std::ptrdiff_t static_nbdims = Shaper.size();
+    static constexpr std::ptrdiff_t static_rank = Shaper.size();
 
     /// Type of dimensions' size
     using size_type     = typename decltype(Shaper)::size_type;
 
     struct empty_storage {};
-    static constexpr std::ptrdiff_t storage_size  = static_nbdims - size_map::size;
+    static constexpr std::ptrdiff_t storage_size  = static_rank - size_map::size;
     using storage_t     = std::conditional_t< (storage_size!=0)
                                             , std::array<size_type,storage_size>
                                             , empty_storage
                                             >;
 
     /// Associated kwk::stride type
-    using stride_type   = unit_stride<size_type, static_nbdims>;
+    using stride_type   = unit_stride<size_type, static_rank>;
 
     /// Indicates that the shape has at least one dimension specified at runtime
     static constexpr bool is_dynamic        = storage_size >= 1;
 
     /// Indicates that the shape's dimensions are all specified at runtime
-    static constexpr bool is_fully_dynamic  = storage_size == static_nbdims;
+    static constexpr bool is_fully_dynamic  = storage_size == static_rank;
 
     /// Indicates that the shape's dimensions are all specified compile-time
     static constexpr bool is_fully_static   = storage_size == 0;
@@ -129,13 +129,13 @@ namespace kwk
     template<typename... T>
     constexpr shape(T... s) noexcept
     requires  (   (std::is_convertible_v<T,size_type> && ...)
-              &&  (sizeof...(T) <= static_nbdims)
+              &&  (sizeof...(T) <= static_rank)
               &&  is_fully_dynamic
               )
             : storage_{ static_cast<size_type>(s)... }
     {
-      if constexpr(sizeof...(T) < static_nbdims)
-        for(std::size_t i = sizeof...(T);i<static_nbdims;++i)
+      if constexpr(sizeof...(T) < static_rank)
+        for(std::size_t i = sizeof...(T);i<static_rank;++i)
           storage_[i] = 1;
     }
 
@@ -157,16 +157,16 @@ namespace kwk
     //==============================================================================================
     template<std::same_as<detail::axis>... Extent>
     constexpr shape(Extent... s) noexcept
-    requires( (sizeof...(Extent) <= static_nbdims) && !is_fully_static )
+    requires( (sizeof...(Extent) <= static_rank) && !is_fully_static )
     {
       // Default fillings
-      detail::constexpr_for<static_nbdims>
+      detail::constexpr_for<static_rank>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           if constexpr(!size_map::contains(I))
           {
-            if constexpr(I==0)  storage_[size_map::template locate<static_nbdims>(I)] = 0;
-            else                storage_[size_map::template locate<static_nbdims>(I)] = 1;
+            if constexpr(I==0)  storage_[size_map::template locate<static_rank>(I)] = 0;
+            else                storage_[size_map::template locate<static_rank>(I)] = 1;
           }
         }
       );
@@ -178,7 +178,7 @@ namespace kwk
                       , "[kwk::shape] Semi-dynamic construction overwrite static shape"
                       );
 
-        storage_[size_map::template locate<static_nbdims>(e.dims)] = static_cast<size_type>(e.size);
+        storage_[size_map::template locate<static_rank>(e.dims)] = static_cast<size_type>(e.size);
       };
 
       (fill(s),...);
@@ -208,7 +208,7 @@ namespace kwk
       detail::constexpr_for<size()>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
-          constexpr auto idx = size_map::template locate<static_nbdims>(I);
+          constexpr auto idx = size_map::template locate<static_rank>(I);
           if constexpr( idx < storage_size ) storage_[idx] = other.template get<I>();
         }
       );
@@ -229,9 +229,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShaper>
     constexpr shape( shape<OtherShaper> const& other ) noexcept
-              requires( OtherShaper.size() < static_nbdims && is_fully_dynamic)
+              requires( OtherShaper.size() < static_rank && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherShaper.size(),static_nbdims);
+      constexpr auto dz = std::min(OtherShaper.size(),static_rank);
 
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
@@ -240,7 +240,7 @@ namespace kwk
         }
       );
 
-      for(std::size_t i = dz; i < static_nbdims;++i) storage_[i] = 1;
+      for(std::size_t i = dz; i < static_rank;++i) storage_[i] = 1;
     }
 
     //==============================================================================================
@@ -259,9 +259,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShaper>
     constexpr explicit  shape( shape<OtherShaper> const& other ) noexcept
-                        requires( OtherShaper.size() > static_nbdims && is_fully_dynamic)
+                        requires( OtherShaper.size() > static_rank && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherShaper.size(),static_nbdims);
+      constexpr auto dz = std::min(OtherShaper.size(),static_rank);
 
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
@@ -270,7 +270,7 @@ namespace kwk
         }
       );
 
-      detail::constexpr_for<shape<OtherShaper>::static_nbdims - dz>
+      detail::constexpr_for<shape<OtherShaper>::static_rank - dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           storage_.back() *= other.template get<dz+I>();
@@ -279,12 +279,12 @@ namespace kwk
     }
 
     /// Number of dimensions
-    static constexpr std::ptrdiff_t size() noexcept { return static_nbdims; }
+    static constexpr std::ptrdiff_t size() noexcept { return static_rank; }
 
     /// Assignment operators
     template<auto OtherShaper>
     constexpr shape& operator=( shape<OtherShaper> const& other ) noexcept
-    requires( OtherShaper.size() < static_nbdims || Shaper.is_compatible(OtherShaper) )
+    requires( OtherShaper.size() < static_rank || Shaper.is_compatible(OtherShaper) )
     {
       shape that(other);
       swap(that);
@@ -297,7 +297,7 @@ namespace kwk
     template<std::size_t I> constexpr auto get() const noexcept
     {
       if constexpr(size_map::contains(I)) return Shaper.at(I);
-      else return storage_[size_map::template locate<static_nbdims>(I)];
+      else return storage_[size_map::template locate<static_rank>(I)];
     }
 
     /// Swap shape's contents
@@ -334,13 +334,13 @@ namespace kwk
     //==============================================================================================
     constexpr std::ptrdiff_t nbdims() const noexcept
     {
-      if constexpr(static_nbdims == 0)  return 0;
+      if constexpr(static_rank == 0)  return 0;
       else  return [&]<std::size_t...I>( std::index_sequence<I...> const&)
       {
         size_type m = this->get<0>() == 1 ? 0 : 1;
         ((m = std::max(m, size_type(this->get<I>() == 1 ? 0 : 1+I))),...);
         return m;
-      }(std::make_index_sequence<static_nbdims>());
+      }(std::make_index_sequence<static_rank>());
     }
 
     //==============================================================================================
@@ -353,15 +353,15 @@ namespace kwk
     //==============================================================================================
     constexpr std::ptrdiff_t numel() const noexcept
     {
-      if constexpr(static_nbdims == 0) return 0;
+      if constexpr(static_rank == 0) return 0;
       else return [&]<std::size_t...I>( std::index_sequence<I...> const&)
           {
             return (size_type{1} * ... * this->get<I>());
-          }(std::make_index_sequence<static_nbdims>());
+          }(std::make_index_sequence<static_rank>());
     }
 
     /// Conversion to kwk::stride
-    constexpr auto as_stride() const requires(static_nbdims > 0) { return stride_type(*this); }
+    constexpr auto as_stride() const requires(static_rank > 0) { return stride_type(*this); }
 
     //==============================================================================================
     // Comparisons
@@ -398,7 +398,7 @@ namespace kwk
     {
       os << "[";
 
-      detail::constexpr_for<static_nbdims>
+      detail::constexpr_for<static_rank>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           os << " " << s.template get<I>();
@@ -418,19 +418,19 @@ namespace kwk
                           , Comp const& comp, Check const& check
                           ) const noexcept
     {
-      constexpr auto other_size = shape<Shaper2>::static_nbdims;
+      constexpr auto other_size = shape<Shaper2>::static_rank;
 
-      if constexpr( static_nbdims == other_size )
+      if constexpr( static_rank == other_size )
       {
         bool result = true;
         return [&]<std::size_t... I>(std::index_sequence<I...> const&)
         {
           return (result && ... && comp(this->get<I>(),other.template get<I>()) ) ;
-        }(std::make_index_sequence<static_nbdims>());
+        }(std::make_index_sequence<static_rank>());
       }
       else
       {
-        constexpr auto d = std::min(static_nbdims, other_size);
+        constexpr auto d = std::min(static_rank, other_size);
 
         // Compute equality over common slice of shape
         bool result = true;
@@ -440,17 +440,17 @@ namespace kwk
         }(std::make_index_sequence<d>());
 
         // Check that we have 1s everywhere in the other parts
-        if constexpr( static_nbdims < other_size )
+        if constexpr( static_rank < other_size )
         {
-          constexpr auto sz = other_size - static_nbdims;
+          constexpr auto sz = other_size - static_rank;
           return [&]<std::size_t... I>(std::index_sequence<I...> const&)
           {
-            return (result && ... && (other.template get<static_nbdims+I>() == 1));
+            return (result && ... && (other.template get<static_rank+I>() == 1));
           }(std::make_index_sequence<sz>());
         }
-        else if constexpr( static_nbdims > other_size )
+        else if constexpr( static_rank > other_size )
         {
-          constexpr auto sz = static_nbdims - other_size;
+          constexpr auto sz = static_rank - other_size;
           return [&]<std::size_t... I>(std::index_sequence<I...> const&)
           {
             return (result && ... && check(this->template get<other_size+I>()));
@@ -486,7 +486,7 @@ namespace std
 
   template<auto Shaper>
   struct  tuple_size<kwk::shape<Shaper>>
-        : std::integral_constant<std::size_t,kwk::shape<Shaper>::static_nbdims>
+        : std::integral_constant<std::size_t,kwk::shape<Shaper>::static_rank>
   {
   };
 }

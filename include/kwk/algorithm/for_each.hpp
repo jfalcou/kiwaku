@@ -46,6 +46,6 @@ namespace kwk
     {
       auto shp = c.shape();
       return detail::for_each(f, KWK_FWD(c), get<N>(shp)... );
-    }( std::make_index_sequence<std::remove_cvref_t<Container>::static_nbdims>{});
+    }( std::make_index_sequence<std::remove_cvref_t<Container>::static_rank>{});
   }
 }

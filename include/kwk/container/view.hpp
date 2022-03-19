@@ -24,13 +24,29 @@ namespace kwk
     using span_type     = typename detail::view_builder<Type,Os...>::span_type;
     using access_type   = typename detail::view_builder<Type,Os...>::access_type;
 
+    /// Underlying value type
+    using value_type      = Type;
+
+    /// Associated iterator type
     using iterator          = typename span_type::iterator;
+
+    /// Associated  const iterator type
     using const_iterator    = typename span_type::const_iterator;
 
+    /// Associated reference type
     using reference         = typename span_type::reference;
+
+    /// Associated reference to const type
     using const_reference   = typename span_type::const_reference;
 
-    static constexpr auto static_nbdims = access_type::static_nbdims;
+    /// Associated pointer type
+    using pointer         = typename span_type::pointer;
+
+    /// Associated const pointer type
+    using const_pointer   = typename span_type::const_pointer;
+
+    /// Compile-time @ref glossary-rank
+    static constexpr auto static_rank = access_type::static_rank;
 
     template<rbr::concepts::option... Opts>
     constexpr view( Opts const&... params )
@@ -54,14 +70,23 @@ namespace kwk
                         );
     }
 
-    /// Returns an iterator to the end
-    iterator        end()         { return span_type::begin() + access_type::size(); }
+    /// Returns an iterator to the beginning
+    constexpr iterator        begin()         { return span_type::begin(); }
+
+    /// Returns an iterator to the beginning
+    constexpr const_iterator  begin()   const { return span_type::begin(); }
+
+    /// Returns a const iterator to the beginning
+    constexpr const_iterator  cbegin()  const { return span_type::begin(); }
 
     /// Returns an iterator to the end
-    const_iterator  end()   const { return span_type::begin() + access_type::size(); }
+    iterator        end()         { return begin() + access_type::size(); }
+
+    /// Returns an iterator to the end
+    const_iterator  end()   const { return begin() + access_type::size(); }
 
     /// Returns a const iterator to the end
-    const_iterator  cend()  const { return span_type::begin() + access_type::size(); }
+    const_iterator  cend()  const { return begin() + access_type::size(); }
 
     /// Swap the contents of two views
     void swap(view& other) noexcept
@@ -75,14 +100,14 @@ namespace kwk
     //! @{
     //==============================================================================================
     template<std::integral... Is>
-    requires(sizeof...(Is) <= static_nbdims)
+    requires(sizeof...(Is) <= static_rank)
     const_reference operator()(Is... is) const noexcept
     {
       return span_type::data()[ access_type::index(is...) ];
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) <= static_nbdims)
+    requires(sizeof...(Is) <= static_rank)
     reference operator()(Is... is) noexcept
     {
       return span_type::data()[ access_type::index(is...) ];
@@ -96,7 +121,7 @@ namespace kwk
   template<std::size_t I, typename T, auto... Os>
   constexpr auto dim(view<T,Os...> const& v) noexcept
   {
-    if constexpr(I<view<T,Os...>::static_nbdims) return get<I>(v.shape());
+    if constexpr(I<view<T,Os...>::static_rank) return get<I>(v.shape());
     else return 1;
   }
 

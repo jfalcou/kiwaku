@@ -47,7 +47,7 @@ namespace kwk
     /// Associated iterator type
     using iterator        = pointer;
 
-    /// Associated  const iteratortype
+    /// Associated  const iterator type
     using const_iterator  = const_pointer;
 
     /// Constructs a kwk::view_span from any source
