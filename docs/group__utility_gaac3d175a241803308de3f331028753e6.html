@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="generator" content="Doxygen 1.9.4"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Kiwaku: /home/falcou/dev/kiwaku/include/kiwaku/components/slicers Directory Reference</title>
+  <title>Kiwaku: kwk::fixed</title>
   <!--<link href="tabs.css" rel="stylesheet" type="text/css"/> REMOVED BY DOXYSTRAP -->
   <script type="text/javascript" src="jquery.js"></script>
   <script type="text/javascript" src="dynsections.js"></script>
@@ -135,13 +135,60 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_bd788605f9cc897c38ba35c4d80208f9.html">kiwaku</a></li><li class="navelem"><a class="el" href="dir_b8485c3f5e1e1a6a25b099bd661bda02.html">components</a></li><li class="navelem"><a class="el" href="dir_a75bf991f44a130358180fdb4072f00d.html">slicers</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>  </ul>
 </div>
 </div><!-- top -->
-<div class="header">
-  <div class="headertitle"><div class="title">slicers Directory Reference</div></div>
-</div><!--header-->
 <div class="contents">
+<table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+   <td valign="top">
+      <div class="navtab">
+        <table>
+          <tr><td class="navtab"><a class="navtab" href="group__options.html#gaf28a925e2d27faef6fee0f4865075da1">base_index</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="namespacekwk.html#ade943f744bb84d024912a199386f90aa">dim</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="namespacekwk_a0e22375561086d17560bc1123dcdd3c7.html#a0e22375561086d17560bc1123dcdd3c7">extent</a></td></tr>
+          <tr><td class="navtabHL"><a class="navtab" href="group__utility_gaac3d175a241803308de3f331028753e6.html#gaac3d175a241803308de3f331028753e6">fixed</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="group__options.html#ga78098c4b679c4efa5da03f13d8fb4363">index</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="group__options.html#gae8ac5a2250bfa9d335d84c7805977648">indexes</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="group__options.html#gace72223278336b5a89f3344a3345d117">label</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">of_size</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="group__options.html#gafb4de9f8ff869f745bb2b40dfdaeb179">size</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="group__options.html#ga7c7242aa657afe8da67cbaa82f4caf0a">source</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="group__options.html#ga73cafd41309748a544125b34f2032fa3">strides</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="namespacekwk.html#a66c0a5409dbd44a6186ab31290d87d03">view</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="namespacekwk.html#a6deaa1010b903e45d5f4f952fe4d8bba">view</a></td></tr>
+        </table>
+      </div>
+   </td>
+   <td valign="top" class="mempage">
+<a id="gaac3d175a241803308de3f331028753e6" name="gaac3d175a241803308de3f331028753e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaac3d175a241803308de3f331028753e6">&#9670;&nbsp;</a></span>fixed</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;auto N&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto kwk::fixed = std::integral_constant&lt;decltype(detail::clamp&lt;N&gt;()),detail::clamp&lt;N&gt;()&gt;{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >The underlying type is computed from the actual value to be the smallest fitting type. This means, for example, that <a class="el" href="group__utility_gaac3d175a241803308de3f331028753e6.html#gaac3d175a241803308de3f331028753e6" title="Provides a short-cut to define a std::integral_constant instance from a literal integer.">kwk::fixed&lt;123&gt;</a> is an instance of <code>std::integral_constant&lt;unsigned char,123&gt;</code>. When negative values are used, signed integral types are selected, i.e <a class="el" href="group__utility_gaac3d175a241803308de3f331028753e6.html#gaac3d175a241803308de3f331028753e6" title="Provides a short-cut to define a std::integral_constant instance from a literal integer.">kwk::fixed</a>&lt;-999&gt; is an instance of <code>std::integral_constant&lt;signed short,-999&gt;</code>. </p>
+
+</div>
+</div>
+    </td>
+  </tr>
+</table>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->

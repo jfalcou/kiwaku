@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="generator" content="Doxygen 1.9.4"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Kiwaku: kwk::range_source&lt; T &gt; Struct Template Reference</title>
+  <title>Kiwaku: kwk::view_span::reset</title>
   <!--<link href="tabs.css" rel="stylesheet" type="text/css"/> REMOVED BY DOXYSTRAP -->
   <script type="text/javascript" src="jquery.js"></script>
   <script type="text/javascript" src="dynsections.js"></script>
@@ -135,60 +135,75 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1range__source.html">range_source</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1view__span.html">view_span</a></li>  </ul>
 </div>
 </div><!-- top -->
-<div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structkwk_1_1range__source-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">kwk::range_source&lt; T &gt; Struct Template Reference</div></div>
-</div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1range__source_1_1range__span.html">range_span</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a375b635a8c00cfe180cde79f1b8cff07"><td class="memItemLeft" align="right" valign="top"><a id="a375b635a8c00cfe180cde79f1b8cff07" name="a375b635a8c00cfe180cde79f1b8cff07"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>stored_value_type</b> = <a class="el" href="structkwk_1_1range__source.html">range_source</a>&lt; T &gt;</td></tr>
-<tr class="separator:a375b635a8c00cfe180cde79f1b8cff07"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa22eeda83e316cb5fba9f4715acab653"><td class="memItemLeft" align="right" valign="top"><a id="aa22eeda83e316cb5fba9f4715acab653" name="aa22eeda83e316cb5fba9f4715acab653"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>keyword_type</b> = data_source</td></tr>
-<tr class="separator:aa22eeda83e316cb5fba9f4715acab653"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47aee45c7a2fd3a9dbc7eceac3f14b7a"><td class="memItemLeft" align="right" valign="top"><a id="a47aee45c7a2fd3a9dbc7eceac3f14b7a" name="a47aee45c7a2fd3a9dbc7eceac3f14b7a"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>span_type</b> = <a class="el" href="structkwk_1_1range__source_1_1range__span.html">range_span</a></td></tr>
-<tr class="separator:a47aee45c7a2fd3a9dbc7eceac3f14b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:a1695a0fc35303df55c4a5f5d32d1d587"><td class="memItemLeft" align="right" valign="top"><a id="a1695a0fc35303df55c4a5f5d32d1d587" name="a1695a0fc35303df55c4a5f5d32d1d587"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>range_source</b> (T *p=nullptr, std::ptrdiff_t s=0)</td></tr>
-<tr class="separator:a1695a0fc35303df55c4a5f5d32d1d587"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf3ecfa64da5d460ba2f756bee378b8e"><td class="memItemLeft" align="right" valign="top"><a id="aaf3ecfa64da5d460ba2f756bee378b8e" name="aaf3ecfa64da5d460ba2f756bee378b8e"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (keyword_type const &amp;) const noexcept</td></tr>
-<tr class="separator:aaf3ecfa64da5d460ba2f756bee378b8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18e70c2a0c7a7e07a731b5f1fe11fc2a"><td class="memItemLeft" align="right" valign="top"><a id="a18e70c2a0c7a7e07a731b5f1fe11fc2a" name="a18e70c2a0c7a7e07a731b5f1fe11fc2a"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>as_span</b> () const noexcept</td></tr>
-<tr class="separator:a18e70c2a0c7a7e07a731b5f1fe11fc2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d388a264c85355119c0bc1735755307"><td class="memItemLeft" align="right" valign="top"><a id="a4d388a264c85355119c0bc1735755307" name="a4d388a264c85355119c0bc1735755307"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>default_shape</b> () const noexcept</td></tr>
-<tr class="separator:a4d388a264c85355119c0bc1735755307"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ac4586004a4bef185c81c0f135838330b"><td class="memItemLeft" align="right" valign="top"><a id="ac4586004a4bef185c81c0f135838330b" name="ac4586004a4bef185c81c0f135838330b"></a>
-T *&#160;</td><td class="memItemRight" valign="bottom"><b>data_</b></td></tr>
-<tr class="separator:ac4586004a4bef185c81c0f135838330b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35adbf6dce76751e1636ec00bea1f6c6"><td class="memItemLeft" align="right" valign="top"><a id="a35adbf6dce76751e1636ec00bea1f6c6" name="a35adbf6dce76751e1636ec00bea1f6c6"></a>
-std::ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b></td></tr>
-<tr class="separator:a35adbf6dce76751e1636ec00bea1f6c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+   <td valign="top">
+      <div class="navtab">
+        <table>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#acd87beb9cf874e55be2f7c510088ef7f">begin</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#a85a05a903705e0ac52cd2596f7a2d3c5">begin</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#a393d997aed7993eef49ce3a027d011b9">cbegin</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#afa361f3eca88cf1f49b13d42bafe2ff3">const_iterator</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#aba5d8abf9f9788a695a61f1d3d682890">const_pointer</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#ab970ff639eb7a97176c90511ef736660">const_reference</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#a03318f1153e44df2a30d46eae7757653">iterator</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#ae8ff8d7883d9be32bf3d721ebb05c678">pointer</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#afd34bf6aeefb2ceb9a47dac469a3101f">reference</a></td></tr>
+          <tr><td class="navtabHL"><a class="navtab" href="structkwk_1_1view__span_a1faf22b0bdb34ef3a99546f5928b651a.html#a1faf22b0bdb34ef3a99546f5928b651a">reset</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span_ad7e298a673908b745adbd25ee9e5b405.html#ad7e298a673908b745adbd25ee9e5b405">swap</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#a0b573929408792a2c6bc461853a24ca0">value_type</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1view__span.html#ae96f8ff725d9cf38438ff2b5f67a8b3e">view_span</a></td></tr>
+        </table>
+      </div>
+   </td>
+   <td valign="top" class="mempage">
+<a id="a1faf22b0bdb34ef3a99546f5928b651a" name="a1faf22b0bdb34ef3a99546f5928b651a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1faf22b0bdb34ef3a99546f5928b651a">&#9670;&nbsp;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Source &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structkwk_1_1view__span.html#ae8ff8d7883d9be32bf3d721ebb05c678">pointer</a> <a class="el" href="structkwk_1_1view__span.html">kwk::view_span</a>&lt; Source &gt;::reset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1view__span.html#ae8ff8d7883d9be32bf3d721ebb05c678">pointer</a>&#160;</td>
+          <td class="paramname"><em>ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Given <code>current_ptr</code>, the pointer that was managed by <code>*this</code>, performs the following actions, in this order:</p>
+<ul>
+<li>Saves a copy of the current pointer <code>old_ptr = current_ptr</code></li>
+<li>Overwrites the current pointer with the argument <code>current_ptr = ptr</code></li>
+<li>Returns the copy of the previous current pointer</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>pointer to a new pointer to manage </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The previous pointer value </dd></dl>
+
+</div>
+</div>
+    </td>
+  </tr>
 </table>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.20-->

@@ -39,7 +39,13 @@ TAB_SIZE               = 2
 ALIASES                =  "semiregular=<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>" \
                           "regular=<a href=\"https://en.cppreference.com/w/cpp/concepts/regular\">Regular</a>" \
                           "swappable=<a href=\"https://en.cppreference.com/w/cpp/concepts/swappable\">Swappable</a>" \
-                          "groupheader{1}=<h2 class=\"groupheader\"> \1 </h2>"
+                          "groupheader{1}=<h2 class=\"groupheader\"> \1 </h2>"  \
+                          "ce=@htmlonly <a id=\"godbolt-link\" href=\"#\">See it live on Compiler Explorer</a> <div id=\"godbolt\">@endhtmlonly" \
+                          "ce{1}=@htmlonly <a id=\"godbolt-link\" href=\"#\"> \1 </a> <div id=\"godbolt\">@endhtmlonly" \
+                          endce=@htmlonly</div>@endhtmlonly \
+                          "godbolt{1}=@ce @include \1 \n @endce" \
+                          "godbolt{2}=@ce{\1} @include \2 \n @endce"
+
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
