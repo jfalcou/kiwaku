@@ -6,7 +6,6 @@
 set ( SOURCES
       allocator.cpp
       heap.cpp
-      shallow.cpp
     )
 
 make_unit("allocator" ${SOURCES})

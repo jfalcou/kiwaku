@@ -6,9 +6,7 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kwk/allocator/heap_allocator.hpp>
-#include <kwk/allocator/shallow_allocator.hpp>
-#include <kwk/allocator/any_allocator.hpp>
+#include <kwk/allocator.hpp>
 
 struct box
 {
@@ -17,7 +15,7 @@ struct box
   template<kwk::concepts::allocator A>
   box ( std::ptrdiff_t n, A a)
       : alloc(std::move(a))
-      , data_(alloc.allocate(n*sizeof(float)))
+      , data_( reinterpret_cast<float*>(alloc.allocate(n*sizeof(float))) )
       , size_(n)
   {}
 
@@ -45,8 +43,8 @@ struct box
   float&  get(int i)        noexcept { return data()[i];  }
   float   get(int i) const  noexcept { return data()[i];  }
 
-  float *       data()       noexcept { return static_cast<float*>(data_.data); }
-  float const*  data() const noexcept { return static_cast<float const*>(data_.data); }
+  float *       data()       noexcept { return data_; }
+  float const*  data() const noexcept { return data_; }
 
   float *       begin()       noexcept { return data(); }
   float const*  begin() const noexcept { return data(); }
@@ -59,20 +57,19 @@ struct box
   void swap(box& b) noexcept
   {
     alloc.swap(b.alloc);
-    data_.swap(b.data_);
+    std::swap(data_,b.data_);
     std::swap(size_,b.size_);
   }
 
   kwk::any_allocator  alloc;
-  kwk::block          data_;
+  float*              data_;
   std::ptrdiff_t      size_;
 };
 
 TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
 {
-  std::byte data[64];
   box b( 5, kwk::heap_allocator{} );
-  box c( 7, kwk::make_shallow<32,16>(data) );
+  box c( 7, kwk::heap_allocator{} );
 
   for(int i=0;i<5;i++) b.get(i) = 1.f/(1+i);
   for(int i=0;i<7;i++) c.get(i) = 1.5f*(1+i);

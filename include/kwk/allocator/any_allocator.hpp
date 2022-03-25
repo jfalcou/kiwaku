@@ -9,7 +9,6 @@
 
 #include <kwk/detail/ct_helpers.hpp>
 #include <kwk/concept/allocator.hpp>
-#include <kwk/allocator/block.hpp>
 #include <cstdlib>
 #include <cstddef>
 #include <memory>
@@ -33,8 +32,8 @@ namespace kwk
     struct api_t
     {
       virtual ~api_t() {}
-      virtual block                   allocate(std::size_t) = 0;
-      virtual void                    deallocate(block&)    = 0;
+      virtual void*                   allocate(std::size_t) = 0;
+      virtual void                    deallocate(void* )    = 0;
       virtual std::unique_ptr<api_t>  clone()         const = 0;
     };
 
@@ -46,8 +45,8 @@ namespace kwk
       model_t(const base_type&  t)  : object(t)             {}
       model_t(base_type&&       t)  : object(std::move(t))  {}
 
-      block allocate(std::size_t n)        override { return object.allocate(n);                }
-      void  deallocate(block& b)           override { object.deallocate(b);                     }
+      void* allocate(std::size_t n)        override { return object.allocate(n);                }
+      void  deallocate(void* b)            override { object.deallocate(b);                     }
       std::unique_ptr<api_t> clone() const override { return std::make_unique<model_t>(object); }
 
       private:
@@ -111,7 +110,7 @@ namespace kwk
       @return A kwk::block wrapping the newly allocated memory and its size. If zero byte was
               requested, the returned kwk::block is empty.
     **/
-    [[nodiscard]] block allocate(std::size_t n) { return object->allocate(n); }
+    [[nodiscard]] auto allocate(std::size_t n) { return object->allocate(n); }
 
     /**
       @brief  Deallocates data
@@ -121,7 +120,7 @@ namespace kwk
 
       @param  b kwk::block containing the memory to deallocate
     **/
-    void  deallocate(block& b)    { object->deallocate(b); }
+    void  deallocate(void* b)    { object->deallocate(b); }
 
     private:
     std::unique_ptr<api_t> object;

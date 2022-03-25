@@ -17,7 +17,5 @@ namespace kwk
   //================================================================================================
 }
 
-#include <kwk/allocator/block.hpp>
 #include <kwk/allocator/any_allocator.hpp>
 #include <kwk/allocator/heap_allocator.hpp>
-#include <kwk/allocator/shallow_allocator.hpp>

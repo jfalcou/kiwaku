@@ -8,7 +8,6 @@
 #pragma once
 
 #include <concepts>
-#include <kwk/allocator/block.hpp>
 
 namespace kwk::concepts
 {
@@ -17,16 +16,33 @@ namespace kwk::concepts
     @brief Allocator concept
 
     A **KIWAKU** Allocator is a @semiregular, @swappable type which provides:
-      + a `allocate` member function that takes an integral value and return a block
-      + a `deallocate` member function that takes a lvalue reference to a block as parameter
+      + a `allocate` member function that takes an integral value and allocates bytes
+      + a `deallocate` member function that takes a pointer to bytes as parameter
   **/
   //================================================================================================
   template<typename A>
   concept allocator =   std::semiregular<A>
                     &&  std::swappable<A>
-                    &&  requires(A a, block& b, std::ptrdiff_t n)
+                    &&  requires(A a, void* b, std::ptrdiff_t n)
   {
-    { a.allocate(n)   } -> std::same_as<block>;
+    { a.allocate(n)   };
     { a.deallocate(b) };
+  };
+
+  //================================================================================================
+  /**
+    @brief Aligned Allocator concept
+
+    A **KIWAKU** Aligned Allocator is a kwk::concepts::allocator that also provides:
+      + a `allocate_aligned` member function and allocates aligned memory on a given alignment
+      + a `deallocate_aligned` member function that deallocates aligned memory
+  **/
+  //================================================================================================
+  template<typename A>
+  concept aligned_allocator =   allocator<A>
+                            &&  requires(A a, void* b, std::ptrdiff_t n, std::ptrdiff_t al)
+  {
+    { a.allocate_aligned(n,al) };
+    { a.deallocate_aligned(b) };
   };
 }

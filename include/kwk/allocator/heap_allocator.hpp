@@ -8,7 +8,6 @@
 #pragma once
 
 #include <kwk/detail/assert.hpp>
-#include <kwk/allocator/block.hpp>
 #include <cstdlib>
 
 namespace kwk
@@ -16,7 +15,7 @@ namespace kwk
   //================================================================================================
   /**
     @ingroup memory
-    @brief Malloc based block allocator
+    @brief Malloc based  allocator
 
     Model of the kwk::concepts::allocator concept. kwk::heap_allocator allocates and deallocates
     memory block on the heap using `malloc` and `free`.
@@ -27,23 +26,23 @@ namespace kwk
     /**
       @brief  Allocates data on the heap
       @param  n Number of bytes to allocate
-      @return A kwk::block wrapping the newly allocated memory and its size. If zero byte was
-              requested, the returned kwk::block is empty.
+      @return A pointer to the newly allocated memory. If zero byte was requested, the returned
+              pointer is equal to `nullptr`.
     **/
-    [[nodiscard]] block allocate(std::ptrdiff_t n) noexcept
+    [[nodiscard]] void* allocate(std::ptrdiff_t n) noexcept
     {
-      return (n!=0) ? block{ malloc(n), n } : block{ nullptr, n };
+      return (n!=0) ? malloc(n) : nullptr;
     }
 
     /**
       @brief  Deallocates data on the heap
 
-      Free the heap memory from a kwk::block. If the deallocated memory was not allocated by an
+      Free the heap memory from a pointer. If the deallocated memory was not allocated by an
       instance of kwk::heap_allocator, the behavior is undefined.
 
-      @param  b kwk::block containing the memory to deallocate
+      @param  b Pointer to the memory to deallocate
     **/
-    void deallocate(block & b) noexcept { if(b.data) free(b.data); }
+    void deallocate(void* ptr) noexcept { if(ptr) free(ptr); }
 
     /// Swap the contents of two instance of kwk::heap_allocator
     void swap(heap_allocator&) {}
