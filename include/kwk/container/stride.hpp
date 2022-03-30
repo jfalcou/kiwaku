@@ -1,9 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #pragma once
 
@@ -18,6 +18,19 @@ namespace kwk
   struct strides_;
   template<auto Shaper> struct shape;
 
+  //================================================================================================
+  //! @ingroup containers
+  //! @brief  Fixed rank stride with automatic unit stride detection capability
+  //!
+  //! <hr/>
+  //! **Required header**:
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!  #include<kwk/container/stride.hpp>
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //! <hr/>
+  //!
+  //! @tparam Strider An instance of a stride descriptor
+  //================================================================================================
   template<auto Strider>
   struct stride
   {
@@ -26,8 +39,11 @@ namespace kwk
     //==============================================================================================
     using strider_type  = decltype(Strider);
     using stride_map    = typename strider_type::map_type;
-    using value_type    = typename strider_type::size_type;
-    using storage_type  = detail::stride_storage<value_type,Strider>;
+
+    /// Type of dimensions' size
+    using size_type     = typename strider_type::size_type;
+
+    using storage_t     = detail::stride_storage<size_type,Strider>;
 
     static constexpr auto is_unit     = strider_type::is_unit;
     static constexpr auto is_implicit = strider_type::is_implicit;
@@ -35,6 +51,9 @@ namespace kwk
 
     static constexpr auto size() noexcept { return static_size; }
 
+    //==============================================================================================
+    // stride is its self option keyword
+    //==============================================================================================
     using stored_value_type = stride<Strider>;
     using keyword_type      = strides_;
 
@@ -48,7 +67,7 @@ namespace kwk
       constexpr auto i = std::min<std::ptrdiff_t>(I,static_size-1);
 
       if constexpr(stride_map::contains(i))
-        return std::integral_constant<value_type,1>{};
+        return std::integral_constant<size_type,1>{};
       else
         return storage_[stride_map::template locate<static_size>(i)];
     }
@@ -56,7 +75,7 @@ namespace kwk
     //==============================================================================================
     // Construct from some amount of integral values
     //==============================================================================================
-    template<std::convertible_to<value_type>... Values>
+    template<std::convertible_to<size_type>... Values>
     constexpr stride(Values... v) noexcept : storage_{}
     {
       // Filter out the non-dynamic stride values
@@ -107,7 +126,7 @@ namespace kwk
     //==============================================================================================
     // indexing interface
     //==============================================================================================
-    template<std::convertible_to<value_type>... Is>
+    template<std::convertible_to<size_type>... Is>
     constexpr auto  index(Is... is) const noexcept
                     requires( (  sizeof...(Is) <= Strider.static_size) )
     {
@@ -130,7 +149,7 @@ namespace kwk
       return os;
     }
 
-    storage_type storage_;
+    storage_t storage_;
   };
 
   //================================================================================================
@@ -145,13 +164,16 @@ namespace kwk
     //==============================================================================================
     using strider_type  = decltype(Strider);
     using stride_map    = typename strider_type::map_type;
-    using value_type    = typename strider_type::size_type;
-    using storage_type  = detail::stride_storage<value_type,Strider>;
+    using size_type     = typename strider_type::size_type;
+    using storage_t     = detail::stride_storage<size_type,Strider>;
 
     static constexpr auto is_unit     = strider_type::is_unit;
     static constexpr auto is_implicit = strider_type::is_implicit;
     static constexpr auto static_size = strider_type::static_size;
 
+    //==============================================================================================
+    // stride is its self option keyword
+    //==============================================================================================
     static constexpr auto size() noexcept { return static_size; }
 
     using stored_value_type = stride<Strider>;
@@ -175,7 +197,7 @@ namespace kwk
     //==============================================================================================
     // indexing interface
     //==============================================================================================
-    constexpr auto index(std::convertible_to<value_type> auto is) const noexcept { return is; }
+    constexpr auto index(std::convertible_to<size_type> auto is) const noexcept { return is; }
 
     void swap( stride& ) noexcept {}
 

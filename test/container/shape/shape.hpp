@@ -25,7 +25,7 @@ template<typename Shape> inline void test_0D(Shape const& sh)
 
 template<typename Size, typename Shape> inline void test_nD(Size const&, Shape const& sh)
 {
-  TTS_EQUAL(sh.size(), Size::value  );
+  TTS_EQUAL(sh.rank(), Size::value  );
 
   TTS_EQUAL(kwk::get<0>(sh)                   , 3            );
   TTS_EQUAL(kwk::get<Shape::static_rank-1>(sh), 3*Size::value);

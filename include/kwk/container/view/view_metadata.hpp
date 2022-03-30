@@ -1,16 +1,16 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #pragma once
 
 #include <kwk/detail/raberu.hpp>
 #include <kwk/options/label.hpp>
 
-namespace kwk
+namespace kwk::detail
 {
   template<typename... Data> struct view_metadata;
 

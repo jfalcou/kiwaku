@@ -16,7 +16,7 @@ TTS_CASE_TPL( "Default constructed shape behavior", sizes<10>)
 
   TTS_EQUAL(sh.nbdims() , 1       );
   TTS_EQUAL(sh.numel()  , 0       );
-  TTS_EQUAL(sh.size()   , T::value);
+  TTS_EQUAL(sh.rank()   , T::value);
 
   TTS_EQUAL(kwk::get<0>(sh), 0);
   if constexpr(T::value==1) TTS_EQUAL(kwk::get<T::value-1>(sh) , 0);

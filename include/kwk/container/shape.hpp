@@ -205,7 +205,7 @@ namespace kwk
     constexpr shape( shape<OtherShaper> const& other ) noexcept
     requires( OtherShaper.size() == Shaper.size() && Shaper.is_compatible(OtherShaper))
     {
-      detail::constexpr_for<size()>
+      detail::constexpr_for<rank()>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           constexpr auto idx = size_map::template locate<static_rank>(I);
@@ -279,7 +279,7 @@ namespace kwk
     }
 
     /// Number of dimensions
-    static constexpr std::ptrdiff_t size() noexcept { return static_rank; }
+    static constexpr std::ptrdiff_t rank() noexcept { return static_rank; }
 
     /// Assignment operators
     template<auto OtherShaper>

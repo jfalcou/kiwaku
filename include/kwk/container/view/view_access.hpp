@@ -1,9 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: MIT
-**/
+*/
 //==================================================================================================
 #pragma once
 #include <kwk/detail/raberu.hpp>
@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace kwk
+namespace kwk::detail
 {
   //================================================================================================
   // Rank N general cases
