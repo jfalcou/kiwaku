@@ -10,6 +10,7 @@
 #include <kwk/options.hpp>
 #include <type_traits>
 #include <utility>
+#include <iostream>
 
 namespace kwk::detail
 {
@@ -86,7 +87,7 @@ namespace kwk::detail
   // Expected sizeof : sizeof(void*) + sizeof(shape[0])
   //================================================================================================
   template<auto Shape, auto Stride>
-  requires( !Shape.is_fully_static && Shape.size() == 1 && Stride.is_unit )
+  requires( !Shape.is_fully_static && Shape.rank() == 1 && Stride.is_unit )
   struct  view_access<Shape, Stride>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
@@ -118,7 +119,7 @@ namespace kwk::detail
   // Expected sizeof : sizeof(void*) + sizeof(shape)
   //================================================================================================
   template<auto Shape, auto Stride>
-  requires(   !Shape.is_fully_static  && Shape.size() == 2
+  requires(   !Shape.is_fully_static  && Shape.rank() == 2
           &&  Stride.is_unit          && Stride.is_implicit
           )
   struct  view_access<Shape, Stride>
