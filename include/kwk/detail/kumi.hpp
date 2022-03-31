@@ -5,7 +5,9 @@
   SPDX-License-Identifier: MIT
 */
 //==================================================================================================
-#pragma once
+#ifndef KUMI_HPP_INCLUDED
+#define KUMI_HPP_INCLUDED
+
 #include <concepts>
 #include <iosfwd>
 #include <type_traits>
@@ -1239,3 +1241,4 @@ namespace kumi
 }
 
 #undef KUMI_FWD
+#endif
