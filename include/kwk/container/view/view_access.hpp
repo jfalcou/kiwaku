@@ -10,7 +10,6 @@
 #include <kwk/options.hpp>
 #include <type_traits>
 #include <utility>
-#include <iostream>
 
 namespace kwk::detail
 {

@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/algorithm/for_each.hpp>
 #include <kwk/detail/view_builder.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/options.hpp>
@@ -77,6 +78,9 @@ namespace kwk
     //! @}
     //==============================================================================================
 
+    //! Return the rank of the view
+    constexpr auto rank() const noexcept{ return this->shape().rank(); }
+
     //==============================================================================================
     //! @name Range interface
     //! @{
@@ -103,11 +107,52 @@ namespace kwk
     //! @}
     //==============================================================================================
 
-    /// Swap the contents of two views
+    /// Swap the contents with another view
     void swap(view& other) noexcept
     {
       access_t::swap( static_cast<access_t&>(other) );
       span_t::swap( static_cast<span_t&>(other) );
+    }
+
+    /// Swap the contents of two views
+    friend void swap(view& a, view& b) noexcept { a.swap(b); }
+
+    /// Stream insertion operator
+    friend std::ostream& operator<<(std::ostream& os, view const& v)
+    {
+      auto spaces = meta_t::has_label ? "  " : "";
+      auto lbl    = [&]() { if constexpr(meta_t::has_label) os << v.label() << ":\n"; };
+
+      if constexpr( view::static_rank < 3)
+      {
+        lbl();
+        for_each( [&](auto const& c, auto i0, auto... i)
+                  {
+                    if(i0 == 0) os << spaces << "[ ";
+                    os << c(i0,i...) << " ";
+                    if(i0 == dim<0>(c)-1) os << "]\n";
+                  }
+                , v
+                );
+      }
+      else
+      {
+        lbl();
+        for_each( [&](auto const& c, auto i0, auto i1, auto i2, auto... i)
+                  {
+                    if(i0 == 0)
+                    {
+                      if(i1 == 0 && i2 > 0) os << "\n";
+                      os << spaces << "[ ";
+                    }
+                    os << c(i0,i1,i2,i...) << " ";
+                    if(i0 == dim<0>(c)-1) os << "]\n";
+                  }
+                , v
+                );
+      }
+
+      return os;
     }
 
     constexpr auto settings() const noexcept
