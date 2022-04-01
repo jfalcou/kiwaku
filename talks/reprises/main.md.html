@@ -320,118 +320,19 @@ Plutôt dans "Kiwaku design" nan ? Réduction du scope : on n'essaie pas de trou
 
 ## Simple view construction
 
-### Miaou.
-
-<script type="preformatted">
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
-// simple_view.cpp
-#include <kwk/kwk.hpp>
-#include <iostream>
-
-int main()
-{
-  using namespace kwk;
-
-  double data[6] = {1.2,2.3,3.4,4.5,5.6,6.7};
-
-  auto vd = view{ source = data };
-  std::cout << vd.shape() << "\n";
-  std::cout << vd.rank() << "\n";
-  
-  for(std::size_t i = 0; i < vd.size();++i)
-    vd(i) *= 10.;
-
-  for(auto e : data)
-    std::cout << e << " ";
-} 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-</script>
+<iframe width="100%" height="75%" src="http://localhost:10240/e#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:18,fontUsePx:'0',j:1,lang:c%2B%2B,selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:'//+simple_view.cpp%0A%23include+%3Ckwk/kwk.hpp%3E%0A%23include+%3Ciostream%3E%0A%0Aint+main()%0A%7B%0A++using+namespace+kwk%3B%0A%0A++double+data%5B6%5D+%3D+%7B1.2,2.3,3.4,4.5,5.6,6.7%7D%3B%0A%0A++auto+vd+%3D+view%7B+source+%3D+data+%7D%3B%0A++std::cout+%3C%3C+vd.shape()+%3C%3C+%22%5Cn%22%3B%0A++std::cout+%3C%3C+vd.rank()+%3C%3C+%22%5Cn%22%3B%0A++%0A++for(std::size_t+i+%3D+0%3B+i+%3C+vd.size()%3B%2B%2Bi)%0A++++vd(i)+*%3D+10.%3B%0A%0A++for(auto+e+:+data)%0A++++std::cout+%3C%3C+e+%3C%3C+%22+%22%3B%0A%7D+'),l:'5',n:'0',o:'C%2B%2B+source+%231',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:g10,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1'),flagsViewOpen:'1',fontScale:18,fontUsePx:'0',j:1,lang:c%2B%2B,libs:!((name:kiwaku,ver:trunk)),options:'-O3+-DNDEBUG+-std%3Dc%2B%2B20',selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:1,tree:'1'),l:'5',n:'0',o:'Intel+-+G%2B%2B+10+(C%2B%2B,+Editor+%231,+Compiler+%231)',t:'0')),k:50,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compiler:1,editor:1,fontScale:18,fontUsePx:'0',tree:'1',wrap:'1'),l:'5',n:'0',o:'Output+of+Intel+-+G%2B%2B+10+(Compiler+%231)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:50,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4"></iframe>
 
 ---
 
-
 ## Rank 3 view from standard range
 
-### Miaou miaou.
-
-<script type="preformatted">
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
-#include <kwk/kwk.hpp>
-#include <vector>
-#include <iostream>
-
-int main()
-{
-  using namespace kwk;
-
-  std::vector<double> data(18);
-
-  auto vd = view{ source = data 
-                , of_size(2,3,3)
-                , label = "base_freq"
-                };
-  
-  std::cout << vd.shape() << "\n";
-  std::cout << dim<0>(vd) << " x " 
-            << dim<1>(vd) << " x " 
-            << dim<2>(vd) << "\n";
-  std::cout << vd.rank() << "\n";
-
-  for(std::size_t i2 = 0; i2 < dim<2>(vd);++i2)
-    for(std::size_t i1 = 0; i1 < dim<1>(vd);++i1)
-    for(std::size_t i0 = 0; i0 < dim<0>(vd);++i0)  
-      vd(i0,i1,i2) = (i0+1) + 10*(i1+1) + 100*(i2+1);
-
-  for(auto e : data)
-    std::cout << e << " ";    
-  std::cout << "\n\n";
-  
-  std::cout << vd << "\n"; 
-}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-</script>
+<iframe width="100%" height="75%" src="http://localhost:10240/e#z:OYLghAFBqd5QCxAYwPYBMCmBRdBLAF1QCcAaPECAMzwBtMA7AQwFtMQByARg9KtQYEAysib0QXABx8BBAKoBnTAAUAHpwAMvAFYTStJg1DIApACYAQuYukl9ZATwDKjdAGFUtAK4sGe1wAyeAyYAHI%2BAEaYxHoADqgKhE4MHt6%2BcQlJAkEh4SxRMVy2mPaOAkIETMQEqT5%2BRXaYDskVVQQ5YZHRegqV1bXpDX3twZ353VwAlLaoXsTI7BzmAMzByN5YANQmy24A1gDuewD0h3sAdAixsTvYJhoAgitrG5jbuwBuTUTEt/dPZlWDHWXi2OzcTl6xEwrD%2Bj3%2BwQImxYTGCEEm/xMAHYrI9NpsvIkjJtmGwFLEmAtNmcdrinnjNr10CAQF8HCRwehZhF6LdNugmJUIFIMcs6f98UwvERNh90O8ACKyvCYA7YiyM2bzN47JUCyrbBn440m02kTaoKgAfUSAC9MBAzKRls6MUbTR78eaDFFaIrtmYzBEmEorVRoQBHcxmCWeuPYhW02OxpkstDS95ucGy9DnBQIJixB2TTPZ6MmACsbgY5bFKYIzJQsyR4Oz%2BBY4I0twgcpLrd2AbMm1Ug8NDzjJv7bn5eA7uy43d7pYH0eHo9jE%2BX0/b4Jjy2wPfQfd2ZcDlertbp%2BNTTYzU5z52Ihj26K3g/PNbPdfhDP4xAgN52pgVpIngQ66psXZipsYGZjOc5uHuB69kmljWGBbrjsaf4AQ2LJASBMFcP6UEangxFtrO4ILvuh6ilYaGWORmEmjhgF4PahF4BoJG0jBPGUQhUHIUeqEMRY3ElmOHpyhA3HkEUGH%2BnJXaWFMAYalwGgAFRyQual9pYmxaTpckxgZSY/lhOFSjKbwgPygpMCxxo3umLYngOOqedOq6XpODJuc2b7llWNZhZeyaBXht4eVmA5yiFZ4RV%2BGqYliCocNMtCcBWvB%2BBwWikKgnBZoxGoKFqVIrDwpAEJoWXTHsIAVho%2BicAALPlDXFZwvAKCAbX1YVWWkHAsAwIgTYsLEdDROQlBoDNc0xMAWl8HQBDRANEARD1ETBFUACenC1UtbCCAA8gwtAnSNpBYCiRjiPd%2BDQs0XwDfdmCqE00qLEViIlD1tB4BET7EEdHhYD1BDELOp2jVQBjAAoABqKoHJdRYFbV/CCCIYjsFIMiCIoKjqPduhFAYRgoNY1j6GDA2wKS7B7HgBxMHsXikF8MRw14DB7JM0yoLEZQMF9AC0l3LJs0sKqECrYBYcgAOIK0yuqmOVZhFY0zTOBArgDPUpCBKMeQFBkiSS2bttZAwHTWxMxSlC0wwOw0JTfJ7bQu10hS2F7nh1D0wyB%2BMhTTJVcwLHocOYIsPDZbl3X3SVHAAJKCCUCubOrDNGVpmwQGV4nmrghAkAGyxFJsHjLfQxB11MvDDVooukM1rXtRwXWkCwIDLB15xmB1ACcHVYlwHUVpIWJYssWLSAVRVZ/1g11Q10zjVNzaxNKC0QEts0t/4%2BA/Ho%2BPCKI4gk7f5NqLD0Ip7wBxPrEiNpxweWkOvXgWdLrSiPkiS0mxc5bT9NLQuxdNI8XLqgZu0Q26TA7rvaYCAYRYBiOifug9h4ADYKznCxK1CsZhJAVg6lwQMRDAwAJ6pvWw29O6NR7i1NqOUODLAzhvPqO8Rrdx4WYfhQDBHsO7vzRIzgOpAA%3D"></iframe>
 
 ---
 
 ## Code generation comparison with standard C
 
-### Miaou miaou miaou.
-
-<script type="preformatted">
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
-#include <kwk/kwk.hpp>
-
-template<typename T, auto... Os>
-void g( kwk::view<T,Os...> v)
-{
-  for(std::ptrdiff_t i=0;i<v.size();++i)
-    v(i) *= 2.354f;
-}
-
-void f_kwk(float* ptr, int n)
-{
-  g( kwk::view{kwk::source = ptr, kwk::size = n});
-}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-</script>
-
-
-
-<script type="preformatted">
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
-#include <cstddef>
-
-void f_c(float* ptr, int n)
-{
-  for(std::ptrdiff_t i=0;i<n;++i)
-    ptr[i] *= 2.354f;
-}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-</script>
-
-## 
-
-Le second slide d'exemples, peut-être
+<iframe width="100%" height="75%" src="http://localhost:10240/e#z:OYLghAFBqd5TKALEBjA9gEwKYFFMCWALugE4A0BIEAZgQDbYB2AhgLbYgDkAjF%2BTXRMiAZVQtGIHgA4BQogFUAztgAKAD24AGfgCsp5eiyahUAUgBMAIUtXyKxqiIEh1ZpgDC6egFc2TA3cAGQImbAA5PwAjbFIDAAd0JWIXJi9ffwSklKEQsMi2GLiee2xHZyERIhZSInS/AJKHbCdUqpqiPIjo2IMlatr6zKaBztDuwt6eAEp7dB9SVE4uSwBmUNRfHABqM1WPAGsAdwOAemODgDokePi93DMtAEFHp6JsNnijd72PIgBPeLMdjYbYAFXI2xYPhIlzh2wA8kp7q8AG7oAiYbbACDbC4gECogjYI6/CFIuGXe7bVHTV5mADsNme222glIEH6mAJ8SIpEINBoAH0iNsCHsACJaPZWcX7VGXZIAL2wEDpqxs1lsBDpLNZNIgOu2ACpJdsLJdVgBWAAsNBl9IZEvpz3RmLZQoutHo6BYRGN215FDFwm2TF1LyZr1ZOLxJwJRJJjKs%2BJASnmi1BZqDkNTyqzqwlYcZEvVzMjEq4s3o3Ct/ACXB05HQ3A8tls23TCyWuwsqz45CI2ir5AgKAwnwYsUo1An8SncWAPC0AgY71ISmoUWH5CioRq/24A4nHGECKY9EPjf4ODYxmAkmv5EIpBazlR2E3T%2Bw6haMOWA6hO8NZPvQBBRKQB5eDgO58gQbBHiONBGMASgAGrEkcCJAg2A6CMIYgSJwMhyMIyhqJoT76CURgmGg7bWIY4GbrArAcCABwEEcLAHD45AfnEfI%2BEwBzTLM6C8qkX4ALQIqs2zSRK4QSrgVgKAA4gpXKSuYWrWBYTbNK0rgQO4QyNOQwTjAURRZMkFRpN4DR2TkTBdDZUylOUbSjOZfRlG%2BPkdO5PTFPYvlOcM4XBdZoVSLMXaZgYfLYABI4gXW5ANk2LZcAAksIZQKds6kMVY2zLtsEBtnpdjbPgxBkL2/aQl4k6MKQzUzPwQ7XmJ5AHCANoWqsACcw08Fa/bSAAbKNqxaKNhjcDa/AIVaK7ZfwuX8JuK69TosxwLA45YHghAkBQVC0FObFpaRojiJIJH4YoKgaDu%2BgWIY970bVXmBSZZmRRZVn5HFJSJPZqR%2BZD2QOSFkxhUZDntIMIP%2Bd5lSjIjtkjB0sPRbUuNTAlGZLNwawbFsBYeKgXI4PaqwPM8aIYliwqoN6vr%2BoGfKQkBYYRsm0ZsmQnJENyIBBgKwqinKUoynKHhMA6tU6qLrJBmYVqyjrRamoW5qWraTPliW6W1vWO65TVmrlYlPZrBYPXDkdp3tdO11zguIBLiudD0Oum4QNuT57qwpBXse6BsKeRDnpeO63vej5Ni%2BgUfl%2BTY/n%2B7yIZQhUgU2YEQVBZ2waQ8GIbMyEsKhGEkthzAF69hHPbIr3kR9VEgN9tGmGVTFRCxarNpJQgyXJClKSpamadJ2mFrp9sGbtAXGQEplMJ4GMlGDEx4%2BQUOuYTJ8I7FSOY4DTBo3Ue8A5vd8k8jEUZBZ/QxeDV8zHM3acN9FKaVqxWyyjbbgBVgLFVKrVCqWgqp21sJCBql1mrfW2G1ecHU0HTFdn1WYSBsAsBwHEMeIFVrkHWptcBXBdogH2m7WYg0xqXBtAyaQo0rQMlGpNaQ/YZpWmWlwVY1snw7UHG7UciAxwgFljOWg8h27EU7vIbulES5IE3DRTRssARAnoeQUgmi%2B6GJ0QQQUejOBaBAVwTKW1mzcAlOYmg2xG5HFiNsSBRVpIlTKnAmkShPFF2gX45ceDDoEKISQ6gTCQAzS0JcK0FhlzDS0NIG0PAZp8MmkIih9jxF7QkfgoRLswFiO4OEqsswBLJFcDaIAA"></iframe>
 
 ---
 
