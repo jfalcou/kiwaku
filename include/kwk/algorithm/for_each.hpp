@@ -9,6 +9,9 @@
 //==================================================================================================
 #pragma once
 
+#include <cstddef>
+#include <utility>
+
 namespace kwk
 {
   namespace detail
@@ -16,10 +19,10 @@ namespace kwk
     //================================================================================================
     // n-Dimensional for_each algorithm
     //================================================================================================
-    template<typename Func, typename Dim0, typename Container>
-    constexpr void for_each(Func f, Container&& c, Dim0 d0)
+    template<typename Func, typename Dim, typename Container>
+    constexpr void for_each(Func f, Container&& c, Dim d)
     {
-      for(std::ptrdiff_t i0=0;i0<d0;++i0) f(KWK_FWD(c), i0);
+      for(std::ptrdiff_t i=0;i<d;++i) f(KWK_FWD(c), i);
     }
 
     template<typename Func, typename Container, typename Dim, typename... Dims>
@@ -44,8 +47,7 @@ namespace kwk
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      auto shp = c.shape();
-      return detail::for_each(f, KWK_FWD(c), get<N>(shp)... );
-    }( std::make_index_sequence<std::remove_cvref_t<Container>::static_rank>{});
+      return detail::for_each(f, KWK_FWD(c), dim<N>(c)... );
+    }( std::make_index_sequence<std::remove_cvref_t<Container>::static_rank>{} );
   }
 }
