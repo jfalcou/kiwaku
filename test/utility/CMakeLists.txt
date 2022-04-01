@@ -4,7 +4,9 @@
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 set ( SOURCES
+      allocator.cpp
       fixed.cpp
+      heap.cpp
     )
 
 make_unit("utility" ${SOURCES})
