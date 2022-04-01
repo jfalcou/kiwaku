@@ -40,8 +40,11 @@
 # Setup
 .idea/
 *.sublime-*
+compile_commands.json
 
 # Potential local build repository
 *build*/
 Testing/
 doc/conf.py
+.vscode/*
+.cache/*

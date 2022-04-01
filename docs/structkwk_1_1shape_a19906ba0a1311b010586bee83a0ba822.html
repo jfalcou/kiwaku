@@ -1,0 +1,247 @@
+<!-- HTML header for doxygen 1.8.20-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="generator" content="Doxygen 1.9.4"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Kiwaku: kwk::shape::shape</title>
+  <!--<link href="tabs.css" rel="stylesheet" type="text/css"/> REMOVED BY DOXYSTRAP -->
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="dynsections.js"></script>
+  <script type="text/javascript" src="godbolt.js"></script>
+  <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js"></script>
+  <link href="doxygen.css" rel="stylesheet" type="text/css" />
+  <link href="doxystrap.css" rel="stylesheet" type="text/css"/>
+  <!-- DOXYSTRAP BLOCK CHANGE BEGIN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+  <script type="text/javascript" src="doxystrap.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- Custom input to switch branches -->
+  <script>
+    function switchBranchAction() {
+      var branch = document.getElementById("branch_input").value;
+      var form = this;
+      window.location.href = window.location.hostname + '/en/' + branch;
+    }
+  </script>
+  <!-- DOXYSTRAP BLOCK CHANGE END -->
+</head>
+<body>
+  <!-- DOXYSTRAP BLOCK CHANGE BEGIN -->
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+      <!--GITHUB RIBBON-->
+      <a id="forkme_banner" href="https://github.com/jfalcou/kiwaku">View on GitHub</a>
+      <!--GITHUB RIBBON-->
+        <a href="index.html" class="navbar-brand">Kiwaku 0.1-beta</a>
+      </div>
+    </div>
+  </nav>
+  <!-- DOXYSTRAP BLOCK CHANGE END -->
+  <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+    <!-- DOXYSTRAP BLOCK CHANGE BEGIN -->
+    <div class="content" id="content">
+      <div class="container">
+        <div id="titlearea">
+          <table cellspacing="0" cellpadding="0">
+            <tbody>
+              <tr style="height: 56px;">
+                <td id="projectlogo"><a href="index.html"><img alt="Logo" src="logo.png" /></a>
+                </td>
+                <td id="projectalign" style="padding-left: 0.5em;">
+                  <div id="projectname">Kiwaku
+                    &#160;<span id="projectnumber">0.1-beta</span>
+                  </div>
+                  <!-- BEGIN PROJECT_BRIEF--><div id="projectbrief">Containers Well Made</div><!--END PROJECT_BRIEF -->
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 panel " style="padding-bottom: 15px;">
+            <div style="margin-bottom: 15px;">
+              <!-- DOXYSTRAP BLOCK CHANGE END -->
+              <!-- end header part -->
+<!-- Generated by Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Search','.html');
+/* @license-end */
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Index</span></a></li>
+      <li><a href="pages.html"><span>Documentation</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>References</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.svg"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1shape.html">shape</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="contents">
+<table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+   <td valign="top">
+      <div class="navtab">
+        <table>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#a3d2ea9ff5d7f6e4decf0d9748781b873">as_stride</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#a6b356ea8e781a2c521f61d09e4e3efc6">is_dynamic</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#a4a409b86d709d6fe5e0b4bcbaee7025c">is_fully_dynamic</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#a862dcfa26ebbe584006e5ad2f40731a0">is_fully_static</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape_ac73bd286bf9fb6be5df395e864a5f818.html#ac73bd286bf9fb6be5df395e864a5f818">nbdims</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape_aa8081bc51b6238e76bd96e3fa05030e5.html#aa8081bc51b6238e76bd96e3fa05030e5">numel</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#a088bde0950176b1fc6985e4d222002ba">operator&lt;&lt;</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#ae1ef6c5a1d103611e5eb672ee00f2c48">operator=</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape_a29c84619679d5eed14057493fd18efc9.html#a29c84619679d5eed14057493fd18efc9">shape</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape_a274197bf6a84ce853e1a403eeabb37df.html#a274197bf6a84ce853e1a403eeabb37df">shape</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape_a7a1e811c1c802af635742405d61a1f51.html#a7a1e811c1c802af635742405d61a1f51">shape</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape_a56c24e18ef2514311686218743421f35.html#a56c24e18ef2514311686218743421f35">shape</a></td></tr>
+          <tr><td class="navtabHL"><a class="navtab" href="structkwk_1_1shape_a19906ba0a1311b010586bee83a0ba822.html#a19906ba0a1311b010586bee83a0ba822">shape</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape_aa92e792b9aeabab4372c164aa773c2b5.html#aa92e792b9aeabab4372c164aa773c2b5">shape</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#ad5f0c275332ca15dbc5b97e9737f3188">size</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#ab378b4291aba2eff564028d8e59f3083">size_type</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#af29308fdb30c16f1f25241c76140f562">static_nbdims</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#a2f81075c361edd7e6bf6077e9c10e0e8">stride_type</a></td></tr>
+          <tr><td class="navtab"><a class="navtab" href="structkwk_1_1shape.html#a0531c0b3471d7fb2f21b41237a18f2f6">swap</a></td></tr>
+        </table>
+      </div>
+   </td>
+   <td valign="top" class="mempage">
+<a id="a19906ba0a1311b010586bee83a0ba822" name="a19906ba0a1311b010586bee83a0ba822"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19906ba0a1311b010586bee83a0ba822">&#9670;&nbsp;</a></span>shape() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;auto Shaper&gt; </div>
+<div class="memtemplate">
+template&lt;auto OtherShaper&gt; <br />
+requires ( OtherShaper.size() &lt; <a class="el" href="structkwk_1_1shape.html#af29308fdb30c16f1f25241c76140f562">static_nbdims</a> &amp;&amp; <a class="el" href="structkwk_1_1shape.html#a4a409b86d709d6fe5e0b4bcbaee7025c">is_fully_dynamic</a>)</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; Shaper &gt;::shape </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; OtherShaper &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Constructs a <a class="el" href="structkwk_1_1shape.html" title="Fixed rank shape with mixed size capability.">kwk::shape</a> from a shape with higher ranks, filling the missing sizes with 1</p>
+<p >This constructor does not participate in overload resolution of the shape is not fully specified at runtime.</p>
+<h2 class="groupheader">Example </h2>
+<p > <a id="godbolt-link" href="#">See it live on Compiler Explorer</a> <div id="godbolt"> </p><div class="fragment"><div class="line"><span class="comment">//==================================================================================================</span></div>
+<div class="line"><span class="comment">/*</span></div>
+<div class="line"><span class="comment">  KIWAKU - Containers Well Made</span></div>
+<div class="line"><span class="comment">  Copyright : KIWAKU Contributors &amp; Maintainers</span></div>
+<div class="line"><span class="comment">  SPDX-License-Identifier: MIT</span></div>
+<div class="line"><span class="comment">*/</span></div>
+<div class="line"><span class="comment">//==================================================================================================</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;kwk/kwk.hpp&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="line">{</div>
+<div class="line">  <span class="comment">// x will contains 4 x 32</span></div>
+<div class="line">  <a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::_2D &gt;</a> x(<a class="code hl_function" href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">kwk::of_size</a>(4, 8, 2, 2));</div>
+<div class="line">  std::cout &lt;&lt; x &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">// y will contains 7 x 1 x 1</span></div>
+<div class="line">  <a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::_3D &gt;</a> y = <a class="code hl_function" href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">kwk::of_size</a>(7);</div>
+<div class="line">  std::cout &lt;&lt; y &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line">}</div>
+<div class="ttc" id="anamespacekwk_a53305b69e29bdf55072efcacbd18609d_html_a53305b69e29bdf55072efcacbd18609d"><div class="ttname"><a href="namespacekwk_a53305b69e29bdf55072efcacbd18609d.html#a53305b69e29bdf55072efcacbd18609d">kwk::of_size</a></div><div class="ttdeci">constexpr auto of_size(Ds... ds) noexcept</div><div class="ttdoc">Generates a kwk::shape from a list of sizes.</div><div class="ttdef"><b>Definition:</b> shape.hpp:528</div></div>
+<div class="ttc" id="astructkwk_1_1shape_html"><div class="ttname"><a href="structkwk_1_1shape.html">kwk::shape</a></div><div class="ttdoc">Fixed rank shape with mixed size capability.</div><div class="ttdef"><b>Definition:</b> shape.hpp:70</div></div>
+</div><!-- fragment --><p> <br  />
+  </div></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>Shape to copy </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+    </td>
+  </tr>
+</table>
+</div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.20-->
+<!-- start footer part -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+</div> <!-- DOXYSTRAP RELATED -->
+<hr class="footer"/>
+</body>
+</html>

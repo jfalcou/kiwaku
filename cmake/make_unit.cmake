@@ -1,8 +1,6 @@
 ##==================================================================================================
 ##  KIWAKU - Containers Well Made
-##  Copyright 2020 Joel FALCOU
-##
-##  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 include(add_target_parent)
@@ -10,19 +8,19 @@ include(add_target_parent)
 ##==================================================================================================
 # Unit test Configuration
 ##==================================================================================================
-add_library(unit_test_config INTERFACE)
+add_library(kiwaku_test INTERFACE)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options( unit_test_config INTERFACE /W3 /EHsc /std:c++latest)
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  target_compile_options( kiwaku_test INTERFACE /W3 /EHsc /std:c++20)
 else()
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options( unit_test_config INTERFACE -std=c++20 -Werror -Wall -Wextra -Wno-gnu-string-literal-operator-template)
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options( kiwaku_test INTERFACE -std=c++20 -Werror -Wall -Wextra)
   else()
-  target_compile_options( unit_test_config INTERFACE -std=c++20 -Werror -Wall -Wextra)
+  target_compile_options( kiwaku_test INTERFACE -std=c++20 -Werror -Wall -Wextra)
   endif()
 endif()
 
-target_include_directories( unit_test_config INTERFACE
+target_include_directories( kiwaku_test INTERFACE
                             ${PROJECT_SOURCE_DIR}/test
                             ${PROJECT_SOURCE_DIR}/include
                           )
@@ -66,7 +64,7 @@ function(make_unit root)
     add_dependencies(unit ${test})
 
     setup_location( ${test} "unit")
-    target_link_libraries(${test} PUBLIC unit_test_config)
+    target_link_libraries(${test} PUBLIC kiwaku_test)
 
     target_include_directories( ${test}
                                 PUBLIC

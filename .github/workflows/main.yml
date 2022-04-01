@@ -36,3 +36,16 @@ jobs:
         with:
           compiler: 'clang++'
           cpu:      2
+  clang-libcpp:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Fetch current branch
+        uses: actions/checkout@v2
+      - name: Testing Kiwaku with clang++
+        uses: ./.github/actions/run_docker
+        with:
+          compiler: 'clang++'
+          cpu:      2
+          options: 'CMAKE_CXX_FLAGS="-stdlib=libc++" -DCMAKE_EXE_LINKER_FLAGS="-stdlib=libc++"'
