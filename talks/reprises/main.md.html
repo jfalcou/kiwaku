@@ -1,0 +1,505 @@
+<!------------------------------------------------------------------------------------------------->
+<!--
+  Copyright 2022 Sylvain Joube & Joel Falcou
+  Licensed under the terms of the Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)
+-->
+<!------------------------------------------------------------------------------------------------->
+
+<meta charset="utf-8" lang="en">
+<!------------------------------------------------------------------------------------------------->
+
+**Kiwaku, containers well made**
+    Generative programming for efficient HPC data structures
+<small><em><span class="current-date"></span>&nbsp;REPRISES</em></small>
+<br>
+Sylvain JOUBE
+<br>
+<small>
+Joël FALCOU, Hadrien GRASLAND, David CHAMONT.
+</small>
+<br>
+<center><small>![](images/lisn.png style="height: 3rem")&nbsp;&nbsp;&nbsp;![](images/ijclab.png style="height: 3rem")</small></center>
+<center>![](images/ccby40.png style="height: 0.7rem")</center>
+<small><small>Powered by Markdeep and Markdeep-Slides</small></small>
+
+---
+
+
+
+
+## Context
+
+### nD Arrays : a pervasive tool
+  * Main data structure in **numerical simulations**
+  * Expected to be **efficient**
+  * Expected to be **easy to use** yet  **expressive**
+
+### Problem already addressed many times :
+
+  ![](images/standards.png style="width: 40%")
+
+---
+
+## Context
+
+### nD Arrays : a pervasive tool
+  * Main data structure in **numerical simulations**
+  * Expected to be **efficient**
+  * Expected to be **easy to use** yet  **expressive**
+
+### Problem already addressed many times :
+  
+  |  Libraries                                    | C++ Standard ?                      |
+  |:----------------------------------------------|:-----------------------------------:|
+  | `std::vector`, `std::valarray`, `std::mdspan` | <div style="color:#0f0;">✓</div>  |   
+  | EIGEN, Armadillo, xtensor, Blaze, Kokkos, ...      | <div style="color:#F00;">✗</div>  |
+
+<center>
+!!! ERROR:
+    **What if the real issue was a software design problem?**
+</center>
+
+---
+
+## nD Array Design Space
+
+### A small sampling
+  * Owning or non-owning array ?
+  * Are my dimensions runtime or compile-time ? or both ?
+  * Storage order : C, FORTRAN, arbitrary, ... ?
+  * Indexes start at 0 ? 1 ? -3 ? any user value ?
+  * Memory allocation : Allocator-based ? Which allocator model ? Stack or Heap ?
+
+### One implementation to rule them all ?
+  * Monolithic implementation leads to unmaintainable code
+  * Arbitrary restrictions on API is not a solution
+
+!!! Tip: Our Position
+    Apply a different design strategy to the problem
+
+---
+
+## Generative Programming [Czarnecki et al. : 2002]
+
+********************************************************************************
+*
+*   +---------------+   +-------------------------+   +---------------+
+*  | Domain Specific | |   Generative Components   | | Executable Code |
+*  |   Description   | +                           + |                 |
+*  |                 | |                           | |       +-+       |
+*  |       o         | |      .--------------.     | |  *-->|  +-->o   |
+*  |      / \   -----+-+---->|   Translator   +----+-+->     +-+       |
+*  |     *   *       | |      '--------------'     | |        ^        |
+*  |     |  / \      | |             ^             | |        | In     |
+*  |     v o   *     | |             |             | |  .--.--+--.--.  |
+*  |     o           | |             v             | |  | a| 7| b| x|  |
+*  |                 | |   .-------------------.   | |  '--'--'--'--'  |
+*   +---------------+  |  |      Parametric     |  |  +---------------+
+*                      |  |    Sub-Components   |  | 
+*                      |  |                     |  | 
+*                      |  |  +-+  .----.   +    |  | 
+*                      |  | |   | |    |  / \   |  |
+*                      |  |  +-+  '----' +---+  |  |
+*                      |  | *    o  ------->    |  |
+*                      |  |    +---+  .----.    |  |
+*                      |  |     \ /  |      |   |  |
+*                      |  |      +    '----'    |  |
+*                      |   '-------------------'   |
+*                       +-------------------------+
+*
+********************************************************************************
+
+---
+
+## Generative Programming for nD arrays
+
+### Advantages of Generative programming
+  * Domain specific descriptor and components are easy to extend
+  * Reduce the number of implementations from $|X|\cdot|Y|$ to $|X| + |Y|$
+  * Generative programming in C++ is based on **template metaprogramming** and **code generation**
+
+<!--
+  Le rôle des templates : Modular implementation => only compile what is really needed
+
+  Notre position c'est que qu'on peut utiliser la generative programming (GP) pour résoudre ce problème de design d'une manière suffisamment flexible à l'usage pour résoudre ce problème et répondre à tous les use-case. Kiwaku est censé résoudre ce problème, exemple de code qui claque. -->
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+// Wow, such C++ code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+# Existing solutions
+
+---
+
+## Overview
+
+### What do users want?
+  * Small and non-ambiguous interface
+  * Clear and concise documentation
+  * High discoverability
+
+### What do users deal with?
+  * Some APIs suffer from feature creep
+  * Some APIs require strong programming skills
+  * Some (most) APIs are sometimes counterintuitive and verbose
+
+### What is missing?
+  * User friendly for non computer experts
+  * Keep API scope reasonable
+
+---
+
+## Painful example : std::vector
+
+### Higher dimensions vector declaration
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+// 5D vector declaration and creation
+std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>>
+  my_vect(  d0,
+            std::vector<std::vector<std::vector<std::vector<float>>>>(d1,
+            std::vector<std::vector<std::vector<float>>>(d2,
+            std::vector<std::vector<float>>(d3,
+            std::vector<float>(d4)
+            )))
+          );
+
+// Access to fields
+my_vect[i0][i1][i2][i3][i4] = some_float;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+  * For a $d_1 \times d_2 \times \ldots \times d_{n}$ array, $1 + d_1 \times d_2 \times \ldots \times d_{n-1}$ allocations occurs
+  * Data access induces spurious cache misses
+  * Memory is not contiguous, leading to sub-par performance
+
+---
+
+<!-- ## Painful example : std::pmr
+
+### Constructing, assigning, and destroying container objects means :
+
+  * An **atomic** load on default constructor from std::pmr::get_default_resource()
+  * A **virtual call** for every move-assignment
+  * Verbose, complex, hard to read code
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+// define allocation behavior via a custom "memory_resource"
+class my_memory_resource : public std::pmr::memory_resource { ... };
+my_memory_resource mem_res;
+auto my_vector = std::pmr::vector<int>(0, &mem_res);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+TODO : Il y avait quelque chose à dire ici mais je sais plus quoi
+
+L'utilisation de memory-ressource est malvenue
+
+--- -->
+
+## Painful example : std::mdspan
+
+### Extent definition
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C++ linenumbers
+std::extents<4,3> fixed_4x3;                                        // Compile-time known extent
+std::extents<std::dynamic_extent,std::dynamic_extent> dynamic(4,3); // Runtime known extent
+
+std::extents< std::dynamic_extent,std::dynamic_extent,std::dynamic_extent,std::dynamic_extent
+            , std::dynamic_extent,std::dynamic_extent,std::dynamic_extent,std::dynamic_extent // Ughhhh
+            > dyn8d;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+### Type interface
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C++ linenumbers
+template< typename T, typename Extents
+        , typename LayoutPolicy = std::layout_right, typename Accessor = std::accessor_basic
+        >
+class mdspan;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Painful example : Expression template libraries
+
+### API inconsistencies and traps
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C++
+auto unexpected_lazy_evaluation(matrix A, B)
+{
+  auto C = A * B; // The type of C is not matrix
+  return C;
+}
+
+template<typename T> auto dangerous_reference_to_temporary(T const& t) 
+{
+  matrix m = t + t;
+  return m / t; // returns a reference to a temporary
+}
+
+template<typename T> auto silent_performance_bug(T const& t) 
+{
+  T that = t * t; // may or may not be of type T
+  return that;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+>>> Conclusion orale et on passe à la suite. Dire à l'oral "E.g EIGEN"
+>>> EIGEN ça pue
+
+---
+
+# Kiwaku
+
+---
+
+## Kiwaku design - Overview
+
+### Scope reduction
+  * monolithic "all in one" solutions are bound to fail
+  * Kiwaku only works with numerical nD arrays
+
+TODO : what's more ?
+
+Plutôt dans "Kiwaku design" nan ? Réduction du scope : on n'essaie pas de trouver une solution à tous les problèmes, on ne s'occupe que des tableaux numériques blablabla tu sais de quoi je parle ;)
+
+---
+
+## Kiwaku design
+
+### `kwk::view`
+  * Never owns any memory
+  * Wraps existing memory in a nD-array like interface
+  * Is designed to be as small as possible in 'resting position'
+
+### `kwk::table` 
+  * Owns memory allocated via an allocator or on the stack
+  * Wraps said memory in a nD-array like interface
+  * Is designed to be as small as possible in 'resting position'
+
+  ### Two sides of the same coin
+  * A `kwk::table` is a `kwk::view` over the memory it owns
+  * Efficient `kwk::view` leads to efficient `kwk::table`
+
+
+---
+
+## Kiwaku design
+
+### Supported options
+
+  * Kiwaku options are defined as orthogonal policies
+  * can be used as positional arguments in constructors
+  * options are exploited both at compile-time and run-time
+
+|  Options          | Values                                            |
+|:------------------|:--------------------------------------------------|
+| `kwk::source`     | pointers, static arrays, contiguous ranges        |
+| `kwk::size`       | `kwk::of_size(dn...)`, integers are 1D-shapes     |
+| `kwk::base_index` | `kwk::index<I>`, `kwk::indexes<I0,I1,...>`        |
+| `kwk::label`      | any string-like values                            |
+| `kwk::allocator`  | any types modeling `kwk::concepts::allocator`     |
+
+
+
+---
+
+## Simple view construction
+
+### Miaou.
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+// simple_view.cpp
+#include <kwk/kwk.hpp>
+#include <iostream>
+
+int main()
+{
+  using namespace kwk;
+
+  double data[6] = {1.2,2.3,3.4,4.5,5.6,6.7};
+
+  auto vd = view{ source = data };
+  std::cout << vd.shape() << "\n";
+  std::cout << vd.rank() << "\n";
+  
+  for(std::size_t i = 0; i < vd.size();++i)
+    vd(i) *= 10.;
+
+  for(auto e : data)
+    std::cout << e << " ";
+} 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+
+## Rank 3 view from standard range
+
+### Miaou miaou.
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <kwk/kwk.hpp>
+#include <vector>
+#include <iostream>
+
+int main()
+{
+  using namespace kwk;
+
+  std::vector<double> data(18);
+
+  auto vd = view{ source = data 
+                , of_size(2,3,3)
+                , label = "base_freq"
+                };
+  
+  std::cout << vd.shape() << "\n";
+  std::cout << dim<0>(vd) << " x " 
+            << dim<1>(vd) << " x " 
+            << dim<2>(vd) << "\n";
+  std::cout << vd.rank() << "\n";
+
+  for(std::size_t i2 = 0; i2 < dim<2>(vd);++i2)
+    for(std::size_t i1 = 0; i1 < dim<1>(vd);++i1)
+    for(std::size_t i0 = 0; i0 < dim<0>(vd);++i0)  
+      vd(i0,i1,i2) = (i0+1) + 10*(i1+1) + 100*(i2+1);
+
+  for(auto e : data)
+    std::cout << e << " ";    
+  std::cout << "\n\n";
+  
+  std::cout << vd << "\n"; 
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Code generation comparison with standard C
+
+### Miaou miaou miaou.
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <kwk/kwk.hpp>
+
+template<typename T, auto... Os>
+void g( kwk::view<T,Os...> v)
+{
+  for(std::ptrdiff_t i=0;i<v.size();++i)
+    v(i) *= 2.354f;
+}
+
+void f_kwk(float* ptr, int n)
+{
+  g( kwk::view{kwk::source = ptr, kwk::size = n});
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <cstddef>
+
+void f_c(float* ptr, int n)
+{
+  for(std::ptrdiff_t i=0;i<n;++i)
+    ptr[i] *= 2.354f;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+## 
+
+Le second slide d'exemples, peut-être
+
+---
+
+# Conclusion
+
+
+
+---
+
+## Conclusion
+
+### Current work
+  * [Kiwaku on Github](https://github.com/jfalcou/kiwaku/)
+  * Allocators : adaptation of Alexandrescu's model 
+  * Slicers : complete the implementation
+
+### Future of my PhD
+  * Support for tiling and non-trivial walkthrough (Morton, ...)
+  * Support for data locality in distributed computing scenarios
+  * Support for heterogenous platforms (GPU, FPGA, ...)
+  * Seamless integration with SYCL
+
+
+<!--TODO : faire cette slide
+
+Qu'est-ce qu'on est en train de faire maintenant
+- Allocateurs
+- Slicers
+- Où est-ce qu'on veut aller dans la thèse :
+  - Gestion de l'hétérogénéité (localité des données par exemple ?)
+  - Distribution, compatibilité GPU, interopérabilité avec des outils actuels comme SYCL. Par exemple, écrire du Kiwaku qui génère du code SYCL.
+-->
+
+<!------------------------------------------------------------------------------------------------->
+
+---
+
+# Thanks for your attention !
+
+<!------------------------------------------------------------------------------------------------->
+<!-- Markdeep slides stuff -->
+<script>
+    markdeepSlidesOptions = {
+        aspectRatio: 16 / 9,
+        theme: 'lri',
+        fontSize: 22,
+        diagramZoom: 1.0,
+        totalSlideNumber: true,
+        progressBar: true,
+        breakOnHeadings: false,
+        slideChangeHook: (oldSlide, newSlide) => {},
+        modeChangeHook: (newMode) => {}
+    };
+</script>
+<link rel="stylesheet" href="markdeep-slides/lib/markdeep-relative-sizes/1.09/relativize.css">
+<link rel="stylesheet" href="markdeep-slides/markdeep-slides.css">
+<script src="markdeep-slides/markdeep-slides.js"></script>
+
+<!-- Markdeep stuff -->
+<script>
+    markdeepOptions = {
+        tocStyle: 'none',
+        detectMath: false,
+        onLoad: function() {
+            initSlides();
+        }
+    };
+</script>
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
+<script src="markdeep-slides/lib/markdeep/1.09/markdeep.min.js" charset="utf-8"></script>
+<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
