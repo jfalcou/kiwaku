@@ -63,7 +63,7 @@ body, .md div.title, .md h1, .md h2, .md h3 {
     font-weight: bold;
     text-align: left;
     text-transform: uppercase;
-    font-size: 2.5rem !important;
+    font-size: 2rem !important;
     margin: calc(var(--slide-height) / 2 - 12rem / 2) 0 0 0;  /* center vertically, assuming two lines of text */
     padding: 0;
 }
