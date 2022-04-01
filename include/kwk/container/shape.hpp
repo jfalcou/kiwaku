@@ -401,7 +401,7 @@ namespace kwk
       detail::constexpr_for<static_rank>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
-          os << " " << s.template get<I>();
+          os << " " << +s.template get<I>();
         }
       );
 
