@@ -30,8 +30,8 @@ namespace kwk
 
     using span_type         = range_span;
 
-    constexpr auto as_span()        const noexcept { return range_span{data_};    }
-    constexpr auto default_shape()  const noexcept { return of_size<Size>(size_); }
+    constexpr auto as_span()        const noexcept { return range_span{data_};  }
+    constexpr auto default_shape()  const noexcept { return of_size(size_);     }
 
     T*    data_;
     Size  size_;

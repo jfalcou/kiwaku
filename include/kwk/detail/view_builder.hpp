@@ -30,7 +30,7 @@ namespace kwk::detail
     using access_type             = detail::view_access< shape, stride >;
 
     // Computes view_metadata type;
-    using label_t   = rbr::get_type_t<decltype(opts), label>;
+    using label_t   = rbr::result::fetch_t<label, decltype(opts)>;
     using meta_type = detail::view_metadata<label_t>;
   };
 }

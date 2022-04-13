@@ -8,18 +8,60 @@
 #ifndef RABERU_HPP_INCLUDED
 #define RABERU_HPP_INCLUDED
 
-#include <ostream>
 #include <array>
+#include <cstring>
+#include <ostream>
 #include <string_view>
 #include <type_traits>
 #include <utility>
 
 #define RBR_FWD(...) static_cast<decltype(__VA_ARGS__) &&>(__VA_ARGS__)
 
+namespace rbr::concepts
+{
+  // Keyword concept
+  template<typename K> concept keyword = requires( K k )
+  {
+    typename K::tag_type;
+    { K::template accept<int>() } -> std::same_as<bool>;
+  };
+
+  // Option concept
+  template<typename O> concept option = requires( O const& o )
+  {
+    { o(typename std::remove_cvref_t<O>::keyword_type{}) }
+    -> std::same_as<typename std::remove_cvref_t<O>::stored_value_type>;
+  };
+
+  // Settings concept
+  template<typename S> concept settings = requires( S const& s )
+  {
+    typename S::rbr_settings;
+  };
+
+  // Type checker concept
+  template<typename C> concept type_checker = requires( C const& )
+  {
+    typename C::template apply<int>::type;
+  };
+
+  // keyword parameter exact match
+  template<typename Option, auto Keyword>
+  concept exactly = std::same_as< typename Option::keyword_type
+                                , std::remove_cvref_t<decltype(Keyword)>
+                                >;
+}
+
 namespace rbr::detail
 {
   // Lightweight container of value in alternatives
-  template<typename T, typename V> struct type_or_ { V value; };
+  template<concepts::keyword T, typename V> struct type_or_
+  {
+    V value;
+
+    template<concepts::option... Os>
+    constexpr decltype(auto) operator()(Os&&... os) const { return fetch(*this, RBR_FWD(os)...); }
+  };
 
   // Type -> String converter
   template <typename T> constexpr auto type_name() noexcept
@@ -106,6 +148,9 @@ namespace rbr
       template <std::size_t... Is>
       constexpr str_(const char (&str)[N], std::index_sequence<Is...>) :data{str[Is]...} {}
       constexpr str_(const char (&str)[N]) : str_{str, std::make_index_sequence<N>{}} {}
+
+      static constexpr  auto  size()  { return N; }
+      auto value() const { return std::string_view(&data[0],strlen(&data[0])); }
     };
 
     template<std::size_t N> str_(const char (&str)[N]) -> str_<N>;
@@ -115,43 +160,13 @@ namespace rbr
   {
     friend std::ostream& operator<<(std::ostream& os, id_ const&)
     {
-      os << '\''; for(auto e : ID.data) os << e;
-      return os << '\'';
+      return os << '\'' << ID.value() << '\'';
     }
   };
 
   namespace literals
   {
     template<str_ ID> constexpr auto operator""_id() noexcept { return id_<ID>{}; }
-  }
-
-  namespace concepts
-  {
-    // Keyword concept
-    template<typename K> concept keyword = requires( K k )
-    {
-      typename K::tag_type;
-      { K::template accept<int>() } -> std::same_as<bool>;
-    };
-
-    // Option concept
-    template<typename O> concept option = requires( O const& o )
-    {
-      { o(typename std::remove_cvref_t<O>::keyword_type{}) }
-      -> std::same_as<typename std::remove_cvref_t<O>::stored_value_type>;
-    };
-
-    // Type checker concept
-    template<typename C> concept type_checker = requires( C const& )
-    {
-      typename C::template apply<int>::type;
-    };
-
-    // keyword parameter exact match
-    template<typename Option, auto Keyword>
-    concept exactly = std::same_as< typename Option::keyword_type
-                                  , std::remove_cvref_t<decltype(Keyword)>
-                                  >;
   }
 
   // Callable alternative wrapper
@@ -173,22 +188,35 @@ namespace rbr
     Value contents;
   };
 
-  // Base class for custom keyword
+// Base class for custom keyword
   template<typename Keyword> struct as_keyword
   {
     using tag_type  = Keyword;
+
+    inline constexpr auto operator<=>(as_keyword const&) const noexcept = default;
+
     template<typename T> static constexpr bool accept()
     {
-      if constexpr( requires(Keyword) { Keyword::accept(); } ) return Keyword::accept();
-      else return true;
+      if constexpr( requires(Keyword) { Keyword::template check<T>(); } )
+        return Keyword::template check<T>();
+      else
+        return true;
+    }
+
+    template<typename Type>
+    constexpr auto operator=(Type&& v) const noexcept requires( accept<Type>() )
+    {
+      return option<Keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
     }
 
     template<typename V> std::ostream& show(std::ostream& os, V const& v) const
     {
-      if constexpr(  requires(Keyword t) { t.show(os,v); } ) Keyword{}.show(os,v);
-      else os << '[' << detail::type_name<Keyword>() << ']';
-
-      return os << " : " << v << " (" << detail::type_name<V>() << ')';
+      if constexpr(  requires(Keyword t) { t.display(os,v); } ) return Keyword{}.display(os,v);
+      else
+      {
+        os << '[' << detail::type_name<Keyword>() << ']';
+        return os << " : " << v << " (" << detail::type_name<V>() << ')';
+      }
     }
 
     template<typename Type>
@@ -201,103 +229,67 @@ namespace rbr
     {
       return detail::type_or_<Keyword,call<Func>>{RBR_FWD(v)};
     }
+
+    template<concepts::option... Os>
+    constexpr decltype(auto) operator()(Os&&... o) const { return fetch(Keyword{}, RBR_FWD(o)...); }
   };
 
   // checked_keyword implementation
-  template<typename Tag, typename Traits> struct checked_keyword
+  template<typename Tag, typename Traits>
+  struct checked_keyword : as_keyword<checked_keyword<Tag, Traits>>
   {
-    using tag_type  = Tag;
-
     constexpr checked_keyword() {}
     constexpr checked_keyword(Tag, Traits) {}
 
-    template<typename T> static constexpr bool accept()
+    template<typename T> static constexpr bool check()
     {
       return Traits::template apply<std::remove_cvref_t<T>>::value;
     }
 
     template<typename V>
-    std::ostream& show(std::ostream& os, V const& v) const
+    std::ostream& display(std::ostream& os, V const& v) const
     {
       if constexpr(  requires(Tag t) { os << Tag{}; } ) os << Tag{};
       else os << '[' << detail::type_name<Tag>() << ']';
 
-      return os << " : " << v << " (" << detail::type_name<V>() << ')';
+      os << " ::: " << v << " (" << detail::type_name<V>() << ") checked by '";
+      return os << detail::type_name<Traits>() << '\'';
     }
 
-    template<typename Type>
-    constexpr auto operator=(Type&& v) const noexcept requires( accept<Type>() )
-    {
-      return option<checked_keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
-    }
-
-    template<typename Type>
-    constexpr auto operator|(Type&& v) const noexcept requires( accept<Type>() )
-    {
-      return detail::type_or_<checked_keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
-    }
-
-    template<typename Func> constexpr auto operator|(call<Func>&& v) const noexcept
-    {
-      return detail::type_or_<checked_keyword,call<Func>>{RBR_FWD(v)};
-    }
+    using as_keyword<checked_keyword<Tag, Traits>>::operator=;
   };
 
   // Keyword accepting a precise type as input
-  template<typename Tag, typename Value> struct typed_keyword
+  template<typename Tag, typename Value>
+  struct typed_keyword  : as_keyword<typed_keyword<Tag, Value>>
   {
-    using tag_type  = Tag;
+    template<typename T> static constexpr bool check() { return std::is_same_v<T,Value>; }
 
-    template<typename T> static constexpr bool accept() { return std::is_same_v<T,Value>; }
+    using as_keyword<typed_keyword<Tag, Value>>::operator=;
 
-    template<typename Type>
-    constexpr auto operator=(Type&& v) const noexcept requires( accept<Type>() )
+    template<typename V>
+    std::ostream& display(std::ostream& os, V const& v) const
     {
-      return option<typed_keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
-    }
+      if constexpr(  requires(Tag t) { os << Tag{}; } ) os << Tag{};
+      else os << '[' << detail::type_name<Tag>() << ']';
 
-    template<typename Type>
-    constexpr auto operator|(Type&& v) const noexcept requires( accept<Type>() )
-    {
-      return detail::type_or_<typed_keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
-    }
-
-    template<typename Func> constexpr auto operator|(call<Func>&& v) const noexcept
-    {
-      return detail::type_or_<typed_keyword,call<Func>>{RBR_FWD(v)};
+      return os << " : " << v << " [[" << detail::type_name<V>() << "]]";
     }
   };
 
   // Keyword accepting any type as input
-  template<typename Tag> struct any_keyword
+  template<typename Tag>
+  struct any_keyword   : as_keyword<any_keyword<Tag>>
   {
-    using tag_type  = Tag;
-    template<typename T> static constexpr bool accept() { return true; }
-
-    template<typename Type>
-    constexpr auto operator=(Type&& v) const noexcept requires( accept<Type>() )
-    {
-      return option<any_keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
-    }
+    using as_keyword<any_keyword<Tag>>::operator=;
 
     template<typename V>
-    std::ostream& show(std::ostream& os, V const& v) const
+    std::ostream& display(std::ostream& os, V const& v) const
     {
-      if constexpr(  requires(Tag t) { os << Tag{}; } ) os << Tag{};
-      else os << '[' << detail::type_name<Tag>() << ']';
+      if constexpr(requires(Tag t) { os << Tag{}; })  os << Tag{};
+      else                                            os << '[' << detail::type_name<Tag>() << ']';
 
       return os << " : " << v << " (" << detail::type_name<V>() << ')';
-    }
-
-    template<typename Type>
-    constexpr auto operator|(Type&& v) const noexcept requires( accept<Type>() )
-    {
-      return detail::type_or_<any_keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
-    }
-
-    template<typename Func> constexpr auto operator|(call<Func>&& v) const noexcept
-    {
-      return detail::type_or_<any_keyword,call<Func>>{RBR_FWD(v)};
     }
   };
 
@@ -339,6 +331,14 @@ namespace rbr
     }
 
     constexpr std::true_type operator()(keyword_type const&) const noexcept { return {}; }
+
+    template<typename O0, typename O1, typename... Os>
+    constexpr decltype(auto) operator()(O0&&, O1&&, Os&&... ) const
+    {
+      return    std::same_as<keyword_type , typename std::remove_cvref_t<O0>::keyword_type>
+            ||  std::same_as<keyword_type , typename std::remove_cvref_t<O1>::keyword_type>
+            || (std::same_as<keyword_type, typename std::remove_cvref_t<Os>::keyword_type> || ...);
+    }
   };
 
   // Keyword builder
@@ -379,6 +379,7 @@ namespace rbr
   // Settings is a group of options
   template<concepts::option... Opts> struct settings
   {
+    using rbr_settings = void;
     using base = aggregator<Opts...>;
     constexpr settings(Opts const&... opts) : content_(opts...) {}
 
@@ -420,7 +421,7 @@ namespace rbr
     template<concepts::keyword Key, typename Value>
     constexpr auto operator[](detail::type_or_<Key, Value> const & tgt) const
     {
-            if constexpr( contains(Key{}) )                     return (*this)[Key{}];
+      if constexpr( contains(Key{}) )                           return (*this)[Key{}];
       else  if constexpr( requires(Value t) { t.perform(); } )  return tgt.value.perform();
       else                                                      return tgt.value;
     }
@@ -442,30 +443,6 @@ namespace rbr
 
   template<concepts::option... Opts>
   settings(Opts&&... opts) -> settings<std::remove_cvref_t<Opts>...>;
-
-  // Traits to fetch type of an option from the type of a Settings
-  template<typename Settings, auto Keyword, typename Default = unknown_key>
-  struct get_type
-  {
-    using base = std::remove_cvref_t<decltype( std::declval<Settings>()[Keyword])>;
-    using type = std::conditional_t< std::same_as<base,unknown_key>, Default, base>;
-  };
-
-  template<typename Settings, auto Keyword>
-  struct get_type<Settings,Keyword>
-  {
-    using type = std::remove_cvref_t<decltype( std::declval<Settings>()[Keyword])>;
-  };
-
-  template<typename Settings, auto Keyword, typename Default = unknown_key>
-  using get_type_t = typename get_type<Settings,Keyword,Default>::type;
-
-  template<auto Keyword, concepts::option... Opts>
-  struct fetch : get_type<settings<Opts...>,Keyword>
-  {};
-
-  template<auto Keyword, concepts::option... Opts>
-  using fetch_t = typename fetch<Keyword,Opts...>::type;
 
   // Merge settings
   template<concepts::option... K1s, concepts::option... K2s>
@@ -523,6 +500,86 @@ namespace rbr
       // Rebuild a new settings by going over the keys that we keep
       return rbr::settings{ (Ks{} = os[Ks{}] )...};
     }(selected_keys_t{});
+  }
+
+  // Standalone fetch one keyword inside N
+  template<concepts::keyword K, concepts::option... Os>
+  constexpr decltype(auto) fetch(K const& kw, Os const&... os)
+  {
+    auto const opts = settings(os...);
+    return opts[kw];
+  }
+
+  template<concepts::keyword K, typename V, concepts::option... Os>
+  constexpr decltype(auto) fetch(detail::type_or_<K, V> const& kw, Os const&... os)
+  {
+    auto const opts = settings(os...);
+    return opts[kw];
+  }
+
+  template<typename K, concepts::settings Settings>
+  constexpr decltype(auto) fetch(K const& kw, Settings const& opts)
+  {
+    return opts[kw];
+  }
+
+  namespace result
+  {
+    template<auto Keyword, typename... Sources> struct fetch;
+
+    template<auto Keyword, concepts::option... Os>
+    struct fetch<Keyword, Os...>
+    {
+      using type = decltype( rbr::fetch(Keyword, Os{}...) );
+    };
+
+    template<auto Keyword, concepts::settings Settings>
+    struct fetch<Keyword, Settings>
+    {
+      using type = decltype( rbr::fetch(Keyword, std::declval<Settings>()) );
+    };
+
+    template<auto Keyword, typename... Sources>
+    using fetch_t = typename fetch<Keyword,Sources...>::type;
+  }
+
+  // Global keyword/value_type types extractors
+  template<typename... T> struct types {};
+
+  namespace result
+  {
+    template<typename Settings, template<typename...> class List = types> struct keywords;
+    template<typename Settings, template<typename...> class List = types> struct values;
+
+    template<typename... Opts, template<typename...> class List>
+    struct keywords<settings<Opts...>, List>
+    {
+      using type = List<typename Opts::keyword_type...>;
+    };
+
+    template<typename... Opts, template<typename...> class List>
+    struct values<settings<Opts...>, List>
+    {
+      using type = List<typename Opts::stored_value_type...>;
+    };
+
+    template<typename Settings, template<typename...> class List = types>
+    using keywords_t = typename keywords<Settings,List>::type;
+
+    template<typename Settings, template<typename...> class List = types>
+    using values_t = typename values<Settings,List>::type;
+  }
+
+  template<template<typename...> class List, typename... Opts>
+  auto keywords(rbr::settings<Opts...> const&)
+  {
+    return result::keywords_t<rbr::settings<Opts...>,List>{typename Opts::keyword_type{}...};
+  }
+
+  template<template<typename...> class List, typename... Opts>
+  auto values(rbr::settings<Opts...> const& o)
+  {
+    return result::values_t<rbr::settings<Opts...>,List>{ o[typename Opts::keyword_type{}]... };
   }
 }
 

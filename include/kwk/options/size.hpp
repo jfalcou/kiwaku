@@ -18,19 +18,20 @@ namespace kwk
   {
     // Single integral -> 1D shape
     template<std::convertible_to<std::ptrdiff_t> T>
-    auto operator=(T s) const noexcept
+    constexpr auto operator=(T s) const noexcept
     {
       return of_size(s);
     }
 
     // Extent from of_size(...)
-    template<auto Shaper> auto operator=(shape<Shaper> const& s) const noexcept
+    template<auto Shaper>
+    constexpr auto operator=(shape<Shaper> const& s) const noexcept
     {
       return s;
     }
 
     // Display
-    template<typename Shape> std::ostream& show(std::ostream& os, Shape const& s) const
+    template<typename Shape> std::ostream& display(std::ostream& os, Shape const& s) const
     {
       return os << "Shape: " << s;
     }

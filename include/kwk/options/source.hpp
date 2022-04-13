@@ -44,7 +44,7 @@ namespace kwk
     }
 
     // Display
-    template<typename Src> std::ostream& show(std::ostream& os, Src src) const
+    template<typename Src> std::ostream& display(std::ostream& os, Src src) const
     {
       return os << "Source: " << src.as_span().data()
                               << " (" << rbr::detail::type_name<Src>() << ") "
