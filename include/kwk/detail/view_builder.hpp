@@ -10,7 +10,7 @@
 #include <kwk/container/components/metadata.hpp>
 #include <kwk/container/components/data_block.hpp>
 #include <kwk/container/components/accessor.hpp>
-#include <kwk/container/view/options.hpp>
+#include <kwk/container/options/view.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/options.hpp>
 
