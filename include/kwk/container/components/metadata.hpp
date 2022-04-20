@@ -12,16 +12,16 @@
 
 namespace kwk::detail
 {
-  template<typename... Data> struct view_metadata;
+  template<typename... Data> struct metadata;
 
   template<typename Label, typename... Data>
   requires (!std::same_as<Label, rbr::unknown_key>)
-  struct view_metadata<Label, Data...>
+  struct metadata<Label, Data...>
   {
     static constexpr bool has_label = true;
 
     template<rbr::concepts::option... Opts>
-    constexpr   view_metadata(rbr::settings<Opts...> const& opts)
+    constexpr   metadata(auto const&, rbr::settings<Opts...> const& opts)
               : label_(opts[kwk::label])
     {}
 
@@ -32,11 +32,11 @@ namespace kwk::detail
 
   template<typename... Data>
   requires (std::same_as<Data, rbr::unknown_key> && ...)
-  struct view_metadata<Data...>
+  struct metadata<Data...>
   {
     static constexpr bool has_label = false;
 
     template<rbr::concepts::option... Opts>
-    constexpr view_metadata(rbr::settings<Opts...> const&) {}
+    constexpr metadata(auto const&, rbr::settings<Opts...> const&) {}
   };
 }

@@ -6,6 +6,7 @@
 */
 //==================================================================================================
 #pragma once
+#include <kwk/container/options.hpp>
 #include <type_traits>
 #include <utility>
 
@@ -13,18 +14,18 @@ namespace kwk::detail
 {
   //================================================================================================
   /*
-    Span-like kwk::view base class
+    Data holder kwk::view base class
 
     SCARY base class gathering all types and member functions pertaining to the upkeep, access and
-    update to the span-like part of a kwk::view.
+    update to the data part of a kwk::view.
 
-    Contrary to most standard view and container,kwk::view_span keep the potential const qualifier
+    Contrary to most standard view and container,kwk::data_block keep the potential const qualifier
     of underlying type on purpose.
 
     @tparam Source  Source object carrying informations about the underlying pointer
   */
   //================================================================================================
-  template<typename Source> struct view_span : Source
+  template<typename Source> struct data_block : Source
   {
     using base_t       = typename Source::base_type;
 
@@ -49,8 +50,11 @@ namespace kwk::detail
     // Associated  const iterator type
     using const_iterator  = const_pointer;
 
-    // Constructs a kwk::view_span from any source
-    constexpr view_span(Source src) : Source(src) {}
+    // Constructs a kwk::data_block from any source
+    template<rbr::concepts::option... Opts>
+    constexpr data_block(auto const& tag, rbr::settings<Opts...> const& opts)
+              : Source( options::source(tag,opts).as_span())
+    {}
 
     // Returns an iterator to the beginning
     constexpr iterator        begin()         { return Source::data(); }
@@ -74,13 +78,13 @@ namespace kwk::detail
     constexpr pointer reset(pointer ptr) noexcept { return std::exchange(Source::data, ptr); }
 
     /*
-      Swap contents of two compatible kwk::view_span
+      Swap contents of two compatible kwk::data_block
 
       This function does not participate in overload resolution if
       `std::same_as<base_t, typename OtherSource::base_t>` evaluates to `false`.
     */
     template<typename OtherSource>
-    constexpr void swap( view_span<OtherSource>& other ) noexcept
+    constexpr void swap( data_block<OtherSource>& other ) noexcept
     requires( std::same_as<base_t, typename OtherSource::base_t> )
     {
       std::swap(Source::data, other.data);
