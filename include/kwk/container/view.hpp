@@ -203,12 +203,12 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  view(O const&...) -> view<typename rbr::result::fetch_t<kwk::source,O...>::span_type::base_type, O{}...>;
+  view(O const&...) -> view<typename options::element<tag::view_,rbr::settings<O...>>::type,O{}...>;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
   template<rbr::concepts::option... O>
   view(rbr::settings<O...> const&)
-      -> view<typename rbr::result::fetch_t<kwk::source,O...>::span_type::base_type, O{}...>;
+      -> view<typename options::element<tag::view_,rbr::settings<O...>>::type, O{}...>;
 
   //================================================================================================
   //! @}
