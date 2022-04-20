@@ -25,7 +25,7 @@ namespace kwk
 
   //================================================================================================
   //! @ingroup containers
-  //! @brief  Fixed rank shape with mixed size capability
+  //! @brief  Fixed order shape with mixed size capability
   //!
   //! <hr/>
   //! **Required header**:
@@ -35,7 +35,7 @@ namespace kwk
   //! <hr/>
   //!
   //! kwk::shape defines and optimally stores a set of integral values representing the size of a
-  //! container along a fixed number of dimensions (or @ref glossary-rank). Those sizes can be
+  //! container along a fixed number of dimensions (or @ref glossary-order). Those sizes can be
   //! either specified at runtime or at compile-time. kwk::shape then provides an interface to
   //! query informations about those dimensions, sizes and compare shapes.
   //!
@@ -46,9 +46,9 @@ namespace kwk
   //!   type in itself.
   //!
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-  //!   kwk::shape s1 = kwk::of_size(kwk::fixed<5>);                   // Rank 1 shape with static size
-  //!   kwk::shape s2 = kwk::of_size(n, m);                            // Rank 2 shape with dynamic sizes
-  //!   kwk::shape s3 = kwk::of_size(kwk::fixed<2>,kwk::fixed<2>, n);  // Rank 3 shape with mixed sizes
+  //!   kwk::shape s1 = kwk::of_size(kwk::fixed<5>);                   // Order 1 shape with static size
+  //!   kwk::shape s2 = kwk::of_size(n, m);                            // Order 2 shape with dynamic sizes
+  //!   kwk::shape s3 = kwk::of_size(kwk::fixed<2>,kwk::fixed<2>, n);  // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!   <br/>
   //!
@@ -56,9 +56,9 @@ namespace kwk
   //!   kwk::shape layout is done with the kwk::extent object or one of the pre-defined layouts.
   //!
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-  //!   kwk::shape< kwk::extent[5] >      s1;             // Rank 1 shape with static size
-  //!   kwk::shape< kwk::_2D >            s2(n, m);       // Rank 2 shape with dynamic sizes
-  //!   kwk::shape< kwk::extent[2][2]() > s3( _[2] = n);  // Rank 3 shape with mixed sizes
+  //!   kwk::shape< kwk::extent[5] >      s1;             // Order 1 shape with static size
+  //!   kwk::shape< kwk::_2D >            s2(n, m);       // Order 2 shape with dynamic sizes
+  //!   kwk::shape< kwk::extent[2][2]() > s3( _[2] = n);  // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
   //! For most usage, kwk::shape is to be used as a whole. Acces to individual size along a given
@@ -70,27 +70,27 @@ namespace kwk
   {
     using size_map      = decltype(Shaper.size_map());
 
-    /// @ref glossary-rank of the eve::shape
-    static constexpr std::ptrdiff_t static_rank = Shaper.size();
+    /// @ref glossary-order of the eve::shape
+    static constexpr std::ptrdiff_t static_order = Shaper.size();
 
     /// Type of dimensions' size
     using size_type     = typename decltype(Shaper)::size_type;
 
     struct empty_storage {};
-    static constexpr std::ptrdiff_t storage_size  = static_rank - size_map::size;
+    static constexpr std::ptrdiff_t storage_size  = static_order - size_map::size;
     using storage_t     = std::conditional_t< (storage_size!=0)
                                             , std::array<size_type,storage_size>
                                             , empty_storage
                                             >;
 
     /// Associated kwk::stride type
-    using stride_type   = unit_stride<size_type, static_rank>;
+    using stride_type   = unit_stride<size_type, static_order>;
 
     /// Indicates that the shape has at least one dimension specified at runtime
     static constexpr bool is_dynamic        = storage_size >= 1;
 
     /// Indicates that the shape's dimensions are all specified at runtime
-    static constexpr bool is_fully_dynamic  = storage_size == static_rank;
+    static constexpr bool is_fully_dynamic  = storage_size == static_order;
 
     /// Indicates that the shape's dimensions are all specified compile-time
     static constexpr bool is_fully_static   = storage_size == 0;
@@ -121,7 +121,7 @@ namespace kwk
     //! Initializes current kwk::shape with a variadic list of integral values.
     //!
     //! This constructor will not take part in overload resolution if the number of values exceed
-    //! shape's rank, if the shape is not fully dynamic or if any value is not convertible
+    //! shape's order, if the shape is not fully dynamic or if any value is not convertible
     //! to kwk::shape::size_type.
     //!
     //! @param  s Variadic list of dimensions' size
@@ -129,13 +129,13 @@ namespace kwk
     template<typename... T>
     constexpr shape(T... s) noexcept
     requires  (   (std::is_convertible_v<T,size_type> && ...)
-              &&  (sizeof...(T) <= static_rank)
+              &&  (sizeof...(T) <= static_order)
               &&  is_fully_dynamic
               )
             : storage_{ static_cast<size_type>(s)... }
     {
-      if constexpr(sizeof...(T) < static_rank)
-        for(std::size_t i = sizeof...(T);i<static_rank;++i)
+      if constexpr(sizeof...(T) < static_order)
+        for(std::size_t i = sizeof...(T);i<static_order;++i)
           storage_[i] = 1;
     }
 
@@ -157,16 +157,16 @@ namespace kwk
     //==============================================================================================
     template<std::same_as<detail::axis>... Extent>
     constexpr shape(Extent... s) noexcept
-    requires( (sizeof...(Extent) <= static_rank) && !is_fully_static )
+    requires( (sizeof...(Extent) <= static_order) && !is_fully_static )
     {
       // Default fillings
-      detail::constexpr_for<static_rank>
+      detail::constexpr_for<static_order>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           if constexpr(!size_map::contains(I))
           {
-            if constexpr(I==0)  storage_[size_map::template locate<static_rank>(I)] = 0;
-            else                storage_[size_map::template locate<static_rank>(I)] = 1;
+            if constexpr(I==0)  storage_[size_map::template locate<static_order>(I)] = 0;
+            else                storage_[size_map::template locate<static_order>(I)] = 1;
           }
         }
       );
@@ -178,7 +178,7 @@ namespace kwk
                       , "[kwk::shape] Semi-dynamic construction overwrite static shape"
                       );
 
-        storage_[size_map::template locate<static_rank>(e.dims)] = static_cast<size_type>(e.size);
+        storage_[size_map::template locate<static_order>(e.dims)] = static_cast<size_type>(e.size);
       };
 
       (fill(s),...);
@@ -190,11 +190,11 @@ namespace kwk
     //! Constructs a kwk::shape from another one with compatible layout but potentially different
     //! size_type.
     //!
-    //! Two kwk::shapes have compatible layout if they have the same @ref glossary-rank and if each
+    //! Two kwk::shapes have compatible layout if they have the same @ref glossary-order and if each
     //! dimension of the constructed kwk::shape can hold its equivalent from the source shape, i.e
     //! it's runtime specified or, if it's compile-time specified, has the same value than its source.
     //!
-    //! This constructor doesn not participate in overload resolution if shape's ranks are not equal.
+    //! This constructor doesn not participate in overload resolution if shape's orders are not equal.
     //!
     //! @groupheader{Example}
     //! @godbolt{docs/shape/compatible.cpp}
@@ -205,19 +205,19 @@ namespace kwk
     constexpr shape( shape<OtherShaper> const& other ) noexcept
     requires( OtherShaper.size() == Shaper.size() && Shaper.is_compatible(OtherShaper))
     {
-      detail::constexpr_for<rank()>
+      detail::constexpr_for<order()>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
-          constexpr auto idx = size_map::template locate<static_rank>(I);
+          constexpr auto idx = size_map::template locate<static_order>(I);
           if constexpr( idx < storage_size ) storage_[idx] = other.template get<I>();
         }
       );
     }
 
     //==============================================================================================
-    //! @brief Constructs from a shape with a lower rank
+    //! @brief Constructs from a shape with a lower order
     //!
-    //! Constructs a kwk::shape from a shape with higher ranks, filling the missing sizes with 1
+    //! Constructs a kwk::shape from a shape with higher orders, filling the missing sizes with 1
     //!
     //! This constructor does not participate in overload resolution of the shape is not fully
     //! specified at runtime.
@@ -229,9 +229,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShaper>
     constexpr shape( shape<OtherShaper> const& other ) noexcept
-              requires( OtherShaper.size() < static_rank && is_fully_dynamic)
+              requires( OtherShaper.size() < static_order && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherShaper.size(),static_rank);
+      constexpr auto dz = std::min(OtherShaper.size(),static_order);
 
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
@@ -240,13 +240,13 @@ namespace kwk
         }
       );
 
-      for(std::size_t i = dz; i < static_rank;++i) storage_[i] = 1;
+      for(std::size_t i = dz; i < static_order;++i) storage_[i] = 1;
     }
 
     //==============================================================================================
-    //! @brief Constructs from a shape with a higher rank
+    //! @brief Constructs from a shape with a higher order
     //!
-    //! Constructs a kwk::shape from a shape with higher ranks, compacting the extra-dimensions into
+    //! Constructs a kwk::shape from a shape with higher orders, compacting the extra-dimensions into
     //! the last.
     //!
     //! This constructor does not participate in overload resolution of the shape is not fully
@@ -259,9 +259,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShaper>
     constexpr explicit  shape( shape<OtherShaper> const& other ) noexcept
-                        requires( OtherShaper.size() > static_rank && is_fully_dynamic)
+                        requires( OtherShaper.size() > static_order && is_fully_dynamic)
     {
-      constexpr auto dz = std::min(OtherShaper.size(),static_rank);
+      constexpr auto dz = std::min(OtherShaper.size(),static_order);
 
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
@@ -270,7 +270,7 @@ namespace kwk
         }
       );
 
-      detail::constexpr_for<shape<OtherShaper>::static_rank - dz>
+      detail::constexpr_for<shape<OtherShaper>::static_order - dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           storage_.back() *= other.template get<dz+I>();
@@ -279,12 +279,12 @@ namespace kwk
     }
 
     /// Number of dimensions
-    static constexpr std::ptrdiff_t rank() noexcept { return static_rank; }
+    static constexpr std::ptrdiff_t order() noexcept { return static_order; }
 
     /// Assignment operators
     template<auto OtherShaper>
     constexpr shape& operator=( shape<OtherShaper> const& other ) noexcept
-    requires( OtherShaper.size() < static_rank || Shaper.is_compatible(OtherShaper) )
+    requires( OtherShaper.size() < static_order || Shaper.is_compatible(OtherShaper) )
     {
       shape that(other);
       swap(that);
@@ -297,7 +297,7 @@ namespace kwk
     template<std::size_t I> constexpr auto get() const noexcept
     {
       if constexpr(size_map::contains(I)) return Shaper.at(I);
-      else return storage_[size_map::template locate<static_rank>(I)];
+      else return storage_[size_map::template locate<static_order>(I)];
     }
 
     /// Swap shape's contents
@@ -334,13 +334,13 @@ namespace kwk
     //==============================================================================================
     constexpr std::ptrdiff_t nbdims() const noexcept
     {
-      if constexpr(static_rank == 0)  return 0;
+      if constexpr(static_order == 0)  return 0;
       else  return [&]<std::size_t...I>( std::index_sequence<I...> const&)
       {
         size_type m = this->get<0>() == 1 ? 0 : 1;
         ((m = std::max(m, size_type(this->get<I>() == 1 ? 0 : 1+I))),...);
         return m;
-      }(std::make_index_sequence<static_rank>());
+      }(std::make_index_sequence<static_order>());
     }
 
     //==============================================================================================
@@ -353,15 +353,15 @@ namespace kwk
     //==============================================================================================
     constexpr std::ptrdiff_t numel() const noexcept
     {
-      if constexpr(static_rank == 0) return 0;
+      if constexpr(static_order == 0) return 0;
       else return [&]<std::size_t...I>( std::index_sequence<I...> const&)
           {
             return (size_type{1} * ... * this->get<I>());
-          }(std::make_index_sequence<static_rank>());
+          }(std::make_index_sequence<static_order>());
     }
 
     /// Conversion to kwk::stride
-    constexpr auto as_stride() const requires(static_rank > 0) { return stride_type(*this); }
+    constexpr auto as_stride() const requires(static_order > 0) { return stride_type(*this); }
 
     //==============================================================================================
     // Comparisons
@@ -398,7 +398,7 @@ namespace kwk
     {
       os << "[";
 
-      detail::constexpr_for<static_rank>
+      detail::constexpr_for<static_order>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           os << " " << +s.template get<I>();
@@ -418,19 +418,19 @@ namespace kwk
                           , Comp const& comp, Check const& check
                           ) const noexcept
     {
-      constexpr auto other_size = shape<Shaper2>::static_rank;
+      constexpr auto other_size = shape<Shaper2>::static_order;
 
-      if constexpr( static_rank == other_size )
+      if constexpr( static_order == other_size )
       {
         bool result = true;
         return [&]<std::size_t... I>(std::index_sequence<I...> const&)
         {
           return (result && ... && comp(this->get<I>(),other.template get<I>()) ) ;
-        }(std::make_index_sequence<static_rank>());
+        }(std::make_index_sequence<static_order>());
       }
       else
       {
-        constexpr auto d = std::min(static_rank, other_size);
+        constexpr auto d = std::min(static_order, other_size);
 
         // Compute equality over common slice of shape
         bool result = true;
@@ -440,17 +440,17 @@ namespace kwk
         }(std::make_index_sequence<d>());
 
         // Check that we have 1s everywhere in the other parts
-        if constexpr( static_rank < other_size )
+        if constexpr( static_order < other_size )
         {
-          constexpr auto sz = other_size - static_rank;
+          constexpr auto sz = other_size - static_order;
           return [&]<std::size_t... I>(std::index_sequence<I...> const&)
           {
-            return (result && ... && (other.template get<static_rank+I>() == 1));
+            return (result && ... && (other.template get<static_order+I>() == 1));
           }(std::make_index_sequence<sz>());
         }
-        else if constexpr( static_rank > other_size )
+        else if constexpr( static_order > other_size )
         {
-          constexpr auto sz = static_rank - other_size;
+          constexpr auto sz = static_order - other_size;
           return [&]<std::size_t... I>(std::index_sequence<I...> const&)
           {
             return (result && ... && check(this->template get<other_size+I>()));
@@ -486,7 +486,7 @@ namespace std
 
   template<auto Shaper>
   struct  tuple_size<kwk::shape<Shaper>>
-        : std::integral_constant<std::size_t,kwk::shape<Shaper>::static_rank>
+        : std::integral_constant<std::size_t,kwk::shape<Shaper>::static_order>
   {
   };
 }

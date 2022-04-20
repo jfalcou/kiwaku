@@ -108,7 +108,7 @@ namespace kwk
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //! <hr/>
   //!
-  //! kwk::extent is used to define the layout of a kwk::shape in terms of rank and potential
+  //! kwk::extent is used to define the layout of a kwk::shape in terms of order and potential
   //! compile-time sizes.
   //!
   //! kwk::extent supports two member functions:
@@ -124,31 +124,31 @@ namespace kwk
   //!
   //! Some pre-made descriptor are provided for common cases:
   //!
-  //!  - `kwk::_1D`     : Dynamic rank 1 kwk::shape descriptor
-  //!  - `kwk::_2D`     : Dynamic rank 2 kwk::shape descriptor
-  //!  - `kwk::_3D`     : Dynamic rank 3 kwk::shape descriptor
-  //!  - `kwk::_4D`     : Dynamic rank 4 kwk::shape descriptor
-  //!  - `kwk::_nD<N>`  : Dynamic rank N kwk::shape descriptor
+  //!  - `kwk::_1D`     : Dynamic order 1 kwk::shape descriptor
+  //!  - `kwk::_2D`     : Dynamic order 2 kwk::shape descriptor
+  //!  - `kwk::_3D`     : Dynamic order 3 kwk::shape descriptor
+  //!  - `kwk::_4D`     : Dynamic order 4 kwk::shape descriptor
+  //!  - `kwk::_nD<N>`  : Dynamic order N kwk::shape descriptor
   //!
   //! @groupheader{Examples}
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
   //! #include<kwk/container/shape.hpp>
   //!
   //! // Shape descriptors with runtime sizes
-  //! kwk::shape< kwk::extent()   > d1(6, 8); // Rank 1 shape with runtime size 6 x 8
-  //! kwk::shape< kwk::extent()() > d2;       // Rank 2 shape with runtime size 0 x 1
+  //! kwk::shape< kwk::extent()   > d1(6, 8); // Order 1 shape with runtime size 6 x 8
+  //! kwk::shape< kwk::extent()() > d2;       // Order 2 shape with runtime size 0 x 1
   //!
   //! // Shape descriptors with compile-time sizes
-  //! kwk::shape< kwk::extent[4]    > s1;   // Rank 1 shape with compile-time size 4
-  //! kwk::shape< kwk::extent[2][2] > s2;   // Rank 2 shape with compile-time sizes 2 x 2
+  //! kwk::shape< kwk::extent[4]    > s1;   // Order 1 shape with compile-time size 4
+  //! kwk::shape< kwk::extent[2][2] > s2;   // Order 2 shape with compile-time sizes 2 x 2
   //!
   //! // Shape descriptor mixing runtime and compile-time sizes
-  //! kwk::shape< kwk::extent[3]()[3]() > h;  // Rank 4 shape with size 3 x 1 x 3 x 1
+  //! kwk::shape< kwk::extent[3]()[3]() > h;  // Order 4 shape with size 3 x 1 x 3 x 1
   //!
   //! // Pre-made descriptors
-  //! kwk::shape< kwk::_2D    > p1; // Rank 2 shape with default runtime size
-  //! kwk::shape< kwk::_nD<7> > p2; // Rank 7 shape with default runtime size
-  //! kwk::shape< kwk::_3D[3] > h;  // Rank 4 shape with size 0 x 1 x 1 x 3
+  //! kwk::shape< kwk::_2D    > p1; // Order 2 shape with default runtime size
+  //! kwk::shape< kwk::_nD<7> > p2; // Order 7 shape with default runtime size
+  //! kwk::shape< kwk::_3D[3] > h;  // Order 4 shape with size 0 x 1 x 1 x 3
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
   //================================================================================================
