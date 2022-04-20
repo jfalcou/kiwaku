@@ -20,7 +20,7 @@ namespace kwk
 
   //================================================================================================
   //! @ingroup containers
-  //! @brief  Fixed rank stride with automatic unit stride detection capability
+  //! @brief  Fixed order stride with automatic unit stride detection capability
   //!
   //! <hr/>
   //! **Required header**:

@@ -40,7 +40,7 @@ namespace kwk
   }
 
   //================================================================================================
-  // Rank N for_each algorithm
+  // Order N for_each algorithm
   //================================================================================================
   template<typename Func, typename Container>
   constexpr void for_each(Func f, Container&& c)
@@ -48,6 +48,6 @@ namespace kwk
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
       return detail::for_each(f, KWK_FWD(c), dim<N>(c)... );
-    }( std::make_index_sequence<std::remove_cvref_t<Container>::static_rank>{} );
+    }( std::make_index_sequence<std::remove_cvref_t<Container>::static_order>{} );
   }
 }

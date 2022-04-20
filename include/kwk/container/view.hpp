@@ -52,8 +52,8 @@ namespace kwk
     /// Associated const pointer type
     using const_pointer   = typename span_t::const_pointer;
 
-    /// Compile-time @ref glossary-rank
-    static constexpr auto static_rank = access_t::static_rank;
+    /// Compile-time @ref glossary-order
+    static constexpr auto static_order = access_t::static_order;
 
     //==============================================================================================
     //! @name Constructors
@@ -78,8 +78,8 @@ namespace kwk
     //! @}
     //==============================================================================================
 
-    //! Return the rank of the view
-    constexpr auto rank() const noexcept{ return this->shape().rank(); }
+    //! Return the order of the view
+    constexpr auto order() const noexcept{ return this->shape().order(); }
 
     //==============================================================================================
     //! @name Range interface
@@ -123,7 +123,7 @@ namespace kwk
       auto spaces = meta_t::has_label ? "  " : "";
       auto lbl    = [&]() { if constexpr(meta_t::has_label) os << v.label() << ":\n"; };
 
-      if constexpr( view::static_rank < 3)
+      if constexpr( view::static_order < 3)
       {
         lbl();
         for_each( [&](auto const& c, auto i0, auto... i)
@@ -169,14 +169,14 @@ namespace kwk
     //! @{
     //==============================================================================================
     template<std::integral... Is>
-    requires(sizeof...(Is) <= static_rank)
+    requires(sizeof...(Is) <= static_order)
     const_reference operator()(Is... is) const noexcept
     {
       return span_t::data()[ access_t::index(is...) ];
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) <= static_rank)
+    requires(sizeof...(Is) <= static_order)
     reference operator()(Is... is) noexcept
     {
       return span_t::data()[ access_t::index(is...) ];
@@ -191,7 +191,7 @@ namespace kwk
   template<std::size_t I, typename T, auto... Os>
   constexpr auto dim(view<T,Os...> const& v) noexcept
   {
-    if constexpr(I<view<T,Os...>::static_rank) return get<I>(v.shape());
+    if constexpr(I<view<T,Os...>::static_order) return get<I>(v.shape());
     else return 1;
   }
 

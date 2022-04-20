@@ -14,13 +14,13 @@
 namespace kwk::detail
 {
   //================================================================================================
-  // Rank N general cases
+  // Order N general cases
   //================================================================================================
   template<auto Shape, auto Stride> struct accessor
   {
     using shape_type                  = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                 = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_rank = shape_type::static_rank;
+    static constexpr auto static_order = shape_type::static_order;
 
     constexpr auto  size()    const noexcept  { return shape_.numel(); }
     constexpr auto  shape()   const noexcept  { return shape_;         }
@@ -58,7 +58,7 @@ namespace kwk::detail
   };
 
   //================================================================================================
-  // Rank N shape is fully static: no contents, only computation
+  // Order N shape is fully static: no contents, only computation
   //================================================================================================
   template<auto Shape, auto Stride>
   requires( Shape.is_fully_static )
@@ -66,7 +66,7 @@ namespace kwk::detail
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_rank = shape_type::static_rank;
+    static constexpr auto static_order = shape_type::static_order;
 
     constexpr auto  size()    const noexcept  { return Shape.numel(); }
     constexpr auto  shape()   const noexcept  { return Shape;         }
@@ -87,12 +87,12 @@ namespace kwk::detail
   // Expected sizeof : sizeof(void*) + sizeof(shape[0])
   //================================================================================================
   template<auto Shape, auto Stride>
-  requires( !Shape.is_fully_static && Shape.rank() == 1 && Stride.is_unit )
+  requires( !Shape.is_fully_static && Shape.order() == 1 && Stride.is_unit )
   struct  accessor<Shape, Stride>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_rank = shape_type::static_rank;
+    static constexpr auto static_order = shape_type::static_order;
 
     template<rbr::concepts::option... Opts>
     constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
@@ -119,14 +119,14 @@ namespace kwk::detail
   // Expected sizeof : sizeof(void*) + sizeof(shape)
   //================================================================================================
   template<auto Shape, auto Stride>
-  requires(   !Shape.is_fully_static  && Shape.rank() == 2
+  requires(   !Shape.is_fully_static  && Shape.order() == 2
           &&  Stride.is_unit          && Stride.is_implicit
           )
   struct  accessor<Shape, Stride>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_rank = shape_type::static_rank;
+    static constexpr auto static_order = shape_type::static_order;
 
     template<rbr::concepts::option... Opts>
     constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
