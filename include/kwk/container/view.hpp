@@ -23,13 +23,13 @@ namespace kwk
   //!   @tparam Os    Variadic list of settings describing current's view behavior
   //================================================================================================
   template<typename Type, auto... Os>
-  struct  view  : private detail::view_builder<Type,Os...>::meta_type
-                        , detail::view_builder<Type,Os...>::span_type
-                        , detail::view_builder<Type,Os...>::access_type
+  struct  view  : private detail::view_builder<Type,Os...>::metadata
+                        , detail::view_builder<Type,Os...>::data_block
+                        , detail::view_builder<Type,Os...>::accessor
   {
-    using meta_t    = typename detail::view_builder<Type,Os...>::meta_type;
-    using span_t    = typename detail::view_builder<Type,Os...>::span_type;
-    using access_t  = typename detail::view_builder<Type,Os...>::access_type;
+    using meta_t    = typename detail::view_builder<Type,Os...>::metadata;
+    using span_t    = typename detail::view_builder<Type,Os...>::data_block;
+    using access_t  = typename detail::view_builder<Type,Os...>::accessor;
 
     /// Underlying value type
     using value_type      = Type;
@@ -69,9 +69,9 @@ namespace kwk
     /// Construct a view from a settings descriptor
     template<rbr::concepts::option... Opts>
     constexpr view(rbr::settings<Opts...> const& params)
-            : meta_t { params }
-            , span_t{ params[source | ptr_source<Type>{} ].as_span() }
-            , access_t { params }
+            : meta_t { tag::view_{}, params }
+            , span_t{ tag::view_{}, params }
+            , access_t { tag::view_{}, params }
     {}
 
     //==============================================================================================
@@ -157,10 +157,9 @@ namespace kwk
 
     constexpr auto settings() const noexcept
     {
-      return rbr::merge ( rbr::settings ( source  = span_t::data()
-                                        , size    = access_t::shape()
-                                        , strides = access_t::stride()
-                                        )
+      return rbr::merge ( rbr::settings( source  = span_t::data()
+                                            , size    = access_t::shape()
+                                            )
                         , rbr::settings(Os...)
                         );
     }

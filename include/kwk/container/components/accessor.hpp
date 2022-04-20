@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 #include <kwk/detail/raberu.hpp>
-#include <kwk/options.hpp>
+#include <kwk/container/options.hpp>
 #include <type_traits>
 #include <utility>
 
@@ -16,10 +16,10 @@ namespace kwk::detail
   //================================================================================================
   // Rank N general cases
   //================================================================================================
-  template<auto Shape, auto Stride> struct view_access
+  template<auto Shape, auto Stride> struct accessor
   {
-    using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
-    using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
+    using shape_type                  = std::remove_cvref_t<decltype(Shape)>;
+    using stride_type                 = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_rank = shape_type::static_rank;
 
     constexpr auto  size()    const noexcept  { return shape_.numel(); }
@@ -27,9 +27,9 @@ namespace kwk::detail
     constexpr auto  stride()  const noexcept  { return stride_;        }
 
     template<rbr::concepts::option... Opts>
-    constexpr   view_access(rbr::settings<Opts...> const& opts)
-              : shape_ ( opts[kwk::size | opts[source].default_shape()])
-              , stride_( opts[strides  | shape_.as_stride() ] )
+    constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
+              : shape_ ( options::shape(tag,opts) )
+              , stride_( options::stride(tag,opts) )
     {}
 
     constexpr auto index(auto i0)     const noexcept { return i0*get<0>(stride_);   }
@@ -47,7 +47,7 @@ namespace kwk::detail
       stride_ = st;
     }
 
-    constexpr void swap( view_access& other ) noexcept
+    constexpr void swap( accessor& other ) noexcept
     {
       shape_.swap( other.shape_ );
       stride_.swap( other.stride_ );
@@ -62,7 +62,7 @@ namespace kwk::detail
   //================================================================================================
   template<auto Shape, auto Stride>
   requires( Shape.is_fully_static )
-  struct view_access<Shape,Stride>
+  struct accessor<Shape,Stride>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
@@ -73,9 +73,10 @@ namespace kwk::detail
     constexpr auto  stride()  const noexcept  { return Stride;        }
 
     template<rbr::concepts::option... Opts>
-    constexpr view_access(rbr::settings<Opts...> const&) {}
+    constexpr   accessor(auto const&, rbr::settings<Opts...> const& )
+    {}
 
-    constexpr void swap( view_access& ) noexcept {}
+    constexpr void swap( accessor& ) noexcept {}
 
     template<std::integral... Is>
     constexpr auto index(Is... is) const noexcept { return Stride.index(is...); }
@@ -87,15 +88,15 @@ namespace kwk::detail
   //================================================================================================
   template<auto Shape, auto Stride>
   requires( !Shape.is_fully_static && Shape.rank() == 1 && Stride.is_unit )
-  struct  view_access<Shape, Stride>
+  struct  accessor<Shape, Stride>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_rank = shape_type::static_rank;
 
     template<rbr::concepts::option... Opts>
-    constexpr   view_access(rbr::settings<Opts...> const& opts)
-              : shape_( opts[kwk::size | opts[source].default_shape()])
+    constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
+              : shape_ ( options::shape(tag,opts) )
     {}
 
     constexpr auto        size()                    const noexcept  { return get<0>(shape_);  }
@@ -105,7 +106,7 @@ namespace kwk::detail
 
     constexpr void reshape( shape_type const& s ) { shape_ = s; }
 
-    constexpr void swap( view_access& other ) noexcept
+    constexpr void swap( accessor& other ) noexcept
     {
       shape_.swap( other.shape_ );
     }
@@ -121,15 +122,15 @@ namespace kwk::detail
   requires(   !Shape.is_fully_static  && Shape.rank() == 2
           &&  Stride.is_unit          && Stride.is_implicit
           )
-  struct  view_access<Shape, Stride>
+  struct  accessor<Shape, Stride>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_rank = shape_type::static_rank;
 
     template<rbr::concepts::option... Opts>
-    constexpr   view_access(rbr::settings<Opts...> const& opts)
-              : shape_( opts[kwk::size | opts[source].default_shape()])
+    constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
+              : shape_ ( options::shape(tag,opts) )
     {}
 
     constexpr std::ptrdiff_t  size()    const noexcept  { return shape_.numel();              }
@@ -141,7 +142,7 @@ namespace kwk::detail
     constexpr auto index(auto i0)           const noexcept { return i0; }
     constexpr auto index(auto i0, auto i1)  const noexcept { return i0 + i1*get<0>(shape_); }
 
-    constexpr void swap( view_access& other ) noexcept { shape_.swap( other.shape_ ); }
+    constexpr void swap( accessor& other ) noexcept { shape_.swap( other.shape_ ); }
 
     shape_type  shape_;
   };
