@@ -31,14 +31,10 @@ namespace kwk
     using span_t    = typename detail::view_builder<Type,Os...>::data_block;
     using access_t  = typename detail::view_builder<Type,Os...>::accessor;
 
+    static constexpr auto tag = tag::view_{};
+
     /// Underlying value type
     using value_type        = Type;
-
-    /// Associated iterator type
-    using iterator          = typename span_t::iterator;
-
-    /// Associated  const iterator type
-    using const_iterator    = typename span_t::const_iterator;
 
     /// Associated reference type
     using reference         = typename span_t::reference;
@@ -67,9 +63,9 @@ namespace kwk
 
     /// Construct a view from a settings descriptor
     constexpr view(rbr::concepts::settings auto const& params)
-            : meta_t   { tag::view_{}, params }
-            , span_t   { tag::view_{}, params }
-            , access_t { tag::view_{}, params }
+            : meta_t   { tag, params }
+            , span_t   { tag, params }
+            , access_t { tag, params }
     {}
 
     //==============================================================================================
@@ -78,43 +74,6 @@ namespace kwk
 
     //! Return the order of the view
     constexpr auto order() const noexcept{ return this->shape().order(); }
-
-    //==============================================================================================
-    //! @name Range interface
-    //! @{
-    //==============================================================================================
-    /// Returns an iterator to the beginning
-    constexpr iterator        begin()         { return span_t::begin(); }
-
-    /// Returns an iterator to the beginning
-    constexpr const_iterator  begin()   const { return span_t::begin(); }
-
-    /// Returns a const iterator to the beginning
-    constexpr const_iterator  cbegin()  const { return span_t::begin(); }
-
-    /// Returns an iterator to the end
-    iterator        end()         { return begin() + access_t::size(); }
-
-    /// Returns an iterator to the end
-    const_iterator  end()   const { return begin() + access_t::size(); }
-
-    /// Returns a const iterator to the end
-    const_iterator  cend()  const { return begin() + access_t::size(); }
-
-    //==============================================================================================
-    //! @}
-    //==============================================================================================
-
-    /// Swap the contents with another view
-    void swap(view& other) noexcept
-    {
-      meta_t::swap( static_cast<meta_t&>(other) );
-      span_t::swap( static_cast<span_t&>(other) );
-      access_t::swap( static_cast<access_t&>(other) );
-    }
-
-    /// Swap the contents of two views
-    friend void swap(view& a, view& b) noexcept { a.swap(b); }
 
     /// Stream insertion operator
     friend std::ostream& operator<<(std::ostream& os, view const& v)
@@ -127,9 +86,9 @@ namespace kwk
         lbl();
         for_each( [&](auto const& c, auto i0, auto... i)
                   {
-                    if(i0 == 0) os << spaces << "[ ";
+                    if(i0 == first<0>(v)) os << spaces << "[ ";
                     os << c(i0,i...) << " ";
-                    if(i0 == dim<0>(c)-1) os << "]\n";
+                    if(i0 == last<0>(v)) os << "]\n";
                   }
                 , v
                 );
@@ -139,13 +98,13 @@ namespace kwk
         lbl();
         for_each( [&](auto const& c, auto i0, auto i1, auto i2, auto... i)
                   {
-                    if(i0 == 0)
+                    if(i0 == first<0>(v))
                     {
-                      if(i1 == 0 && i2 > 0) os << "\n";
+                      if(i1 == first<1>(v) && i2 > first<2>(v)) os << "\n";
                       os << spaces << "[ ";
                     }
                     os << c(i0,i1,i2,i...) << " ";
-                    if(i0 == dim<0>(c)-1) os << "]\n";
+                    if(i0 == last<0>(v)) os << "]\n";
                   }
                 , v
                 );
@@ -156,11 +115,29 @@ namespace kwk
 
     constexpr auto settings() const noexcept
     {
-      return rbr::merge ( rbr::settings( source  = span_t::data()
-                                            , size    = access_t::shape()
-                                            )
-                        , rbr::settings(Os...)
-                        );
+      // Retrieve all basic options + correct shape value
+      auto const base   = rbr::settings(Os...);
+      auto const opts   = rbr::merge( rbr::settings(size = access_t::shape())
+                                    , base
+                                    );
+
+      // Retrieve potential offset to rebuild proper view target
+      auto const offset = options::offset(tag, opts);
+
+      if constexpr(meta_t::has_label)
+      {
+        return rbr::merge ( rbr::settings( source = span_t::data() + offset
+                                         , label = meta_t::label()
+                                         )
+                          , opts
+                          );
+      }
+      else
+      {
+        return rbr::merge ( rbr::settings(source = span_t::data() + offset)
+                          , opts
+                          );
+      }
     }
 
     //==============================================================================================
@@ -186,12 +163,27 @@ namespace kwk
     //==============================================================================================
   };
 
-  /// Retrieve size along the Ith dimension
+  /// Retrieve number of elements along the Ith dimension
   template<std::size_t I, typename T, auto... Os>
   constexpr auto dim(view<T,Os...> const& v) noexcept
   {
     if constexpr(I<view<T,Os...>::static_order) return get<I>(v.shape());
     else return 1;
+  }
+
+  /// Retrieve the first valid index along the Ith dimension
+  template<std::size_t I, typename T, auto... Os>
+  constexpr auto first(view<T,Os...> const& v) noexcept
+  {
+    auto bi = options::base_index(v.tag, rbr::settings{Os...});
+    return get<I>(bi.template as_position<view<T,Os...>::static_order>());
+  }
+
+  /// Retrieve the last valid index along the Ith dimension
+  template<std::size_t I, typename T, auto... Os>
+  constexpr auto last(view<T,Os...> const& v) noexcept
+  {
+    return first<I>(v) + dim<I>(v) - 1;
   }
 
   //================================================================================================

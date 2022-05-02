@@ -14,26 +14,27 @@
 
 namespace kwk
 {
+  template<std::ptrdiff_t Base    > struct index_;
+  template<std::ptrdiff_t... Bases> struct indexes_;
+
   namespace detail
   {
-    template< typename N, std::size_t Dims
+    template< typename Index, std::size_t Dims
             , typename Indexes = std::make_index_sequence<Dims>
             >
     struct indexes;
 
     template<std::ptrdiff_t... Bs, std::size_t Dims, std::size_t... I>
     requires( sizeof...(Bs) == sizeof...(I) )
-    struct indexes<values<Bs...>, Dims, std::index_sequence<I...>>
+    struct indexes<indexes_<Bs...>, Dims, std::index_sequence<I...>>
     {
-      using type = kumi::tuple<std::integral_constant<std::ptrdiff_t, I?Bs:Bs>...>;
+      static constexpr auto value = kumi::tuple{Bs...};
     };
 
     template<std::ptrdiff_t B, std::size_t Dims, std::size_t... I>
-    struct indexes< std::integral_constant<std::ptrdiff_t, B>
-                  , Dims, std::index_sequence<I...>
-                  >
+    struct indexes<index_<B>, Dims, std::index_sequence<I...>>
     {
-      using type = kumi::tuple<std::integral_constant<std::ptrdiff_t, I?B:B>...>;
+      static constexpr auto value = kumi::tuple{(I?B:B)...};
     };
   }
 
@@ -46,6 +47,11 @@ namespace kwk
     using keyword_type      = base_index_;
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+
+    template<std::size_t Order> constexpr auto as_position() const noexcept
+    {
+      return detail::indexes<index_, Order>::value;
+    }
   };
 
   template<std::ptrdiff_t... Bases> struct indexes_
@@ -54,6 +60,11 @@ namespace kwk
     using keyword_type      = base_index_;
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+
+    template<std::size_t Order> constexpr auto as_position() const noexcept
+    {
+      return detail::indexes<indexes_, Order>::value;
+    }
   };
 
   struct base_index_ : rbr::as_keyword<base_index_>

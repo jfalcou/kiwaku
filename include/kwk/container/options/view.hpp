@@ -38,6 +38,22 @@ namespace kwk::options
     return p[kwk::strides | options::shape(tag::view_{},p).as_stride() ];
   }
 
+  // Unless retrieved from options, the base_index is index_<0>
+  template<rbr::concepts::settings Settings>
+  constexpr auto base_index(tag::view_ const&, Settings const& p) noexcept
+  {
+    return p[kwk::base_index | index<0> ];
+  }
+
+  // Compute the offset from base_index and stride
+  template<rbr::concepts::settings Settings>
+  constexpr auto offset(tag::view_ const& m, Settings const& p) noexcept
+  {
+    auto st = stride(m,p);
+    auto bi = base_index(m,p).template as_position<decltype(st)::static_size>();
+    return kumi::apply([&](auto... i) { return st.index(i...); }, bi);
+  }
+
   // For view, we infer the block type from the source that must be present
   template<rbr::concepts::settings Settings>
   struct data<tag::view_, Settings>

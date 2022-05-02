@@ -46,25 +46,12 @@ namespace kwk::detail
     // Associated const pointer type
     using const_pointer   = std::add_pointer_t<base_t const>;
 
-    // Associated iterator type
-    using iterator        = pointer;
-
-    // Associated  const iterator type
-    using const_iterator  = const_pointer;
-
     // Constructs a kwk::data_block from any source
     constexpr data_block(auto const& tag, rbr::concepts::settings auto const& opts)
-              : Source( options::source(tag,opts).as_span() )
+              : Source( options::source(tag,opts)
+                                .as_block( options::offset(tag,opts))
+                      )
     {}
-
-    // Returns an iterator to the beginning
-    constexpr iterator        begin()         { return Source::data(); }
-
-    // Returns an iterator to the beginning
-    constexpr const_iterator  begin()   const { return Source::data(); }
-
-    // Returns a const iterator to the beginning
-    constexpr const_iterator  cbegin()  const { return Source::data(); }
 
     /*
       Replaces the managed pointer.
@@ -79,10 +66,11 @@ namespace kwk::detail
       This function does not participate in overload resolution if the bse data
       Source is owning its data.
     */
-    constexpr pointer reset(pointer ptr) noexcept requires(!own_data)
-    {
-      return std::exchange(Source::data, ptr);
-    }
+    // constexpr pointer reset(pointer ptr) noexcept requires(!own_data)
+    // {
+    //   // DELEGATE TO SOURCE
+    //   return std::exchange(Source::data, ptr);
+    // }
 
     /*
       Swap contents of two compatible kwk::data_block
@@ -91,13 +79,14 @@ namespace kwk::detail
       `std::same_as<base_t, typename OtherSource::base_t>` or
       `own_data == data_block<OtherSource>::own_data` evaluates to `false`.
     */
-    template<typename OtherSource>
-    constexpr void swap( data_block<OtherSource>& other ) noexcept
-    requires(   (std::same_as<base_t, typename OtherSource::base_t>)
-            &&  (own_data == data_block<OtherSource>::own_data)
-            )
-    {
-      std::swap(Source::data, other.data);
-    }
+    // template<typename OtherSource>
+    // constexpr void swap( data_block<OtherSource>& other ) noexcept
+    // requires(   (std::same_as<base_t, typename OtherSource::base_t>)
+    //         &&  (own_data == data_block<OtherSource>::own_data)
+    //         )
+    // {
+    //   // DELEGATE TO SOURCE
+    //   std::swap(Source::data, other.data);
+    // }
   };
 }

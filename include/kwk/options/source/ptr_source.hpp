@@ -20,12 +20,15 @@ namespace kwk
     using keyword_type      = data_source;
 
     static constexpr bool own_data = false;
-
     constexpr ptr_source(T* p = nullptr) : data_(p) {}
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
-    constexpr auto as_span()        const noexcept { return *this;          }
+    constexpr auto as_block(std::ptrdiff_t offset = 0) const noexcept
+    {
+      return ptr_source{data_ - offset};
+    }
+
     constexpr auto data()           const noexcept { return data_;          }
     constexpr auto default_shape()  const noexcept { return shape<_1D>{0};  }
     T* data_;

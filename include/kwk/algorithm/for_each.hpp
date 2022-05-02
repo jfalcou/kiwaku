@@ -22,7 +22,7 @@ namespace kwk
     template<typename Func, typename Dim, typename Container>
     constexpr void for_each(Func f, Container&& c, Dim d)
     {
-      for(std::ptrdiff_t i=0;i<d;++i) f(KWK_FWD(c), i);
+      for(std::ptrdiff_t i=get<0>(d);i<=get<1>(d);++i) f(KWK_FWD(c), i);
     }
 
     template<typename Func, typename Container, typename Dim, typename... Dims>
@@ -30,8 +30,8 @@ namespace kwk
     {
       detail::for_each( [f,d0](auto&& x, auto... is)
                         {
-                          for(std::ptrdiff_t i0=0;i0<d0;++i0)
-                            f(KWK_FWD(x), i0,is...);
+                          for(std::ptrdiff_t i=get<0>(d0);i<=get<1>(d0);++i)
+                            f(KWK_FWD(x), i,is...);
                         }
                       , KWK_FWD(c)
                       , ds...
@@ -47,7 +47,7 @@ namespace kwk
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      return detail::for_each(f, KWK_FWD(c), dim<N>(c)... );
+      return detail::for_each(f, KWK_FWD(c), kumi::tuple{first<N>(c),last<N>(c)}... );
     }( std::make_index_sequence<std::remove_cvref_t<Container>::static_order>{} );
   }
 }

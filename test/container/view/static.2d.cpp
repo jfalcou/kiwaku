@@ -6,7 +6,6 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include "tts.hpp"
 #include <kwk/container.hpp>
 #include <algorithm>
 #include <array>
@@ -24,7 +23,6 @@ TTS_CASE( "Build a 2D view from a C array" )
   TTS_EQUAL ( v.size() , 12               );
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), &ref[0])) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
@@ -36,7 +34,6 @@ TTS_CASE( "Build a 2D view from a C array" )
   TTS_EQUAL ( w.size() , 12               );
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), &ref[0])) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
@@ -55,7 +52,6 @@ TTS_CASE( "Build a 2D view from std::array" )
   TTS_EQUAL ( v.size() , 12               );
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), &ref[0])) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
@@ -67,7 +63,6 @@ TTS_CASE( "Build a 2D view from std::array" )
   TTS_EQUAL ( w.size() , 12               );
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), &ref[0])) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
@@ -86,7 +81,6 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a ContiguousRange"
   TTS_EQUAL ( v.size() , 12               );
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), ref.begin())) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
@@ -100,7 +94,6 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a ContiguousRange"
   TTS_EQUAL ( w.size() , 12               );
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), ref.begin())) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
@@ -120,7 +113,6 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a pointer" )
   TTS_EQUAL ( v.size() , 12               );
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), ref.begin())) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
@@ -134,7 +126,6 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a pointer" )
   TTS_EQUAL ( w.size() , 12               );
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), ref.begin())) );
 
   for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
     for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
