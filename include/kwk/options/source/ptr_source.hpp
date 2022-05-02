@@ -19,6 +19,8 @@ namespace kwk
     using stored_value_type = ptr_source<T>;
     using keyword_type      = data_source;
 
+    static constexpr bool own_data = false;
+
     constexpr ptr_source(T* p = nullptr) : data_(p) {}
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }

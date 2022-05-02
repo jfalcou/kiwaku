@@ -14,10 +14,10 @@ namespace kwk::detail
 {
   //================================================================================================
   /*
-    Data holder kwk::view base class
+    Data holder base class
 
     SCARY base class gathering all types and member functions pertaining to the upkeep, access and
-    update to the data part of a kwk::view.
+    update to the data part of a kwk container.
 
     Contrary to most standard view and container,kwk::data_block keep the potential const qualifier
     of underlying type on purpose.
@@ -28,6 +28,8 @@ namespace kwk::detail
   template<typename Source> struct data_block : Source
   {
     using base_t       = typename Source::base_type;
+
+    static constexpr bool own_data = Source::own_data;
 
     // Underlying pointee value type
     using value_type      = std::remove_const_t<base_t>;
@@ -74,8 +76,13 @@ namespace kwk::detail
       - Saves a copy of the current pointer `old_ptr = current_ptr`
       - Overwrites the current pointer with the argument `current_ptr = ptr`
       - Returns the copy of the previous current pointer
+
+      Does not participate in overload resolution if the bse data Source is owning its data.
     */
-    constexpr pointer reset(pointer ptr) noexcept { return std::exchange(Source::data, ptr); }
+    constexpr pointer reset(pointer ptr) noexcept requires(!own_data)
+    {
+      return std::exchange(Source::data, ptr);
+    }
 
     /*
       Swap contents of two compatible kwk::data_block

@@ -23,6 +23,8 @@ namespace kwk
 
     struct range_span
     {
+      static constexpr bool own_data = false;
+
       using base_type = T;
       T* data_;
       constexpr auto data()  const noexcept { return data_; }
