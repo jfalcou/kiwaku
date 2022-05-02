@@ -18,16 +18,15 @@ namespace kwk::detail
   //================================================================================================
   template<auto Shape, auto Stride> struct accessor
   {
-    using shape_type                  = std::remove_cvref_t<decltype(Shape)>;
-    using stride_type                 = std::remove_cvref_t<decltype(Stride)>;
+    using shape_type                   = std::remove_cvref_t<decltype(Shape)>;
+    using stride_type                  = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_order = shape_type::static_order;
 
     constexpr auto  size()    const noexcept  { return shape_.numel(); }
     constexpr auto  shape()   const noexcept  { return shape_;         }
     constexpr auto  stride()  const noexcept  { return stride_;        }
 
-    template<rbr::concepts::option... Opts>
-    constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
+    constexpr   accessor(auto const& tag, rbr::concepts::settings auto const& opts)
               : shape_ ( options::shape(tag,opts) )
               , stride_( options::stride(tag,opts) )
     {}
@@ -66,17 +65,14 @@ namespace kwk::detail
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_order = shape_type::static_order;
+    static constexpr auto static_order  = shape_type::static_order;
 
     constexpr auto  size()    const noexcept  { return Shape.numel(); }
     constexpr auto  shape()   const noexcept  { return Shape;         }
     constexpr auto  stride()  const noexcept  { return Stride;        }
 
-    template<rbr::concepts::option... Opts>
-    constexpr   accessor(auto const&, rbr::settings<Opts...> const& )
-    {}
-
-    constexpr void swap( accessor& ) noexcept {}
+    constexpr       accessor(auto const&, rbr::concepts::settings auto const&) noexcept {}
+    constexpr void  swap( accessor& ) noexcept {}
 
     template<std::integral... Is>
     constexpr auto index(Is... is) const noexcept { return Stride.index(is...); }
@@ -92,10 +88,9 @@ namespace kwk::detail
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_order = shape_type::static_order;
+    static constexpr auto static_order  = shape_type::static_order;
 
-    template<rbr::concepts::option... Opts>
-    constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
+    constexpr   accessor(auto const& tag, rbr::concepts::settings auto const& opts)
               : shape_ ( options::shape(tag,opts) )
     {}
 
@@ -104,12 +99,8 @@ namespace kwk::detail
     constexpr stride_type stride()                  const noexcept  { return {};              }
     constexpr auto        index(std::ptrdiff_t is)  const noexcept  { return is;              }
 
-    constexpr void reshape( shape_type const& s ) { shape_ = s; }
-
-    constexpr void swap( accessor& other ) noexcept
-    {
-      shape_.swap( other.shape_ );
-    }
+    constexpr void reshape( shape_type const& s ) noexcept { shape_ = s; }
+    constexpr void swap( accessor& other )        noexcept { shape_.swap( other.shape_ ); }
 
     shape_type shape_;
   };
@@ -126,10 +117,9 @@ namespace kwk::detail
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_order = shape_type::static_order;
+    static constexpr auto static_order  = shape_type::static_order;
 
-    template<rbr::concepts::option... Opts>
-    constexpr   accessor(auto const& tag, rbr::settings<Opts...> const& opts)
+    constexpr   accessor(auto const& tag, rbr::concepts::settings auto const& opts)
               : shape_ ( options::shape(tag,opts) )
     {}
 

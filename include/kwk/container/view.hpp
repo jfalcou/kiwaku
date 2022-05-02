@@ -32,7 +32,7 @@ namespace kwk
     using access_t  = typename detail::view_builder<Type,Os...>::accessor;
 
     /// Underlying value type
-    using value_type      = Type;
+    using value_type        = Type;
 
     /// Associated iterator type
     using iterator          = typename span_t::iterator;
@@ -47,10 +47,10 @@ namespace kwk
     using const_reference   = typename span_t::const_reference;
 
     /// Associated pointer type
-    using pointer         = typename span_t::pointer;
+    using pointer           = typename span_t::pointer;
 
     /// Associated const pointer type
-    using const_pointer   = typename span_t::const_pointer;
+    using const_pointer     = typename span_t::const_pointer;
 
     /// Compile-time @ref glossary-order
     static constexpr auto static_order = access_t::static_order;
@@ -60,17 +60,15 @@ namespace kwk
     //! @{
     //==============================================================================================
 
-    /// Construct a view from a list of settings
-    template<rbr::concepts::option... Opts>
-    constexpr view( Opts const&... params )
-            : view{rbr::settings(params...)}
+    /// Construct a view from a list of options
+    constexpr view( rbr::concepts::option auto const&... params )
+            : view{ rbr::settings(params...) }
     {}
 
     /// Construct a view from a settings descriptor
-    template<rbr::concepts::option... Opts>
-    constexpr view(rbr::settings<Opts...> const& params)
-            : meta_t { tag::view_{}, params }
-            , span_t{ tag::view_{}, params }
+    constexpr view(rbr::concepts::settings auto const& params)
+            : meta_t   { tag::view_{}, params }
+            , span_t   { tag::view_{}, params }
             , access_t { tag::view_{}, params }
     {}
 
@@ -110,8 +108,9 @@ namespace kwk
     /// Swap the contents with another view
     void swap(view& other) noexcept
     {
-      access_t::swap( static_cast<access_t&>(other) );
+      meta_t::swap( static_cast<meta_t&>(other) );
       span_t::swap( static_cast<span_t&>(other) );
+      access_t::swap( static_cast<access_t&>(other) );
     }
 
     /// Swap the contents of two views

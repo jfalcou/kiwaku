@@ -42,7 +42,7 @@ namespace kwk::options
   template<rbr::concepts::settings Settings>
   struct data<tag::view_, Settings>
   {
-    using src_t = rbr::result::fetch_t<kwk::source | ptr_source<void>{}, Settings>;;
+    using src_t = rbr::result::fetch_t<kwk::source | ptr_source<void>{}, Settings>;
     using type = typename src_t::span_type;
   };
 

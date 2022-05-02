@@ -53,9 +53,8 @@ namespace kwk::detail
     using const_iterator  = const_pointer;
 
     // Constructs a kwk::data_block from any source
-    template<rbr::concepts::option... Opts>
-    constexpr data_block(auto const& tag, rbr::settings<Opts...> const& opts)
-              : Source( options::source(tag,opts).as_span())
+    constexpr data_block(auto const& tag, rbr::concepts::settings auto const& opts)
+              : Source( options::source(tag,opts).as_span() )
     {}
 
     // Returns an iterator to the beginning
@@ -77,7 +76,8 @@ namespace kwk::detail
       - Overwrites the current pointer with the argument `current_ptr = ptr`
       - Returns the copy of the previous current pointer
 
-      Does not participate in overload resolution if the bse data Source is owning its data.
+      This function does not participate in overload resolution if the bse data
+      Source is owning its data.
     */
     constexpr pointer reset(pointer ptr) noexcept requires(!own_data)
     {
@@ -88,11 +88,14 @@ namespace kwk::detail
       Swap contents of two compatible kwk::data_block
 
       This function does not participate in overload resolution if
-      `std::same_as<base_t, typename OtherSource::base_t>` evaluates to `false`.
+      `std::same_as<base_t, typename OtherSource::base_t>` or
+      `own_data == data_block<OtherSource>::own_data` evaluates to `false`.
     */
     template<typename OtherSource>
     constexpr void swap( data_block<OtherSource>& other ) noexcept
-    requires( std::same_as<base_t, typename OtherSource::base_t> )
+    requires(   (std::same_as<base_t, typename OtherSource::base_t>)
+            &&  (own_data == data_block<OtherSource>::own_data)
+            )
     {
       std::swap(Source::data, other.data);
     }
