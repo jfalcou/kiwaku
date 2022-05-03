@@ -117,6 +117,9 @@ namespace kwk
   //!
   //! Both of these operators can be chained as needed to describe a given shape.
   //!
+  //! The actual integer type storing the size of each dimensions can be specified by using
+  //! kwk::extent_of.
+  //!
   //! Usage of kwk::extent is advised when one wants to properly type a given shape.
   //! Other usage of shape descriptors are usually abstracted away via kwk::of_size.
   //!
@@ -135,8 +138,10 @@ namespace kwk
   //! #include<kwk/container/shape.hpp>
   //!
   //! // Shape descriptors with runtime sizes
-  //! kwk::shape< kwk::extent()   > d1(6, 8); // Order 1 shape with runtime size 6 x 8
+  //! kwk::shape< kwk::extent()() > d1(6, 8); // Order 1 shape with runtime size 6 x 8
   //! kwk::shape< kwk::extent()() > d2;       // Order 2 shape with runtime size 0 x 1
+  //!
+  //! kwk::shape< kwk::extent_of<short>()() > s1(6, 8); // Order 1 shape with runtime size 6 x 8 stored as short
   //!
   //! // Shape descriptors with compile-time sizes
   //! kwk::shape< kwk::extent[4]    > s1;   // Order 1 shape with compile-time size 4
@@ -153,6 +158,9 @@ namespace kwk
   //!
   //================================================================================================
   inline constexpr detail::shaper<std::ptrdiff_t> extent  = {};
+
+  template<typename T>
+  inline constexpr detail::shaper<T> extent_of  = {};
 
   inline constexpr auto _1D     = extent();
   inline constexpr auto _2D     = _1D();
