@@ -8,4 +8,5 @@
 #pragma once
 
 #include <kwk/container/options/view.hpp>
+#include <kwk/container/options/table.hpp>
 #include <kwk/container/options/common.hpp>

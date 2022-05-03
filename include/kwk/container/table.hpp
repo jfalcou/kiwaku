@@ -7,11 +7,13 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/algorithm/for_each.hpp>
 #include <kwk/container/options.hpp>
 #include <kwk/container/components/container.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/options.hpp>
 #include <type_traits>
+
 
 namespace kwk
 {
@@ -20,12 +22,12 @@ namespace kwk
   //! @brief Non-owning, contiguous multi-dimensional container
   //!
   //!   @tparam Type  Type of the underlying data
-  //!   @tparam Os    Variadic list of settings describing current's view behavior
+  //!   @tparam Os    Variadic list of settings describing current's table behavior
   //================================================================================================
   template<typename Type, auto... Os>
-  struct  view  : container<tag::view_,Type,Os...>
+  struct  table  : container<tag::table_,Type,Os...>
   {
-    using parent = container<tag::view_,Type,Os...>;
+    using parent = container<tag::table_,Type,Os...>;
 
     static constexpr auto tag = parent::tag;
 
@@ -52,11 +54,11 @@ namespace kwk
     //! @{
     //==============================================================================================
 
-    /// Construct a view from a list of options
-    constexpr view(rbr::concepts::option auto const&... opts) : parent{rbr::settings(opts...)} {}
+    /// Construct a table from a list of options
+    constexpr table(rbr::concepts::option auto const&... opts) : parent{rbr::settings(opts...)} {}
 
-    /// Construct a view from a settings descriptor
-    constexpr view(rbr::concepts::settings auto const& params) : parent{ params } {}
+    /// Construct a table from a settings descriptor
+    constexpr table(rbr::concepts::settings auto const& params) : parent{ params } {}
 
     //==============================================================================================
     //! @}
@@ -64,18 +66,11 @@ namespace kwk
 
     constexpr auto settings() const noexcept
     {
-      // Retrieve all basic options + correct shape value
-      auto const base   = rbr::settings(Os...);
-      auto const opts   = rbr::merge( rbr::settings(size = parent::shape())
-                                    , base
-                                    );
-
-      // Retrieve potential offset to rebuild proper view target
-      auto const offset = options::offset(tag, opts);
+      auto const opts   = rbr::settings(Os...);
 
       if constexpr(parent::has_label)
       {
-        return rbr::merge ( rbr::settings ( source = parent::data() + offset
+        return rbr::merge ( rbr::settings ( size = parent::shape()
                                                 , label = parent::label()
                                                 )
                           , opts
@@ -83,7 +78,7 @@ namespace kwk
       }
       else
       {
-        return rbr::merge ( rbr::settings(source = parent::data() + offset)
+        return rbr::merge ( rbr::settings(size = parent::shape())
                           , opts
                           );
       }
@@ -95,14 +90,14 @@ namespace kwk
   //! @{
   //================================================================================================
 
-  /// This deduction guide is provided for kwk::view to allow deduction from a list of options
+  /// This deduction guide is provided for kwk::table to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  view(O const&...) -> view<typename options::element<tag::view_,rbr::settings<O...>>::type,O{}...>;
+  table(O const&...) -> table<typename options::element<tag::table_,rbr::settings<O...>>::type,O{}...>;
 
-  /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
+  /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
   template<rbr::concepts::option... O>
-  view(rbr::settings<O...> const&)
-      -> view<typename options::element<tag::view_,rbr::settings<O...>>::type, O{}...>;
+  table(rbr::settings<O...> const&)
+      -> table<typename options::element<tag::table_,rbr::settings<O...>>::type, O{}...>;
 
   //================================================================================================
   //! @}

@@ -22,4 +22,5 @@ namespace kwk
 
 #include <kwk/container/shape.hpp>
 #include <kwk/container/slicers.hpp>
+#include <kwk/container/table.hpp>
 #include <kwk/container/view.hpp>
