@@ -553,7 +553,7 @@ namespace kwk
 
   template<typename... Ds> constexpr auto of_size( Ds... ds) noexcept
   {
-    using type_t = std::common_type_t<detail::to_int_t<Ds>...>;
+    using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
     return of_size<type_t,Ds...>(ds...);
   }
 }
