@@ -8,15 +8,13 @@
 #pragma once
 
 #include <kwk/detail/raberu.hpp>
+#include <kwk/container/options/forward.hpp>
 #include <kwk/options.hpp>
 
 namespace kwk::tag { struct view_ {}; }
 
 namespace kwk::options
 {
-  template<typename Mode, rbr::concepts::settings Settings> struct data;
-  template<typename Mode, rbr::concepts::settings Settings> struct element;
-
   // The data source is fetched or an empty ptr_source is returned
   template<rbr::concepts::settings Settings>
   constexpr auto source(tag::view_ const&, Settings const& p) noexcept
@@ -31,35 +29,12 @@ namespace kwk::options
     return p[kwk::size | options::source(tag::view_{},p).default_shape()];
   }
 
-  // Unless specified, the stride is computed from the shape
-  template<rbr::concepts::settings Settings>
-  constexpr auto stride(tag::view_ const&, Settings const& p) noexcept
-  {
-    return p[kwk::strides | options::shape(tag::view_{},p).as_stride() ];
-  }
-
-  // Unless retrieved from options, the base_index is index_<0>
-  template<rbr::concepts::settings Settings>
-  constexpr auto base_index(tag::view_ const&, Settings const& p) noexcept
-  {
-    return p[kwk::base_index | index<0> ];
-  }
-
-  // Compute the offset from base_index and stride
-  template<rbr::concepts::settings Settings>
-  constexpr auto offset(tag::view_ const& m, Settings const& p) noexcept
-  {
-    auto st = stride(m,p);
-    auto bi = base_index(m,p).template as_position<decltype(st)::static_size>();
-    return kumi::apply([&](auto... i) { return st.index(i...); }, bi);
-  }
-
   // For view, we compute the data_block from the source and base_index
   template<rbr::concepts::settings Settings>
   constexpr auto block(tag::view_ const& m, Settings const& p) noexcept
   {
-    auto src = options::source(m,p);
-    return src.as_block(options::offset(m,p));
+    auto src = source(m,p);
+    return src.as_block(offset(m,p));
   }
 
   // For view, we infer the type from the source that must be present
