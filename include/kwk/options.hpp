@@ -35,3 +35,4 @@ namespace kwk
 #include <kwk/options/source.hpp>
 #include <kwk/options/size.hpp>
 #include <kwk/options/strides.hpp>
+#include <kwk/options/type.hpp>
