@@ -36,6 +36,7 @@ namespace kwk
     {
       return range_span{data_ - offset};
     }
+
     constexpr auto default_shape()  const noexcept { return of_size(size_);     }
 
     T*    data_;

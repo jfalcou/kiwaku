@@ -14,8 +14,8 @@ namespace kwk::tag { struct view_ {}; }
 
 namespace kwk::options
 {
-  template<typename Mode, rbr::concepts::settings Settings> struct element;
   template<typename Mode, rbr::concepts::settings Settings> struct data;
+  template<typename Mode, rbr::concepts::settings Settings> struct element;
 
   // The data source is fetched or an empty ptr_source is returned
   template<rbr::concepts::settings Settings>
@@ -54,13 +54,13 @@ namespace kwk::options
     return kumi::apply([&](auto... i) { return st.index(i...); }, bi);
   }
 
-  // For view, we infer the block type from the source that must be present
+  // For view, we compute the data_block from the source and base_index
   template<rbr::concepts::settings Settings>
-  struct data<tag::view_, Settings>
+  constexpr auto block(tag::view_ const& m, Settings const& p) noexcept
   {
-    using src_t = rbr::result::fetch_t<kwk::source | ptr_source<void>{}, Settings>;
-    using type = typename src_t::span_type;
-  };
+    auto src = options::source(m,p);
+    return src.as_block(options::offset(m,p));
+  }
 
   // For view, we infer the type from the source that must be present
   template<rbr::concepts::settings Settings>
