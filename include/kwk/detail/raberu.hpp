@@ -586,6 +586,7 @@ namespace rbr
   // Option calls aggregator
   template<concepts::option... Ts> struct aggregator : Ts...
   {
+    constexpr aggregator() noexcept : Ts{}... {}
     constexpr aggregator(Ts const&...t) noexcept : Ts(t)... {}
     using Ts::operator()...;
 

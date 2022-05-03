@@ -22,7 +22,7 @@ namespace kwk
     template<typename Func, typename Dim, typename Container>
     constexpr void for_each(Func f, Container&& c, Dim d)
     {
-      for(std::ptrdiff_t i=get<0>(d);i<=get<1>(d);++i) f(KWK_FWD(c), i);
+      for(std::ptrdiff_t i=get<0>(d);i<get<1>(d);++i) f(KWK_FWD(c), i);
     }
 
     template<typename Func, typename Container, typename Dim, typename... Dims>
@@ -30,7 +30,7 @@ namespace kwk
     {
       detail::for_each( [f,d0](auto&& x, auto... is)
                         {
-                          for(std::ptrdiff_t i=get<0>(d0);i<=get<1>(d0);++i)
+                          for(std::ptrdiff_t i=get<0>(d0);i<get<1>(d0);++i)
                             f(KWK_FWD(x), i,is...);
                         }
                       , KWK_FWD(c)

@@ -49,13 +49,16 @@ namespace kwk::options
 
     if constexpr( shp_t::is_fully_static )
     {
+      constexpr auto offset = options::offset(tag::table_{}, Settings{});
+
       return detail::stack_block< typename element<tag::table_, Settings>::type
                                 , shp_t{}.numel()
+                                , offset
                                 >{};
     }
     else
     {
-
+      // NEXT STEP heap_block
     }
   }
 

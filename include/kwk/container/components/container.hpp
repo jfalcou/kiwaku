@@ -60,7 +60,7 @@ namespace kwk
                   {
                     if(i0 == first<0>(v)) os << spaces << "[ ";
                     os << c(i0,i...) << " ";
-                    if(i0 == last<0>(v)) os << "]\n";
+                    if(i0 == last<0>(v)-1) os << "]\n";
                   }
                 , v
                 );
@@ -76,7 +76,7 @@ namespace kwk
                       os << spaces << "[ ";
                     }
                     os << c(i0,i1,i2,i...) << " ";
-                    if(i0 == last<0>(v)) os << "]\n";
+                    if(i0 == last<0>(v)-1) os << "]\n";
                   }
                 , v
                 );
@@ -86,14 +86,14 @@ namespace kwk
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) <= static_order)
+    requires(sizeof...(Is) == static_order)
     const_reference operator()(Is... is) const noexcept
     {
       return span_t::data()[ access_t::index(is...) ];
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) <= static_order)
+    requires(sizeof...(Is) == static_order)
     reference operator()(Is... is) noexcept
     {
       return span_t::data()[ access_t::index(is...) ];
@@ -119,7 +119,7 @@ namespace kwk
   template<std::size_t I, typename T, typename Tag, auto... Os>
   constexpr auto last(container<Tag,T,Os...> const& v) noexcept
   {
-    return first<I>(v) + dim<I>(v) - 1;
+    return first<I>(v) + dim<I>(v);
   }
 }
 

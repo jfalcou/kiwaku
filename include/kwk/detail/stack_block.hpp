@@ -11,15 +11,15 @@
 
 namespace kwk::detail
 {
-  template<typename T, std::ptrdiff_t Size>
+  template<typename T, std::ptrdiff_t Size, std::ptrdiff_t Offset>
   struct stack_block
   {
     using base_type = std::remove_const_t<T>;
 
     base_type data_[Size];
 
-    constexpr auto data()       noexcept { return &data_[0]; }
-    constexpr auto data() const noexcept { return &data_[0]; }
+    constexpr auto data()       noexcept { return &data_[0] - Offset; }
+    constexpr auto data() const noexcept { return &data_[0] - Offset; }
 
     constexpr void swap(stack_block& other) noexcept
     {

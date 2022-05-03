@@ -31,7 +31,7 @@ namespace kwk::options
   template<typename Tag, rbr::concepts::settings Settings>
   constexpr auto base_index(Tag const&, Settings const& p) noexcept
   {
-    return p[kwk::base_index | index<0> ];
+    return p[kwk::base_index | bases<0> ];
   }
 
   // Compute the offset from base_index and stride
