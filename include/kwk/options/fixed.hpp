@@ -18,6 +18,17 @@ namespace kwk
     template<typename T, T N> struct  to_int<std::integral_constant<T,N>> { using type = T; };
     template<typename T>      using   to_int_t = typename to_int<T>::type;
 
+    template<typename... T>   struct largest_type;
+    template<typename T>      struct largest_type<T> { using type = T; };
+
+    template<typename T0, typename T1>
+    struct largest_type<T0,T1> : std::conditional<sizeof(T0)<sizeof(T1),T1,T0>
+    {};
+
+    template<typename T0, typename T1, typename... T2>
+    struct largest_type<T0, T1, T2...> : largest_type< typename largest_type<T0,T1>::type, T2...>
+    {};
+
     template<auto Value> constexpr auto clamp()
     {
       if constexpr(Value >= 0)
