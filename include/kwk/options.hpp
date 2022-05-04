@@ -29,6 +29,7 @@ namespace kwk
   //================================================================================================
 }
 
+#include <kwk/options/allocator.hpp>
 #include <kwk/options/base_index.hpp>
 #include <kwk/options/fixed.hpp>
 #include <kwk/options/label.hpp>

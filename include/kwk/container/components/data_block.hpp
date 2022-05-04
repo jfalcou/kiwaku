@@ -51,6 +51,9 @@ namespace kwk::detail
               : Source( options::block(tag,opts) )
     {}
 
+    constexpr Source&       as_source()       noexcept { return static_cast<Source&>(*this);       }
+    constexpr Source const& as_source() const noexcept { return static_cast<Source const&>(*this); }
+
     /*
       Replaces the managed pointer.
 
@@ -71,20 +74,16 @@ namespace kwk::detail
     // }
 
     /*
-      Swap contents of two compatible kwk::data_block
+      Swap contents of two kwk::data_block
 
-      This function does not participate in overload resolution if
-      `std::same_as<base_t, typename OtherSource::base_t>` or
-      `own_data == data_block<OtherSource>::own_data` evaluates to `false`.
+      This function does not participate in overload resolution if the underlying source block
+      can't be properly swapped.
     */
-    // template<typename OtherSource>
-    // constexpr void swap( data_block<OtherSource>& other ) noexcept
-    // requires(   (std::same_as<base_t, typename OtherSource::base_t>)
-    //         &&  (own_data == data_block<OtherSource>::own_data)
-    //         )
-    // {
-    //   // DELEGATE TO SOURCE
-    //   std::swap(Source::data, other.data);
-    // }
+    template<typename OtherSource>
+    constexpr void swap( data_block<OtherSource>& other ) noexcept
+    requires requires(Source& a, OtherSource& b) { a.swap(b);}
+    {
+      as_source().swap(other.as_source());
+    }
   };
 }
