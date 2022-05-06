@@ -37,3 +37,12 @@ TTS_CASE( "numel behavior on nD shape" )
   TTS_EQUAL( (kwk::of_size(4,1,1,1).numel()), 4   );
   TTS_EQUAL( (kwk::of_size(1,1,1,1).numel()), 1   );
 };
+
+struct other_base { int x; };
+
+struct ebo_carrier : kwk::shape<kwk::extent[42][69]>, other_base {};
+
+TTS_CASE( "kwk::shape and Empty Base Optimisation" )
+{
+  TTS_CONSTEXPR_EQUAL( sizeof(ebo_carrier), sizeof(other_base) );
+};
