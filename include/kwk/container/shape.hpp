@@ -126,8 +126,8 @@ namespace kwk
     //==============================================================================================
     KWK_FORCEINLINE constexpr shape() noexcept
     {
-      if constexpr(storage_size > 1ULL)  for(auto& e : as_array()) e = 1;
-      if constexpr(storage_size > 0ULL)  as_array()[0] = 0;
+      if constexpr(storage_size > 1ULL)  for(auto& e : storage()) e = 1;
+      if constexpr(storage_size > 0ULL)  storage()[0] = 0;
     }
 
     //==============================================================================================
@@ -151,7 +151,7 @@ namespace kwk
     {
       if constexpr(sizeof...(T) < static_order)
         for(std::size_t i = sizeof...(T);i<static_order;++i)
-          as_array()[i] = 1;
+          storage()[i] = 1;
     }
 
     //==============================================================================================
@@ -180,8 +180,8 @@ namespace kwk
         {
           if constexpr(!size_map::contains(I))
           {
-            if constexpr(I==0)  as_array()[size_map::template locate<static_order>(I)] = 0;
-            else                as_array()[size_map::template locate<static_order>(I)] = 1;
+            if constexpr(I==0)  storage()[size_map::template locate<static_order>(I)] = 0;
+            else                storage()[size_map::template locate<static_order>(I)] = 1;
           }
         }
       );
@@ -193,7 +193,7 @@ namespace kwk
                       , "[kwk::shape] Semi-dynamic construction overwrite static shape"
                       );
 
-        as_array()[size_map::template locate<static_order>(e.dims)] = static_cast<size_type>(e.size);
+        storage()[size_map::template locate<static_order>(e.dims)] = static_cast<size_type>(e.size);
       };
 
       (fill(s),...);
@@ -224,7 +224,7 @@ namespace kwk
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
           constexpr auto idx = size_map::template locate<static_order>(I);
-          if constexpr( idx < storage_size ) as_array()[idx] = other.template get<I>();
+          if constexpr( idx < storage_size ) storage()[idx] = other.template get<I>();
         }
       );
     }
@@ -251,11 +251,11 @@ namespace kwk
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
-          as_array()[I] = other.template get<I>();
+          storage()[I] = other.template get<I>();
         }
       );
 
-      for(std::size_t i = dz; i < static_order;++i) as_array()[i] = 1;
+      for(std::size_t i = dz; i < static_order;++i) storage()[i] = 1;
     }
 
     //==============================================================================================
@@ -281,14 +281,14 @@ namespace kwk
       detail::constexpr_for<dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
-          as_array()[I] = other.template get<I>();
+          storage()[I] = other.template get<I>();
         }
       );
 
       detail::constexpr_for<shape<OtherShaper>::static_order - dz>
       ( [&]<std::ptrdiff_t I>(std::integral_constant<std::ptrdiff_t,I> const&)
         {
-          as_array().back() *= other.template get<dz+I>();
+          storage().back() *= other.template get<dz+I>();
         }
       );
     }
@@ -312,13 +312,13 @@ namespace kwk
     template<std::size_t I> constexpr auto get() const noexcept
     {
       if constexpr(size_map::contains(I)) return Shaper.at(I);
-      else return as_array()[size_map::template locate<static_order>(I)];
+      else return storage()[size_map::template locate<static_order>(I)];
     }
 
     /// Swap shape's contents
     void swap( shape& other ) noexcept
     {
-      as_array().swap( other.as_array() );
+      storage().swap( other.storage() );
     }
 
 /*
@@ -424,8 +424,8 @@ namespace kwk
       return os;
     }
 
-    constexpr storage_t&        as_array() noexcept       { return static_cast<storage_t&>(*this);        }
-    constexpr storage_t const&  as_array() const noexcept { return static_cast<storage_t const&>(*this);  }
+    constexpr storage_t&        storage() noexcept       { return static_cast<storage_t&>(*this);        }
+    constexpr storage_t const&  storage() const noexcept { return static_cast<storage_t const&>(*this);  }
 
     private:
 
