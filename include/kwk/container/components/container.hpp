@@ -46,12 +46,21 @@ namespace kwk
             , access_t { tag, params }
     {}
 
-    constexpr auto order() const noexcept{ return this->shape().order(); }
+    constexpr auto order() const noexcept { return this->shape().order(); }
+    constexpr auto empty() const noexcept { return this->size() == 0; }
+
+    using meta_t::label;
 
     friend std::ostream& operator<<(std::ostream& os, container const& v)
     {
       auto spaces = has_label ? "  " : "";
       auto lbl    = [&]() { if constexpr(has_label) os << v.label() << ":\n"; };
+
+      if( v.empty() )
+      {
+        lbl();
+        return os << spaces << "[ ]";
+      }
 
       if constexpr( container::static_order < 3)
       {
@@ -86,15 +95,13 @@ namespace kwk
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order)
-    const_reference operator()(Is... is) const noexcept
+    requires(sizeof...(Is) == static_order) const_reference operator()(Is... is) const noexcept
     {
       return span_t::data()[ access_t::index(is...) ];
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order)
-    reference operator()(Is... is) noexcept
+    requires(sizeof...(Is) == static_order) reference operator()(Is... is) noexcept
     {
       return span_t::data()[ access_t::index(is...) ];
     }

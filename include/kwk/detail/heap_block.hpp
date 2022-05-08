@@ -62,6 +62,7 @@ namespace kwk::detail
     constexpr         void swap(heap_block& other)            { data_.swap(other.data_); }
     constexpr friend  void swap(heap_block& a,heap_block& b)  { a.swap(b); }
 
-    constexpr auto data() noexcept { return data_.get(); }
+    constexpr auto data()       noexcept { return data_.get(); }
+    constexpr auto data() const noexcept { return data_.get(); }
   };
 }

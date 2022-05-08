@@ -37,6 +37,7 @@ namespace kwk::detail
     static constexpr bool has_label = false;
     constexpr metadata(auto const&, rbr::concepts::settings auto const&) noexcept {}
 
+    constexpr auto label() const noexcept { return ""; }
     constexpr void  swap( metadata& ) noexcept {}
   };
 }

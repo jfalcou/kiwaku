@@ -22,9 +22,9 @@ namespace kwk::options
 
   // Unless specified, the stride is computed from the shape
   template<typename Tag, rbr::concepts::settings Settings>
-  constexpr auto stride(Tag const&, Settings const& p) noexcept
+  constexpr auto stride(Tag const& m, Settings const& p) noexcept
   {
-    return p[kwk::strides | options::shape(tag::view_{},p).as_stride() ];
+    return p[kwk::strides | options::shape(m,p).as_stride() ];
   }
 
   // Unless retrieved from options, the base_index is index_<0>
