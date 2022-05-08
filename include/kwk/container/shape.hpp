@@ -279,7 +279,7 @@ namespace kwk
     }
 
     /// Number of dimensions
-    static constexpr std::ptrdiff_t order() noexcept { return static_order; }
+    static constexpr auto order() noexcept { return static_order; }
 
     /// Assignment operators
     template<auto OtherShaper>
@@ -332,7 +332,7 @@ namespace kwk
       doesn't participate to the shape's extent.
     **/
     //==============================================================================================
-    constexpr std::ptrdiff_t nbdims() const noexcept
+    constexpr int nbdims() const noexcept
     {
       if constexpr(static_order == 0)  return 0;
       else  return [&]<std::size_t...I>( std::index_sequence<I...> const&)
@@ -351,7 +351,7 @@ namespace kwk
       dimensions' size.
     **/
     //==============================================================================================
-    constexpr std::ptrdiff_t numel() const noexcept
+    constexpr auto numel() const noexcept
     {
       if constexpr(static_order == 0) return 0;
       else return [&]<std::size_t...I>( std::index_sequence<I...> const&)
