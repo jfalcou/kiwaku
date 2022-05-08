@@ -27,24 +27,8 @@ namespace kwk::detail
   //================================================================================================
   template<typename Source> struct data_block : Source
   {
-    using base_t       = typename Source::base_type;
-
+    using pointer         = typename Source::pointer;
     static constexpr bool own_data = Source::own_data;
-
-    // Underlying pointee value type
-    using value_type      = std::remove_const_t<base_t>;
-
-    // Associated reference type
-    using reference       = std::add_lvalue_reference_t<base_t>;
-
-    // Associated reference to const type
-    using const_reference = std::add_lvalue_reference_t<base_t const>;
-
-    // Associated pointer type
-    using pointer         = std::add_pointer_t<base_t>;
-
-    // Associated const pointer type
-    using const_pointer   = std::add_pointer_t<base_t const>;
 
     // Constructs a kwk::data_block from any source
     constexpr data_block(auto const& tag, rbr::concepts::settings auto const& opts)
@@ -67,11 +51,11 @@ namespace kwk::detail
       This function does not participate in overload resolution if the bse data
       Source is owning its data.
     */
-    // constexpr pointer reset(pointer ptr) noexcept requires(!own_data)
-    // {
-    //   // DELEGATE TO SOURCE
-    //   return std::exchange(Source::data, ptr);
-    // }
+    constexpr pointer reset(pointer ptr) noexcept
+    requires requires(Source& s) { s.reset(ptr); }
+    {
+      return as_source().reset(ptr);
+    }
 
     /*
       Swap contents of two kwk::data_block

@@ -14,9 +14,14 @@ namespace kwk::detail
   template<typename T, std::ptrdiff_t Size, std::ptrdiff_t Offset>
   struct stack_block
   {
-    using base_type = std::remove_const_t<T>;
+    using base_type       = T;
+    using value_type      = std::remove_const_t<base_type>;
+    using reference       = std::add_lvalue_reference_t<base_type>;
+    using const_reference = std::add_lvalue_reference_t<base_type const>;
+    using pointer         = std::add_pointer_t<base_type>;
+    using const_pointer   = std::add_pointer_t<base_type const>;
 
-    base_type data_[Size];
+    value_type data_[Size];
 
     constexpr auto data()       noexcept { return &data_[0] - Offset; }
     constexpr auto data() const noexcept { return &data_[0] - Offset; }

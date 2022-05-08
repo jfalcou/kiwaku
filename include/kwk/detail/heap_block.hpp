@@ -14,7 +14,12 @@ namespace kwk::detail
 {
   template<typename T> struct heap_block
   {
-    using base_type = T;
+    using base_type       = T;
+    using value_type      = std::remove_const_t<base_type>;
+    using reference       = std::add_lvalue_reference_t<base_type>;
+    using const_reference = std::add_lvalue_reference_t<base_type const>;
+    using pointer         = std::add_pointer_t<base_type>;
+    using const_pointer   = std::add_pointer_t<base_type const>;
 
     struct deleter
     {
@@ -30,7 +35,6 @@ namespace kwk::detail
 
     std::unique_ptr<T, deleter> data_;
 
-    //temporary fix
     template<typename Allocator>
     constexpr heap_block( Allocator a, auto size, auto offset)
                         : data_ ( (T*)(a.allocate(size*sizeof(T))) - offset

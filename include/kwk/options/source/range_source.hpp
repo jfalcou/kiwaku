@@ -24,10 +24,20 @@ namespace kwk
     struct range_span
     {
       static constexpr bool own_data = false;
+      using base_type       = T;
+      using value_type      = std::remove_const_t<base_type>;
+      using reference       = std::add_lvalue_reference_t<base_type>;
+      using const_reference = std::add_lvalue_reference_t<base_type const>;
+      using pointer         = std::add_pointer_t<base_type>;
+      using const_pointer   = std::add_pointer_t<base_type const>;
 
-      using base_type = T;
       T* data_;
       constexpr auto data()  const noexcept { return data_; }
+
+      constexpr pointer reset(pointer ptr) noexcept
+      {
+        return std::exchange(data_, ptr);
+      }
     };
 
     using span_type         = range_span;

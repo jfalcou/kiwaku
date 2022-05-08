@@ -19,6 +19,12 @@ namespace kwk
     using stored_value_type = ptr_source<T>;
     using keyword_type      = data_source;
 
+    using value_type      = std::remove_const_t<base_type>;
+    using reference       = std::add_lvalue_reference_t<base_type>;
+    using const_reference = std::add_lvalue_reference_t<base_type const>;
+    using pointer         = std::add_pointer_t<base_type>;
+    using const_pointer   = std::add_pointer_t<base_type const>;
+
     static constexpr bool own_data = false;
     constexpr ptr_source(T* p = nullptr) : data_(p) {}
 
@@ -27,6 +33,11 @@ namespace kwk
     constexpr auto as_block(std::ptrdiff_t offset = 0) const noexcept
     {
       return ptr_source{data_ - offset};
+    }
+
+    constexpr pointer reset(pointer ptr) noexcept
+    {
+      return std::exchange(data_, ptr);
     }
 
     constexpr auto data()           const noexcept { return data_;          }
