@@ -298,8 +298,8 @@ namespace kwk
 
     /// Assignment operators
     template<auto OtherShaper>
-    constexpr shape& operator=( shape<OtherShaper> const& other ) noexcept
     requires( OtherShaper.size() < static_order || Shaper.is_compatible(OtherShaper) )
+    constexpr shape& operator=( shape<OtherShaper> const& other ) noexcept
     {
       shape that(other);
       swap(that);
@@ -313,6 +313,11 @@ namespace kwk
     {
       if constexpr(size_map::contains(I)) return Shaper.at(I);
       else return storage()[size_map::template locate<static_order>(I)];
+    }
+
+    constexpr auto operator[](std::size_t i) const noexcept
+    {
+      if constexpr(static_order == 0) return 1; else return as_array()[i];
     }
 
     /// Swap shape's contents
@@ -379,11 +384,15 @@ namespace kwk
     constexpr auto as_stride() const requires(static_order > 0) { return stride_type(*this); }
 
     /// Conversion to std::array
-    constexpr auto as_array() const noexcept
+    constexpr decltype(auto) as_array() const noexcept
     {
-      return kumi::apply( [](auto... m) { return std::array<size_type,static_order>{m...}; }
-                        , *this
-                        );
+      if constexpr(is_fully_dynamic) return storage();
+      else
+      {
+        return kumi::apply( [](auto... m) { return std::array<size_type,static_order>{m...}; }
+                          , *this
+                          );
+      }
     }
 
     //==============================================================================================
