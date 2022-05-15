@@ -378,6 +378,14 @@ namespace kwk
     /// Conversion to kwk::stride
     constexpr auto as_stride() const requires(static_order > 0) { return stride_type(*this); }
 
+    /// Conversion to std::array
+    constexpr auto as_array() const noexcept
+    {
+      return kumi::apply( [](auto... m) { return std::array<size_type,static_order>{m...}; }
+                        , *this
+                        );
+    }
+
     //==============================================================================================
     // Comparisons
     //==============================================================================================

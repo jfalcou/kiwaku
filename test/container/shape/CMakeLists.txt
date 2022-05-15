@@ -4,6 +4,7 @@
 ##  SPDX-License-Identifier: MIT
 ##==================================================================================================
 set ( SOURCES
+      as_array.cpp
       as_stride.cpp
       compare.cpp
       contain.cpp
