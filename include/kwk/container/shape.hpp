@@ -309,7 +309,17 @@ namespace kwk
     //==============================================================================================
     // Element access
     //==============================================================================================
-    template<std::size_t I> constexpr auto get() const noexcept
+    template<std::size_t I>
+    requires(I>=0 && I<static_order)
+    constexpr auto get() const noexcept
+    {
+      if constexpr(size_map::contains(I)) return Shaper.at(I);
+      else return storage()[size_map::template locate<static_order>(I)];
+    }
+
+    template<std::size_t I>
+    requires(I>=0 && I<static_order)
+    constexpr decltype(auto) get() noexcept
     {
       if constexpr(size_map::contains(I)) return Shaper.at(I);
       else return storage()[size_map::template locate<static_order>(I)];
@@ -317,13 +327,34 @@ namespace kwk
 
     constexpr auto operator[](std::size_t i) const noexcept
     {
+      KIWAKU_ASSERT ( (i>=0 && i<static_order)
+                    , "[kwk::shape::operator[]] Out of bounds access"
+                    );
       if constexpr(static_order == 0) return 1; else return as_array()[i];
+    }
+
+    constexpr auto& operator[](std::size_t i) noexcept requires( is_dynamic && static_order>0)
+    {
+      KIWAKU_ASSERT ( (i>=0 && i<static_order)
+                    , "[kwk::shape::operator[]] Out of bounds access"
+                    );
+
+      KIWAKU_ASSERT ( !size_map::contains(i)
+                    , "[kwk::shape::operator[]] Access overwrites of compile-time dimension"
+                    );
+
+      return storage()[size_map::template locate<static_order>(i)];
     }
 
     /// Swap shape's contents
     void swap( shape& other ) noexcept
     {
       storage().swap( other.storage() );
+    }
+
+    friend void swap( shape& x,shape& y ) noexcept
+    {
+      x.swap(y);
     }
 
 /*
@@ -344,6 +375,7 @@ namespace kwk
       return that;
     }
 */
+
     //==============================================================================================
     /**
       @brief Number of non-trivial dimensions
@@ -501,6 +533,9 @@ namespace kwk
 {
   template<std::size_t I, auto Shaper>
   constexpr auto get(shape<Shaper> const& s) noexcept { return s.template get<I>(); }
+
+  template<std::size_t I, auto Shaper>
+  constexpr decltype(auto) get(shape<Shaper>& s) noexcept { return s.template get<I>(); }
 }
 
 namespace kumi
