@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/container/slicers/axis.hpp>
+#include <kwk/container/slicers/full_slicer.hpp>
 #include <kwk/container/stride.hpp>
 #include <kwk/options/fixed.hpp>
 #include <kwk/detail/ct_helpers.hpp>
@@ -76,7 +76,8 @@ namespace kwk
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
   //!   kwk::shape< kwk::extent[5] >      s1;             // Order 1 shape with static size
   //!   kwk::shape< kwk::_2D >            s2(n, m);       // Order 2 shape with dynamic sizes
-  //!   kwk::shape< kwk::extent[2][2]() > s3( _[2] = n);  // Order 3 shape with mixed sizes
+  //!   kwk::shape< kwk::extent[2][2]( )> s3( _[2] = n);  // Order 3 shape with mixed sizes
+  //!   kwk::shape< kwk::extent[2]( )[3]> s4( _, n, _);   // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
   //! For most usage, kwk::shape is to be used as a whole. Acces to individual size along a given
@@ -131,27 +132,73 @@ namespace kwk
     }
 
     //==============================================================================================
-    //! @brief Constructor from set of integral values
+    //! @brief Constructor from set of dimensions
     //!
-    //! Initializes current kwk::shape with a variadic list of integral values.
+    //! Initializes current kwk::shape with a variadic list of dimension values.
+    //! Values can either be any integral value, any fixed integral value or kwk::_.
+    //!
+    //! If you pass kwk::_ as a dimension's value, it means that the shape will be using the
+    //! value for this dimension, i.e 0 for the first dimension, 1 for others or whatever fixed
+    //! size is already provided for it.
+    //!
+    //! Passing a runtime dimension size where a static size is provided is undefined behavior if
+    //! both sizes are not equal.
     //!
     //! This constructor will not take part in overload resolution if the number of values exceed
-    //! shape's order, if the shape is not fully dynamic or if any value is not convertible
-    //! to kwk::shape::size_type.
+    //! shape's order or if any value is neither convertible to kwk::shape::size_type nor kwk::_.
     //!
-    //! @param  s Variadic list of dimensions' size
+    //! @param  s Variadic list of dimensions' values
     //==============================================================================================
     template<typename... T>
     constexpr shape(T... s) noexcept
-    requires  (   (std::is_convertible_v<T,size_type> && ...)
-              &&  (sizeof...(T) <= static_order)
-              &&  is_fully_dynamic
-              )
-            : storage_t{ static_cast<size_type>(s)... }
+    requires(  (sizeof...(T) <= static_order)
+            && ((std::same_as<T,detail::full_slicer> || std::is_convertible_v<T,size_type>) && ...)
+            )
     {
-      if constexpr(sizeof...(T) < static_order)
-        for(std::size_t i = sizeof...(T);i<static_order;++i)
-          storage()[i] = 1;
+      auto& st = storage();
+
+      // Fill storage data with provided size
+      [&]<std::size_t... I>(std::index_sequence<I...> const&)
+      {
+        [[maybe_unused]] auto proc = [&]<typename N, typename X>(X const& sz, N idx)
+        {
+          if constexpr( std::is_convertible_v<X,size_type> )
+          {
+            if constexpr(!size_map::contains(N::value))
+              st[size_map::template locate<static_order>(idx)] = sz;
+            else
+              KIWAKU_ASSERT ( sz == get<N::value>()
+                            , "[kwk::shape] - Runtime/Compile-time mismatch in constructor"
+                            );
+          }
+          else
+          {
+            if constexpr(!size_map::contains(N::value))
+            {
+              if constexpr(N::value==0) st[size_map::template locate<static_order>(idx)] = 0;
+              else                      st[size_map::template locate<static_order>(idx)] = 1;
+            }
+          }
+        };
+
+        (proc(s, kumi::index<I>),...);
+      }(std::index_sequence_for<T...>{});
+
+      // Complete the rest with 0/1 if needed
+      [&]<std::size_t... I>(std::index_sequence<I...> const&)
+      {
+        [[maybe_unused]] auto proc = [&]<typename N>(N)
+        {
+          constexpr auto M = sizeof...(T) + N::value;
+          if constexpr(!size_map::contains(M))
+          {
+            if constexpr(M==0) st[size_map::template locate<static_order>(M)] = 0;
+            else               st[size_map::template locate<static_order>(M)] = 1;
+          }
+        };
+
+        (proc(kumi::index<I>),...);
+      }(std::make_index_sequence<static_order - sizeof...(T)>{});
     }
 
     //==============================================================================================
