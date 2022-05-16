@@ -92,7 +92,7 @@ namespace kwk
 
     /// @ref glossary-order of the eve::shape
     static constexpr std::ptrdiff_t static_order = Shaper.size();
-    static constexpr std::ptrdiff_t storage_size  = parent::storage_size;
+    static constexpr std::ptrdiff_t storage_size = parent::storage_size;
 
     /// Type of dimensions' size
     using size_type     = typename parent::size_type;

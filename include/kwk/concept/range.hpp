@@ -16,6 +16,21 @@ namespace kwk::concepts
 {
   //================================================================================================
   /**
+    @brief Range
+
+    Types model kwk::concepts::range if they supports call to the range standard interface.
+  **/
+  //================================================================================================
+  template<typename Range>
+  concept range = requires(Range&& r)
+  {
+    { std::begin(r) };
+    { std::end(r)   };
+    { std::size(r)  };
+  };
+
+  //================================================================================================
+  /**
     @brief Contiguous Range
 
     Types model kwk::concepts::contiguous_range if they supports call to `std::data` along with
@@ -23,11 +38,8 @@ namespace kwk::concepts
   **/
   //================================================================================================
   template<typename Range>
-  concept contiguous_range = requires(Range&& r)
+  concept contiguous_range = range<Range> && requires(Range&& r)
   {
-    { std::begin(r) };
-    { std::end(r)   };
-    { std::size(r)  };
     { std::data(r)  };
   };
 
