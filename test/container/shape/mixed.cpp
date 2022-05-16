@@ -25,6 +25,12 @@ TTS_CASE( "1D mixed shape constructor" )
   TTS_EQUAL(s2.numel()          , 33                  );
   TTS_EQUAL(get<0>(s2)          , 33                  );
 
+  auto ss2 = kwk::of_size<std::int16_t>(std::int16_t{33});
+  TTS_CONSTEXPR_EQUAL(sizeof(ss2) , sizeof(std::int16_t));
+  TTS_EQUAL(ss2.order()           , 1                   );
+  TTS_EQUAL(ss2.numel()           , 33                  );
+  TTS_EQUAL(get<0>(ss2)         , 33                  );
+
   auto s2d = kwk::of_size(std::int16_t{33});
   TTS_CONSTEXPR_EQUAL(sizeof(s2d), sizeof(std::int16_t) );
   TTS_EQUAL(s2d.order()           , 1                    );

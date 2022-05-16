@@ -592,7 +592,7 @@ namespace kwk
   //! @tparam SizeType  Integral type used to store sizes. If unspecified, `std::ptrdiff_t` is used.
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
-  template<typename SizeType, typename... Ds>
+  template<typename SizeType, int..., typename... Ds>
   constexpr auto of_size(Ds... ds) noexcept
   {
     // Compute the necessary constructor parameters
@@ -619,9 +619,9 @@ namespace kwk
                       );
   }
 
-  template<typename... Ds> constexpr auto of_size( Ds... ds) noexcept
+  template<int..., typename... Ds> constexpr auto of_size( Ds... ds) noexcept
   {
     using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
-    return of_size<type_t,Ds...>(ds...);
+    return of_size<type_t>(ds...);
   }
 }
