@@ -7,7 +7,8 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/container/slicers/full_slicer.hpp>
+#include "kwk/container/slicers/full_slicer.hpp"
+#include <kwk/container/slicers.hpp>
 #include <kwk/container/stride.hpp>
 #include <kwk/options/fixed.hpp>
 #include <kwk/detail/ct_helpers.hpp>
@@ -165,7 +166,9 @@ namespace kwk
           if constexpr( std::is_convertible_v<X,size_type> )
           {
             if constexpr(!size_map::contains(N::value))
+            {
               st[size_map::template locate<static_order>(idx)] = sz;
+            }
             else
               KIWAKU_ASSERT ( sz == get<N::value>()
                             , "[kwk::shape] - Runtime/Compile-time mismatch in constructor"
@@ -383,11 +386,11 @@ namespace kwk
     constexpr auto& operator[](std::size_t i) noexcept requires( is_dynamic && static_order>0)
     {
       KIWAKU_ASSERT ( (i>=0 && i<static_order)
-                    , "[kwk::shape::operator[]] Out of bounds access"
+                    , "[kwk::shape::operator[] Out of bounds access"
                     );
 
       KIWAKU_ASSERT ( !size_map::contains(i)
-                    , "[kwk::shape::operator[]] Access overwrites of compile-time dimension"
+                    , "[kwk::shape::operator[] Access overwrites of compile-time dimension"
                     );
 
       return storage()[size_map::template locate<static_order>(i)];
@@ -624,7 +627,8 @@ namespace kwk
     {
       return kumi::fold_right( []<typename T>(auto a, T)
                               {
-                                if constexpr(std::integral<T>) return a(); else return a[T::value];
+                                if constexpr( requires{ T::value; } ) return a[T::value];
+                                else                                  return a();
                               }
                             , kumi::tuple{ds...}
                             , detail::shaper<SizeType>{}
@@ -642,27 +646,11 @@ namespace kwk
   template<typename SizeType, int..., typename... Ds>
   constexpr auto of_size(Ds... ds) noexcept
   {
-    // Compute the necessary constructor parameters
-    std::size_t i = -1;
-    auto  v = kumi::fold_right
-              ( [&]<typename T>(auto acc, T m)
-                {
-                  i++;
-                  if constexpr(std::integral<T>)
-                    return push_back(acc, detail::axis{i,static_cast<std::ptrdiff_t>(m)});
-                  else
-                    return acc;
-                }
-              , kumi::tuple{ds...}
-              , kumi::tuple<>{}
-              );
-
-    // Build the shape
     return kumi::apply( [](auto... v)
                         {
                           return  kwk::shape<detail::as_shape<SizeType>(Ds{}...)>(v...);
                         }
-                      , v
+                      , kumi::tuple{ds...}
                       );
   }
 
@@ -670,5 +658,15 @@ namespace kwk
   {
     using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
     return of_size<type_t>(ds...);
+  }
+
+  template<int..., kumi::product_type Ds> constexpr auto of_size( Ds ds) noexcept
+  {
+    return kumi::apply([](auto... s) { return of_size(s...); }, ds);
+  }
+
+  template<typename SizeType,int..., kumi::product_type Ds> constexpr auto of_size( Ds ds) noexcept
+  {
+    return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
   }
 }
