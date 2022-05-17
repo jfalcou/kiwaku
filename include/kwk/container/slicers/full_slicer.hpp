@@ -12,11 +12,17 @@
 #include <kwk/container/slicers/axis.hpp>
 #include <type_traits>
 #include <cstddef>
+#include <ostream>
 
 namespace kwk::detail
 {
   struct full_slicer
   {
+    friend std::ostream& operator<<(std::ostream& os, full_slicer const&)
+    {
+      return os << "_";
+    }
+
     constexpr auto operator()(std::ptrdiff_t b, std::ptrdiff_t e) const noexcept
     {
       return unit_slicer{b,e};

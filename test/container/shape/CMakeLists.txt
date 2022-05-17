@@ -10,6 +10,7 @@ set ( SOURCES
       contain.cpp
       convert.cpp
       ctor.cpp
+      joker.cpp
       properties.cpp
       of_shape.cpp
       mixed.cpp

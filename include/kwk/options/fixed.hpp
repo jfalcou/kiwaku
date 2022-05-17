@@ -14,7 +14,10 @@ namespace kwk
 {
   namespace detail
   {
+    struct full_slicer;
+
     template<typename T>      struct  to_int { using type = T; };
+    template<>                struct  to_int<full_slicer> { using type = char; };
     template<typename T, T N> struct  to_int<std::integral_constant<T,N>> { using type = T; };
     template<typename T>      using   to_int_t = typename to_int<T>::type;
 

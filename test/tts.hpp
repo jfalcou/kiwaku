@@ -558,10 +558,6 @@ namespace tts
       else              os << e;
       return os.str();
     }
-    else if constexpr( support_std_to_string<T> )
-    {
-      return std::to_string(e);
-    }
     else if constexpr( streamable<T> )
     {
       std::ostringstream os;
@@ -571,6 +567,10 @@ namespace tts
     else if constexpr( support_to_string<T> )
     {
       return to_string(e);
+    }
+    else if constexpr( support_std_to_string<T> )
+    {
+      return std::to_string(e);
     }
     else if constexpr( sequence<T> )
     {
