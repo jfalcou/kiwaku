@@ -32,7 +32,7 @@ namespace kwk
     }
 
     // Display
-    template<typename T> std::ostream& display(std::ostream& os, info<T> const& s) const
+    template<typename T> std::ostream& display(std::ostream& os, info<T> const&) const
     {
       return os << "Type: " << rbr::detail::type_name<T>();
     }
