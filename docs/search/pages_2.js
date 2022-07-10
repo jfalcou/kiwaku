@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['glossary_0',['Glossary',['../glossary.html',1,'rationale']]]
+  ['installation_20and_20quick_20start_0',['Installation and Quick Start',['../about.html',1,'']]]
 ];

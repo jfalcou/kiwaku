@@ -8,9 +8,9 @@ environment:
 build_script:
 - mkdir build
 - cd build
-- cmake -G "Visual Studio 17 2022" -A x64 ..
-- cmake --build . --target unit --verbose --config Release
-- cmake --build . --target unit --verbose --config Debug
+- cmake -G "Visual Studio 17 2022" -A x64 .. -DKIWAKU_BUILD_TEST=ON
+- cmake --build . --target kwk-unit --verbose --config Release
+- cmake --build . --target kwk-unit --verbose --config Debug
 
 test_script:
 - ctest -C Release -VV

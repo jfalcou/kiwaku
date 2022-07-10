@@ -3,7 +3,7 @@
 echo "::group::Running: 'cmake .. -G Ninja -DCMAKE_CXX_COMPILER="$1" $3'"
 mkdir build
 cd build
-cmake .. -G Ninja -DCMAKE_CXX_COMPILER=$1 && ninja unit -j $2
+cmake .. -G Ninja -DCMAKE_CXX_COMPILER=$1 && ninja -j $2
 if [ "$?" -ne "0" ]
 then
   echo "::error Tests can not be compiled!" ;

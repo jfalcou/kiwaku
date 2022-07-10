@@ -5,7 +5,6 @@
   SPDX-License-Identifier: MIT
 */
 //==================================================================================================
-#include "kwk/detail/kumi.hpp"
 #include "test.hpp"
 #include <kwk/container/shape.hpp>
 #include <kwk/options/fixed.hpp>
@@ -34,40 +33,6 @@ TTS_CASE( "1D shape constructor with joker indexes" )
 };
 
 // ------------------- Generalized cartesian product for testing
-auto generate_dataset(auto d0, auto d1)
-{
-  return kumi::flatten(kumi::apply( [&](auto... m)
-                                      {
-                                        constexpr auto n = d0.size();
-                                        return kumi::tuple{ kumi::zip ( kumi::generate<n>(m)
-                                                                      , d1
-                                                                      )...
-                                                          };
-                                      }
-                                      , d0
-                                      )
-                      );
-}
-
-auto generate_dataset(auto d0, auto... ds)
-{
-  auto i = generate_dataset(ds...);
-  auto o = kumi::flatten(kumi::apply( [&](auto... m)
-                                            {
-                                              constexpr auto n = i.size();
-                                              return kumi::tuple{ kumi::zip( kumi::generate<n>(m)
-                                                                          , i
-                                                                          )...
-                                                                };
-                                            }
-                                        , d0
-                                        )
-                        );
-
-  return kumi::apply( [](auto... m) { return kumi::tuple{kumi::flatten(m)...}; }
-                    , o
-                    );
-}
 
 void test_sizes(auto computed, auto expected)
 {
@@ -98,15 +63,15 @@ inline auto v3 = kumi::tuple{1,9,33};
 
 TTS_CASE( "2D shape constructor with joker indexes" )
 {
-  test_sizes( generate_dataset(d0,d1), generate_dataset(v0,v1));
+  test_sizes( kumi::cartesian_product(d0,d1), kumi::cartesian_product(v0,v1));
 };
 
 TTS_CASE( "3D shape constructor with joker indexes" )
 {
-  test_sizes( generate_dataset(d0,d1,d2), generate_dataset(v0,v1, v2));
+  test_sizes( kumi::cartesian_product(d0,d1,d2), kumi::cartesian_product(v0,v1, v2));
 };
 
 TTS_CASE( "4D shape constructor with joker indexes" )
 {
-  test_sizes( generate_dataset(d0,d1,d2,d3), generate_dataset(v0,v1,v2,v3));
+  test_sizes( kumi::cartesian_product(d0,d1,d2,d3), kumi::cartesian_product(v0,v1,v2,v3));
 };

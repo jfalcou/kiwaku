@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['about_20kiwaku_0',['About KIWAKU',['../about.html',1,'']]]
+  ['change_20log_0',['Change Log',['../changelog.html',1,'']]]
 ];

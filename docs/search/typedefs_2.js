@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pointer_0',['pointer',['../structkwk_1_1view__span.html#ae8ff8d7883d9be32bf3d721ebb05c678',1,'kwk::view_span']]]
+  ['pointer_0',['pointer',['../structkwk_1_1view.html#a8901046dd17d98231951e3819fa26798',1,'kwk::view']]]
 ];
