@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['iterator_0',['iterator',['../structkwk_1_1view__span.html#a03318f1153e44df2a30d46eae7757653',1,'kwk::view_span']]]
+  ['iterator_0',['iterator',['../structkwk_1_1view.html#a0188146ed0ae437d22410c94d3f3d1f1',1,'kwk::view']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['capacity_0',['capacity',['../structkwk_1_1shallow__allocator.html#a0485bed5d851330b765a217c02160bb7',1,'kwk::shallow_allocator']]],
-  ['cbegin_1',['cbegin',['../structkwk_1_1view__span.html#a393d997aed7993eef49ce3a027d011b9',1,'kwk::view_span']]]
+  ['cbegin_0',['cbegin',['../structkwk_1_1view.html#afbd02e583ad92bcbf91bbe22780494cd',1,'kwk::view']]],
+  ['cend_1',['cend',['../structkwk_1_1view.html#a4b2ebc630050ca1aca2357c8557c6799',1,'kwk::view']]]
 ];

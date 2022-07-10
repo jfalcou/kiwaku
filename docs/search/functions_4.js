@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['nbdims_0',['nbdims',['../structkwk_1_1shape_ac73bd286bf9fb6be5df395e864a5f818.html#ac73bd286bf9fb6be5df395e864a5f818',1,'kwk::shape']]],
-  ['numel_1',['numel',['../structkwk_1_1shape_aa8081bc51b6238e76bd96e3fa05030e5.html#aa8081bc51b6238e76bd96e3fa05030e5',1,'kwk::shape']]]
+  ['end_0',['end',['../structkwk_1_1view.html#a70a04fc35a98776f2d63af9a160287fa',1,'kwk::view::end()'],['../structkwk_1_1view.html#a339e8d8b2135c7c8b5f45d23a695cfb3',1,'kwk::view::end() const']]]
 ];

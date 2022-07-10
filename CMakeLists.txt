@@ -18,21 +18,16 @@ if(${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR})
   message( FATAL_ERROR "[kiwaku] Building in-source, not recommended! Build in a separate directory." )
 endif()
 
+## =================================================================================================
+## Exporting target for external use
+## =================================================================================================
+include(kwk-install)
+
 ##==================================================================================================
 ## Options
 ##==================================================================================================
-option( KIWAKU_BUILD_TEST    "Build tests for kiwaku"     ON  )
-option( KIWAKU_IS_DEPENDENT  "Dependent mode for kiwaku"  OFF )
-
-##==================================================================================================
-## Setup Install target only if not used as dependent
-##==================================================================================================
-# UNCOMMENT WHEN SOMETHING CAN BE INSTALLED
-# if( NOT KIWAKU_IS_DEPENDENT )
-#   include(install)
-# else()
-#   message(STATUS "[kiwaku] KIWAKU is used as a in-project dependency - No install targets available")
-# endif()
+option( KIWKAU_BUILD_TEST  "Build tests for raberu" ON  )
+option( KIWAKU_BUILD_DOCS  "Build docs for raberu"  OFF )
 
 ##==================================================================================================
 ## Setup Testing
@@ -40,30 +35,29 @@ option( KIWAKU_IS_DEPENDENT  "Dependent mode for kiwaku"  OFF )
 if( KIWAKU_BUILD_TEST )
   enable_testing()
   include(CTest)
-  add_custom_target(tests)
-  add_custom_target(unit)
-
-  add_dependencies(tests unit)
+  add_custom_target(kwk-unit)
   add_subdirectory(test)
 endif()
 
 ##==================================================================================================
 ## Add Doxygen building target
 ##==================================================================================================
-find_package(Doxygen QUIET)
+if(KIWAKU_BUILD_DOCS)
+  find_package(Doxygen QUIET)
 
-if (DOXYGEN_FOUND)
-  message( STATUS "[kiwaku] Doxygen available")
-else (DOXYGEN_FOUND)
-  message( STATUS "[kiwaku] Doxygen need to be installed to generate the doxygen documentation")
-endif (DOXYGEN_FOUND)
+  if (DOXYGEN_FOUND)
+    message( STATUS "[kiwaku] Doxygen available")
+  else (DOXYGEN_FOUND)
+    message( STATUS "[kiwaku] Doxygen need to be installed to generate the doxygen documentation")
+  endif (DOXYGEN_FOUND)
 
-if (DOXYGEN_FOUND)
-  set(DOXYGEN_CONFIG ${PROJECT_SOURCE_DIR}/doc/Doxyfile)
-  add_custom_target ( doxygen
-                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIG}
-                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc
-                      COMMENT "[kiwaku] Generating API documentation with Doxygen"
-                      VERBATIM
-                    )
-endif (DOXYGEN_FOUND)
+  if (DOXYGEN_FOUND)
+    set(DOXYGEN_CONFIG ${PROJECT_SOURCE_DIR}/doc/Doxyfile)
+    add_custom_target ( kwk-doxygen
+                        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIG}
+                        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc
+                        COMMENT "[kiwaku] Generating API documentation with Doxygen"
+                        VERBATIM
+                      )
+  endif (DOXYGEN_FOUND)
+endif()
