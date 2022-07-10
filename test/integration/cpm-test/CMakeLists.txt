@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(kiwaku-install-test LANGUAGES CXX)
 
-message(STATUS "Testing FetchContent for branch ${KIWAKU_SHA1}")
+message(STATUS "Testing CPM for branch ${KIWAKU_SHA1}")
 
 # Setup CPM
 include(cpm.cmake)
@@ -19,4 +19,4 @@ CPMAddPackage ( NAME kiwaku
 
 # Use kiwaku
 add_executable(test_kiwaku ../main.cpp)
-target_link_libraries(test_kiwaku PUBLIC  ${KIWAKU_LIBRARIES})
+target_link_libraries(test_kiwaku PUBLIC kiwaku::kiwaku)
