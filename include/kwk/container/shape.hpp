@@ -378,7 +378,7 @@ namespace kwk
     constexpr auto operator[](std::size_t i) const noexcept
     {
       KIWAKU_ASSERT ( (i>=0 && i<static_order)
-                    , "[kwk::shape::operator[]] Out of bounds access"
+                    , "[kwk::shape::operator[] Out of bounds access"
                     );
       if constexpr(static_order == 0) return 1; else return as_array()[i];
     }

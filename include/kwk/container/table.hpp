@@ -19,7 +19,7 @@ namespace kwk
 {
   //================================================================================================
   //! @ingroup containers
-  //! @brief Non-owning, contiguous multi-dimensional container
+  //! @brief Owning, contiguous multi-dimensional container
   //!
   //!   @tparam Type  Type of the underlying data
   //!   @tparam Os    Variadic list of settings describing current's table behavior
@@ -70,9 +70,9 @@ namespace kwk
 
       if constexpr(parent::has_label)
       {
-        return rbr::merge ( rbr::settings ( size = parent::shape()
-                                                , label = parent::label()
-                                                )
+        return rbr::merge ( rbr::settings ( size  = parent::shape()
+                                          , label = parent::label()
+                                          )
                           , opts
                           );
       }
