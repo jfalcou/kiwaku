@@ -7,13 +7,23 @@
   SPDX-License-Identifier: MIT
 **/
 //==================================================================================================
-#undef KIWAKU_ASSERT
-#undef KIWAKU_VERIFY
+#pragma once
 
-#if defined(KIWAKU_DISABLE_ASSERTS) || defined(NDEBUG)
+#if defined(KIWAKU_ASSERT)
+
+// user/predefined
+
+#elif defined(KIWAKU_DISABLE_ASSERTS) || defined(NDEBUG)
 
 #define KIWAKU_ASSERT(cond, ...) ((void)0)
 #define KIWAKU_VERIFY(cond, ...) ((void)(cond))
+
+#elif defined(BOOST_ENABLE_ASSERT_HANDLER)
+
+#include <boost/assert.hpp>
+
+#define KIWAKU_ASSERT   BOOST_ASSERT_MSG
+#define KIWAKU_VERIFY   BOOST_VERIFY_MSG
 
 #else
 
