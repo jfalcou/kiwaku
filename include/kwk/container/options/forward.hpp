@@ -16,6 +16,12 @@ namespace kwk::options
   template<typename Mode, rbr::concepts::settings Settings> struct element;
 
   template<typename Tag, rbr::concepts::settings Settings>
+  constexpr auto shape(Tag const&, Settings const&) noexcept;
+
+  template<typename Tag, rbr::concepts::settings Settings>
+  constexpr auto source(Tag const&, Settings const&) noexcept;
+
+  template<typename Tag, rbr::concepts::settings Settings>
   constexpr auto stride(Tag const&, Settings const&) noexcept;
 
   template<typename Tag, rbr::concepts::settings Settings>

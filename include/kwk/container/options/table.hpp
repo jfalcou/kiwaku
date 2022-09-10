@@ -18,19 +18,13 @@ namespace kwk::tag { struct table_ {}; }
 
 namespace kwk::options
 {
-  // The shape has retrieved from the options or error occurs
-  template<rbr::concepts::settings Settings>
-  constexpr auto shape(tag::table_ const&, Settings const& p) noexcept
-  {
-    return p[ kwk::size | of_size(0,1) ];
-  }
-
   // For table, we infer the type from :
   template<rbr::concepts::settings Settings>
   struct element<tag::table_, Settings>
   {
-    //  - type_ if present
-    using has_type = rbr::result::fetch_t<type_{} | type<rbr::unknown_key>, Settings>;
+    //  - type_ if present, type of the source if not
+    using has_source = rbr::result::fetch_t<data_source{}, Settings>;
+    using has_type   = rbr::result::fetch_t<type_{} | type<typename has_source::span_type::base_type>, Settings>;
 
     using type = typename has_type::type;
 
@@ -43,21 +37,32 @@ namespace kwk::options
   template<rbr::concepts::settings Settings>
   constexpr auto block(tag::table_ const& m, Settings const& p) noexcept
   {
-    auto shp    = options::shape(m, p);
+    auto  shp   = options::shape(m, p);
     using shp_t = decltype(shp);
     using type  = typename element<tag::table_, Settings>::type;
 
-    if constexpr( shp_t::is_fully_static )
+    // Get the data block
+    auto data = [&]()
     {
-      constexpr auto offset = options::offset(tag::table_{}, Settings{});
-      return detail::stack_block<type, shp_t{}.numel(), offset>{};
-    }
-    else
+      if constexpr( shp_t::is_fully_static )
+      {
+        constexpr auto offset = options::offset(tag::table_{}, Settings{});
+        return detail::stack_block<type, shp_t{}.numel(), offset>{};
+      }
+      else
+      {
+        return detail::heap_block<type> { p[ kwk::allocator | heap_allocator{} ]
+                                        , shp.numel(), options::offset(tag::table_{}, p)
+                                        };
+      }
+    }();
+
+    if constexpr( Settings::contains(kwk::source) )
     {
-      return detail::heap_block<type> { p[ kwk::allocator | heap_allocator{} ]
-                                      , shp.numel(), options::offset(tag::table_{}, p)
-                                      };
+      data.assign(options::source(tag::table_{}, p).as_block());
     }
+
+    return data;
   }
 
 }

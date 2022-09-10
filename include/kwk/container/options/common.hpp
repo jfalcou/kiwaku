@@ -20,6 +20,20 @@ namespace kwk::options
     using type = decltype( block(Tag{}, std::declval<Settings>()) );
   };
 
+  // The data source is fetched or an empty ptr_source is returned
+  template<typename Tag, rbr::concepts::settings Settings>
+  constexpr auto source(Tag const&, Settings const& p) noexcept
+  {
+    return p[kwk::source | ptr_source<rbr::unknown_key>{}];
+  }
+
+  // The shape has retrieved from the options or error occurs
+  template<typename Tag, rbr::concepts::settings Settings>
+  constexpr auto shape(Tag const& tag, Settings const& p) noexcept
+  {
+    return p[kwk::size | options::source(tag,p).default_shape()];
+  }
+
   // Unless specified, the stride is computed from the shape
   template<typename Tag, rbr::concepts::settings Settings>
   constexpr auto stride(Tag const& m, Settings const& p) noexcept

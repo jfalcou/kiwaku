@@ -7,8 +7,8 @@
 //==================================================================================================
 #pragma once
 #include <kwk/allocator/any_allocator.hpp>
+#include <algorithm>
 #include <memory>
-#include <iostream>
 
 namespace kwk::detail
 {
@@ -64,5 +64,10 @@ namespace kwk::detail
 
     constexpr auto data()       noexcept { return data_.get(); }
     constexpr auto data() const noexcept { return data_.get(); }
+
+    constexpr void assign(auto const& src)
+    {
+      std::copy(src.data(), src.data() + data_.get_deleter().size_, data());
+    }
   };
 }

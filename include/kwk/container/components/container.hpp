@@ -56,19 +56,18 @@ namespace kwk
       auto spaces = has_label ? "  " : "";
       auto lbl    = [&]() { if constexpr(has_label) os << v.label() << ":\n"; };
 
+      lbl();
       if( v.empty() )
       {
-        lbl();
         return os << spaces << "[ ]";
       }
 
       if constexpr( container::static_order < 3)
       {
-        lbl();
         for_each( [&](auto const& c, auto i0, auto... i)
                   {
                     if(i0 == first<0>(v)) os << spaces << "[ ";
-                    os << c(i0,i...) << " ";
+                    os << c(i0,i...) << ' ';
                     if(i0 == last<0>(v)-1) os << "]\n";
                   }
                 , v
@@ -76,15 +75,14 @@ namespace kwk
       }
       else
       {
-        lbl();
         for_each( [&](auto const& c, auto i0, auto i1, auto i2, auto... i)
                   {
                     if(i0 == first<0>(v))
                     {
-                      if(i1 == first<1>(v) && i2 > first<2>(v)) os << "\n";
+                      if(i1 == first<1>(v) && i2 > first<2>(v)) os << '\n';
                       os << spaces << "[ ";
                     }
-                    os << c(i0,i1,i2,i...) << " ";
+                    os << c(i0,i1,i2,i...) << ' ';
                     if(i0 == last<0>(v)-1) os << "]\n";
                   }
                 , v

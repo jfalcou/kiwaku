@@ -8,6 +8,7 @@
 #pragma once
 
 #include <type_traits>
+#include <algorithm>
 
 namespace kwk::detail
 {
@@ -25,6 +26,11 @@ namespace kwk::detail
 
     constexpr auto data()       noexcept { return &data_[0] - Offset; }
     constexpr auto data() const noexcept { return &data_[0] - Offset; }
+
+    constexpr void assign(auto const& src)
+    {
+      std::copy(src.data(), src.data() + Size, data());
+    }
 
     constexpr void swap(stack_block& other) noexcept
     {

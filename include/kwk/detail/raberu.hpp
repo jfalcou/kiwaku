@@ -611,6 +611,8 @@ namespace rbr
     using rbr_settings = void;
     using base = aggregator<Opts...>;
 
+    constexpr settings() {}
+
     /// Constructor from a variadic pack of rbr::concepts::option
     constexpr settings(Opts const&... opts) : content_(opts...) {}
 
