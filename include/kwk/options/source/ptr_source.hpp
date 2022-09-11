@@ -25,7 +25,6 @@ namespace kwk
     using pointer         = std::add_pointer_t<base_type>;
     using const_pointer   = std::add_pointer_t<base_type const>;
 
-    static constexpr bool own_data = false;
     constexpr ptr_source(T* p = nullptr) : data_(p) {}
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }

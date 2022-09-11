@@ -28,7 +28,6 @@ namespace kwk::detail
   template<typename Source> struct data_block : Source
   {
     using pointer         = typename Source::pointer;
-    static constexpr bool own_data = Source::own_data;
 
     // Constructs a kwk::data_block from any source
     constexpr data_block(auto const& tag, rbr::concepts::settings auto const& opts)

@@ -23,7 +23,6 @@ namespace kwk
 
     struct range_span
     {
-      static constexpr bool own_data = false;
       using base_type       = T;
       using value_type      = std::remove_const_t<base_type>;
       using reference       = std::add_lvalue_reference_t<base_type>;
