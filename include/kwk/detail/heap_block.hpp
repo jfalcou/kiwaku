@@ -30,14 +30,14 @@ namespace kwk::detail
       deleter() : size_(0), offset_(0) {}
       template<typename A> deleter(A a, auto s, auto o) : allocator_(a), size_(s), offset_(o) {}
 
-      void operator()(void* p) { allocator_.deallocate((T*)(p) + offset_); }
+      void operator()(void* p) { allocator_.deallocate((value_type*)(p) + offset_); }
     };
 
-    std::unique_ptr<T, deleter> data_;
+    std::unique_ptr<value_type, deleter> data_;
 
     template<typename Allocator>
     constexpr heap_block( Allocator a, auto size, auto offset)
-                        : data_ ( (T*)(a.allocate(size*sizeof(T))) - offset
+                        : data_ ( (value_type*)(a.allocate(size*sizeof(T))) - offset
                                 , deleter(a,size,offset)
                                 )
     {}
