@@ -23,6 +23,13 @@ namespace kwk
       return of_size(s);
     }
 
+    // Extent -> shape<Extent>{}
+    template<typename SizeType, typename... Ops>
+    constexpr auto operator=(detail::shaper<SizeType,Ops...> const&) const noexcept
+    {
+      return shape<detail::shaper<SizeType,Ops...>{}>{};
+    }
+
     // Extent from of_size(...)
     template<auto Shaper>
     constexpr auto operator=(shape<Shaper> const& s) const noexcept

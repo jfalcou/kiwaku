@@ -14,10 +14,10 @@ namespace kwk::detail
 {
   //================================================================================================
   /*
-    Data holder kwk::view base class
+    Data holder base class
 
     SCARY base class gathering all types and member functions pertaining to the upkeep, access and
-    update to the data part of a kwk::view.
+    update to the data part of a kwk container.
 
     Contrary to most standard view and container,kwk::data_block keep the potential const qualifier
     of underlying type on purpose.
@@ -27,43 +27,15 @@ namespace kwk::detail
   //================================================================================================
   template<typename Source> struct data_block : Source
   {
-    using base_t       = typename Source::base_type;
-
-    // Underlying pointee value type
-    using value_type      = std::remove_const_t<base_t>;
-
-    // Associated reference type
-    using reference       = std::add_lvalue_reference_t<base_t>;
-
-    // Associated reference to const type
-    using const_reference = std::add_lvalue_reference_t<base_t const>;
-
-    // Associated pointer type
-    using pointer         = std::add_pointer_t<base_t>;
-
-    // Associated const pointer type
-    using const_pointer   = std::add_pointer_t<base_t const>;
-
-    // Associated iterator type
-    using iterator        = pointer;
-
-    // Associated  const iterator type
-    using const_iterator  = const_pointer;
+    using pointer         = typename Source::pointer;
 
     // Constructs a kwk::data_block from any source
-    template<rbr::concepts::option... Opts>
-    constexpr data_block(auto const& tag, rbr::settings<Opts...> const& opts)
-              : Source( options::source(tag,opts).as_span())
+    constexpr data_block(auto const& tag, rbr::concepts::settings auto const& opts)
+              : Source( options::block(tag,opts) )
     {}
 
-    // Returns an iterator to the beginning
-    constexpr iterator        begin()         { return Source::data(); }
-
-    // Returns an iterator to the beginning
-    constexpr const_iterator  begin()   const { return Source::data(); }
-
-    // Returns a const iterator to the beginning
-    constexpr const_iterator  cbegin()  const { return Source::data(); }
+    constexpr Source&       as_source()       noexcept { return static_cast<Source&>(*this);       }
+    constexpr Source const& as_source() const noexcept { return static_cast<Source const&>(*this); }
 
     /*
       Replaces the managed pointer.
@@ -74,20 +46,27 @@ namespace kwk::detail
       - Saves a copy of the current pointer `old_ptr = current_ptr`
       - Overwrites the current pointer with the argument `current_ptr = ptr`
       - Returns the copy of the previous current pointer
+
+      This function does not participate in overload resolution if the bse data
+      Source is owning its data.
     */
-    constexpr pointer reset(pointer ptr) noexcept { return std::exchange(Source::data, ptr); }
+    constexpr pointer reset(pointer ptr) noexcept
+    requires requires(Source& s) { s.reset(ptr); }
+    {
+      return as_source().reset(ptr);
+    }
 
     /*
-      Swap contents of two compatible kwk::data_block
+      Swap contents of two kwk::data_block
 
-      This function does not participate in overload resolution if
-      `std::same_as<base_t, typename OtherSource::base_t>` evaluates to `false`.
+      This function does not participate in overload resolution if the underlying source block
+      can't be properly swapped.
     */
     template<typename OtherSource>
     constexpr void swap( data_block<OtherSource>& other ) noexcept
-    requires( std::same_as<base_t, typename OtherSource::base_t> )
+    requires requires(Source& a, OtherSource& b) { a.swap(b);}
     {
-      std::swap(Source::data, other.data);
+      as_source().swap(other.as_source());
     }
   };
 }

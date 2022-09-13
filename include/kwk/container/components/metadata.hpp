@@ -20,13 +20,13 @@ namespace kwk::detail
   {
     static constexpr bool has_label = true;
 
-    template<rbr::concepts::option... Opts>
-    constexpr   metadata(auto const&, rbr::settings<Opts...> const& opts)
+    constexpr   metadata(auto const&, rbr::concepts::settings auto const& opts)
               : label_(opts[kwk::label])
     {}
 
-    constexpr Label const& label() const requires( has_label ) { return label_; }
+    constexpr Label const& label() const noexcept { return label_; }
 
+    constexpr void  swap( metadata& other ) noexcept { std::swap(label_,other.label_); }
     Label label_;
   };
 
@@ -35,8 +35,9 @@ namespace kwk::detail
   struct metadata<Data...>
   {
     static constexpr bool has_label = false;
+    constexpr metadata(auto const&, rbr::concepts::settings auto const&) noexcept {}
 
-    template<rbr::concepts::option... Opts>
-    constexpr metadata(auto const&, rbr::settings<Opts...> const&) {}
+    constexpr auto label() const noexcept { return ""; }
+    constexpr void  swap( metadata& ) noexcept {}
   };
 }

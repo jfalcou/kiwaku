@@ -6,7 +6,6 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include "tts.hpp"
 #include <kwk/container.hpp>
 #include <algorithm>
 #include <array>
@@ -24,7 +23,6 @@ TTS_CASE( "Build a 1D view from a C array" )
   TTS_EQUAL ( v.size() , 7                );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)  );
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), &ref[0])) );
 
   for(std::ptrdiff_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
@@ -35,7 +33,6 @@ TTS_CASE( "Build a 1D view from a C array" )
   TTS_EQUAL ( w.size() , 4                );
   TTS_EQUAL ( w.shape(), kwk::of_size(4)  );
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), &ref[0])) );
 
   for(std::ptrdiff_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);
@@ -53,7 +50,6 @@ TTS_CASE( "Build a 1D view from std::array" )
   TTS_EQUAL ( v.size() , 7                );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)  );
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), &ref[0])) );
 
   for(std::ptrdiff_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
@@ -64,7 +60,6 @@ TTS_CASE( "Build a 1D view from std::array" )
   TTS_EQUAL ( w.size() , 4                );
   TTS_EQUAL ( w.shape(), kwk::of_size(4)  );
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), &ref[0])) );
 
   for(std::ptrdiff_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);
@@ -82,7 +77,6 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a ContiguousRange"
   TTS_EQUAL ( v.size() , 7                );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)  );
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), ref.begin())) );
 
   for(std::ptrdiff_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
@@ -95,7 +89,6 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a ContiguousRange"
   TTS_EQUAL ( w.size() , 5                );
   TTS_EQUAL ( w.shape(), kwk::of_size(5)  );
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), ref.begin())) );
 
   for(std::ptrdiff_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);
@@ -114,7 +107,6 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer" )
   TTS_EQUAL ( v.size() , 7                );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)  );
   TTS_EXPECT( v.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), ref.begin())) );
 
   for(std::ptrdiff_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
@@ -127,7 +119,6 @@ TTS_CASE( "Build a 1D view with constexpr shape settings from a pointer" )
   TTS_EQUAL ( w.size() , 5                );
   TTS_EQUAL ( w.shape(), kwk::of_size(5)  );
   TTS_EXPECT( w.shape().is_fully_static   );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), ref.begin())) );
 
   for(std::ptrdiff_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);

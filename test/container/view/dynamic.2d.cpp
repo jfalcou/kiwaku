@@ -6,7 +6,6 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include "tts.hpp"
 #include <kwk/container.hpp>
 #include <algorithm>
 #include <array>
@@ -23,8 +22,7 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from a C array" )
 
   TTS_EQUAL ( sizeof(v), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
   TTS_EQUAL ( v.size() , 12                                   );
-  TTS_EQUAL ( v.shape(), kwk::of_size(4,3)                     );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), &ref[0]))      );
+  TTS_EQUAL ( v.shape(), kwk::of_size(4,3)                    );
   TTS_EXPECT_NOT( v.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(v);++i1)
@@ -34,9 +32,8 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from a C array" )
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(sz-1,sz) };
 
   TTS_EQUAL ( sizeof(w), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( w.size() , 12                                    );
-  TTS_EQUAL ( w.shape(), kwk::of_size(3,4)                     );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), &ref[0]))      );
+  TTS_EQUAL ( w.size() , 12                                   );
+  TTS_EQUAL ( w.shape(), kwk::of_size(3,4)                    );
   TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(w);++i1)
@@ -56,7 +53,6 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from std::array" )
   TTS_EQUAL ( sizeof(v), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
   TTS_EQUAL ( v.size() , 12                                   );
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3)                    );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), &ref[0]))      );
   TTS_EXPECT_NOT( v.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(v);++i1)
@@ -68,7 +64,6 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from std::array" )
   TTS_EQUAL ( sizeof(w), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
   TTS_EQUAL ( w.size() , 12                                   );
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4)                    );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), &ref[0]))      );
   TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(w);++i1)
@@ -88,7 +83,6 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from a ContiguousRange" )
   TTS_EQUAL ( sizeof(v), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
   TTS_EQUAL ( v.size() , 12                                   );
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3)                    );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), ref.begin()))  );
   TTS_EXPECT_NOT( v.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(v);++i1)
@@ -102,7 +96,6 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from a ContiguousRange" )
   TTS_EQUAL ( sizeof(w), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
   TTS_EQUAL ( w.size() , 12                                   );
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4)                    );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), ref.begin()))  );
   TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(w);++i1)
@@ -122,7 +115,6 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from a pointer" )
   TTS_EQUAL ( sizeof(v), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
   TTS_EQUAL ( v.size() , 12                                   );
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3)                    );
-  TTS_EXPECT( (std::equal( v.begin(), v.end(), ref.begin()))  );
   TTS_EXPECT_NOT( v.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(v);++i1)
@@ -136,7 +128,6 @@ TTS_CASE( "Build a 2D view with dynamic shape settings from a pointer" )
   TTS_EQUAL ( sizeof(w), sizeof(void*)+2*sizeof(std::ptrdiff_t) );
   TTS_EQUAL ( w.size() , 12                                   );
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4)                    );
-  TTS_EXPECT( (std::equal( w.begin(), w.end(), ref.begin()))  );
   TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 
   for(std::ptrdiff_t i1 = 0;i1<kwk::dim<1>(w);++i1)

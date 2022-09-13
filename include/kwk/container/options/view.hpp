@@ -8,43 +8,20 @@
 #pragma once
 
 #include <kwk/detail/raberu.hpp>
+#include <kwk/container/options/forward.hpp>
 #include <kwk/options.hpp>
 
 namespace kwk::tag { struct view_ {}; }
 
 namespace kwk::options
 {
-  template<typename Mode, rbr::concepts::settings Settings> struct element;
-  template<typename Mode, rbr::concepts::settings Settings> struct data;
-
-  // The data source is fetched or an empty ptr_source is returned
+  // For view, we compute the data_block from the source and base_index
   template<rbr::concepts::settings Settings>
-  constexpr auto source(tag::view_ const&, Settings const& p) noexcept
+  constexpr auto block(tag::view_ const& m, Settings const& p) noexcept
   {
-    return p[kwk::source | ptr_source<void>{}];
+    auto src = source(m,p);
+    return src.as_block(offset(m,p));
   }
-
-  // Unless specified, the shape is retrieved from the source options
-  template<rbr::concepts::settings Settings>
-  constexpr auto shape(tag::view_ const&, Settings const& p) noexcept
-  {
-    return p[kwk::size | options::source(tag::view_{},p).default_shape()];
-  }
-
-  // Unless specified, the stride is computed from the shape
-  template<rbr::concepts::settings Settings>
-  constexpr auto stride(tag::view_ const&, Settings const& p) noexcept
-  {
-    return p[kwk::strides | options::shape(tag::view_{},p).as_stride() ];
-  }
-
-  // For view, we infer the block type from the source that must be present
-  template<rbr::concepts::settings Settings>
-  struct data<tag::view_, Settings>
-  {
-    using src_t = rbr::result::fetch_t<kwk::source | ptr_source<void>{}, Settings>;;
-    using type = typename src_t::span_type;
-  };
 
   // For view, we infer the type from the source that must be present
   template<rbr::concepts::settings Settings>

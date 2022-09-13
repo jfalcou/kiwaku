@@ -586,6 +586,7 @@ namespace rbr
   // Option calls aggregator
   template<concepts::option... Ts> struct aggregator : Ts...
   {
+    constexpr aggregator() noexcept : Ts{}... {}
     constexpr aggregator(Ts const&...t) noexcept : Ts(t)... {}
     using Ts::operator()...;
 
@@ -609,6 +610,8 @@ namespace rbr
   {
     using rbr_settings = void;
     using base = aggregator<Opts...>;
+
+    constexpr settings() {}
 
     /// Constructor from a variadic pack of rbr::concepts::option
     constexpr settings(Opts const&... opts) : content_(opts...) {}
