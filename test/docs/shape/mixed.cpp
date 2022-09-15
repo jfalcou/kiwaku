@@ -1,8 +1,8 @@
 //==================================================================================================
 /*
-  KIWAKU - Containers Well Made
-  Copyright : KIWAKU Contributors & Maintainers
-  SPDX-License-Identifier: MIT
+    KIWAKU - Containers Well Made
+    Copyright : KIWAKU Contributors & Maintainers
+    SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
 #include <kwk/kwk.hpp>

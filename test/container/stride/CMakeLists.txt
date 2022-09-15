@@ -1,7 +1,7 @@
 ##==================================================================================================
 ##  KIWAKU - Containers Well Made
 ##  Copyright : KIWAKU Contributors & Maintainers
-##  SPDX-License-Identifier: MIT
+##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
 set ( SOURCES
       ctor.cpp

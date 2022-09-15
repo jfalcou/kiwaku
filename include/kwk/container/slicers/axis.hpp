@@ -1,8 +1,8 @@
 //==================================================================================================
 /**
   KIWAKU - Containers Well Made
-  Copyright : KIWAKU Contributors & Maintainers
-  SPDX-License-Identifier: MIT
+  Copyright : KIWAKU Project Contributors
+  SPDX-License-Identifier: BSL-1.0
 **/
 //==================================================================================================
 #pragma once
