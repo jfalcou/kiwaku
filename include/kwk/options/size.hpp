@@ -25,9 +25,9 @@ namespace kwk
 
     // Extent -> shape<Extent>{}
     template<typename SizeType, typename... Ops>
-    constexpr auto operator=(detail::shaper<SizeType,Ops...> const&) const noexcept
+    constexpr auto operator=(detail::hybrid_sequence<SizeType,Ops...> const&) const noexcept
     {
-      return shape<detail::shaper<SizeType,Ops...>{}>{};
+      return shape<detail::hybrid_sequence<SizeType,Ops...>{}>{};
     }
 
     // Extent from of_size(...)
