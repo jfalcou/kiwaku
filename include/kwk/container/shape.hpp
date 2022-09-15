@@ -10,10 +10,10 @@
 #include "kwk/container/slicers/full_slicer.hpp"
 #include <kwk/container/slicers.hpp>
 #include <kwk/container/stride.hpp>
+#include <kwk/options/extent.hpp>
 #include <kwk/options/fixed.hpp>
 #include <kwk/detail/ct_helpers.hpp>
 #include <kwk/detail/assert.hpp>
-#include <kwk/detail/shaper.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <utility>
 #include <cstddef>
@@ -631,7 +631,7 @@ namespace kwk
                                 else                                  return a();
                               }
                             , kumi::tuple{ds...}
-                            , detail::shaper<SizeType>{}
+                            , detail::hybrid_sequence<SizeType>{}
                             );
     }
   }
