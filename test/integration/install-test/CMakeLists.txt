@@ -1,7 +1,7 @@
 ##==================================================================================================
 ##  KIWAKU - Containers Well Made
 ##  Copyright : KIWAKU Contributors & Maintainers
-##  SPDX-License-Identifier: MIT
+##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
 cmake_minimum_required(VERSION 3.19)
 project(kwk-install-test LANGUAGES CXX)

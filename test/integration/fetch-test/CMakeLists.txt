@@ -1,7 +1,7 @@
 ##==================================================================================================
-##  EVE - Expressive Vector Engine
-##  Copyright : EVE Contributors & Maintainers
-##  SPDX-License-Identifier: MIT
+##  KIWAKU - Containers Well Made
+##  Copyright : KIWAKU Project Contributors
+##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
 cmake_minimum_required(VERSION 3.19)
 project(test_kiwaku-install-test LANGUAGES CXX)
