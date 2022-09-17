@@ -26,7 +26,7 @@ include(kiwaku-install)
 ##==================================================================================================
 ## Options
 ##==================================================================================================
-option( KIWKAU_BUILD_TEST  "Build tests for raberu" ON  )
+option( KIWAKU_BUILD_TEST  "Build tests for raberu" ON  )
 option( KIWAKU_BUILD_DOCS  "Build docs for raberu"  OFF )
 
 ##==================================================================================================
