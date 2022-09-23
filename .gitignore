@@ -47,3 +47,4 @@ Testing/
 doc/conf.py
 .vscode/*
 .cache/*
+.ideas/*
