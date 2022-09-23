@@ -10,6 +10,7 @@
 #include <kwk/container/slicers.hpp>
 #include <kwk/container/stride.hpp>
 #include <kwk/detail/assert.hpp>
+#include <kwk/detail/joker.hpp>
 #include <kwk/detail/ct_helpers.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/detail/prefilled_array.hpp>
@@ -123,7 +124,7 @@ namespace kwk
     template<typename... T>
     constexpr shape(T... s) noexcept
     requires(  (sizeof...(T) <= static_order)
-            && ((std::same_as<T,detail::full_slicer> || std::is_convertible_v<T,size_type>) && ...)
+            && ((std::same_as<T,detail::value_joker> || std::is_convertible_v<T,size_type>) && ...)
             )
     {
       auto& st = storage();
