@@ -13,8 +13,3 @@
 #include <kwk/container/slicers/slicer.hpp>
 #include <kwk/container/slicers/axis.hpp>
 #include <cstddef>
-
-namespace kwk
-{
-  inline constexpr detail::full_slicer _ = {};
-}

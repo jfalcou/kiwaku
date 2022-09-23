@@ -7,18 +7,12 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/detail/joker.hpp>
 #include <type_traits>
 #include <cstddef>
 
 namespace kwk::detail
 {
-  struct axis
-  {
-    axis& operator=(std::size_t s) { size = s; return *this;}
-    std::size_t     dims;
-    std::ptrdiff_t  size;
-  };
-
   template<typename Shape>
   constexpr auto reshape( axis const& i, std::ptrdiff_t, Shape const& s ) noexcept
   {
