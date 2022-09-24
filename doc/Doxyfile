@@ -7,7 +7,7 @@ PROJECT_NUMBER         = 0.1-beta
 PROJECT_LOGO           = logo.png
 PROJECT_BRIEF          = "Containers Well Made"
 
-OUTPUT_DIRECTORY       = ../docs
+OUTPUT_DIRECTORY       = $(KWK_DOXYGEN_OUPUT)
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 

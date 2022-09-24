@@ -1,7 +1,7 @@
 //==================================================================================================
 //  EVE - Expressive Vector Engine
 //  Copyright : KIWAKU Contributors & Maintainers
-##  SPDX-License-Identifier: BSL-1.0
+//  SPDX-License-Identifier: BSL-1.0
 //==================================================================================================
 class SendToGodbolt extends HTMLElement {
     constructor() {
