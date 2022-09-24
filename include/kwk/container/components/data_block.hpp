@@ -31,7 +31,7 @@ namespace kwk::detail
 
     // Constructs a kwk::data_block from any source
     constexpr data_block(auto const& tag, rbr::concepts::settings auto const& opts)
-              : Source( options::block(tag,opts) )
+              : Source{ options::block(tag,opts) }
     {}
 
     constexpr Source&       as_source()       noexcept { return static_cast<Source&>(*this);       }

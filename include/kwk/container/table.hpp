@@ -54,6 +54,8 @@ namespace kwk
     //! @{
     //==============================================================================================
 
+    constexpr table() : parent{rbr::settings(Os...)} {}
+
     /// Construct a table from a list of options
     constexpr table(rbr::concepts::option auto const&... opts) : parent{rbr::settings(opts...)} {}
 

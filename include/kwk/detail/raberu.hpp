@@ -587,7 +587,7 @@ namespace rbr
   template<concepts::option... Ts> struct aggregator : Ts...
   {
     constexpr aggregator() noexcept : Ts{}... {}
-    constexpr aggregator(Ts const&...t) noexcept : Ts(t)... {}
+    constexpr aggregator(Ts const&...t) noexcept requires(sizeof...(Ts)>0) : Ts(t)... {}
     using Ts::operator()...;
 
     template<concepts::keyword K> constexpr auto operator()(K const &) const noexcept
@@ -612,10 +612,10 @@ namespace rbr
     using base = aggregator<Opts...>;
 
     /// Default constructor
-    constexpr settings() {}
+    constexpr settings()  : content_{} {}
 
     /// Constructor from a variadic pack of rbr::concepts::option
-    constexpr settings(Opts const&... opts) : content_(opts...) {}
+    constexpr settings(Opts const&... opts) requires(sizeof...(Opts)>0) : content_(opts...) {}
 
     /// Number of options in current rbr::settings
     static constexpr std::ptrdiff_t size() noexcept { return sizeof...(Opts); }

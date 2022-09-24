@@ -13,8 +13,27 @@
 #include <kwk/detail/heap_block.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/options.hpp>
+#include <type_traits>
 
 namespace kwk::tag { struct table_ {}; }
+
+namespace kwk::detail
+{
+  template<typename T1, typename T2>
+  struct select_type;
+
+  template<typename T1>
+  struct select_type<T1,rbr::unknown_key>
+  {
+    using type= typename T1::span_type::base_type;
+  };
+
+  template<typename T2>
+  struct select_type<rbr::unknown_key,T2>
+  {
+    using type = typename T2::type;
+  };
+}
 
 namespace kwk::options
 {
@@ -23,10 +42,10 @@ namespace kwk::options
   struct element<tag::table_, Settings>
   {
     //  - type_ if present, type of the source if not
-    using has_source = rbr::result::fetch_t<data_source{}, Settings>;
-    using has_type   = rbr::result::fetch_t<type_{} | type<typename has_source::span_type::base_type>, Settings>;
-
-    using type = typename has_type::type;
+    using has_source  = rbr::result::fetch_t<data_source{}, Settings>;
+    using has_type    = rbr::result::fetch_t<type_{}, Settings>;
+    using base_type   = detail::select_type<has_source, has_type>;
+    using type        = typename base_type::type;
 
     static_assert ( !std::same_as<type, rbr::unknown_key>
                   , "[KWK] - Error: table must specify type"
