@@ -3,8 +3,10 @@
 ##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
-include(make_unit)
+set ( SOURCES
+      allocator.cpp
+      concepts.cpp
+      heap.cpp
+    )
 
-# add_subdirectory(container)
-# add_subdirectory(docs)
-add_subdirectory(utility)
+make_unit("utility.memory" ${SOURCES})

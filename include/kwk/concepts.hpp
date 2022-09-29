@@ -7,8 +7,6 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/concepts.hpp>
-#include <kwk/utility.hpp>
-// #include <kwk/container.hpp>
-// #include <kwk/algorithm.hpp>
-// #include <kwk/options.hpp>
+#include <kwk/concepts/allocator.hpp>
+// #include <kwk/concept/range.hpp>
+// #include <kwk/concept/slicer.hpp>
