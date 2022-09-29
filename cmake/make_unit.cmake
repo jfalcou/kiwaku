@@ -28,7 +28,7 @@ function(source_to_target root ext filename testname)
   string(REPLACE ".cpp" ".${ext}" base ${filename})
   string(REPLACE "/"    "." base ${base})
   string(REPLACE "\\"   "." base ${base})
-  SET(${testname} "kwk-${root}.${base}" PARENT_SCOPE)
+  SET(${testname} "${root}.${base}" PARENT_SCOPE)
 endfunction()
 
 function(setup_location test location)
