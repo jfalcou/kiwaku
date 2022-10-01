@@ -3,5 +3,8 @@
 ##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
-add_subdirectory(memory)
-add_subdirectory(meta)
+set ( SOURCES
+      fixed.cpp
+    )
+
+make_unit("utility.meta" ${SOURCES})

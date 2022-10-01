@@ -6,7 +6,7 @@
 **/
 //==================================================================================================
 #pragma once
-#include <kwk/detail/kumi.hpp>
+
 #include <type_traits>
 #include <cstdint>
 
@@ -14,11 +14,11 @@ namespace kwk
 {
   namespace detail
   {
-    struct value_joker;
+    struct joker;
 
-    template<typename T>      struct  to_int { using type = T; };
-    template<>                struct  to_int<value_joker> { using type = char; };
-    template<typename T, T N> struct  to_int<std::integral_constant<T,N>> { using type = T; };
+    template<typename T>      struct  to_int                              { using type = T;     };
+    template<>                struct  to_int<joker>                       { using type = char;  };
+    template<typename T, T N> struct  to_int<std::integral_constant<T,N>> { using type = T;     };
     template<typename T>      using   to_int_t = typename to_int<T>::type;
 
     template<typename... T>   struct largest_type;
@@ -62,7 +62,7 @@ namespace kwk
     `std::integral_constant<signed short,-999>`.
   **/
   template<auto N>
-  inline constexpr auto fixed = std::integral_constant<decltype(detail::clamp<N>()),detail::clamp<N>()>{};
+  inline constexpr auto fixed = std::integral_constant<decltype(N), N>{};
 
   namespace literals
   {
@@ -77,6 +77,9 @@ namespace kwk
       @ingroup utility
       @brief User-defined literal suffix for compile-time constant
     **/
-    template<char... c> constexpr auto operator"" _c() noexcept { return fixed<b10<c...>()>; }
+    template<char... c> constexpr auto operator"" _c() noexcept
+    {
+      return fixed<detail::clamp<b10<c...>()>()>;
+    }
   }
 }
