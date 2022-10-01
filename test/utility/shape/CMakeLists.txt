@@ -5,18 +5,19 @@
 ##==================================================================================================
 set ( SOURCES
       as_array.cpp
-      as_stride.cpp
+      # as_stride.cpp
       compare.cpp
       contain.cpp
-      convert.cpp
+      # convert.cpp
       ctor.cpp
+      default_ctor.cpp
       joker.cpp
       properties.cpp
-      of_shape.cpp
+      of_size.cpp
       mixed.cpp
       strictly_contain.cpp
       swap.cpp
       tuple.cpp
     )
 
-make_unit("components.shape" ${SOURCES})
+make_unit("utility.shape" ${SOURCES})

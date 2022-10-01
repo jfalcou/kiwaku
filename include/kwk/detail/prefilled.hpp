@@ -13,11 +13,26 @@
 
 namespace kwk::detail
 {
-  template<auto Desc> struct prefilled
+  // Compute the prefilled_array base class for prefilled storage
+  template<auto Desc> struct array_storage
+  {
+    using decriptor_t     = decltype(Desc);
+    using value_type      = typename decriptor_t::base_type;
+    static constexpr  std::size_t storage_size = kumi::count_if(Desc,kumi::predicate<is_joker>());
+
+    struct empty_storage {};
+    using storage_type =  std::conditional_t< (storage_size!=0)
+                                            , std::array<value_type,storage_size>
+                                            , empty_storage
+                                            >;
+  };
+
+  template<auto Desc> struct prefilled : array_storage<Desc>::storage_type
   {
     using decriptor_t     = decltype(Desc);
     using value_type      = typename decriptor_t::base_type;
     using is_product_type = void;
+    using storage_t       = typename array_storage<Desc>::storage_type;
 
     static constexpr  std::size_t static_size     = std::tuple_size<decriptor_t>::value;
     static constexpr  std::size_t dynamic_size    = kumi::count_if(Desc,kumi::predicate<is_joker>());
@@ -34,20 +49,25 @@ namespace kwk::detail
                             );
 
     static constexpr
-    auto location = kumi::apply ( [](auto... m) { return std::array<value_type,static_size>{m...}; }
+    auto location = kumi::apply ( [](auto... m)
+                                  {
+                                    return std::array < std::ptrdiff_t
+                                                      , static_size
+                                                      >{static_cast<std::ptrdiff_t>(m)...};
+                                  }
                                 , index
                                 );
 
-    static bool contains(std::size_t i) { return location[i] != -1; }
+    static bool constexpr contains(std::size_t i) { return location[i] != -1; }
 
-    constexpr prefilled() : values{} {}
+    constexpr prefilled() : storage_t{} {}
 
     template<typename Filler>
     constexpr prefilled(Filler f)
     {
       kumi::for_each_index( [&]<typename V>(auto i, V const&, auto m)
                             {
-                              if constexpr(kwk::is_joker_v<V>) values[m] = f(i,m);
+                              if constexpr(kwk::is_joker_v<V>) storage()[m] = f(i,m);
                             }
                           , Desc, index
                           );
@@ -55,18 +75,18 @@ namespace kwk::detail
 
     // Static access
     template<int N>
-    friend constexpr decltype(auto) get(prefilled const& s)
+    friend constexpr auto get(prefilled const& s)
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_joker_v<kumi::element_t<N,decriptor_t>>) return s.values[get<N>(index)];
+      if constexpr(is_joker_v<kumi::element_t<N,decriptor_t>>) return s.storage()[get<N>(index)];
       else return get<N>(Desc);
     }
 
     template<int N>
-    friend constexpr decltype(auto) get(prefilled& s)
+    friend constexpr auto& get(prefilled& s)
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_joker_v<kumi::element_t<N,decriptor_t>>) return s.values[get<N>(index)];
+      if constexpr(is_joker_v<kumi::element_t<N,decriptor_t>>) return s.storage()[get<N>(index)];
       else return get<N>(Desc);
     }
 
@@ -82,7 +102,7 @@ namespace kwk::detail
     {
       KIWAKU_ASSERT ( i<static_size , "[kwk] - Out of bounds access"                  );
       KIWAKU_ASSERT ( contains(i)   , "[kwk] - Access overwrites a compile-time value");
-      return values[location[i]];
+      return storage()[location[i]];
     }
 
 /*
@@ -101,16 +121,28 @@ namespace kwk::detail
     // Conversion to std::array
     constexpr decltype(auto) as_array() const noexcept
     {
-      return kumi::apply( [](auto... m) { return std::array<value_type,static_size>{m...}; }
+      return kumi::apply( [](auto... m)
+                          {
+                            return std::array<value_type,static_size>{static_cast<value_type>(m)...};
+                          }
                         , *this
                         );
     }
 
     // Swap prefilled_array's contents
-    void swap( prefilled& other ) noexcept { values.swap( other.storage() ); }
+    void swap( prefilled& other ) noexcept { storage().swap( other.storage() ); }
     friend void swap( prefilled& x, prefilled& y ) noexcept { x.swap(y); }
 
-    std::array<value_type,dynamic_size> values;
+    constexpr storage_t&        storage() noexcept
+    {
+      return static_cast<storage_t&>(*this);
+    }
+
+    constexpr storage_t const&  storage() const noexcept
+    {
+      return static_cast<storage_t const&>(*this);
+    }
+
   };
 }
 

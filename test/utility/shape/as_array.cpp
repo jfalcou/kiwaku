@@ -8,8 +8,7 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kwk/container/stride.hpp>
-#include <kwk/container/shape.hpp>
+#include <kwk/utility/container/shape.hpp>
 
 template<typename T, std::size_t N>
 using type = std::array<T,N>;

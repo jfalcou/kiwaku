@@ -1,15 +1,13 @@
 //==================================================================================================
-/*
+/**
   KIWAKU - Containers Well Made
-  Copyright : KIWAKU Contributors & Maintainers
-  SPDX-License-Identifier:   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
-*/
+**/
 //==================================================================================================
 #include "test.hpp"
-#include <kwk/container/shape.hpp>
-#include <kwk/options/fixed.hpp>
+#include <kwk/utility/container/shape.hpp>
+#include <kwk/utility/fixed.hpp>
 
 TTS_CASE( "1D shape constructor with joker indexes" )
 {
@@ -25,13 +23,13 @@ TTS_CASE( "1D shape constructor with joker indexes" )
   TTS_EQUAL( get<0>(d3), 3);
 
   kwk::shape<kwk::extent[3]> s1(kwk::_);
-  TTS_EQUAL( get<0>(s1), 3);
+  TTS_EQUAL( get<0>(s1), 3UL);
 
   kwk::shape<kwk::extent[3]> s2(3);
-  TTS_EQUAL( get<0>(s2), 3);
+  TTS_EQUAL( get<0>(s2), 3UL);
 
   kwk::shape<kwk::extent[3]> s3(3_c);
-  TTS_EQUAL( get<0>(s3), 3);
+  TTS_EQUAL( get<0>(s3), 3UL);
 };
 
 // ------------------- Generalized cartesian product for testing
@@ -42,7 +40,7 @@ void test_sizes(auto computed, auto expected)
                     {
                       auto comp = kwk::of_size(get<0>(e));
                       auto ref  = kwk::of_size(get<1>(e));
-                      TTS_EQUAL(comp, ref);
+                      TTS_EQUAL(comp, ref) << "From:\n" << get<0>(e) << "\nand:\n" << get<1>(e);
                     }
                   , kumi::zip(computed,expected)
                   );

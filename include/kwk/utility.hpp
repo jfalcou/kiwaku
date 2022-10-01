@@ -17,6 +17,7 @@ namespace kwk
   //================================================================================================
 }
 
+#include <kwk/utility/container/shape.hpp>
 #include <kwk/utility/memory/any_allocator.hpp>
 #include <kwk/utility/memory/heap_allocator.hpp>
 #include <kwk/utility/fixed.hpp>

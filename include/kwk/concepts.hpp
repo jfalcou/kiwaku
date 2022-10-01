@@ -8,5 +8,6 @@
 #pragma once
 
 #include <kwk/concepts/allocator.hpp>
-// #include <kwk/concept/range.hpp>
+#include <kwk/concepts/extent.hpp>
+#include <kwk/concepts/range.hpp>
 // #include <kwk/concept/slicer.hpp>

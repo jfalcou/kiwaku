@@ -12,49 +12,8 @@
 #include <type_traits>
 #include <utility>
 
-// Faster than std::forward
-#define KWK_FWD(...) static_cast<decltype(__VA_ARGS__) &&>(__VA_ARGS__)
-
-// Force a function to be inline
-#if defined(KWK_NO_FORCEINLINE)
-#  define KWK_FORCEINLINE inline
-#else
-#  if defined(_MSC_VER)
-#    define KWK_FORCEINLINE __forceinline
-#  elif defined(__GNUC__) && __GNUC__ > 3
-#    define KWK_FORCEINLINE inline __attribute__((__always_inline__))
-#  else
-#    define KWK_FORCEINLINE inline
-#  endif
-#endif
-
-
 namespace kwk::detail
 {
-  //================================================================================================
-  // Find the static_size of static array like types
-  //================================================================================================
-  template<typename> struct static_size : std::false_type {};
-
-  template<typename T, std::size_t N> struct static_size<std::array<T, N>> : std::true_type
-  {
-    static constexpr std::size_t size_value = N;
-  };
-
-  template<typename T, std::size_t N> struct static_size<T[N]> : std::true_type
-  {
-    static constexpr std::size_t size_value = N;
-  };
-
-  template<typename T>
-  inline constexpr std::size_t static_size_v = static_size<std::remove_cvref_t<T>>::size_value;
-
-  //================================================================================================
-  // Find the value type of anything with a .data()
-  //================================================================================================
-  template<typename C>
-  using value_type_of = std::remove_reference_t<decltype(*std::begin(std::declval<C&>()))>;
-
   //================================================================================================
   // for_each_args abstraction
   //================================================================================================
