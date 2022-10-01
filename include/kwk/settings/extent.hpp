@@ -7,8 +7,9 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/hybrid_sequence.hpp>
+#include <kwk/detail/combo.hpp>
 #include <cstddef>
+#include <type_traits>
 #include <utility>
 
 namespace kwk
@@ -36,8 +37,8 @@ namespace kwk
   //! The actual integer type storing the size of each dimensions can be specified by using
   //! kwk::extent_of.
   //!
-  //! Usage of kwk::extent is advised when one wants to properly type a given shape.
-  //! Other usage of shape descriptors are usually abstracted away via kwk::of_size.
+  //! Usage of @ref kwk::extent is advised when one wants to properly type a given shape.
+  //! Other usage of @ref kwk::shape descriptors are usually abstracted away via @ref kwk::of_size.
   //!
   //! @groupheader{Associated variables}
   //!
@@ -73,21 +74,21 @@ namespace kwk
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
   //================================================================================================
-  inline constexpr detail::hybrid_sequence<std::ptrdiff_t> extent  = {};
+  inline constexpr detail::combo<std::ptrdiff_t> extent  = {};
 
   template<typename T>
-  inline constexpr detail::hybrid_sequence<T> extent_of  = {};
+  inline constexpr detail::combo<T> extent_of  = {};
 
-  inline constexpr auto _1D     = extent();
-  inline constexpr auto _2D     = _1D();
-  inline constexpr auto _3D     = _2D();
-  inline constexpr auto _4D     = _3D();
+  inline constexpr auto _1D = extent();
+  inline constexpr auto _2D = _1D();
+  inline constexpr auto _3D = _2D();
+  inline constexpr auto _4D = _3D();
 
   template<std::size_t N>
   inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...> const&) constexpr
                               {
-                                return detail::hybrid_sequence< std::ptrdiff_t
-                                                              , typename detail::to_dyn_<I>::type...
-                                                              >{};
+                                return detail::combo< std::ptrdiff_t
+                                                    , std::remove_cv_t<decltype((I,joker{}))>...
+                                                    >{};
                               }(std::make_index_sequence<N>{});
 }
