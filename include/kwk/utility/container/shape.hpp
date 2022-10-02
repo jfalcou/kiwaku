@@ -18,6 +18,10 @@
 namespace kwk
 {
   struct size_;
+  template<auto Shape> struct shape;
+
+  template<std::size_t N, auto Desc>
+  constexpr auto compress(shape<Desc> const& s) noexcept;
 
   //================================================================================================
   //! @ingroup containers
@@ -211,6 +215,62 @@ namespace kwk
                           );
     }
 
+    //==============================================================================================
+    //! @brief Constructs from a shape with a lower order
+    //!
+    //! Constructs a kwk::shape from a shape with higher orders, filling the missing sizes with 1
+    //!
+    //! This constructor does not participate in overload resolution of the shape is not fully
+    //! specified at runtime.
+    //!
+    //! @groupheader{Example}
+    //! @godbolt{docs/shape/odd_sized.cpp}
+    //!
+    //! @param other  Shape to copy
+    //==============================================================================================
+    template<auto OtherShaper>
+    constexpr explicit shape( shape<OtherShaper> const& other ) noexcept
+              requires( shape<OtherShaper>::static_order < static_order && is_fully_dynamic)
+    {
+      constexpr auto dz = std::min(shape<OtherShaper>::static_order,static_order);
+      for(std::size_t i = 0;  i < dz;++i)           parent::storage()[i] = other[i];
+      for(std::size_t i = dz; i < static_order;++i) parent::storage()[i] = 1;
+    }
+
+    //==============================================================================================
+    //! @brief Constructs from a shape with a higher order
+    //!
+    //! Constructs a kwk::shape from a shape with higher orders, compacting the extra-dimensions
+    //! into the last.
+    //!
+    //! If you require compile-time shape descriptor to be updated, consider using @ref compress.
+    //!
+    //! This constructor does not participate in overload resolution of the shape is not fully
+    //! specified at runtime.
+    //!
+    //! @groupheader{Example}
+    //! @godbolt{docs/shape/odd_sized.cpp}
+    //!
+    //! @param other  Shape to copy
+    //==============================================================================================
+    template<auto Other>
+    constexpr explicit  shape( shape<Other> const& o ) noexcept
+                        requires( shape<Other>::static_order > static_order && is_fully_dynamic)
+            : shape( compress<static_order>(o) )
+    {}
+
+    //==============================================================================================
+    /// Assignment operator
+    //==============================================================================================
+    template<auto Other>
+    requires( shape<Other>::static_order < static_order || Shape.is_compatible(Other) )
+    constexpr shape& operator=( shape<Other> const& other ) noexcept
+    {
+      shape that(other);
+      swap(that);
+      return *this;
+    }
+
     /// Swap shapes' contents
     friend void swap( shape& x, shape& y ) noexcept { x.swap(y); }
     using parent::swap;
@@ -252,6 +312,9 @@ namespace kwk
 
     /// Number of dimensions
     static constexpr auto order() noexcept { return static_order; }
+
+    /// Conversion to kwk::stride
+    // constexpr auto as_stride() const requires(static_order > 0) { return stride_type(*this); }
 
     //==============================================================================================
     //! @brief Number of non-trivial dimensions
@@ -356,6 +419,23 @@ namespace kwk
                             , detail::combo<SizeType>{}
                             );
     }
+  }
+
+  //================================================================================================
+  //! @brief Compress a kwk::shape to a given order
+  //! @tparam N  Expected @ref glossary-order of the generated shape.
+  //! @param  s  Original shape to compress
+  //! @return A new kwk::shape instance which order has been set to N by compressing dimensions.
+  //================================================================================================
+  template<std::size_t N, auto Desc>
+  constexpr auto compress(shape<Desc> const& s) noexcept
+  {
+    using old_t = typename shape<Desc>::parent;
+    using new_t = typename shape<compress<N>(Desc)>::parent;
+
+    shape<compress<N>(Desc)> that;
+    static_cast<new_t&>(that) = compress<N>(static_cast<old_t const&>(s));
+    return that;
   }
 
   //================================================================================================

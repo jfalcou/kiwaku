@@ -15,6 +15,6 @@ int main()
   std::cout << x << "\n";
 
   // y will contains 7 x 1 x 1
-  kwk::shape< kwk::_3D > y = kwk::of_size(7);
+  kwk::shape< kwk::_3D > y{kwk::of_size(7)};
   std::cout << y << "\n";
 }

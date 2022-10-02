@@ -8,7 +8,7 @@ set ( SOURCES
       # as_stride.cpp
       compare.cpp
       contain.cpp
-      # convert.cpp
+      convert.cpp
       ctor.cpp
       default_ctor.cpp
       joker.cpp

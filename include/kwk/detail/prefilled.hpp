@@ -144,25 +144,16 @@ namespace kwk::detail
   template<std::size_t N, auto Desc>
   constexpr auto compress(prefilled<Desc> const& s)  noexcept
   {
-    using that_t = prefilled<compress<N>(Desc)>;
-    that_t that;
+    using t_t = prefilled<compress<N>(Desc)>;
+    t_t t;
 
-    kumi::for_each_index( [&]<typename I>(I, auto m)
-                          {
-                            if constexpr(I::value < N && that_t::contains(I::value))
-                              that[I::value] = m;
-                          }
-                        , s
-                        );
+    kumi::for_each_index
+    ( [&](auto i, auto m) { if constexpr(i < N && t_t::contains(i)) t[i] = m; }, s);
 
-    kumi::for_each_index( [&]<typename I>(I, auto m)
-                          {
-                            if constexpr(I::value >= N && that_t::contains(N-1))
-                              that[N-1] *= m;
-                          }
-                        , s
-                        );
-    return that;
+    kumi::for_each_index
+    ( [&](auto i, auto m) { if constexpr(i >= N && t_t::contains(N-1)) t[N-1] *= m; }, s);
+
+    return t;
   }
 }
 

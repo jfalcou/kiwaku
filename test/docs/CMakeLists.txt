@@ -5,7 +5,7 @@
 ##==================================================================================================
 set ( SOURCES
       shape/compatible.cpp
-      #shape/odd_sized.cpp
+      shape/odd_sized.cpp
       shape/mixed.cpp
     )
 
