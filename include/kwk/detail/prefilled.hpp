@@ -9,6 +9,7 @@
 
 #include <kwk/detail/assert.hpp>
 #include <kwk/detail/combo.hpp>
+#include <kwk/detail/pp_helpers.hpp>
 #include <array>
 
 namespace kwk::detail
@@ -16,8 +17,8 @@ namespace kwk::detail
   // Compute the prefilled_array base class for prefilled storage
   template<auto Desc> struct array_storage
   {
-    using decriptor_t     = decltype(Desc);
-    using value_type      = typename decriptor_t::base_type;
+    using descriptor_t    = decltype(Desc);
+    using value_type      = typename descriptor_t::base_type;
     static constexpr  std::size_t storage_size = kumi::count_if(Desc,kumi::predicate<is_joker>());
 
     struct empty_storage {};
@@ -29,16 +30,17 @@ namespace kwk::detail
 
   template<auto Desc> struct prefilled : array_storage<Desc>::storage_type
   {
-    using decriptor_t     = decltype(Desc);
-    using value_type      = typename decriptor_t::base_type;
-    using is_product_type = void;
+    using descriptor_t    = decltype(Desc);
+    using value_type      = typename descriptor_t::base_type;
     using storage_t       = typename array_storage<Desc>::storage_type;
+    using is_product_type = void;
 
-    static constexpr  std::size_t static_size     = std::tuple_size<decriptor_t>::value;
+    static constexpr  std::size_t static_size     = std::tuple_size<descriptor_t>::value;
     static constexpr  std::size_t dynamic_size    = kumi::count_if(Desc,kumi::predicate<is_joker>());
     static constexpr  bool        is_fully_static = (dynamic_size == 0);
     static constexpr  bool        is_dynamic      = !is_fully_static;
 
+    //
     static constexpr
     auto index  = kumi::map ( [k=0]<typename V>(V) mutable
                               {
@@ -58,10 +60,13 @@ namespace kwk::detail
                                 , index
                                 );
 
+    // Do we have runtime storage for a given index ?
     static bool constexpr contains(std::size_t i) { return location[i] != -1; }
 
+    // Defautl constructor
     constexpr prefilled() : storage_t{} {}
 
+    // Construct using a higher-level filling strategy
     template<typename Filler>
     constexpr prefilled(Filler f)
     {
@@ -75,29 +80,29 @@ namespace kwk::detail
 
     // Static access
     template<int N>
-    friend constexpr auto get(prefilled const& s)
+    friend KWK_FORCEINLINE constexpr auto get(prefilled const& s) noexcept
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_joker_v<kumi::element_t<N,decriptor_t>>) return s.storage()[get<N>(index)];
+      if constexpr(is_joker_v<kumi::element_t<N,descriptor_t>>) return s.storage()[location[N]];
       else return get<N>(Desc);
     }
 
     template<int N>
-    friend constexpr auto& get(prefilled& s)
+    friend KWK_FORCEINLINE constexpr auto& get(prefilled& s) noexcept
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_joker_v<kumi::element_t<N,decriptor_t>>) return s.storage()[get<N>(index)];
+      if constexpr(is_joker_v<kumi::element_t<N,descriptor_t>>) return s.storage()[location[N]];
       else return get<N>(Desc);
     }
 
     // Dynamic access
-    constexpr auto operator[](std::size_t i) const noexcept
+    KWK_FORCEINLINE constexpr auto operator[](std::size_t i) const noexcept
     {
       KIWAKU_ASSERT(i<static_size , "[kwk] - Out of bounds access");
       if constexpr(static_size == 0) return 1; else return as_array()[i];
     }
 
-    constexpr auto& operator[](std::size_t i) noexcept
+    KWK_FORCEINLINE constexpr auto& operator[](std::size_t i) noexcept
     requires( is_dynamic && static_size>0)
     {
       KIWAKU_ASSERT ( i<static_size , "[kwk] - Out of bounds access"                  );
@@ -105,16 +110,6 @@ namespace kwk::detail
       return storage()[location[i]];
     }
 
-/*
-    template<auto Desc2>
-    requires( Desc2.size() < static_size || Desc.is_compatible(Desc2) )
-    constexpr prefilled_array& operator=( prefilled_array<Desc2> const& p ) noexcept
-    {
-      prefilled_array that(p);
-      swap(that);
-      return *this;
-    }
-*/
     // Total size of the array
     static constexpr auto size() noexcept { return static_size; }
 
@@ -133,6 +128,7 @@ namespace kwk::detail
     void swap( prefilled& other ) noexcept { storage().swap( other.storage() ); }
     friend void swap( prefilled& x, prefilled& y ) noexcept { x.swap(y); }
 
+    // Internal storage access for algorithms
     constexpr storage_t&        storage() noexcept
     {
       return static_cast<storage_t&>(*this);
@@ -142,8 +138,32 @@ namespace kwk::detail
     {
       return static_cast<storage_t const&>(*this);
     }
-
   };
+
+  // Project  elements in a N dimension prefilled instance
+  template<std::size_t N, auto Desc>
+  constexpr auto compress(prefilled<Desc> const& s)  noexcept
+  {
+    using that_t = prefilled<compress<N>(Desc)>;
+    that_t that;
+
+    kumi::for_each_index( [&]<typename I>(I, auto m)
+                          {
+                            if constexpr(I::value < N && that_t::contains(I::value))
+                              that[I::value] = m;
+                          }
+                        , s
+                        );
+
+    kumi::for_each_index( [&]<typename I>(I, auto m)
+                          {
+                            if constexpr(I::value >= N && that_t::contains(N-1))
+                              that[N-1] *= m;
+                          }
+                        , s
+                        );
+    return that;
+  }
 }
 
 // Tuple interface adaptation

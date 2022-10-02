@@ -10,6 +10,7 @@
 #include <kwk/detail/kumi.hpp>
 #include <kwk/utility/joker.hpp>
 #include <type_traits>
+#include <ostream>
 
 namespace kwk::detail
 {
@@ -17,7 +18,12 @@ namespace kwk::detail
   template<typename T, typename... Elems> struct combo
   {
     using is_product_type = void;
-    using base_type = T;
+    using base_type       = T;
+    using contents_type   = kumi::tuple<Elems...>;
+
+    static constexpr auto size() noexcept { return sizeof...(Elems); }
+
+    friend std::ostream& operator<<(std::ostream& os, combo c) { return os << c.data; }
 
     constexpr auto operator()() const
     {
@@ -35,8 +41,8 @@ namespace kwk::detail
     template<std::size_t N>
     friend constexpr decltype(auto) get(combo const& s) noexcept { return get<N>(s.data); }
 
-    // combo sequence are compatible if they have the same size
-    // and don't contains conflicting static values
+    // combo sequences are compatible if they have the same size
+    // and don't contain conflicting static values
     template< typename T0, typename... E0>
     constexpr bool is_compatible(combo<T0,E0...> const& other) const noexcept
     {
@@ -64,6 +70,41 @@ namespace kwk::detail
     kumi::tuple<Elems...> data;
   };
 
+  template<typename T, typename... E>
+  constexpr auto to_combo(kumi::tuple<E...> es) noexcept
+  {
+    return combo<T,E...>{es};
+  }
+
+  // Compress combo at a given size, projecting remaining elements
+  template<std::size_t N, typename T, typename... E>
+  constexpr auto compress(combo<T,E...> s)  noexcept
+  {
+    auto tail = s.data.extract(kumi::index<N>);
+
+    //  We add a _ to the end of the first part
+    //    - if there is at least one _ in the tail
+    //    - if there is a _ in the last element of the head
+    if constexpr(   kumi::any_of(decltype(tail){},kumi::predicate<is_joker>())
+                ||  is_joker_v<kumi::element_t<N-1,typename combo<T,E...>::contents_type>>
+                )
+    {
+      // eg: [1][2][3]()() compress 2 -> [1]()
+      auto head = s.data.extract(kumi::index<0>, kumi::index<N-1>);
+      return to_combo<T>(kumi::push_back(head,kwk::_));
+    }
+    else
+    {
+      // if there is no joker, we compute the product of all remaining elements and try
+      // to insert it in the last part eg: [1][4][5] compress 2 -> [1][20]
+      auto value = kumi::fold_left( [](auto acc, auto v) { return acc*v; }
+                                  , tail
+                                  , get<N-1>(s.data)
+                                  );
+      return to_combo<T>(kumi::push_back(s.data.extract(kumi::index<0>, kumi::index<N-1>),value));
+    }
+  }
+
   // Special case for empty combo so to not instantiate kumi::tuple<>
   template<typename T> struct combo<T>
   {
@@ -73,19 +114,6 @@ namespace kwk::detail
   };
 }
 
-/*
-template<typename ST2,typename... O2>
-    constexpr bool is_compatible(hybrid_sequence<ST2,O2...> o) const noexcept
-    {
-      if constexpr(sizeof...(O2) != sizeof...(Ops))  return false;
-      else
-      {
-        return [&]<std::size_t... I>( std::index_sequence<I...>)
-        {
-        }( std::make_index_sequence<sizeof...(Ops)>{});
-      }
-    }
-*/
 // Tuple interface adaptation
 template<typename T, typename... D>
 struct  std::tuple_size<kwk::detail::combo<T, D...>>
