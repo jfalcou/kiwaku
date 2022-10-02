@@ -25,11 +25,15 @@ TTS_CASE( "fixed<N> behavior - Literal API" )
 {
   using namespace kwk::literals;
 
-  TTS_CONSTEXPR_EQUAL ( (0_c).value      , 0            );
-  TTS_CONSTEXPR_EQUAL ( (16540_c).value  , short(16540) );
-  TTS_CONSTEXPR_EQUAL ( (123456_c).value , 123456U      );
+  constexpr auto cst_0 = 0_c;
+  constexpr auto cst_1 = 16540_c;
+  constexpr auto cst_2 = 123456_c;
 
-  TTS_EXPR_IS( (0_c).value      , std::uint8_t  const);
-  TTS_EXPR_IS( (16540_c).value  , std::uint16_t const);
-  TTS_EXPR_IS( (123456_c).value , std::uint32_t const);
+  TTS_EQUAL ( cst_0.value , 0            );
+  TTS_EQUAL ( cst_1.value , short(16540) );
+  TTS_EQUAL ( cst_2.value , 123456U      );
+
+  TTS_EXPR_IS( cst_0.value , std::uint8_t  const);
+  TTS_EXPR_IS( cst_1.value , std::uint16_t const);
+  TTS_EXPR_IS( cst_2.value , std::uint32_t const);
 };

@@ -50,7 +50,7 @@ function(make_unit root)
     add_executable(${test} ${file})
 
     add_target_parent(${test})
-    add_dependencies(kwk-unit ${test})
+    add_dependencies(unit ${test})
 
     setup_location( ${test} "unit")
     target_link_libraries(${test} PUBLIC kiwaku_test)
