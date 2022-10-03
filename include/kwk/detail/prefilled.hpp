@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/extent.hpp>
 #include <kwk/detail/assert.hpp>
 #include <kwk/detail/combo.hpp>
 #include <kwk/detail/pp_helpers.hpp>
@@ -35,12 +36,12 @@ namespace kwk::detail
     using storage_t       = typename array_storage<Desc>::storage_type;
     using is_product_type = void;
 
+    static constexpr  auto        descriptor      = Desc;
     static constexpr  std::size_t static_size     = std::tuple_size<descriptor_t>::value;
     static constexpr  std::size_t dynamic_size    = kumi::count_if(Desc,kumi::predicate<is_joker>());
     static constexpr  bool        is_fully_static = (dynamic_size == 0);
     static constexpr  bool        is_dynamic      = !is_fully_static;
 
-    //
     static constexpr
     auto index  = kumi::map ( [k=0]<typename V>(V) mutable
                               {
@@ -63,7 +64,7 @@ namespace kwk::detail
     // Do we have runtime storage for a given index ?
     static bool constexpr contains(std::size_t i) { return location[i] != -1; }
 
-    // Defautl constructor
+    // Default constructor
     constexpr prefilled() : storage_t{} {}
 
     // Construct using a higher-level filling strategy
@@ -76,6 +77,32 @@ namespace kwk::detail
                             }
                           , Desc, index
                           );
+    }
+
+    // Fill with a sequence of value/joker
+    constexpr void fill(concepts::extent<value_type> auto... vals) noexcept
+    requires( sizeof...(vals) <= static_size )
+    {
+      auto& v = storage();
+
+      // Fill storage data with provided size
+      kumi::for_each_index( [&]<typename N, typename S>(N, S vs)
+      {
+        constexpr auto i = N::value;
+        if constexpr( std::is_convertible_v<S,value_type> )
+        {
+          if constexpr(contains(i)) v[location[i]] = vs;
+          else  KIWAKU_ASSERT ( vs == get<i>(descriptor)
+                              , "[kwk] - Runtime/Compile-time mismatch in constructor"
+                              );
+        }
+        else
+        {
+          if constexpr(contains(i)) v[location[i]] = i != 0;
+        }
+      }
+      , kumi::tie(vals...)
+      );
     }
 
     // Static access

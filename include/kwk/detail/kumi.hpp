@@ -1454,6 +1454,13 @@ namespace kumi
     else                          return tuple<>{};
   }
 
+
+  template<product_type Tuple>
+  [[nodiscard]] constexpr decltype(auto) back(Tuple&& t) noexcept
+  {
+    return get<std::tuple_size<std::remove_cvref_t<Tuple>>::value - 1>(KUMI_FWD(t));
+  }
+
   //================================================================================================
   //! @ingroup generators
   //! @brief Constructs a tuple by adding a value v at the end of t
@@ -2324,6 +2331,32 @@ namespace kumi
     };
 
     template<typename... T> using cartesian_product_t = typename cartesian_product<T...>::type;
+  }
+
+  template<product_type S1, sized_product_type<S1::size()> S2, typename T>
+  constexpr auto inner_product(S1 const& s1, S2 const& s2, T init) noexcept
+  {
+    if constexpr(sized_product_type<S1,0>) return init;
+    else
+    {
+      return [&]<std::size_t... I>(std::index_sequence<I...>)
+      {
+        return (init + ... + (get<I>(s1) * get<I>(s2)));
+      }(std::make_index_sequence<size<S1>::value>());
+    }
+  }
+
+  namespace result
+  {
+    template<typename S1, typename S2, typename T> struct inner_product
+    {
+      using type = decltype ( kumi::inner_product ( std::declval<S1>(),std::declval<S2>()
+                                                  ,std::declval<T>()
+                                                  )
+                            );
+    };
+
+    template<typename... T> using inner_product_t = typename inner_product<T...>::type;
   }
 
   //================================================================================================

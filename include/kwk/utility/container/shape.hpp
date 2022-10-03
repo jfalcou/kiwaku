@@ -7,9 +7,9 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/concepts/extent.hpp>
 #include <kwk/detail/prefilled.hpp>
 #include <kwk/detail/pp_helpers.hpp>
+#include <kwk/detail/extent_builder.hpp>
 #include <kwk/settings/extent.hpp>
 #include <kwk/utility/joker.hpp>
 #include <kwk/utility/fixed.hpp>
@@ -30,7 +30,7 @@ namespace kwk
   //! <hr/>
   //! **Required header**:
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-  //!  #include<kwk/container/shape.hpp>
+  //!  #include<kwk/utility/container/shape.hpp>
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //! <hr/>
   //!
@@ -120,26 +120,7 @@ namespace kwk
     requires( sizeof...(vals) <= static_order )
     : shape{}
     {
-      auto& v = parent::storage();
-
-      // Fill storage data with provided size
-      kumi::for_each_index( [&]<typename N, typename S>(N, S vs)
-      {
-        constexpr auto i = N::value;
-        if constexpr( std::is_convertible_v<S,size_type> )
-        {
-          if constexpr(parent::contains(i)) v[parent::location[i]] = vs;
-          else  KIWAKU_ASSERT ( vs == get<i>(Shape)
-                              , "[kwk::shape] - Runtime/Compile-time mismatch in constructor"
-                              );
-        }
-        else
-        {
-          if constexpr(parent::contains(i)) v[parent::location[i]] = i != 0;
-        }
-      }
-      , kumi::tie(vals...)
-      );
+      parent::fill(vals...);
     }
 
     //==============================================================================================
@@ -313,9 +294,6 @@ namespace kwk
     /// Number of dimensions
     static constexpr auto order() noexcept { return static_order; }
 
-    /// Conversion to kwk::stride
-    // constexpr auto as_stride() const requires(static_order > 0) { return stride_type(*this); }
-
     //==============================================================================================
     //! @brief Number of non-trivial dimensions
     //!
@@ -403,24 +381,6 @@ namespace kwk
   /// Deduction guide for @ref kwk::shape
   template<concepts::extent<std::ptrdiff_t>... T> shape(T...) -> shape< _nD<sizeof...(T)> >;
 
- // Shape generators
-  namespace detail
-  {
-    // Convert a sequence of dimensions to the proper shaper type
-    template<typename SizeType,typename ... Ds>
-    constexpr auto as_shape(Ds... ds) noexcept
-    {
-      return kumi::fold_right( []<typename T>(auto a, T)
-                              {
-                                if constexpr( requires{ T::value; } ) return a[T::value];
-                                else                                  return a();
-                              }
-                            , kumi::tie(ds...)
-                            , detail::combo<SizeType>{}
-                            );
-    }
-  }
-
   //================================================================================================
   //! @brief Compress a kwk::shape to a given order
   //! @tparam N  Expected @ref glossary-order of the generated shape.
@@ -446,12 +406,7 @@ namespace kwk
   template<typename SizeType, int..., concepts::extent<SizeType>... Ds>
   constexpr auto of_size(Ds... ds) noexcept
   {
-    return kumi::apply( [](auto... v)
-                        {
-                          return  kwk::shape<detail::as_shape<SizeType>(Ds{}...)>(v...);
-                        }
-                      , kumi::tuple{ds...}
-                      );
+    return detail::make_extent<kwk::shape,SizeType>(ds...);
   }
 
   template<int..., concepts::extent<std::ptrdiff_t>... Ds>

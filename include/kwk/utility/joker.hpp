@@ -22,6 +22,10 @@ namespace kwk
   {
     friend std::ostream& operator<<(std::ostream& os, joker const&) { return os << "_"; }
     constexpr auto operator[](std::size_t d) const noexcept { return axis{d,0}; }
+
+    friend constexpr joker operator*(joker, joker) noexcept { return {}; }
+    friend constexpr joker operator*(joker,  auto) noexcept { return {}; }
+    friend constexpr joker operator*(auto , joker) noexcept { return {}; }
   };
 
   template<typename T>  struct is_joker               : std::false_type {};
@@ -34,5 +38,3 @@ namespace kwk
 
   inline constexpr joker _ = {};
 }
-
-

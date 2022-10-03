@@ -8,7 +8,7 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kwk/container/linear_index.hpp>
+#include <kwk/utility/linear_index.hpp>
 #include <array>
 
 TTS_CASE( "1D behavior of linear_index" )

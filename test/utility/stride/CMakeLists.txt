@@ -4,9 +4,9 @@
 ##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
 set ( SOURCES
-      ctor.cpp
-      indexing.cpp
-      unit_indexing.cpp
+      as_stride.cpp
+      with_strides.cpp
+      linear_index.cpp
     )
 
-make_unit("components.stride" ${SOURCES})
+make_unit("utility.stride" ${SOURCES})

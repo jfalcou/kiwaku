@@ -6,3 +6,4 @@
 add_subdirectory(memory)
 add_subdirectory(meta)
 add_subdirectory(shape)
+add_subdirectory(stride)

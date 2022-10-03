@@ -71,9 +71,22 @@ namespace kwk::detail
   };
 
   template<typename T, typename... E>
-  constexpr auto to_combo(kumi::tuple<E...> es) noexcept
+  constexpr auto to_combo(kumi::tuple<E...> const& es) noexcept
   {
     return combo<T,E...>{es};
+  }
+
+  template<typename U, typename T, typename... E>
+  constexpr auto combo_cast(combo<T,E...> const& es) noexcept
+  {
+    return to_combo<U>( kumi::map ( []<typename M>(M m)
+                                    {
+                                      if constexpr(is_joker_v<M>) return m;
+                                      else return static_cast<U>(m);
+                                    }
+                                  , es.data
+                                  )
+                      );
   }
 
   // Compress combo at a given size, projecting remaining elements
