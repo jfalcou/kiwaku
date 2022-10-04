@@ -13,6 +13,7 @@
 #include <kwk/settings/extent.hpp>
 #include <kwk/utility/joker.hpp>
 #include <kwk/utility/fixed.hpp>
+#include <kwk/utility/slicer.hpp>
 #include <cstddef>
 
 namespace kwk
@@ -333,6 +334,11 @@ namespace kwk
       return os << " ]";
     }
 
+    /// Slicing interface - TODO DOC
+    template<typename... Slicers>
+    inline constexpr auto operator()(Slicers const&... s) const noexcept
+    requires( sizeof...(Slicers) <= static_order);
+
     protected:
     template<auto S2, typename Comp, typename Check>
     constexpr bool compare( shape<S2> const& o, Comp const& op, Check const& check) const noexcept
@@ -426,6 +432,20 @@ namespace kwk
   constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
+  }
+
+  // Implementation of slicing interface
+  template<auto Shape>
+  template<typename... Slicers>
+  inline constexpr auto shape<Shape>::operator()(Slicers const&... s) const noexcept
+  requires( sizeof...(Slicers) <= static_order)
+  {
+    auto  shd     = compress<sizeof...(s)>(*this);
+    auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return slice_dim(shd,m,i); }
+                                    , kumi::tie(s...)
+                                    );
+
+    return kumi::apply( [](auto... v) { return of_size(v...); }, sliced );
   }
 }
 
