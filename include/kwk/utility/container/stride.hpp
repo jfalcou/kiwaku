@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/pp_helpers.hpp>
+#include <kwk/detail/abi.hpp>
 #include <kwk/utility/container/shape.hpp>
 #include <cstddef>
 

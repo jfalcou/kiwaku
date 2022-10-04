@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/allocator.hpp>
-#include <kwk/detail/pp_helpers.hpp>
+#include <kwk/detail/abi.hpp>
 #include <cstdlib>
 #include <cstddef>
 #include <memory>
