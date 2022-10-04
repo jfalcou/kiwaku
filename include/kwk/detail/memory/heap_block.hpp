@@ -6,7 +6,7 @@
 **/
 //==================================================================================================
 #pragma once
-#include <kwk/allocator/any_allocator.hpp>
+#include <kwk/utility/memory/any_allocator.hpp>
 #include <algorithm>
 #include <memory>
 
@@ -30,14 +30,14 @@ namespace kwk::detail
       deleter() : size_(0), offset_(0) {}
       template<typename A> deleter(A a, auto s, auto o) : allocator_(a), size_(s), offset_(o) {}
 
-      void operator()(void* p) { allocator_.deallocate((value_type*)(p) + offset_); }
+      void operator()(void* p) { deallocate(allocator_,(value_type*)(p) + offset_); }
     };
 
     std::unique_ptr<value_type, deleter> data_;
 
     template<typename Allocator>
     constexpr heap_block( Allocator a, auto size, auto offset)
-                        : data_ ( (value_type*)(a.allocate(size*sizeof(T))) - offset
+                        : data_ ( (value_type*)(allocate(a,size*sizeof(T))) - offset
                                 , deleter(a,size,offset)
                                 )
     {}
