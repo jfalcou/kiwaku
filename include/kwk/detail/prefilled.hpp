@@ -11,6 +11,7 @@
 #include <kwk/detail/assert.hpp>
 #include <kwk/detail/combo.hpp>
 #include <kwk/detail/pp_helpers.hpp>
+#include <kwk/utility/traits/extent.hpp>
 #include <array>
 
 namespace kwk::detail
@@ -110,7 +111,7 @@ namespace kwk::detail
     friend KWK_FORCEINLINE constexpr auto get(prefilled const& s) noexcept
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_joker_v<kumi::element_t<N,descriptor_t>>) return s.storage()[location[N]];
+      if constexpr(is_dynamic_extent_v<N,Desc>) return s.storage()[location[N]];
       else return get<N>(Desc);
     }
 
@@ -118,7 +119,7 @@ namespace kwk::detail
     friend KWK_FORCEINLINE constexpr auto& get(prefilled& s) noexcept
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_joker_v<kumi::element_t<N,descriptor_t>>) return s.storage()[location[N]];
+      if constexpr(is_dynamic_extent_v<N,Desc>) return s.storage()[location[N]];
       else return get<N>(Desc);
     }
 

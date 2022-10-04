@@ -22,10 +22,16 @@ namespace kwk
   //! @defgroup settings  Container settings
   //! @brief Classes and functions related to table and views constructions
   //================================================================================================
+
+  //================================================================================================
+  //! @ingroup utility
+  //! @defgroup traits  Type Traits
+  //! @brief Constants and meta-functions providing information on **KIWAKU** components
+  //================================================================================================
 }
 
 #include <kwk/concepts.hpp>
 #include <kwk/utility.hpp>
 // #include <kwk/container.hpp>
 // #include <kwk/algorithm.hpp>
-// #include <kwk/options.hpp>
+#include <kwk/settings.hpp>
