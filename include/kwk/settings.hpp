@@ -11,4 +11,5 @@
 #include <kwk/settings/extent.hpp>
 #include <kwk/settings/label.hpp>
 #include <kwk/settings/size.hpp>
+#include <kwk/settings/strides.hpp>
 #include <kwk/settings/type.hpp>
