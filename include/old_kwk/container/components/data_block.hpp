@@ -22,7 +22,6 @@ namespace kwk::detail
     Contrary to most standard view and container,kwk::data_block keep the potential const qualifier
     of underlying type on purpose.
 
-    @tparam Source  Source object carrying informations about the underlying pointer
   */
   //================================================================================================
   template<typename Source> struct data_block : Source

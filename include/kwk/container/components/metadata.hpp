@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/detail/raberu.hpp>
-#include <kwk/options/label.hpp>
+#include <kwk/settings/label.hpp>
 
 namespace kwk::detail
 {
