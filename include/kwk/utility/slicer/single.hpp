@@ -15,7 +15,7 @@ namespace kwk
   template<auto Desc> struct shape;
 
   template<auto Desc, std::size_t N>
-  constexpr auto slice_dim(shape<Desc> const&, std::integral auto, kumi::index_t<N> const&) noexcept
+  constexpr auto reshape(shape<Desc> const&, std::integral auto, kumi::index_t<N> const&) noexcept
   {
     return fixed<1>;
   }

@@ -441,7 +441,7 @@ namespace kwk
   requires( sizeof...(Slicers) <= static_order)
   {
     auto  shd     = compress<sizeof...(s)>(*this);
-    auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return slice_dim(shd,m,i); }
+    auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return reshape(shd,m,i); }
                                     , kumi::tie(s...)
                                     );
 
