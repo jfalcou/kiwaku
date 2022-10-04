@@ -7,9 +7,9 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/prefilled.hpp>
+#include <kwk/detail/sequence/prefilled.hpp>
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/extent_builder.hpp>
+#include <kwk/detail/sequence/extent_builder.hpp>
 #include <kwk/settings/extent.hpp>
 #include <kwk/utility/joker.hpp>
 #include <kwk/utility/fixed.hpp>

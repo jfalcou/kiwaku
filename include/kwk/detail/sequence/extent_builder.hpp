@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/extent.hpp>
-#include <kwk/detail/combo.hpp>
+#include <kwk/detail/sequence/combo.hpp>
 #include <kwk/detail/kumi.hpp>
 
 namespace kwk::detail

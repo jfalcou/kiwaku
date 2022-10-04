@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/combo.hpp>
+#include <kwk/detail/sequence/combo.hpp>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
