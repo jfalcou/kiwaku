@@ -7,6 +7,23 @@
 //==================================================================================================
 #pragma once
 
+namespace kwk
+{
+  //================================================================================================
+  //! @defgroup utility Miscellaneous helper
+  //! @brief Quality of Life helpers
+  //!
+  //! This module defines various functions, types and variables for improving Quality of Life when
+  //! using **KIWAKU** in user's code.
+  //================================================================================================
+
+  //================================================================================================
+  //! @ingroup utility
+  //! @defgroup settings  Container settings
+  //! @brief Classes and functions related to table and views constructions
+  //================================================================================================
+}
+
 #include <kwk/concepts.hpp>
 #include <kwk/utility.hpp>
 // #include <kwk/container.hpp>

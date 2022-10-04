@@ -7,13 +7,12 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/container/shape.hpp>
+#include <kwk/utility/container/shape.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <concepts>
 
-namespace kwk
+namespace kwk::detail
 {
-#if !defined(KWK_USE_DOXYGEN)
   struct size_ : rbr::as_keyword<size_>
   {
     // Single integral -> 1D shape
@@ -25,9 +24,9 @@ namespace kwk
 
     // Extent -> shape<Extent>{}
     template<typename SizeType, typename... Ops>
-    constexpr auto operator=(detail::hybrid_sequence<SizeType,Ops...> const&) const noexcept
+    constexpr auto operator=(detail::combo<SizeType,Ops...> const&) const noexcept
     {
-      return shape<detail::hybrid_sequence<SizeType,Ops...>{}>{};
+      return shape<detail::combo<SizeType,Ops...>{}>{};
     }
 
     // Extent from of_size(...)
@@ -43,11 +42,13 @@ namespace kwk
       return os << "Shape: " << s;
     }
   };
-#endif
+}
 
-  /**
-    @ingroup  options
-    @brief    Keyword for specifying shape options
-   **/
-  inline constexpr size_ size = {};
+namespace kwk
+{
+  //================================================================================================
+  //! @ingroup  settings
+  //! @brief    Size setting for kwk::table and kwk::view
+  //================================================================================================
+  inline constexpr detail::size_ size = {};
 }

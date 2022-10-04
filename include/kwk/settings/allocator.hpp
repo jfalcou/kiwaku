@@ -8,11 +8,10 @@
 #pragma once
 
 #include <kwk/detail/raberu.hpp>
-#include <kwk/concept/allocator.hpp>
+#include <kwk/concepts/allocator.hpp>
 
-namespace kwk
+namespace kwk::detail
 {
-#if !defined(KWK_USE_DOXYGEN)
   struct allocator_ : rbr::as_keyword<allocator_>
   {
     template<typename T>
@@ -25,11 +24,13 @@ namespace kwk
       return os << "Allocation via: " << rbr::detail::type_name<A>();
     }
   };
-#endif
+}
 
-  /**
-    @ingroup  options
-    @brief    Allocator setting for kwk::table
-  **/
-  inline constexpr allocator_ allocator = {};
+namespace kwk
+{
+  //================================================================================================
+  //! @ingroup  settings
+  //! @brief    Allocator setting for kwk::table
+  //================================================================================================
+  inline constexpr detail::allocator_ allocator = {};
 }
