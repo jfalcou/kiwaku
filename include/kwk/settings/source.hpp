@@ -8,21 +8,20 @@
 #pragma once
 
 #include <kwk/detail/raberu.hpp>
-#include <kwk/options/source/ptr_source.hpp>
-#include <kwk/options/source/array_source.hpp>
-#include <kwk/options/source/range_source.hpp>
-#include <kwk/concept/range.hpp>
+#include <kwk/settings/source/ptr_source.hpp>
+#include <kwk/settings/source/array_source.hpp>
+#include <kwk/settings/source/range_source.hpp>
+#include <kwk/concepts/range.hpp>
 #include <array>
 
-namespace kwk
+namespace kwk::detail
 {
-#if !defined(KWK_USE_DOXYGEN)
-  struct data_source : rbr::as_keyword<data_source>
+  struct source_ : rbr::as_keyword<source_>
   {
     // Options passthrough
     constexpr auto operator=(rbr::concepts::option auto const& o) const noexcept { return o; }
 
-    template<concepts::contiguous_static_range Array>
+    template<kwk::concepts::contiguous_static_range Array>
     constexpr auto operator=( Array&& a) const noexcept
     {
       using a_t = std::remove_reference_t<Array>;
@@ -46,16 +45,17 @@ namespace kwk
     // Display
     template<typename Src> std::ostream& display(std::ostream& os, Src src) const
     {
-      return os << "Source: " << src.as_block().data()
-                              << " (" << rbr::detail::type_name<Src>() << ") "
-                              << " - shape: " << src.default_shape();
+      return os << "Source: " << as_block(src).data()
+                              << " (" << rbr::detail::type_name<Src>() << ") ";
     }
   };
-#endif
+}
 
-  /**
-    @ingroup  options
-    @brief    Data source setting for kwk::view
-  **/
-  inline constexpr data_source source = {};
+namespace kwk
+{
+  //================================================================================================
+  //! @ingroup  settings
+  //! @brief    Data source setting for kwk::table and kwk::view
+  //================================================================================================
+  inline constexpr detail::source_ source = {};
 }
