@@ -10,10 +10,10 @@
 
 namespace kwk
 {
-  struct source_;
-
   namespace detail
   {
+    struct source_;
+
     template<typename T> struct span
     {
       using value_type      = std::remove_const_t<T>;
@@ -29,7 +29,7 @@ namespace kwk
   template<typename T> struct range_source
   {
     using stored_value_type = range_source<T>;
-    using keyword_type      = source_;
+    using keyword_type      = detail::source_;
 
     constexpr range_source(T* p = nullptr, std::size_t s = 0) : data_(p), size_(s) {}
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }

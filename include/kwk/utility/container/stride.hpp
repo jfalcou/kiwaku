@@ -11,10 +11,10 @@
 #include <kwk/utility/container/shape.hpp>
 #include <cstddef>
 
+namespace kwk::detail { struct strides_; }
+
 namespace kwk
 {
-  struct strides_;
-
   //================================================================================================
   //! @ingroup containers
   //! @brief  Fixed order stride with mixed size capability
@@ -53,7 +53,7 @@ namespace kwk
     // stride is its self option keyword
     //==============================================================================================
     using stored_value_type = stride<Strides>;
-    using keyword_type      = strides_;
+    using keyword_type      = detail::strides_;
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 

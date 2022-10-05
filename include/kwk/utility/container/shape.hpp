@@ -16,9 +16,10 @@
 #include <kwk/utility/slicer.hpp>
 #include <cstddef>
 
+namespace kwk::detail { struct size_; }
+
 namespace kwk
 {
-  struct size_;
   template<auto Shape> struct shape;
 
   template<std::size_t N, auto Desc>
@@ -90,7 +91,7 @@ namespace kwk
 
     // shape is its self option keyword
     using stored_value_type = shape<Shape>;
-    using keyword_type      = size_;
+    using keyword_type      = detail::size_;
 
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
