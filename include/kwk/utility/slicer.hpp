@@ -9,3 +9,5 @@
 
 #include <kwk/utility/slicer/all.hpp>
 #include <kwk/utility/slicer/single.hpp>
+#include <kwk/utility/slicer/from.hpp>
+#include <kwk/utility/slicer/to.hpp>

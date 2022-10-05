@@ -70,15 +70,13 @@ namespace kwk
   struct shape : kwk::detail::prefilled<Shape>
   {
     using parent = kwk::detail::prefilled<Shape>;
+    static constexpr auto descriptor = Shape;
 
     /// Compile-time value for @ref glossary-order
     static constexpr std::ptrdiff_t static_order = parent::static_size;
 
     /// Type of dimensions' size
     using size_type = typename parent::value_type;
-
-    /// Associated kwk::stride type
-    //using stride_type   = unit_stride<size_type, static_order>;
 
     /// Indicates that the shape has at least one dimension specified at runtime
     static constexpr bool is_dynamic        = parent::is_dynamic;
