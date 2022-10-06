@@ -149,7 +149,7 @@ namespace kwk
       kumi::for_each( [&](auto e)
                       {
                         KIWAKU_ASSERT ( parent::contains(e.dims)
-                                      , "[kwk] - Semi-dynamic construction overwrite static shape"
+                                      , "[KWK] - Semi-dynamic construction overwrite static shape"
                                       );
 
                         st[parent::location[e.dims]] = static_cast<size_type>(e.size);
@@ -188,7 +188,7 @@ namespace kwk
                               else
                               {
                                 KIWAKU_ASSERT( m == get<i>(Shape)
-                                            , "[kwk] - Static/Dynamic mismatch in constructor"
+                                            , "[KWK] - Static/Dynamic mismatch in constructor"
                                             );
                               }
                             }

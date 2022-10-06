@@ -94,7 +94,7 @@ namespace kwk::detail
         {
           if constexpr(contains(i)) v[location[i]] = vs;
           else  KIWAKU_ASSERT ( vs == get<i>(descriptor)
-                              , "[kwk] - Runtime/Compile-time mismatch in constructor"
+                              , "[KWK] - Runtime/Compile-time mismatch in constructor"
                               );
         }
         else
@@ -126,15 +126,15 @@ namespace kwk::detail
     // Dynamic access
     KWK_FORCEINLINE constexpr auto operator[](std::size_t i) const noexcept
     {
-      KIWAKU_ASSERT(i<static_size , "[kwk] - Out of bounds access");
+      KIWAKU_ASSERT(i<static_size , "[KWK] - Out of bounds access");
       if constexpr(static_size == 0) return 1; else return as_array()[i];
     }
 
     KWK_FORCEINLINE constexpr auto& operator[](std::size_t i) noexcept
     requires( is_dynamic && static_size>0)
     {
-      KIWAKU_ASSERT ( i<static_size , "[kwk] - Out of bounds access"                  );
-      KIWAKU_ASSERT ( contains(i)   , "[kwk] - Access overwrites a compile-time value");
+      KIWAKU_ASSERT ( i<static_size , "[KWK] - Out of bounds access"                  );
+      KIWAKU_ASSERT ( contains(i)   , "[KWK] - Access overwrites a compile-time value");
       return storage()[location[i]];
     }
 
