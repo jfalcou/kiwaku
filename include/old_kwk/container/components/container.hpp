@@ -111,20 +111,5 @@ namespace kwk
     if constexpr(I<container<Tag,T,Os...>::static_order) return get<I>(v.shape());
     else return 1;
   }
-
-  /// Retrieve the first valid index along the Ith dimension
-  template<std::size_t I, typename T, typename Tag, auto... Os>
-  constexpr auto first(container<Tag,T,Os...> const& v) noexcept
-  {
-    auto bi = options::base_index(v.tag, rbr::settings{Os...});
-    return get<I>(bi.template as_position<container<Tag,T,Os...>::static_order>());
-  }
-
-  /// Retrieve the last valid index along the Ith dimension
-  template<std::size_t I, typename T, typename Tag, auto... Os>
-  constexpr auto last(container<Tag,T,Os...> const& v) noexcept
-  {
-    return first<I>(v) + dim<I>(v);
-  }
 }
 

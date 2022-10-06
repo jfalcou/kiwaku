@@ -25,20 +25,19 @@ namespace kwk::detail
     {
       any_allocator   allocator_;
       std::ptrdiff_t  size_;
-      std::ptrdiff_t  offset_;
 
-      deleter() : size_(0), offset_(0) {}
-      template<typename A> deleter(A a, auto s, auto o) : allocator_(a), size_(s), offset_(o) {}
+      deleter() : size_(0) {}
+      template<typename A> deleter(A a, auto s) : allocator_(a), size_(s) {}
 
-      void operator()(void* p) { deallocate(allocator_,(value_type*)(p) + offset_); }
+      void operator()(void* p) { deallocate(allocator_,(value_type*)(p)); }
     };
 
     std::unique_ptr<value_type, deleter> data_;
 
     template<typename Allocator>
-    constexpr heap_block( Allocator a, auto size, auto offset)
-                        : data_ ( (value_type*)(allocate(a,size*sizeof(T))) - offset
-                                , deleter(a,size,offset)
+    constexpr heap_block( Allocator a, auto size)
+                        : data_ ( (value_type*)(allocate(a,size*sizeof(T)))
+                                , deleter(a,size)
                                 )
     {}
 
@@ -62,12 +61,12 @@ namespace kwk::detail
     constexpr         void swap(heap_block& other)            { data_.swap(other.data_); }
     constexpr friend  void swap(heap_block& a,heap_block& b)  { a.swap(b); }
 
-    constexpr auto data()       noexcept { return data_.get(); }
-    constexpr auto data() const noexcept { return data_.get(); }
+    constexpr auto get()       noexcept { return data_.get(); }
+    constexpr auto get() const noexcept { return data_.get(); }
 
     constexpr void assign(auto const& src)
     {
-      std::copy(src.data(), src.data() + data_.get_deleter().size_, data());
+      std::copy(data(src), data(src) + data_.get_deleter().size_, get());
     }
   };
 }
