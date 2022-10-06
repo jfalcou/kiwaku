@@ -1,6 +1,6 @@
 //==================================================================================================
 /**
-  KIWAQOU - Containers Well Made
+  KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 **/
@@ -10,6 +10,7 @@
 #include <kwk/detail/assert.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/utility/fixed.hpp>
+#include <ostream>
 
 namespace kwk
 {
@@ -19,6 +20,11 @@ namespace kwk
   {
     T end;
     to(T e) : end(e) {}
+
+    friend std::ostream& operator<<(std::ostream& os, to t)
+    {
+      return os << "to(" << +t.end << ")";
+    }
   };
   
   template<typename T> to(T) -> to<T>;

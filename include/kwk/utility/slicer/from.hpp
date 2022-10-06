@@ -1,6 +1,6 @@
 //==================================================================================================
 /**
-  KIWAQOU - Containers Well Made
+  KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 **/
@@ -9,6 +9,7 @@
 
 #include <kwk/detail/kumi.hpp>
 #include <kwk/utility/fixed.hpp>
+#include <ostream>
 
 namespace kwk
 {
@@ -32,6 +33,11 @@ namespace kwk
                         << begin << ")"
                       );
       }
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, from f)
+    {
+      return os << "from(" << +f.begin << ")";
     }
   };
   
