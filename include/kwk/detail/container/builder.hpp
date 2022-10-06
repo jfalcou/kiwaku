@@ -7,28 +7,27 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/container/components/metadata.hpp>
-// #include <kwk/container/components/data_block.hpp>
-// #include <kwk/container/components/accessor.hpp>
-#include <kwk/container/settings/pick.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <kwk/container/pick.hpp>
+#include <kwk/detail/container/metadata.hpp>
+#include <kwk/detail/container/accessor.hpp>
+#include <kwk/detail/memory/block.hpp>
 
 namespace kwk::detail
 {
-  template<auto... Options>
+  template<rbr::concepts::settings auto Settings>
   struct  builder
   {
-    static constexpr auto opts  = rbr::settings(Options...);
+    using opts_t  = decltype(Settings);
 
     // Computes view_access type
-    static constexpr auto shape   = pick(size, opts);
-    static constexpr auto stride  = pick(strides, opts);
-    //using accessor                = detail::accessor< shape, stride >;
+    static constexpr auto shape   = pick(size, Settings);
+    static constexpr auto stride  = pick(strides, Settings);
+    using accessor                = detail::accessor< shape, stride >;
 
     // Computes data_block type
-    //using data_block  = typename options::data<Tag,decltype(opts)>::type;
+    using data_block  = block_type_t<opts_t>;
 
     // Computes metadata type;
-    // using metadata    = detail::metadata<rbr::result::fetch_t<label, decltype(opts)>>;
+    using metadata    = detail::metadata<result::pick_t<label, opts_t>>;
   };
 }

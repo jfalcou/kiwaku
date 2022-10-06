@@ -26,12 +26,15 @@ namespace kwk
     return pick(opts[category], k, opts);
   }
 
-  template<auto Keyword, rbr::concepts::settings Settings>
-  struct pick_type
+  namespace result
   {
-    using type = decltype( pick(Keyword, std::declval<Settings>() ));
-  };
+    template<auto Keyword, rbr::concepts::settings Settings>
+    struct pick
+    {
+      using type = decltype( kwk::pick(Keyword, std::declval<Settings>() ));
+    };
 
-  template<auto Keyword, rbr::concepts::settings Settings>
-  using pick_type_t = typename pick_type<Keyword, Settings>::type;
+    template<auto Keyword, rbr::concepts::settings Settings>
+    using pick_t = typename pick<Keyword, Settings>::type;
+  }
 }

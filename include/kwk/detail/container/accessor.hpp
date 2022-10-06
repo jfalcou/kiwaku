@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 #include <kwk/detail/raberu.hpp>
-#include <kwk/container/options.hpp>
+#include <kwk/container/pick.hpp>
 #include <type_traits>
 #include <utility>
 
@@ -26,18 +26,18 @@ namespace kwk::detail
     constexpr auto  shape()   const noexcept  { return shape_;         }
     constexpr auto  stride()  const noexcept  { return stride_;        }
 
-    constexpr   accessor(auto const& tag, rbr::concepts::settings auto const& opts)
-              : shape_ ( options::shape(tag,opts) )
-              , stride_( options::stride(tag,opts) )
+    constexpr   accessor(rbr::concepts::settings auto const& opts)
+              : shape_ ( pick(kwk::size   ,opts) )
+              , stride_( pick(kwk::strides,opts) )
     {}
 
-    constexpr auto index(auto i0)     const noexcept { return i0*get<0>(stride_);   }
-    constexpr auto index(auto... is)  const noexcept { return stride_.index(is...); }
+    constexpr auto index(auto i0)     const noexcept { return i0*get<0>(stride_);       }
+    constexpr auto index(auto... is)  const noexcept { return stride_.linearize(is...); }
 
     constexpr void reshape( shape_type const& s ) noexcept
     {
       shape_  = s;
-      stride_ = s.as_stride();
+      stride_ = as_stride(s);
     }
 
     constexpr void reshape( shape_type const& s, stride_type const& st ) noexcept
@@ -71,15 +71,15 @@ namespace kwk::detail
     constexpr auto  shape()   const noexcept  { return Shape;         }
     constexpr auto  stride()  const noexcept  { return Stride;        }
 
-    constexpr       accessor(auto const&, rbr::concepts::settings auto const&) noexcept {}
+    constexpr       accessor(rbr::concepts::settings auto const&) noexcept {}
     constexpr void  swap( accessor& ) noexcept {}
 
     template<std::integral... Is>
-    constexpr auto index(Is... is) const noexcept { return Stride.index(is...); }
+    constexpr auto index(Is... is) const noexcept { return Stride.linearize(is...); }
   };
 
   //================================================================================================
-  // Optimization : runtime 1D shape + unit/implicit stride
+  // Optimization : runtime 1D shape + unit stride
   // Expected sizeof : sizeof(void*) + sizeof(shape[0])
   //================================================================================================
   template<auto Shape, auto Stride>
@@ -90,8 +90,8 @@ namespace kwk::detail
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_order  = shape_type::static_order;
 
-    constexpr   accessor(auto const& tag, rbr::concepts::settings auto const& opts)
-              : shape_ ( options::shape(tag,opts) )
+    constexpr   accessor(rbr::concepts::settings auto const& opts)
+              : shape_ ( pick(kwk::size,opts) )
     {}
 
     constexpr auto        size()                    const noexcept  { return get<0>(shape_);  }
@@ -106,26 +106,25 @@ namespace kwk::detail
   };
 
   //================================================================================================
-  // Optimization : runtime 2D shape + unit & implicit stride
+  // Optimization : runtime 2D shape + unit stride
   // Expected sizeof : sizeof(void*) + sizeof(shape)
   //================================================================================================
   template<auto Shape, auto Stride>
-  requires(   !Shape.is_fully_static  && Shape.order() == 2
-          &&  Stride.is_unit          && Stride.is_implicit
-          )
+  requires( !Shape.is_fully_static && Shape.order() == 2 && Stride.is_unit )
   struct  accessor<Shape, Stride>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_order  = shape_type::static_order;
 
-    constexpr   accessor(auto const& tag, rbr::concepts::settings auto const& opts)
-              : shape_ ( options::shape(tag,opts) )
+    constexpr accessor(rbr::concepts::settings auto const& opts)
+              : shape_ ( pick(kwk::size,opts) )
     {}
 
-    constexpr std::ptrdiff_t  size()    const noexcept  { return shape_.numel();              }
-    constexpr auto            shape()   const noexcept  { return shape_;                      }
-    constexpr auto            stride()  const noexcept  { return stride_type{unit_,get<0>(shape_)}; }
+    constexpr std::ptrdiff_t  size()  const noexcept { return shape_.numel();  }
+    constexpr auto            shape() const noexcept { return shape_;          }
+
+    constexpr auto stride() const noexcept { return stride_type{fixed<1>,get<0>(shape_)}; }
 
     constexpr void reshape( shape_type const& s ) { shape_ = s; }
 

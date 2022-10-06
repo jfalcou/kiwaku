@@ -96,7 +96,7 @@ namespace kwk
     //==============================================================================================
     //! @brief Constructs a default @ref kwk::shape equals to [0 1 ... 1]
     //==============================================================================================
-    shape() : parent([](auto i, auto) -> size_type { return i > 0;}) {}
+    constexpr shape() : parent([](auto i, auto) -> size_type { return i > 0;}) {}
 
     //==============================================================================================
     //! @brief Constructor from set of dimensions
