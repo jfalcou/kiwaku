@@ -16,14 +16,14 @@ namespace kwk::detail
 {
   // For view, we compute the data_block from the source
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto block(view_ const& m, Settings const& p) noexcept
+  KWK_FORCEINLINE constexpr auto block(view_ const&, Settings const& p) noexcept
   {
-    return pick(source,p);
+    return storage(pick(source,p));
   }
 
   // For view, we compute the data_block from the source
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto block(table_ const& m, Settings const& p) noexcept
+  KWK_FORCEINLINE constexpr auto block(table_ const&, Settings const& p) noexcept
   {
     auto  shp   = pick(kwk::size, p);
     using shp_t = decltype(shp);

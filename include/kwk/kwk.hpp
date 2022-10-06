@@ -32,6 +32,6 @@ namespace kwk
 
 #include <kwk/concepts.hpp>
 #include <kwk/utility.hpp>
-// #include <kwk/container.hpp>
+#include <kwk/container.hpp>
 // #include <kwk/algorithm.hpp>
 #include <kwk/settings.hpp>

@@ -24,6 +24,15 @@ namespace kwk
 
       T* data_;
     };
+
+    template<typename T>
+    constexpr auto reset(span<T>& src, T* ptr) noexcept
+    {
+      return std::exchange(src.data_, ptr);
+    }
+
+    template<typename T>
+    constexpr auto data(span<T> const& src) noexcept { return src.data_; }
   }
 
   template<typename T> struct range_source
@@ -43,15 +52,6 @@ namespace kwk
   {
     return typename detail::span<T>{src.data_};
   }
-
-  template<typename T>
-  constexpr auto reset(detail::span<T>& src, T* ptr) noexcept
-  {
-    return std::exchange(src.data_, ptr);
-  }
-
-  template<typename T>
-  constexpr auto data(detail::span<T> const& src) noexcept { return src.data_; }
 
   template<typename T>
   constexpr auto default_shape(range_source<T> const& src)  noexcept

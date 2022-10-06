@@ -105,13 +105,12 @@ namespace kwk
     constexpr auto get() const  noexcept { return data(static_cast<span_t const&>(*this)); }
     constexpr auto get()        noexcept { return data(static_cast<span_t&>(*this)); }
   };
-/*
-  template<std::size_t I, typename T, typename Tag, auto... Os>
-  constexpr auto dim(container<Tag,T,Os...> const& v) noexcept
+
+  template<std::size_t I, auto Tag, auto... Os>
+  constexpr auto dim(container<Tag, Os...> const& v) noexcept
   {
-    if constexpr(I<container<Tag,T,Os...>::static_order) return get<I>(v.shape());
+    if constexpr(I<container<Tag,Os...>::static_order) return get<I>(v.shape());
     else return 1;
   }
-*/
 }
 

@@ -22,7 +22,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a C array" )
   std::ptrdiff_t sz = 7;
   auto v = kwk::table{ kwk::source = ref, kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(v), 40ULL              );
+  TTS_EQUAL ( sizeof(v), 32ULL              );
   TTS_EQUAL ( v.size() , 7                  );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
@@ -33,7 +33,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a C array" )
   sz = 4;
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(w), 40ULL              );
+  TTS_EQUAL ( sizeof(w), 32ULL              );
   TTS_EQUAL ( w.size() , 4                  );
   TTS_EQUAL ( w.shape(), kwk::of_size(4)    );
   TTS_EXPECT_NOT( w.shape().is_fully_static );
@@ -51,7 +51,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from std::array" )
   std::ptrdiff_t sz = 7;
   auto v = kwk::table{ kwk::source = ref, kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(v), 40ULL              );
+  TTS_EQUAL ( sizeof(v), 32ULL              );
   TTS_EQUAL ( v.size() , 7                  );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
@@ -62,7 +62,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from std::array" )
   sz = 4;
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(w), 40ULL              );
+  TTS_EQUAL ( sizeof(w), 32ULL              );
   TTS_EQUAL ( w.size() , 4                  );
   TTS_EQUAL ( w.shape(), kwk::of_size(4)    );
   TTS_EXPECT_NOT( w.shape().is_fully_static );
@@ -80,7 +80,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a ContiguousRange" 
   std::ptrdiff_t sz = 7;
   auto v = kwk::table{ kwk::source = ref, kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(v), 40ULL              );
+  TTS_EQUAL ( sizeof(v), 32ULL              );
   TTS_EQUAL ( v.size() , 7                  );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
@@ -93,7 +93,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a ContiguousRange" 
 
   auto w = kwk::table{ kwk::source = cref, kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(w), 40ULL               );
+  TTS_EQUAL ( sizeof(w), 32ULL               );
   TTS_EQUAL ( w.size() , 5                   );
   TTS_EQUAL ( w.shape(), kwk::of_size(5)     );
   TTS_EXPECT_NOT( w.shape().is_fully_static  );
@@ -111,7 +111,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a pointer" )
   std::ptrdiff_t sz = 7;
   auto v = kwk::table{ kwk::source = ref.data(), kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(v), 40ULL              );
+  TTS_EQUAL ( sizeof(v), 32ULL              );
   TTS_EQUAL ( v.size() , 7                  );
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
@@ -124,7 +124,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a pointer" )
   sz = 5;
   auto w = kwk::table{ kwk::source = cref.data(), kwk::of_size(sz) };
 
-  TTS_EQUAL ( sizeof(w), 40ULL               );
+  TTS_EQUAL ( sizeof(w), 32ULL               );
   TTS_EQUAL ( w.size() , 5                   );
   TTS_EQUAL ( w.shape(), kwk::of_size(5)     );
   TTS_EXPECT_NOT( w.shape().is_fully_static  );
