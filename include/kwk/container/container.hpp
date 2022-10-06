@@ -8,26 +8,33 @@
 #pragma once
 
 #include <kwk/algorithm/for_each.hpp>
-#include <kwk/container/options.hpp>
-#include <kwk/detail/builder.hpp>
-#include <kwk/detail/raberu.hpp>
-#include <kwk/options.hpp>
+#include <kwk/container/pick.hpp>
+#include <kwk/detail/container/builder.hpp>
+#include <kwk/detail/memory/block.hpp>
 #include <type_traits>
 
 namespace kwk
 {
-  template<typename Tag, typename Type, auto... Os>
-  struct  container : private detail::builder<Tag,Type,Os...>::metadata
-                            , detail::builder<Tag,Type,Os...>::data_block
-                            , detail::builder<Tag,Type,Os...>::accessor
+  template<auto Tag, auto... Os>
+  struct  container : private detail::builder<rbr::settings{Tag,Os...}>::metadata
+                            , detail::builder<rbr::settings{Tag,Os...}>::data_block
+                            , detail::builder<rbr::settings{Tag,Os...}>::accessor
   {
-    using meta_t    = typename detail::builder<Tag,Type,Os...>::metadata;
-    using span_t    = typename detail::builder<Tag,Type,Os...>::data_block;
-    using access_t  = typename detail::builder<Tag,Type,Os...>::accessor;
+    using meta_t    = typename detail::builder<rbr::settings{Tag,Os...}>::metadata;
+    using span_t    = typename detail::builder<rbr::settings{Tag,Os...}>::data_block;
+    using access_t  = typename detail::builder<rbr::settings{Tag,Os...}>::accessor;
 
-    static constexpr auto tag = Tag{};
+    constexpr container( rbr::concepts::option auto const&... params )
+            : container{ rbr::settings(Tag, params...) }
+    {}
 
-    using value_type        = Type;
+    constexpr container(rbr::concepts::settings auto const& params)
+            : meta_t   { params }
+            , span_t   { detail::block(params) }
+            , access_t { params }
+    {}
+
+    using value_type        = typename span_t::value_type;
     using reference         = typename span_t::reference;
     using const_reference   = typename span_t::const_reference;
     using pointer           = typename span_t::pointer;
@@ -36,17 +43,8 @@ namespace kwk
     static constexpr auto static_order = access_t::static_order;
     static constexpr auto has_label    = meta_t::has_label;
 
-    constexpr container( rbr::concepts::option auto const&... params )
-            : container{ rbr::settings(params...) }
-    {}
-
-    constexpr container(rbr::concepts::settings auto const& params)
-            : meta_t   { tag, params }
-            , span_t   { tag, params }
-            , access_t { tag, params }
-    {}
-
     constexpr auto order() const noexcept { return this->shape().order(); }
+    constexpr auto numel() const noexcept { return this->shape().numel(); }
     constexpr auto empty() const noexcept { return this->size() == 0; }
 
     using meta_t::label;
@@ -66,9 +64,9 @@ namespace kwk
       {
         for_each( [&](auto const& c, auto i0, auto... i)
                   {
-                    if(i0 == first<0>(v)) os << spaces << "[ ";
+                    if(i0 == 0) os << spaces << "[ ";
                     os << c(i0,i...) << ' ';
-                    if(i0 == last<0>(v)-1) os << "]\n";
+                    if(i0 == get<0>(v.shape())-1) os << "]\n";
                   }
                 , v
                 );
@@ -77,13 +75,13 @@ namespace kwk
       {
         for_each( [&](auto const& c, auto i0, auto i1, auto i2, auto... i)
                   {
-                    if(i0 == first<0>(v))
+                    if(i0 == 0)
                     {
-                      if(i1 == first<1>(v) && i2 > first<2>(v)) os << '\n';
+                      if(i1 == 0 && i2 > 0) os << '\n';
                       os << spaces << "[ ";
                     }
                     os << c(i0,i1,i2,i...) << ' ';
-                    if(i0 == last<0>(v)-1) os << "]\n";
+                    if(i0 == get<0>(v.shape())-1) os << "]\n";
                   }
                 , v
                 );
@@ -95,21 +93,25 @@ namespace kwk
     template<std::integral... Is>
     requires(sizeof...(Is) == static_order) const_reference operator()(Is... is) const noexcept
     {
-      return span_t::data()[ access_t::index(is...) ];
+      return data(static_cast<span_t const&>(*this))[ access_t::index(is...) ];
     }
 
     template<std::integral... Is>
     requires(sizeof...(Is) == static_order) reference operator()(Is... is) noexcept
     {
-      return span_t::data()[ access_t::index(is...) ];
+      return data(static_cast<span_t&>(*this))[ access_t::index(is...) ];
     }
-  };
 
+    constexpr auto get() const  noexcept { return data(static_cast<span_t const&>(*this)); }
+    constexpr auto get()        noexcept { return data(static_cast<span_t&>(*this)); }
+  };
+/*
   template<std::size_t I, typename T, typename Tag, auto... Os>
   constexpr auto dim(container<Tag,T,Os...> const& v) noexcept
   {
     if constexpr(I<container<Tag,T,Os...>::static_order) return get<I>(v.shape());
     else return 1;
   }
+*/
 }
 

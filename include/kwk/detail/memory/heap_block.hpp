@@ -69,4 +69,10 @@ namespace kwk::detail
       std::copy(data(src), data(src) + data_.get_deleter().size_, get());
     }
   };
+
+  template<typename T>
+  constexpr auto data(heap_block<T> const& src) noexcept { return src.get(); }
+
+  template<typename T>
+  constexpr auto data(heap_block<T>& src) noexcept { return src.get(); }
 }

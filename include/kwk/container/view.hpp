@@ -7,29 +7,22 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/algorithm/for_each.hpp>
-#include <kwk/container/options.hpp>
-#include <kwk/container/components/container.hpp>
+#include <kwk/container/container.hpp>
 #include <kwk/detail/raberu.hpp>
-#include <kwk/options.hpp>
 #include <type_traits>
-
 
 namespace kwk
 {
   //================================================================================================
   //! @ingroup containers
-  //! @brief Owning, contiguous multi-dimensional container
+  //! @brief Non-owning, contiguous multi-dimensional container
   //!
-  //!   @tparam Type  Type of the underlying data
-  //!   @tparam Os    Variadic list of settings describing current's table behavior
+  //! @tparam Os    Variadic list of settings describing current's view behavior
   //================================================================================================
-  template<typename Type, auto... Os>
-  struct  table  : container<tag::table_,Type,Os...>
+  template<auto... Os>
+  struct  view  : container<kwk::view_,Os...>
   {
-    using parent = container<tag::table_,Type,Os...>;
-
-    static constexpr auto tag = parent::tag;
+    using parent = container<kwk::view_,Os...>;
 
     /// Underlying value type
     using value_type        = typename parent::value_type;
@@ -54,35 +47,36 @@ namespace kwk
     //! @{
     //==============================================================================================
 
-    constexpr table() : parent{rbr::settings(Os...)} {}
+    /// Construct a view from a list of options
+    constexpr view(rbr::concepts::option auto const&... opts) : view{rbr::settings{opts...}} {}
 
-    /// Construct a table from a list of options
-    constexpr table(rbr::concepts::option auto const&... opts) : parent{rbr::settings(opts...)} {}
-
-    /// Construct a table from a settings descriptor
-    constexpr table(rbr::concepts::settings auto const& params) : parent{ params } {}
+    /// Construct a view from a settings descriptor
+    constexpr view(rbr::concepts::settings auto const& opts)
+            : parent{ []<typename S>(S const& p)
+                      { return rbr::merge(rbr::settings{kwk::view_}, p); }(opts)
+                    }
+    {}
 
     //==============================================================================================
     //! @}
     //==============================================================================================
-
     constexpr auto settings() const noexcept
     {
-      auto const opts   = rbr::settings(Os...);
+      // Retrieve all basic options + correct shape value
+      auto const base   = rbr::settings(kwk::view_, Os...);
+      auto const opts   = rbr::merge( rbr::settings(size = parent::shape())
+                                    , base
+                                    );
 
       if constexpr(parent::has_label)
       {
-        return rbr::merge ( rbr::settings ( size  = parent::shape()
-                                          , label = parent::label()
-                                          )
+        return rbr::merge ( rbr::settings (source = parent::get(), label = parent::label())
                           , opts
                           );
       }
       else
       {
-        return rbr::merge ( rbr::settings(size = parent::shape())
-                          , opts
-                          );
+        return rbr::merge ( rbr::settings(source = parent::get()), opts);
       }
     }
   };
@@ -92,14 +86,13 @@ namespace kwk
   //! @{
   //================================================================================================
 
-  /// This deduction guide is provided for kwk::table to allow deduction from a list of options
+  /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  table(O const&...) -> table<typename options::element<tag::table_,rbr::settings<O...>>::type,O{}...>;
+  view(O const&...) -> view<O{}...>;
 
-  /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
+  /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
   template<rbr::concepts::option... O>
-  table(rbr::settings<O...> const&)
-      -> table<typename options::element<tag::table_,rbr::settings<O...>>::type, O{}...>;
+  view(rbr::settings<O...> const&) -> view<O{}...>;
 
   //================================================================================================
   //! @}

@@ -38,4 +38,10 @@ namespace kwk::detail
         std::swap(data_[i], other.data_[i]);
     }
   };
+
+  template<typename T, std::ptrdiff_t Size>
+  constexpr auto data(stack_block<T,Size> const& src) noexcept { return src.get(); }
+
+  template<typename T, std::ptrdiff_t Size>
+  constexpr auto data(stack_block<T,Size>& src) noexcept { return src.get(); }
 }

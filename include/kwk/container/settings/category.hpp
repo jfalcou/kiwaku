@@ -10,6 +10,7 @@
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/settings/category.hpp>
+#include <ostream>
 
 // Pre-made categories
 namespace kwk::detail
@@ -20,6 +21,7 @@ namespace kwk::detail
     using keyword_type            = category_;
     using kwk_container_category  = void;
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    friend std::ostream& operator<<(std::ostream& os, view_ const&) { return os << "View"; }
   };
 
   struct table_
@@ -28,6 +30,7 @@ namespace kwk::detail
     using keyword_type            = category_;
     using kwk_container_category  = void;
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    friend std::ostream& operator<<(std::ostream& os, table_ const&) { return os << "Table"; }
   };
 }
 

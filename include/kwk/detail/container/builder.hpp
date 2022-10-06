@@ -11,6 +11,7 @@
 #include <kwk/detail/container/metadata.hpp>
 #include <kwk/detail/container/accessor.hpp>
 #include <kwk/detail/memory/block.hpp>
+#include <kwk/detail/raberu.hpp>
 
 namespace kwk::detail
 {

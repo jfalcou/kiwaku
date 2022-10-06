@@ -18,9 +18,9 @@ namespace kwk::detail
     constexpr auto operator=(concepts::category auto const& s) const noexcept { return s; }
 
     template<typename Category>
-    std::ostream& display(std::ostream& os, Category const&) const
+    std::ostream& display(std::ostream& os, Category const& s) const
     {
-      return os << "Category: " << rbr::detail::type_name<Category>();
+      return os << "Category: " << s;
     }
   };
 }

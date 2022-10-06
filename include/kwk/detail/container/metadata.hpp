@@ -7,8 +7,8 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/container/pick.hpp>
 #include <kwk/detail/raberu.hpp>
-#include <kwk/settings/label.hpp>
 
 namespace kwk::detail
 {
@@ -20,8 +20,8 @@ namespace kwk::detail
   {
     static constexpr bool has_label = true;
 
-    constexpr   metadata(auto const&, rbr::concepts::settings auto const& opts)
-              : label_(opts[kwk::label])
+    constexpr   metadata(rbr::concepts::settings auto const& opts)
+              : label_( pick(kwk::label, opts))
     {}
 
     constexpr Label const& label() const noexcept { return label_; }
@@ -35,7 +35,7 @@ namespace kwk::detail
   struct metadata<Data...>
   {
     static constexpr bool has_label = false;
-    constexpr metadata(auto const&, rbr::concepts::settings auto const&) noexcept {}
+    constexpr metadata(rbr::concepts::settings auto const&) noexcept {}
 
     constexpr auto label() const noexcept { return ""; }
     constexpr void  swap( metadata& ) noexcept {}

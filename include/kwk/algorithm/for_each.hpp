@@ -46,7 +46,7 @@ namespace kwk
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      return detail::for_each(f, KWK_FWD(c), kumi::tuple{first<N>(c),last<N>(c)}... );
+      return detail::for_each(f, KWK_FWD(c), kumi::tuple{0,get<N>(c.shape())}... );
     }( std::make_index_sequence<std::remove_cvref_t<Container>::static_order>{} );
   }
 }
