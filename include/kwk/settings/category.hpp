@@ -10,7 +10,6 @@
 #include <kwk/concepts/category.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
-#include <concepts>
 
 namespace kwk::detail
 {
@@ -24,23 +23,6 @@ namespace kwk::detail
       return os << "Category: " << rbr::detail::type_name<Category>();
     }
   };
-
-  // Premade categories
-  struct view_
-  {
-    using stored_value_type       = view_;
-    using keyword_type            = category_;
-    using kwk_container_category  = void;
-    KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
-  };
-
-  struct table_
-  {
-    using stored_value_type       = table_;
-    using keyword_type            = category_;
-    using kwk_container_category  = void;
-    KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
-  };
 }
 
 namespace kwk
@@ -50,10 +32,4 @@ namespace kwk
   //! @brief    Category setting discriminating **KIWAKU** containers
   //================================================================================================
   inline constexpr detail::category_ category = {};
-
-  /// kwk::view category setting
-  inline constexpr detail::view_ view_ = {};
-
-  /// kwk::table category setting
-  inline constexpr detail::table_ table_ = {};
 }

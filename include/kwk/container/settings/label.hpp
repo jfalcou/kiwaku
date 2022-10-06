@@ -7,11 +7,16 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/settings/allocator.hpp>
-#include <kwk/settings/category.hpp>
-#include <kwk/settings/extent.hpp>
+#include <kwk/container/settings/category.hpp>
+#include <kwk/detail/abi.hpp>
+#include <kwk/detail/raberu.hpp>
 #include <kwk/settings/label.hpp>
-#include <kwk/settings/size.hpp>
-#include <kwk/settings/source.hpp>
-#include <kwk/settings/strides.hpp>
-#include <kwk/settings/type.hpp>
+
+namespace kwk
+{
+  template<typename Category, rbr::concepts::settings Settings>
+  KWK_FORCEINLINE constexpr auto pick(Category, detail::label_, Settings const& opts)
+  {
+    return opts[label];
+  }
+}
