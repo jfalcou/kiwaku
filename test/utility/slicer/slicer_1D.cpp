@@ -41,12 +41,3 @@ TTS_CASE("Check static 1D slicing")
   TTS_EQUAL(shape(kwk::to(11_c))                    , kwk::of_size(11));
   TTS_EQUAL(get<0>(shape(kwk::to(11_c)).descriptor) , 11U             );
 };
-
-TTS_CASE("Check slicers error handling")
-{
-  using namespace kwk::literals;
-
-  auto sh = kwk::of_size(4, 10);
-  TTS_EXPECT_NOT_COMPILES(sh, { sh(kwk::_, kwk::_, kwk::_); });
-
-};

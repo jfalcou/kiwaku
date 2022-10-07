@@ -11,7 +11,17 @@
 #include <kwk/utility/container/shape.hpp>
 #include <cstddef>
 
-namespace kwk::detail { struct strides_; }
+namespace kwk::detail
+{
+  struct strides_;
+
+  template<auto Strides>
+  struct stride_base
+  {
+    static constexpr auto desc = combo_cast<std::ptrdiff_t>(Strides);
+    using type = prefilled<desc>;
+  };
+}
 
 namespace kwk
 {
@@ -32,9 +42,9 @@ namespace kwk
   //! @tparam Strider An instance of a stride descriptor
   //================================================================================================
   template<auto Strides>
-  struct stride  : kwk::detail::prefilled<combo_cast<std::ptrdiff_t>(Strides)>
+  struct stride  : detail::stride_base<Strides>::type
   {
-    using parent = kwk::detail::prefilled<combo_cast<std::ptrdiff_t>(Strides)>;
+    using parent = typename detail::stride_base<Strides>::type;
 
     /// Compile-time value for @ref glossary-order
     static constexpr std::ptrdiff_t static_order = parent::static_size;

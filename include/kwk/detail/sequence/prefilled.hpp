@@ -8,26 +8,32 @@
 #pragma once
 
 #include <kwk/concepts/extent.hpp>
-#include <kwk/detail/assert.hpp>
-#include <kwk/detail/sequence/combo.hpp>
 #include <kwk/detail/abi.hpp>
+#include <kwk/detail/assert.hpp>
+#include <kwk/detail/kumi.hpp>
+#include <kwk/detail/sequence/combo.hpp>
 #include <kwk/utility/traits/extent.hpp>
 #include <array>
 
 namespace kwk::detail
 {
   // Compute the prefilled_array base class for prefilled storage
-  template<auto Desc> struct array_storage
+  template<auto Desc, std::size_t Size = kumi::count_if(Desc,kumi::predicate<is_joker>())>
+  struct array_storage
+  {
+    using descriptor_t                        = decltype(Desc);
+    using value_type                          = typename descriptor_t::base_type;
+    static constexpr std::size_t storage_size = Size;
+    using storage_type                        =  std::array<value_type,storage_size>;
+  };
+
+  template<auto Desc> struct array_storage<Desc, 0ULL>
   {
     using descriptor_t    = decltype(Desc);
     using value_type      = typename descriptor_t::base_type;
-    static constexpr  std::size_t storage_size = kumi::count_if(Desc,kumi::predicate<is_joker>());
+    static constexpr  std::size_t storage_size = 0ULL;
 
-    struct empty_storage {};
-    using storage_type =  std::conditional_t< (storage_size!=0)
-                                            , std::array<value_type,storage_size>
-                                            , empty_storage
-                                            >;
+    struct storage_type {};
   };
 
   template<auto Desc> struct prefilled : array_storage<Desc>::storage_type

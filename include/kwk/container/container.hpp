@@ -16,13 +16,20 @@
 namespace kwk
 {
   template<auto Tag, auto... Os>
-  struct  container : private detail::builder<rbr::settings{Tag,Os...}>::metadata
-                            , detail::builder<rbr::settings{Tag,Os...}>::data_block
-                            , detail::builder<rbr::settings{Tag,Os...}>::accessor
+  struct builder_type
   {
-    using meta_t    = typename detail::builder<rbr::settings{Tag,Os...}>::metadata;
-    using span_t    = typename detail::builder<rbr::settings{Tag,Os...}>::data_block;
-    using access_t  = typename detail::builder<rbr::settings{Tag,Os...}>::accessor;
+    static constexpr auto settings_value = rbr::settings{Tag,Os...};
+    using type = detail::builder<settings_value>;
+  };
+
+  template<auto Tag, auto... Os>
+  struct  container : private builder_type<Tag,Os...>::type::metadata
+                            , builder_type<Tag,Os...>::type::data_block
+                            , builder_type<Tag,Os...>::type::accessor
+  {
+    using meta_t    = typename builder_type<Tag,Os...>::type::metadata;
+    using span_t    = typename builder_type<Tag,Os...>::type::data_block;
+    using access_t  = typename builder_type<Tag,Os...>::type::accessor;
 
     constexpr container( rbr::concepts::option auto const&... params )
             : container{ rbr::settings(Tag, params...) }
