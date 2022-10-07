@@ -29,18 +29,9 @@ template<std::size_t I> auto out(auto const& tp)
   return kumi::tuple{v, 1, v - f, t};
 }
 
-// auto out1 = kumi::tuple{411, 1, 411-77, 23};
-// auto out2 = kumi::tuple{291, 1, 291-77, 23};
-// auto out3 = kumi::tuple{179, 1, 179-77, 23};
-// auto out4 = kumi::tuple{373, 1, 373-77, 23};
-// auto out5 = kumi::tuple{597, 1, 597-77, 23};
-// auto out6 = kumi::tuple{611, 1, 611-77, 23};
-// auto out7 = kumi::tuple{739, 1, 739-77, 23};
-// auto out8 = kumi::tuple{809, 1, 809-77, 23};
-
 void test_slice(auto const& in, auto const& out, auto const& sls)
 {
-  kumi::for_each_index([&]<typename N>(N n, auto i)
+  kumi::for_each_index([&]<typename N>(N , auto i)
   {
     auto sh = of_size(i);
     kumi::for_each_index([&]<typename M>(M , auto s)
