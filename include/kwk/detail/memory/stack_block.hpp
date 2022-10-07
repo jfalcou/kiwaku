@@ -24,12 +24,12 @@ namespace kwk::detail
 
     value_type data_[Size];
 
-    constexpr auto get()       noexcept { return &data_[0]; }
-    constexpr auto get() const noexcept { return &data_[0]; }
+    constexpr auto get_data()       noexcept { return &data_[0]; }
+    constexpr auto get_data() const noexcept { return &data_[0]; }
 
     constexpr void assign(auto const& src)
     {
-      std::copy(data(src), data(src) + Size, get());
+      std::copy(data(src), data(src) + Size, get_data());
     }
 
     constexpr void swap(stack_block& other) noexcept
@@ -40,8 +40,8 @@ namespace kwk::detail
   };
 
   template<typename T, std::ptrdiff_t Size>
-  constexpr auto data(stack_block<T,Size> const& src) noexcept { return src.get(); }
+  constexpr auto data(stack_block<T,Size> const& src) noexcept { return src.get_data(); }
 
   template<typename T, std::ptrdiff_t Size>
-  constexpr auto data(stack_block<T,Size>& src) noexcept { return src.get(); }
+  constexpr auto data(stack_block<T,Size>& src) noexcept { return src.get_data(); }
 }

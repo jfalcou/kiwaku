@@ -67,13 +67,14 @@ namespace kwk
         return os << spaces << "[ ]";
       }
 
+      auto shp = v.shape();
       if constexpr( container::static_order < 3)
       {
         for_each( [&](auto const& c, auto i0, auto... i)
                   {
                     if(i0 == 0) os << spaces << "[ ";
                     os << c(i0,i...) << ' ';
-                    if(i0 == get<0>(v.shape())-1) os << "]\n";
+                    if(i0 == get<0>(shp)-1) os << "]\n";
                   }
                 , v
                 );
@@ -88,7 +89,7 @@ namespace kwk
                       os << spaces << "[ ";
                     }
                     os << c(i0,i1,i2,i...) << ' ';
-                    if(i0 == get<0>(v.shape())-1) os << "]\n";
+                    if(i0 == get<0>(shp)-1) os << "]\n";
                   }
                 , v
                 );
@@ -109,8 +110,8 @@ namespace kwk
       return data(static_cast<span_t&>(*this))[ access_t::index(is...) ];
     }
 
-    constexpr auto get() const  noexcept { return data(static_cast<span_t const&>(*this)); }
-    constexpr auto get()        noexcept { return data(static_cast<span_t&>(*this)); }
+    constexpr auto get_data() const  noexcept { return data(static_cast<span_t const&>(*this)); }
+    constexpr auto get_data()        noexcept { return data(static_cast<span_t&>(*this)); }
   };
 
   template<std::size_t I, auto Tag, auto... Os>

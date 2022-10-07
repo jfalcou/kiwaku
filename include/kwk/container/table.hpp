@@ -71,13 +71,13 @@ namespace kwk
 
       if constexpr(parent::has_label)
       {
-        return rbr::merge ( rbr::settings (source = parent::get(), label = parent::label())
+        return rbr::merge ( rbr::settings (source = parent::get_data(), label = parent::label())
                           , opts
                           );
       }
       else
       {
-        return rbr::merge ( rbr::settings(source = parent::get()), opts);
+        return rbr::merge ( rbr::settings(source = parent::get_data()), opts);
       }
     }
   };

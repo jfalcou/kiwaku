@@ -61,18 +61,18 @@ namespace kwk::detail
     constexpr         void swap(heap_block& other)            { data_.swap(other.data_); }
     constexpr friend  void swap(heap_block& a,heap_block& b)  { a.swap(b); }
 
-    constexpr auto get()       noexcept { return data_.get(); }
-    constexpr auto get() const noexcept { return data_.get(); }
+    constexpr auto get_data()       noexcept { return data_.get(); }
+    constexpr auto get_data() const noexcept { return data_.get(); }
 
     constexpr void assign(auto const& src)
     {
-      std::copy(data(src), data(src) + data_.get_deleter().size_, get());
+      std::copy(data(src), data(src) + data_.get_deleter().size_, get_data());
     }
   };
 
   template<typename T>
-  constexpr auto data(heap_block<T> const& src) noexcept { return src.get(); }
+  constexpr auto data(heap_block<T> const& src) noexcept { return src.get_data(); }
 
   template<typename T>
-  constexpr auto data(heap_block<T>& src) noexcept { return src.get(); }
+  constexpr auto data(heap_block<T>& src) noexcept { return src.get_data(); }
 }
