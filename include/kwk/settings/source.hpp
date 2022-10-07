@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/settings/source/ptr_source.hpp>
 #include <kwk/settings/source/array_source.hpp>
