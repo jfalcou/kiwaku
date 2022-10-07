@@ -41,7 +41,7 @@ void test_slice(auto const& in, auto const& out, auto const& sls)
                       return sh(m...);
                     }, s);
 
-      auto expected = of_size(get<M::value>(get<N::value>(out)));
+      auto expected = of_size(kumi::get<M::value>(kumi::get<N::value>(out)));
       TTS_EQUAL(result, expected);
     }, sls);
   }, in);
