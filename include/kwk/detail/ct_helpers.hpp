@@ -7,9 +7,10 @@
 //==================================================================================================
 #pragma once
 
+#include <array>
+#include <cstdint>
 #include <type_traits>
 #include <utility>
-#include <array>
 
 // Faster than std::forward
 #define KWK_FWD(...) static_cast<decltype(__VA_ARGS__) &&>(__VA_ARGS__)
@@ -112,17 +113,11 @@ namespace kwk::detail
     template<std::size_t J> using append = index_list<I...,J>;
 
     // Find the actual dynamic index of a non-unit index
-    template<std::size_t Size> static constexpr std::size_t locate(std::size_t N) noexcept
+    template<std::uint8_t Size> static constexpr auto locate(std::uint8_t const N) noexcept
     {
-      // Build a bitmap of where the known values are
-      std::size_t idx[Size] = {};
-      ((idx[I] = 1), ...);
-
       // Count how far you need to go to find an unknown
-      std::size_t pos = 0;
-      for(std::size_t i=0;i<N;++i) pos += (1-idx[i]);
-
-      return pos;
+      auto const less_than_n_count{( 0 + ... + (I < N) )};
+      return N - less_than_n_count;
     }
   };
 
