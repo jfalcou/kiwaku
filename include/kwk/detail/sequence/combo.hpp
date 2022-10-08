@@ -104,7 +104,7 @@ namespace kwk::detail
     {
       // eg: [1][2][3]()() compress 2 -> [1]()
       auto head = s.data.extract(kumi::index<0>, kumi::index<N-1>);
-      return to_combo<T>(kumi::push_back(head,kwk::_));
+      return to_combo<std::ptrdiff_t>(kumi::push_back(head,kwk::_));
     }
     else
     {
@@ -114,7 +114,12 @@ namespace kwk::detail
                                   , tail
                                   , get<N-1>(s.data)
                                   );
-      return to_combo<T>(kumi::push_back(s.data.extract(kumi::index<0>, kumi::index<N-1>),value));
+      return to_combo<std::ptrdiff_t> ( kumi::push_back ( s.data.extract( kumi::index<0>
+                                                                        , kumi::index<N-1>
+                                                                        )
+                                                        , value
+                                                        )
+                                      );
     }
   }
 
