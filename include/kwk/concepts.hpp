@@ -7,8 +7,6 @@
 //==================================================================================================
 #pragma once
 
-namespace kwk
-
 #include <kwk/concepts/allocator.hpp>
 #include <kwk/concepts/extent.hpp>
 #include <kwk/concepts/range.hpp>
