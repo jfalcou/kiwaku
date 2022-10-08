@@ -15,18 +15,19 @@
 namespace kwk
 {
   //================================================================================================
+  //! @ingroup settings
   //! @var    extent
-  //! @brief  kwk::shape descriptor helper
+  //! @brief  Constexpr generator for extent lists
   //!
   //! <hr/>
   //! **Required header**:
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-  //!  #include<kwk/container/shape.hpp>
+  //!  #include<kwk/settings/extent.hpp>
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //! <hr/>
   //!
-  //! kwk::extent is used to define the layout of a kwk::shape in terms of order and potential
-  //! compile-time sizes.
+  //! kwk::extent is used to define the layout of a kwk::shape or kwk::stride in terms of order and
+  //! potential compile-time sizes.
   //!
   //! kwk::extent supports two member functions:
   //!   - `operator()()`        that specifies that a given dimension is known at runtime
@@ -34,11 +35,12 @@ namespace kwk
   //!
   //! Both of these operators can be chained as needed to describe a given shape.
   //!
-  //! The actual integer type storing the size of each dimensions can be specified by using
-  //! kwk::extent_of.
+  //! The actual integer type storing the size or stride of each dimensions can be specified by
+  //! using kwk::extent_of.
   //!
-  //! Usage of @ref kwk::extent is advised when one wants to properly type a given shape.
-  //! Other usage of @ref kwk::shape descriptors are usually abstracted away via @ref kwk::of_size.
+  //! Usage of @ref kwk::extent is advised when one wants to properly type a given shape or stride.
+  //! Other usage of @ref kwk::shape descriptors are usually abstracted away via @ref kwk::of_size
+  //! or @ref kwk::stride.
   //!
   //! @groupheader{Associated variables}
   //!

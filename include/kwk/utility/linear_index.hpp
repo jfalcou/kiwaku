@@ -1,9 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
-**/
+*/
 //==================================================================================================
 #pragma once
 
@@ -15,7 +15,7 @@
 namespace kwk
 {
   //================================================================================================
-  //! @ingroup containers
+  //! @ingroup utility
   //! @brief  Computes a linear index from a order N list of indexes
   //!
   //! @param sh   Shape used as a reference
@@ -29,7 +29,7 @@ namespace kwk
   }
 
   //================================================================================================
-  //! @ingroup containers
+  //! @ingroup utility
   //! @brief  Computes a linear index from a tuple of N indexes
   //!
   //! @param sh   Shape used as a reference
@@ -43,7 +43,7 @@ namespace kwk
   }
 
   //================================================================================================
-  //! @ingroup containers
+  //! @ingroup utility
   //! @brief  Computes a linear index from a range of N  indexes
   //!
   //! @param sh   Shape used as a reference

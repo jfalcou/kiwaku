@@ -39,6 +39,26 @@ namespace kwk
   //! kwk::stride defines and optimally stores a set of integral values representing the strides
   //! used to walk through a given multi-dimensional container or view.
   //!
+  //! kwk::stride can be defined in two ways:
+  //!
+  //! - using the kwk::with_strides function.
+  //!
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!   kwk::stride s1 = kwk::with_strides(kwk::fixed<5>);                   // Order 1 stride with static size
+  //!   kwk::stride s2 = kwk::with_strides(n, m);                            // Order 2 stride with dynamic sizes
+  //!   kwk::stride s3 = kwk::with_strides(kwk::fixed<2>,kwk::fixed<2>, n);  // Order 3 stride with mixed sizes
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //!   <br/>
+  //!
+  //! - defining the layout of the kwk::stride and manually initializing it. The description of the
+  //!   kwk::stride layout is done with the kwk::extent object or one of the pre-defined layouts.
+  //!
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!   kwk::stride< kwk::extent[5] >      s1;             // Order 1 stride with static size
+  //!   kwk::stride< kwk::_2D >            s2(n, m);       // Order 2 stride with dynamic sizes
+  //!   kwk::stride< kwk::extent[1]( )[3]> s4( _, n, _);   // Order 3 stride with mixed sizes
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //!
   //! @tparam Strider An instance of a stride descriptor
   //================================================================================================
   template<auto Strides>

@@ -1,9 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : EVE Project Contributors
   SPDX-License-Identifier: BSL-1.0
-**/
+*/
 //==================================================================================================
 #pragma once
 
@@ -70,6 +70,8 @@ namespace kwk
   struct shape : kwk::detail::prefilled<Shape>
   {
     using parent = kwk::detail::prefilled<Shape>;
+
+    /// Compile-tilme shape descriptor
     static constexpr auto descriptor = Shape;
 
     /// Compile-time value for @ref glossary-order
@@ -277,7 +279,13 @@ namespace kwk
     }
 
     //==============================================================================================
-    // Check if current shape contains (maybe strictly) all the shape of another one
+    //! @brief Check if current shape contains the volume of another one
+    //!
+    //! Check if a given shape's extents are all less or equal than current shape.
+    //!
+    //! @param other  Shape to compare with
+    //! @return `true` if all extent of other fits inside current shape. `false` otherwise.
+    //!
     //==============================================================================================
     template<auto Shaper2>
     constexpr bool contains( shape<Shaper2> const& other) const noexcept
@@ -285,6 +293,15 @@ namespace kwk
       return compare( other , [](auto a, auto b) { return a>=b;}, [](auto) { return true; } );
     }
 
+    //==============================================================================================
+    //! @brief Check if current shape contains the volume of another one exactly
+    //!
+    //! Check if a given shape's extents are all striclt less than current shape.
+    //!
+    //! @param other  Shape to compare with
+    //! @return `true` if all extent of other fits exactly inside current shape. `false` otherwise.
+    //!
+    //==============================================================================================
     template<auto Shaper2>
     constexpr bool strictly_contains( shape<Shaper2> const& other) const noexcept
     {
@@ -333,7 +350,18 @@ namespace kwk
       return os << " ]";
     }
 
-    /// Slicing interface - TODO DOC
+    //==============================================================================================
+    //! @brief Shape slicing interface
+    //!
+    //! Computes the shape of the sub-volume described by the slicers passed as parameters
+    //!
+    //! Does not participate in overload resolution if the number of parameters is not equal to the
+    //! shape order.
+    //!
+    //! @param s  Variadic list of [slicers](@ref kwk::concepts::slicer) instance
+    //! @return   An instance of @ref kwk::shape corresponding to the shape of the selected
+    //!           sub-volume
+    //==============================================================================================
     template<typename... Slicers>
     inline constexpr auto operator()(Slicers const&... s) const noexcept
     requires( sizeof...(Slicers) <= static_order);
