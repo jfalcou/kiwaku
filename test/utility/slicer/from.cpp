@@ -8,6 +8,12 @@
 #include "test.hpp"
 #include <kwk/utility/container/shape.hpp>
 
+// TTS_CASE("Check kwk::from with kwk::end")
+// {
+//   auto fe = kwk::from(kwk::end - 3);
+//   std::cout << fe << "\n";
+// };
+
 TTS_CASE("Check dynamic slicing for kwk::from")
 {
   using namespace kwk::literals;
@@ -33,9 +39,6 @@ TTS_CASE("Check dynamic slicing for kwk::from")
   TTS_EQUAL(shp(c0, c1)         , kwk::of_size(d0-v0,         d1*d2*d3 - v1));
   TTS_EQUAL(shp(c0, c1, c2)     , kwk::of_size(d0-v0, d1-v1,     d2*d3 - v2));
   TTS_EQUAL(shp(c0, c1, c2, c3) , kwk::of_size(d0-v0, d1-v1, d2-v2, d3 - v3));
-
-  TTS_EXPR_IS(shp(f0).extent<0>(), kwk::joker);
-  TTS_EXPR_IS(shp(c0).extent<0>(), kwk::joker);
 };
 
 TTS_CASE("Check static slicing for kwk::from")

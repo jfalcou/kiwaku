@@ -7,7 +7,9 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/values.hpp>
 #include <kwk/detail/kumi.hpp>
+#include <kwk/utility/end.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <ostream>
 
@@ -20,15 +22,16 @@ namespace kwk
     T begin;
     from(T b) : begin(b)
     {
-      if constexpr (requires{ T::value; })
+      if constexpr( concepts::static_constant<T> )
       {
-        static_assert ( static_cast<ptrdiff_t>(T::value) >= 0
+        static_assert ( static_cast<std::ptrdiff_t>(T::value) >= 0
                       , "[kwk] - Out of bound index for kwk::from"
                       );
       }
-      else
+
+      if constexpr( std::integral<T> )
       {
-        KIWAKU_ASSERT ( static_cast<ptrdiff_t>(begin) >= 0
+        KIWAKU_ASSERT ( static_cast<std::ptrdiff_t>(begin) >= 0
                       , "[kwk] - Out of bound index for kwk::from("
                         << begin << ")"
                       );
@@ -37,10 +40,13 @@ namespace kwk
 
     friend std::ostream& operator<<(std::ostream& os, from f)
     {
-      return os << "from(" << +f.begin << ")";
+      os << "from(";
+      if constexpr(std::integral<decltype(f.begin)>)  os << +f.begin;
+      else                                            os << f.begin;
+      return os<< ")";
     }
   };
-  
+
   template<typename T> from(T) -> from<T>;
 
   template<auto Desc, typename T, std::size_t N>
@@ -49,13 +55,20 @@ namespace kwk
                         , kumi::index_t<N> const&
                         ) noexcept
   {
-    if constexpr (is_static_extent_v<N,Desc> && requires{ T::value; })
+    // from(end - k) -> k
+    if constexpr(concepts::extremum<T>)
     {
-      return fixed<get<N>(Desc) - T::value>;
+      const auto o = offset(f.begin);
+
+      KIWAKU_ASSERT ( static_cast<std::ptrdiff_t>(o) <= get<N>(sh)
+                    , "[kwk] - Out of bound index for: " <<f
+                    );
+
+      return o;
     }
     else
     {
-      return get<N>(sh) - f.begin;
+      return sh.template extent<N>() - f.begin;
     }
   }
 }
