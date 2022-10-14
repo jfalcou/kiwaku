@@ -60,7 +60,7 @@ namespace kwk
       // from(end - k) -> k
       const auto o = offset(f.begin);
 
-      KIWAKU_ASSERT ( static_cast<std::ptrdiff_t>(o) <= get<N>(sh)
+      KIWAKU_ASSERT ( static_cast<decltype(get<N>(sh))>(o) <= get<N>(sh)
                     , "[kwk] - Out of bound index for: " <<f
                     );
 

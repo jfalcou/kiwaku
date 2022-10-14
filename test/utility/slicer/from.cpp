@@ -102,9 +102,56 @@ TTS_CASE("Check kwk::from with kwk::end")
   using kwk::of_size;
 
   auto e  = from(end);
-  // auto de = from(end - 3);
-  // auto se = from(end - 5_c);
+  auto de = from(end - 3);
+  auto se = from(end - 3_c);
 
-  TTS_EQUAL( of_size(9)(e), of_size(0) );
-  TTS_EXPR_IS( of_size(9)(e).extent<0>(), kwk::constant<0> );
+  TTS_EQUAL( of_size(9)(e)            , of_size(0)      );
+  TTS_EQUAL( of_size(9,7)(e,e)        , of_size(0,0)    );
+  TTS_EQUAL( of_size(9,7,5)(e,e,e)    , of_size(0,0,0)  );
+  TTS_EQUAL( of_size(9,7,5,3)(e,e,e,e), of_size(0,0,0,0));
+
+  TTS_EXPECT( of_size(9)(e).is_fully_static );
+  TTS_EXPECT( of_size(9,7)(e,e).is_fully_static );
+  TTS_EXPECT( of_size(9,7,5)(e,e,e).is_fully_static );
+  TTS_EXPECT( of_size(9,7,5,3)(e,e,e,e).is_fully_static );
+
+  TTS_EQUAL( of_size(9)(de)               , of_size(3)      );
+  TTS_EQUAL( of_size(9,7)(de,de)          , of_size(3,3)    );
+  TTS_EQUAL( of_size(9,7,5)(de,de,de)     , of_size(3,3,3)  );
+  TTS_EQUAL( of_size(9,7,5,3)(de,de,de,de), of_size(3,3,3,3));
+
+  TTS_EXPECT( of_size(9)(de).is_fully_dynamic);
+  TTS_EXPECT( of_size(9,7)(de,de).is_fully_dynamic);
+  TTS_EXPECT( of_size(9,7,5)(de,de,de).is_fully_dynamic);
+  TTS_EXPECT( of_size(9,7,5,3)(de,de,de,de).is_fully_dynamic);
+
+  TTS_EQUAL( of_size(9_c)(de)                     , of_size(3)      );
+  TTS_EQUAL( of_size(9_c,7_c)(de,de)              , of_size(3,3)    );
+  TTS_EQUAL( of_size(9_c,7_c,5_c)(de,de,de)       , of_size(3,3,3)  );
+  TTS_EQUAL( of_size(9_c,7_c,5_c,3_c)(de,de,de,de), of_size(3,3,3,3));
+
+  TTS_EXPECT( of_size(9_c)(de).is_fully_dynamic);
+  TTS_EXPECT( of_size(9_c,7_c)(de,de).is_fully_dynamic);
+  TTS_EXPECT( of_size(9_c,7_c,5_c)(de,de,de).is_fully_dynamic);
+  TTS_EXPECT( of_size(9_c,7_c,5_c,3_c)(de,de,de,de).is_fully_dynamic);
+
+  TTS_EQUAL( of_size(9)(se)               , of_size(3)      );
+  TTS_EQUAL( of_size(9,7)(se,se)          , of_size(3,3)    );
+  TTS_EQUAL( of_size(9,7,5)(se,se,se)     , of_size(3,3,3)  );
+  TTS_EQUAL( of_size(9,7,5,3)(se,se,se,se), of_size(3,3,3,3));
+
+  TTS_EXPECT( of_size(9)(se).is_fully_static);
+  TTS_EXPECT( of_size(9,7)(se,se).is_fully_static);
+  TTS_EXPECT( of_size(9,7,5)(se,se,se).is_fully_static);
+  TTS_EXPECT( of_size(9,7,5,3)(se,se,se,se).is_fully_static);
+
+  TTS_EQUAL( of_size(9_c)(se)                     , of_size(3)      );
+  TTS_EQUAL( of_size(9_c,7_c)(se,se)              , of_size(3,3)    );
+  TTS_EQUAL( of_size(9_c,7_c,5_c)(se,se,se)       , of_size(3,3,3)  );
+  TTS_EQUAL( of_size(9_c,7_c,5_c,3_c)(se,se,se,se), of_size(3,3,3,3));
+
+  TTS_EXPECT( of_size(9_c)(se).is_fully_static);
+  TTS_EXPECT( of_size(9_c,7_c)(se,se).is_fully_static);
+  TTS_EXPECT( of_size(9_c,7_c,5_c)(se,se,se).is_fully_static);
+  TTS_EXPECT( of_size(9_c,7_c,5_c,3_c)(se,se,se,se).is_fully_static);
 };
