@@ -7,8 +7,10 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/value.hpp>
 #include <type_traits>
 #include <cstdint>
+#include <ostream>
 
 namespace kwk
 {
@@ -16,9 +18,15 @@ namespace kwk
 
   namespace detail
   {
-    template<typename T>      struct  to_int                              { using type = T; };
-    template<>                struct  to_int<joker>                       { using type = char;  };
-    template<typename T, T N> struct  to_int<std::integral_constant<T,N>> { using type = T;     };
+    template<typename T>  struct  to_int        { using type = T;     };
+    template<>            struct  to_int<joker> { using type = char;  };
+
+    template<concepts::static_constant T>
+    struct  to_int<T>
+    {
+      using type = typename T::value_type;
+    };
+
     template<typename T>      using   to_int_t = typename to_int<T>::type;
 
     template<typename... T>   struct largest_type;
@@ -51,6 +59,15 @@ namespace kwk
     }
   }
 
+  template<auto N>
+  struct constant : std::integral_constant<decltype(N), N>
+  {
+    friend std::ostream& operator<<(std::ostream& os, constant)
+    {
+      return os << "fixed<" << +N << ">";
+    }
+  };
+
   //================================================================================================
   //! @ingroup utility
   //! @brief Provides a short-cut to define a `std::integral_constant` value from a literal integer
@@ -62,7 +79,7 @@ namespace kwk
   //! `std::integral_constant<signed short,-999>`.
   //================================================================================================
   template<auto N>
-  inline constexpr auto fixed = std::integral_constant<decltype(N), N>{};
+  inline constexpr auto fixed = constant<N>{};
 
   namespace literals
   {
