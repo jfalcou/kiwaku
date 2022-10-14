@@ -14,4 +14,10 @@ namespace kwk::concepts
   {
     { T::value };
   };
+
+  template<typename T>
+  concept extremum = requires(T const& t)
+  {
+    { offset(t) };
+  };
 };

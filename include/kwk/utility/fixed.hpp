@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/concepts/value.hpp>
+#include <kwk/concepts/values.hpp>
 #include <type_traits>
 #include <cstdint>
 #include <ostream>
@@ -67,6 +67,12 @@ namespace kwk
       return os << "fixed<" << +N << ">";
     }
   };
+
+  template<auto N, auto M>
+  constexpr auto operator-(constant<N>, constant<M>) noexcept
+  {
+    return constant<N-M>{};
+  }
 
   //================================================================================================
   //! @ingroup utility

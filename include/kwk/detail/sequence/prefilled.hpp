@@ -12,6 +12,7 @@
 #include <kwk/detail/assert.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/detail/sequence/combo.hpp>
+#include <kwk/utility/fixed.hpp>
 #include <kwk/utility/traits/extent.hpp>
 #include <array>
 
@@ -115,7 +116,8 @@ namespace kwk::detail
     template<int N>
     KWK_FORCEINLINE constexpr auto extent() const noexcept
     {
-      return get<N>(Desc);
+      if constexpr(is_dynamic_extent_v<N,Desc>) return storage()[location[N]];
+      else return fixed<get<N>(Desc)>;
     }
 
     // Static access
@@ -208,4 +210,3 @@ struct  std::tuple_element<N, kwk::detail::prefilled<Desc>>
 {
   using type = typename kwk::detail::prefilled<Desc>::value_type;
 };
-
