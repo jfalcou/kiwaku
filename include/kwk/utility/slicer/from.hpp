@@ -55,9 +55,9 @@ namespace kwk
                         , kumi::index_t<N> const&
                         ) noexcept
   {
-    // from(end - k) -> k
     if constexpr(concepts::extremum<T>)
     {
+      // from(end - k) -> k
       const auto o = offset(f.begin);
 
       KIWAKU_ASSERT ( static_cast<std::ptrdiff_t>(o) <= get<N>(sh)
@@ -68,6 +68,7 @@ namespace kwk
     }
     else
     {
+      // from(k) -> sh[N] - k
       return sh.template extent<N>() - f.begin;
     }
   }
