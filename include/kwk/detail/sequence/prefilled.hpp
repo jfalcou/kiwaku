@@ -112,6 +112,12 @@ namespace kwk::detail
       );
     }
 
+    template<int N>
+    KWK_FORCEINLINE constexpr auto extent() const noexcept
+    {
+      return get<N>(Desc);
+    }
+
     // Static access
     template<int N>
     friend KWK_FORCEINLINE constexpr auto get(prefilled const& s) noexcept

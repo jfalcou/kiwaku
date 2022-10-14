@@ -4,10 +4,12 @@
 ##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
 set ( SOURCES
-      slicer_1D.cpp
-      slicer_2D.cpp
-      slicer_3D.cpp
-      # slicer_4D.cpp
+      api.cpp
+      all.cpp
+      to.cpp
+      from.cpp
+      between.cpp
+      every.cpp
     )
 
 make_unit("utility.slicer" ${SOURCES})

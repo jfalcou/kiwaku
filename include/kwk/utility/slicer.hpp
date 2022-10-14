@@ -11,3 +11,5 @@
 #include <kwk/utility/slicer/single.hpp>
 #include <kwk/utility/slicer/from.hpp>
 #include <kwk/utility/slicer/to.hpp>
+#include <kwk/utility/slicer/between.hpp>
+#include <kwk/utility/slicer/every.hpp>
