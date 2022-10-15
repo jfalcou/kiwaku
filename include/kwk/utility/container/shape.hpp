@@ -263,7 +263,7 @@ namespace kwk
     constexpr bool operator==( shape<Shaper2> const& other) const noexcept
     {
       return compare( other
-                    , [](auto a, auto b) { return a == b; }
+                    , [](std::ptrdiff_t a, std::ptrdiff_t b) { return a == b; }
                     , [](auto a) { return a == 1; }
                     );
     }
@@ -273,7 +273,7 @@ namespace kwk
     constexpr bool operator!=( shape<Shaper2> const& other) const noexcept
     {
       return compare( other
-                    , [](auto a, auto b) { return a != b; }
+                    , [](std::ptrdiff_t a, std::ptrdiff_t b) { return a != b; }
                     , [](auto a) { return a == 1; }
                     );
     }
