@@ -10,6 +10,7 @@
 #include <kwk/concepts/values.hpp>
 #include <type_traits>
 #include <cstdint>
+#include <bit>
 #include <ostream>
 
 namespace kwk
@@ -42,20 +43,10 @@ namespace kwk
 
     template<auto Value> constexpr auto clamp()
     {
-      if constexpr(Value >= 0)
-      {
-              if constexpr (Value<0x100      )  return static_cast<std::uint8_t>(Value);
-        else  if constexpr (Value<0x10000    )  return static_cast<std::uint16_t>(Value);
-        else  if constexpr (Value<0x100000000)  return static_cast<std::uint32_t>(Value);
-        else                                    return Value;
-      }
-      else
-      {
-              if constexpr (-Value<0x7F      )  return static_cast<std::int8_t>(Value);
-        else  if constexpr (-Value<0x7FFF    )  return static_cast<std::int16_t>(Value);
-        else  if constexpr (-Value<0x7FFFFFFF)  return static_cast<std::int32_t>(Value);
-        else                                    return Value;
-      }
+            if constexpr (std::bit_width(Value) <=  8)  return static_cast<std::uint8_t>(Value);
+      else  if constexpr (std::bit_width(Value) <= 16)  return static_cast<std::uint16_t>(Value);
+      else  if constexpr (std::bit_width(Value) <= 32)  return static_cast<std::uint32_t>(Value);
+      else                                              return Value;
     }
   }
 
@@ -91,7 +82,7 @@ namespace kwk
   {
     template<char... c> constexpr auto b10()
     {
-      auto value = 0LL;
+      auto value = 0ULL;
       ((value = value * 10 + (c - '0')), ...);
       return value;
     }
