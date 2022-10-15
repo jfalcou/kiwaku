@@ -71,7 +71,7 @@ namespace kwk
   {
     using parent = kwk::detail::prefilled<Shape>;
 
-    /// Compile-tilme shape descriptor
+    /// Compile-time shape descriptor
     static constexpr auto descriptor = Shape;
 
     /// Compile-time value for @ref glossary-order
@@ -263,7 +263,7 @@ namespace kwk
     constexpr bool operator==( shape<Shaper2> const& other) const noexcept
     {
       return compare( other
-                    , [](size_type a, size_type b) { return a == b; }
+                    , [](auto a, auto b) { return a == b; }
                     , [](auto a) { return a == 1; }
                     );
     }
@@ -273,7 +273,7 @@ namespace kwk
     constexpr bool operator!=( shape<Shaper2> const& other) const noexcept
     {
       return compare( other
-                    , [](size_type a, size_type b) { return a != b; }
+                    , [](auto a, auto b) { return a != b; }
                     , [](auto a) { return a == 1; }
                     );
     }
@@ -296,7 +296,7 @@ namespace kwk
     //==============================================================================================
     //! @brief Check if current shape contains the volume of another one exactly
     //!
-    //! Check if a given shape's extents are all striclt less than current shape.
+    //! Check if a given shape's extents are all strictly less than current shape.
     //!
     //! @param other  Shape to compare with
     //! @return `true` if all extent of other fits exactly inside current shape. `false` otherwise.
@@ -376,7 +376,8 @@ namespace kwk
       {
         return [&]<std::size_t... I>(std::index_sequence<I...> const&)
         {
-          return (true && ... && op(get<I>(*this),get<I>(o)) ) ;
+          return (true && ... && op ( get<I>(*this)
+                                    , get<I>(o)) ) ;
         }(std::make_index_sequence<static_order>());
       }
       else
