@@ -93,7 +93,7 @@ namespace kwk::detail
   template<std::size_t N, typename T, typename... E>
   constexpr auto compress(combo<T,E...> s)  noexcept
   {
-    auto tail = s.data.extract(kumi::index<N>);
+    auto tail = kumi::extract(s.data,kumi::index<N>);
 
     //  We add a _ to the end of the first part
     //    - if there is at least one _ in the tail
@@ -103,7 +103,7 @@ namespace kwk::detail
                 )
     {
       // eg: [1][2][3]()() compress 2 -> [1]()
-      auto head = s.data.extract(kumi::index<0>, kumi::index<N-1>);
+      auto head = kumi::extract(s.data, kumi::index<0>, kumi::index<N-1>);
       return to_combo<std::ptrdiff_t>(kumi::push_back(head,kwk::_));
     }
     else
@@ -114,7 +114,8 @@ namespace kwk::detail
                                   , tail
                                   , get<N-1>(s.data)
                                   );
-      return to_combo<std::ptrdiff_t> ( kumi::push_back ( s.data.extract( kumi::index<0>
+      return to_combo<std::ptrdiff_t> ( kumi::push_back ( kumi::extract ( s.data
+                                                                        , kumi::index<0>
                                                                         , kumi::index<N-1>
                                                                         )
                                                         , value
