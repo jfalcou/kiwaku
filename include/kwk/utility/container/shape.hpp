@@ -350,6 +350,18 @@ namespace kwk
       return os << " ]";
     }
 
+    template<typename T, typename... E>
+    constexpr bool is_similar( detail::combo<T,E...> const& o) const noexcept
+    {
+      return descriptor.is_similar(o);
+    }
+
+    template<auto S2>
+    constexpr bool is_similar( shape<S2> const& ) const noexcept
+    {
+      return descriptor.is_similar(S2);
+    }
+
     //==============================================================================================
     //! @brief Shape slicing interface
     //!

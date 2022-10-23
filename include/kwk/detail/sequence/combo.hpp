@@ -8,18 +8,27 @@
 #pragma once
 
 #include <kwk/detail/kumi.hpp>
+#include <kwk/detail/abi.hpp>
 #include <kwk/utility/joker.hpp>
 #include <type_traits>
 #include <ostream>
 
 namespace kwk::detail
 {
+  struct size_;
+
   // combo sequence allow for constructing sequence of static value and placeholders
   template<typename T, typename... Elems> struct combo
   {
     using is_product_type = void;
     using base_type       = T;
     using contents_type   = kumi::tuple<Elems...>;
+
+    // combo is its self option keyword
+    using stored_value_type = combo<T,Elems...>;
+    using keyword_type      = detail::size_;
+
+    KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     static constexpr auto size() noexcept { return sizeof...(Elems); }
 
@@ -65,6 +74,37 @@ namespace kwk::detail
                               , true
                               );
       }
+    }
+
+    template< typename T0, typename... E0>
+    constexpr bool is_similar(combo<T0,E0...> const& other) const noexcept
+    {
+      if constexpr(sizeof...(Elems) != sizeof...(E0))  return false;
+      else
+      {
+        return kumi::fold_left( [](bool acc, auto const& t)
+                                {
+                                  auto[e,f] = t;
+
+                                  // _ _ or _ k is OK by design
+                                  if constexpr(is_joker_v<decltype(e)>) return acc;
+                                  // k _ is KO
+                                  else if constexpr ( !is_joker_v<decltype(e)>
+                                                    && is_joker_v<decltype(f)>
+                                                    )                   return false;
+                                  // k1 k2 requires e == f
+                                  else                                  return acc && (e == f);
+                                }
+                              , kumi::zip(*this,other)
+                              , true
+                              );
+      }
+    }
+
+    template<typename S2>
+    constexpr bool is_similar( S2 const& ) const noexcept
+    {
+      return is_similar(S2::descriptor);
     }
 
     kumi::tuple<Elems...> data;
@@ -130,6 +170,12 @@ namespace kwk::detail
     using base_type = T;
     constexpr auto operator()()               const { return combo<T,joker>{_}; }
     constexpr auto operator[](std::size_t i)  const { return combo<T,std::size_t>{i}; }
+
+    // combo is its self option keyword
+    using stored_value_type = combo<T>;
+    using keyword_type      = detail::size_;
+
+    KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
   };
 }
 
