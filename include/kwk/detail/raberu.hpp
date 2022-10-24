@@ -581,7 +581,10 @@ namespace rbr
   }
 
   /// Type indicating that a [Keyword](@ref rbr::concepts::keyword) is not available
-  struct unknown_key {};
+  struct unknown_key
+  {
+    using type = unknown_key;
+  };
 
   // Option calls aggregator
   template<concepts::option... Ts> struct aggregator : Ts...

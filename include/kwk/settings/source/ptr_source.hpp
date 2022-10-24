@@ -25,6 +25,9 @@ namespace kwk
 
     constexpr ptr_source(T* p = nullptr) : data_(p) {}
 
+    template<typename OtherSource>
+    constexpr ptr_source(OtherSource p = {}) : data_(data(p)) {}
+
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     T* data_;

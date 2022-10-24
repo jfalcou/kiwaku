@@ -24,12 +24,6 @@ namespace kwk::detail
     using base_type       = T;
     using contents_type   = kumi::tuple<Elems...>;
 
-    // combo is its self option keyword
-    using stored_value_type = combo<T,Elems...>;
-    using keyword_type      = detail::size_;
-
-    KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
-
     static constexpr auto size() noexcept { return sizeof...(Elems); }
 
     friend std::ostream& operator<<(std::ostream& os, combo c) { return os << c.data; }
@@ -170,12 +164,6 @@ namespace kwk::detail
     using base_type = T;
     constexpr auto operator()()               const { return combo<T,joker>{_}; }
     constexpr auto operator[](std::size_t i)  const { return combo<T,std::size_t>{i}; }
-
-    // combo is its self option keyword
-    using stored_value_type = combo<T>;
-    using keyword_type      = detail::size_;
-
-    KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
   };
 }
 
