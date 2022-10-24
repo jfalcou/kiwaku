@@ -22,6 +22,12 @@ namespace kwk::detail
     using kwk_container_category  = void;
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
     friend std::ostream& operator<<(std::ostream& os, view_ const&) { return os << "View"; }
+
+    template<typename T>
+    friend constexpr bool operator==(view_ const&, T const& ) noexcept
+    {
+      return std::same_as<view_,T>;
+    }
   };
 
   struct table_
@@ -31,6 +37,12 @@ namespace kwk::detail
     using kwk_container_category  = void;
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
     friend std::ostream& operator<<(std::ostream& os, table_ const&) { return os << "Table"; }
+
+    template<typename T>
+    friend constexpr bool operator==(table_ const&, T const& ) noexcept
+    {
+      return std::same_as<table_,T>;
+    }
   };
 }
 

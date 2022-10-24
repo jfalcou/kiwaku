@@ -11,8 +11,8 @@
 #include <kwk/detail/raberu.hpp>
 #include <kwk/container/settings/allocator.hpp>
 #include <kwk/container/settings/label.hpp>
-#include <kwk/container/settings/size.hpp>
 #include <kwk/container/settings/source.hpp>
+#include <kwk/container/settings/size.hpp>
 #include <kwk/container/settings/strides.hpp>
 #include <kwk/container/settings/type.hpp>
 

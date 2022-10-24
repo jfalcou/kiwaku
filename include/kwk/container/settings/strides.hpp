@@ -17,8 +17,8 @@ namespace kwk
 {
   // The strides are fetched or computed from the size
   template<typename Category, rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(Category, detail::strides_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick(Category c, detail::strides_, Settings const& opts)
   {
-    return opts[strides | as_stride(pick(size,opts))];
+    return opts[strides | as_stride(pick(c,size,opts))];
   }
 }
