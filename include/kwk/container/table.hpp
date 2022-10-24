@@ -20,10 +20,10 @@ namespace kwk
   //!   @tparam Type  Type of the underlying data
   //!   @tparam Os    Variadic list of settings describing current's table behavior
   //================================================================================================
-  template<auto... Os>
-  struct  table  : container<kwk::table_,Os...>
+  template<typename Data, typename Access, typename MetaData>
+  struct  table  : container<kwk::table_,Data,Access,MetaData>
   {
-    using parent = container<kwk::table_,Os...>;
+    using parent = container<kwk::table_,Data,Access,MetaData>;
 
     /// Underlying value type
     using value_type        = typename parent::value_type;
@@ -61,25 +61,6 @@ namespace kwk
     //==============================================================================================
     //! @}
     //==============================================================================================
-    constexpr auto settings() const noexcept
-    {
-      // Retrieve all basic options + correct shape value
-      auto const base   = rbr::settings(kwk::table_, Os...);
-      auto const opts   = rbr::merge( rbr::settings(size = parent::shape())
-                                    , base
-                                    );
-
-      if constexpr(parent::has_label)
-      {
-        return rbr::merge ( rbr::settings (source = parent::get_data(), label = parent::label())
-                          , opts
-                          );
-      }
-      else
-      {
-        return rbr::merge ( rbr::settings(source = parent::get_data()), opts);
-      }
-    }
   };
 
   //================================================================================================
@@ -89,11 +70,17 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::table to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  table(O const&...) -> table<O{}...>;
+  table(O const&...) -> table < typename detail::builder<table_,O{}...>::memory
+                              , typename detail::builder<table_,O{}...>::accessor
+                              , typename detail::builder<table_,O{}...>::metadata
+                              >;
 
   /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
   template<rbr::concepts::option... O>
-  table(rbr::settings<O...> const&) -> table<O{}...>;
+  table(rbr::settings<O...> const&)  -> table < typename detail::builder<table_,O{}...>::memory
+                                              , typename detail::builder<table_,O{}...>::accessor
+                                              , typename detail::builder<table_,O{}...>::metadata
+                                              >;
 
   //================================================================================================
   //! @}

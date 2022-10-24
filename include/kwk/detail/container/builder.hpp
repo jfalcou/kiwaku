@@ -15,20 +15,21 @@
 
 namespace kwk::detail
 {
-  template<rbr::concepts::settings auto Settings>
+  template<auto Tag, auto... Os>
   struct  builder
   {
-    using opts_t  = decltype(Settings);
+    static constexpr auto options  = rbr::settings{Tag,Os...};
+    using options_t                = decltype(options);
 
     // Computes view_access type
-    static constexpr auto shape   = pick(size, Settings);
-    static constexpr auto stride  = pick(strides, Settings);
+    static constexpr auto shape   = pick(size, options);
+    static constexpr auto stride  = pick(strides, options);
     using accessor                = detail::accessor< shape, stride >;
 
     // Computes data_block type
-    using data_block  = block_type_t<opts_t>;
+    using memory  = block_type_t<options_t>;
 
     // Computes metadata type;
-    using metadata    = detail::metadata<result::pick_t<label, opts_t>>;
+    using metadata    = detail::metadata<result::pick_t<label, options_t>>;
   };
 }

@@ -15,47 +15,52 @@
 
 namespace kwk
 {
-  template<auto Tag, auto... Os>
-  struct builder_type
+  template<auto Tag, typename Data, typename Access, typename MetaData>
+  struct  container : private MetaData, Data, Access
   {
-    static constexpr auto settings_value = rbr::settings{Tag,Os...};
-    using type = detail::builder<settings_value>;
-  };
-
-  template<auto Tag, auto... Os>
-  struct  container : private builder_type<Tag,Os...>::type::metadata
-                            , builder_type<Tag,Os...>::type::data_block
-                            , builder_type<Tag,Os...>::type::accessor
-  {
-    using meta_t    = typename builder_type<Tag,Os...>::type::metadata;
-    using span_t    = typename builder_type<Tag,Os...>::type::data_block;
-    using access_t  = typename builder_type<Tag,Os...>::type::accessor;
-
     constexpr container( rbr::concepts::option auto const&... params )
             : container{ rbr::settings(Tag, params...) }
     {}
 
     constexpr container(rbr::concepts::settings auto const& params)
-            : meta_t   { params }
-            , span_t   { detail::block(params) }
-            , access_t { params }
+            : MetaData   { params }
+            , Data   { detail::block(params) }
+            , Access { params }
     {}
 
-    using value_type        = typename span_t::value_type;
-    using reference         = typename span_t::reference;
-    using const_reference   = typename span_t::const_reference;
-    using pointer           = typename span_t::pointer;
-    using const_pointer     = typename span_t::const_pointer;
+    using value_type        = typename Data::value_type;
+    using reference         = typename Data::reference;
+    using const_reference   = typename Data::const_reference;
+    using pointer           = typename Data::pointer;
+    using const_pointer     = typename Data::const_pointer;
 
-    static constexpr auto static_order    = access_t::static_order;
-    static constexpr auto has_label       = meta_t::has_label;
+    static constexpr auto static_order    = Access::static_order;
+    static constexpr auto has_label       = MetaData::has_label;
     static constexpr auto container_kind  = Tag;
 
     constexpr auto order() const noexcept { return this->shape().order(); }
     constexpr auto numel() const noexcept { return this->shape().numel(); }
     constexpr auto empty() const noexcept { return this->size() == 0; }
 
-    using meta_t::label;
+    using MetaData::label;
+
+    constexpr auto settings() const noexcept
+    {
+      // Retrieve all basic options + correct shape value
+      auto const base   = rbr::settings(container_kind);
+      auto const opts   = rbr::merge(rbr::settings(size = this->shape()), base);
+
+      if constexpr(has_label)
+      {
+        return rbr::merge ( rbr::settings (source = get_data(), kwk::label = label())
+                          , opts
+                          );
+      }
+      else
+      {
+        return rbr::merge ( rbr::settings(source = get_data()), opts);
+      }
+    }
 
     friend std::ostream& operator<<(std::ostream& os, container const& v)
     {
@@ -102,23 +107,23 @@ namespace kwk
     template<std::integral... Is>
     requires(sizeof...(Is) == static_order) const_reference operator()(Is... is) const noexcept
     {
-      return data(static_cast<span_t const&>(*this))[ access_t::index(is...) ];
+      return data(static_cast<Data const&>(*this))[ Access::index(is...) ];
     }
 
     template<std::integral... Is>
     requires(sizeof...(Is) == static_order) reference operator()(Is... is) noexcept
     {
-      return data(static_cast<span_t&>(*this))[ access_t::index(is...) ];
+      return data(static_cast<Data&>(*this))[ Access::index(is...) ];
     }
 
-    constexpr auto get_data() const  noexcept { return data(static_cast<span_t const&>(*this)); }
-    constexpr auto get_data()        noexcept { return data(static_cast<span_t&>(*this)); }
+    constexpr auto get_data() const  noexcept { return data(static_cast<Data const&>(*this)); }
+    constexpr auto get_data()        noexcept { return data(static_cast<Data&>(*this)); }
   };
 
-  template<std::size_t I, auto Tag, auto... Os>
-  constexpr auto dim(container<Tag, Os...> const& v) noexcept
+  template<std::size_t I, auto Tag, typename D, typename A, typename M>
+  constexpr auto dim(container<Tag,D,A,M> const& v) noexcept
   {
-    if constexpr(I<container<Tag,Os...>::static_order) return get<I>(v.shape());
+    if constexpr(I<container<Tag,D,A,M>::static_order) return get<I>(v.shape());
     else return 1;
   }
 }
