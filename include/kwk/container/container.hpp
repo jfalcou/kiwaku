@@ -47,8 +47,9 @@ namespace kwk
     using pointer           = typename span_t::pointer;
     using const_pointer     = typename span_t::const_pointer;
 
-    static constexpr auto static_order = access_t::static_order;
-    static constexpr auto has_label    = meta_t::has_label;
+    static constexpr auto static_order    = access_t::static_order;
+    static constexpr auto has_label       = meta_t::has_label;
+    static constexpr auto container_kind  = Tag;
 
     constexpr auto order() const noexcept { return this->shape().order(); }
     constexpr auto numel() const noexcept { return this->shape().numel(); }
