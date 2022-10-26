@@ -21,10 +21,8 @@ namespace kwk
   KWK_FORCEINLINE constexpr auto pick(Category c, detail::strides_, Settings const& opts)
   {
     using shape_type = rbr::result::fetch_t<size,Settings>;
-    static_assert ( !concepts::descriptor<shape_type>
-                  , "[kwk] - kwk::extent can't be used as dynamic size options"
-                  );
 
-    return opts[strides | as_stride(pick(c,size,opts))];
+    if constexpr(!concepts::descriptor<shape_type>)
+      return opts[strides | as_stride(pick(c,size,opts))];
   }
 }
