@@ -19,18 +19,7 @@ namespace kwk
   template<rbr::concepts::settings Settings>
   KWK_FORCEINLINE constexpr auto pick(detail::view_, detail::source_, Settings const& opts)
   {
-    static_assert ( Settings::contains(source) != Settings::contains(type)
-                  , "[KWK] - Error: view can't specify both source and type"
-                  );
-
-    if constexpr( Settings::contains(source) )
-    {
-      return opts[source | ptr_source<rbr::unknown_key>{}];
-    }
-    else
-    {
-      return ptr_source<typename decltype(opts[type])::type>{};
-    }
+    return opts[source | ptr_source<typename decltype(opts[type])::type>{}];
   }
 
   template<rbr::concepts::settings Settings>
