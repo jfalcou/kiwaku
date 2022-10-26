@@ -12,6 +12,7 @@
 #include <kwk/settings/size.hpp>
 #include <kwk/settings/type.hpp>
 #include <kwk/container/settings/category.hpp>
+#include <type_traits>
 
 namespace kwk::concepts
 {
@@ -24,11 +25,11 @@ namespace kwk::concepts
   template<typename T>
   concept basic_container = requires(T const& t)
   {
-    typename T::value_type;
-    typename T::reference;
-    typename T::const_reference;
-    typename T::pointer;
-    typename T::const_pointer;
+    typename std::remove_cvref_t<T>::value_type;
+    typename std::remove_cvref_t<T>::reference;
+    typename std::remove_cvref_t<T>::const_reference;
+    typename std::remove_cvref_t<T>::pointer;
+    typename std::remove_cvref_t<T>::const_pointer;
 
     { t.order() };
     { t.numel() };
@@ -60,14 +61,17 @@ namespace kwk::concepts
   //================================================================================================
   template<typename T, auto... Os>
   concept container =   basic_container<T>
-                    &&  same_value_type < typename T::value_type
-                                        , typename rbr::result::fetch_t < type
-                                                                        | as<typename T::value_type>
-                                                                        , decltype(Os)...
-                                                                        >::type
+                    &&  same_value_type < typename std::remove_cvref_t<T>::value_type
+                                        , typename rbr::result::fetch_t
+                                          < type
+                                          | as<typename std::remove_cvref_t<T>::value_type>
+                                          , decltype(Os)...
+                                          >::type
                                   >
-                    &&  same_shape< typename T::shape_type
-                                  , rbr::fetch(size|(typename T::shape_type{}), Os...)
+                    &&  same_shape< typename std::remove_cvref_t<T>::shape_type
+                                  , rbr::fetch( size | typename std::remove_cvref_t<T>::shape_type{}
+                                              , Os...
+                                              )
                                   >;
 
   //================================================================================================
@@ -77,7 +81,8 @@ namespace kwk::concepts
   //! @ref kwk::table.
   //================================================================================================
   template<typename T, auto... Settings>
-  concept table =  container<T,Settings...> && (kwk::table_ == T::container_kind);
+  concept table =   container<T,Settings...>
+                &&  (kwk::table_ == std::remove_cvref_t<T>::container_kind);
 
   //================================================================================================
   //! @brief View concept
@@ -86,5 +91,6 @@ namespace kwk::concepts
   //! @ref kwk::view.
   //================================================================================================
   template<typename T, auto... Settings>
-  concept view =  container<T,Settings...> && (kwk::view_ == T::container_kind);
+  concept view  =   container<T,Settings...>
+                &&  (kwk::view_ == std::remove_cvref_t<T>::container_kind);
 }
