@@ -76,29 +76,29 @@ namespace kwk
       auto shp = v.shape();
       if constexpr( container::static_order < 3)
       {
-        for_each( [&](auto const& c, auto i0, auto... i)
-                  {
-                    if(i0 == 0) os << spaces << "[ ";
-                    os << c(i0,i...) << ' ';
-                    if(i0 == get<0>(shp)-1) os << "]\n";
-                  }
-                , v
-                );
+        for_each_index( [&](auto e, auto i0, auto... i)
+                        {
+                          if(i0 == 0) os << spaces << "[ ";
+                          os << e << ' ';
+                          if(i0 == get<0>(shp)-1) os << "]\n";
+                        }
+                      , v
+                      );
       }
       else
       {
-        for_each( [&](auto const& c, auto i0, auto i1, auto i2, auto... i)
-                  {
-                    if(i0 == 0)
-                    {
-                      if(i1 == 0 && i2 > 0) os << '\n';
-                      os << spaces << "[ ";
-                    }
-                    os << c(i0,i1,i2,i...) << ' ';
-                    if(i0 == get<0>(shp)-1) os << "]\n";
-                  }
-                , v
-                );
+        for_each_index( [&](auto e, auto i0, auto i1, auto i2, auto... i)
+                        {
+                          if(i0 == 0)
+                          {
+                            if(i1 == 0 && i2 > 0) os << '\n';
+                            os << spaces << "[ ";
+                          }
+                          os << e << ' ';
+                          if(i0 == get<0>(shp)-1) os << "]\n";
+                        }
+                      , v
+                      );
       }
 
       return os;
