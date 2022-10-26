@@ -18,47 +18,48 @@ namespace kwk
   template<auto Tag, typename Data, typename Access, typename MetaData>
   struct  container : private MetaData, Data, Access
   {
-    constexpr container( rbr::concepts::option auto const&... params )
-            : container{ rbr::settings(Tag, params...) }
-    {}
-
-    constexpr container(rbr::concepts::settings auto const& params)
-            : MetaData   { params }
-            , Data   { detail::block(params) }
-            , Access { params }
-    {}
-
     using value_type        = typename Data::value_type;
     using reference         = typename Data::reference;
     using const_reference   = typename Data::const_reference;
     using pointer           = typename Data::pointer;
     using const_pointer     = typename Data::const_pointer;
+    using container_kind    = decltype(Tag);
 
     static constexpr auto static_order    = Access::static_order;
     static constexpr auto has_label       = MetaData::has_label;
-    static constexpr auto container_kind  = Tag;
 
-    constexpr auto order() const noexcept { return this->shape().order(); }
-    constexpr auto numel() const noexcept { return this->shape().numel(); }
-    constexpr auto empty() const noexcept { return this->size() == 0; }
+    constexpr container( container_kind )
+            : MetaData{ }
+            , Data    { }
+            , Access  { }
+    {}
+
+    constexpr container( rbr::concepts::option auto const&... params )
+            : container{ rbr::settings(Tag, params...) }
+    {}
+
+    constexpr container(rbr::concepts::settings auto const& params)
+            : MetaData{ params }
+            , Data    { detail::block(params) }
+            , Access  { params }
+    {}
+
+    static constexpr  auto kind()         noexcept  { return Tag;      }
+    constexpr         auto order() const  noexcept  { return this->shape().order(); }
+    constexpr         auto numel() const  noexcept  { return this->shape().numel(); }
+    constexpr         auto empty() const  noexcept  { return this->size() == 0;     }
 
     using MetaData::label;
 
     constexpr auto settings() const noexcept
     {
-      // Retrieve all basic options + correct shape value
-      auto const base   = rbr::settings(container_kind);
-      auto const opts   = rbr::merge(rbr::settings(size = this->shape()), base);
-
       if constexpr(has_label)
       {
-        return rbr::merge ( rbr::settings (source = get_data(), kwk::label = label())
-                          , opts
-                          );
+        return rbr::settings(Tag,kwk::label = label(),source = get_data(),this->shape());
       }
       else
       {
-        return rbr::merge ( rbr::settings(source = get_data()), opts);
+        return rbr::settings(Tag,source = get_data(),this->shape());
       }
     }
 

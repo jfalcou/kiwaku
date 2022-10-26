@@ -47,6 +47,9 @@ namespace kwk
     //! @{
     //==============================================================================================
 
+    /// Default constructor
+    constexpr view() : parent{kwk::view_} {}
+
     /// Construct a view from a list of options
     constexpr view(rbr::concepts::option auto const&... opts) : view{rbr::settings{opts...}} {}
 
@@ -84,4 +87,16 @@ namespace kwk
   //================================================================================================
   //! @}
   //================================================================================================
+
+  /// Type helper
+  template<auto... Settings> struct make_view
+  {
+    using type = view < typename detail::builder<view_,Settings...>::memory
+                      , typename detail::builder<view_,Settings...>::accessor
+                      , typename detail::builder<view_,Settings...>::metadata
+                      >;
+  };
+
+  template<auto... Settings>
+  using make_view_t = typename make_view<Settings...>::type;
 }

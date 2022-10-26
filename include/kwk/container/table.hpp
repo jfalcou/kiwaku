@@ -48,6 +48,9 @@ namespace kwk
     //! @{
     //==============================================================================================
 
+    /// Default constructor
+    constexpr table() : parent{kwk::table_} {}
+
     /// Construct a table from a list of options
     constexpr table(rbr::concepts::option auto const&... opts) : table{rbr::settings{opts...}} {}
 
@@ -85,4 +88,16 @@ namespace kwk
   //================================================================================================
   //! @}
   //================================================================================================
+
+  /// Type helper
+  template<auto... Settings> struct make_table
+  {
+    using type = table< typename detail::builder<table_,Settings...>::memory
+                      , typename detail::builder<table_,Settings...>::accessor
+                      , typename detail::builder<table_,Settings...>::metadata
+                      >;
+  };
+
+  template<auto... Settings>
+  using make_table_t = typename make_table<Settings...>::type;
 }

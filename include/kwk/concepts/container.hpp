@@ -32,8 +32,7 @@ namespace kwk::concepts
     typename std::remove_cvref_t<T>::const_pointer;
 
     { t.order() };
-    { t.numel() };
-    { t.empty() };
+    { t.kind()  };
     { t.shape() };
   };
 
@@ -81,8 +80,7 @@ namespace kwk::concepts
   //! @ref kwk::table.
   //================================================================================================
   template<typename T, auto... Settings>
-  concept table =   container<T,Settings...>
-                &&  (kwk::table_ == std::remove_cvref_t<T>::container_kind);
+  concept table = container<T,Settings...> && (kwk::table_ == std::remove_cvref_t<T>::kind());
 
   //================================================================================================
   //! @brief View concept
@@ -91,6 +89,5 @@ namespace kwk::concepts
   //! @ref kwk::view.
   //================================================================================================
   template<typename T, auto... Settings>
-  concept view  =   container<T,Settings...>
-                &&  (kwk::view_ == std::remove_cvref_t<T>::container_kind);
+  concept view = container<T,Settings...> && (kwk::view_ == std::remove_cvref_t<T>::kind());
 }
