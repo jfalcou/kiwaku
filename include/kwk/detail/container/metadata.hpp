@@ -20,6 +20,8 @@ namespace kwk::detail
   {
     static constexpr bool has_label = true;
 
+    constexpr   metadata() {}
+
     constexpr   metadata(rbr::concepts::settings auto const& opts)
               : label_( pick(kwk::label, opts))
     {}
@@ -35,6 +37,7 @@ namespace kwk::detail
   struct metadata<Data...>
   {
     static constexpr bool has_label = false;
+    constexpr   metadata() {}
     constexpr metadata(rbr::concepts::settings auto const&) noexcept {}
 
     constexpr auto label() const noexcept { return ""; }

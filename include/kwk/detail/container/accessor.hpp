@@ -20,11 +20,13 @@ namespace kwk::detail
   {
     using shape_type                   = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                  = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_order = shape_type::static_order;
+    static constexpr auto static_order = shape_type::static_size;
 
     constexpr auto  size()    const noexcept  { return shape_.numel(); }
     constexpr auto  shape()   const noexcept  { return shape_;         }
     constexpr auto  stride()  const noexcept  { return stride_;        }
+
+    constexpr   accessor(): shape_ (), stride_() {}
 
     constexpr   accessor(rbr::concepts::settings auto const& opts)
               : shape_ ( pick(kwk::size   ,opts) )
@@ -65,12 +67,13 @@ namespace kwk::detail
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_order  = shape_type::static_order;
+    static constexpr auto static_order  = shape_type::static_size;
 
     constexpr auto  size()    const noexcept  { return Shape.numel(); }
     constexpr auto  shape()   const noexcept  { return Shape;         }
     constexpr auto  stride()  const noexcept  { return Stride;        }
 
+    constexpr       accessor()  {}
     constexpr       accessor(rbr::concepts::settings auto const&) noexcept {}
     constexpr void  swap( accessor& ) noexcept {}
 
@@ -88,8 +91,9 @@ namespace kwk::detail
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_order  = shape_type::static_order;
+    static constexpr auto static_order  = shape_type::static_size;
 
+    constexpr   accessor() : shape_{} {}
     constexpr   accessor(rbr::concepts::settings auto const& opts)
               : shape_ ( pick(kwk::size,opts) )
     {}
@@ -115,8 +119,9 @@ namespace kwk::detail
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
-    static constexpr auto static_order  = shape_type::static_order;
+    static constexpr auto static_order  = shape_type::static_size;
 
+    constexpr accessor() : shape_{} {}
     constexpr accessor(rbr::concepts::settings auto const& opts)
               : shape_ ( pick(kwk::size,opts) )
     {}
