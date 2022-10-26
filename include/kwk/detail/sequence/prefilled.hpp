@@ -45,7 +45,7 @@ namespace kwk::detail
     using is_product_type = void;
 
     static constexpr  auto        descriptor      = Desc;
-    static constexpr  std::size_t static_size     = std::tuple_size<descriptor_t>::value;
+    static constexpr  std::size_t static_size     = Desc.static_size;
     static constexpr  std::size_t dynamic_size    = kumi::count_if(Desc,kumi::predicate<is_joker>());
     static constexpr  bool        is_fully_static = (dynamic_size == 0);
     static constexpr  bool        is_dynamic      = !is_fully_static;

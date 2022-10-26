@@ -28,6 +28,8 @@ namespace kwk::detail
     using stored_value_type = combo<T,Elems...>;
     using keyword_type      = detail::size_;
 
+    static constexpr  std::size_t static_size = sizeof...(Elems);
+
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     static constexpr auto size() noexcept { return sizeof...(Elems); }

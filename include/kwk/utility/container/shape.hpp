@@ -76,6 +76,7 @@ namespace kwk
 
     /// Compile-time value for @ref glossary-order
     static constexpr std::ptrdiff_t static_order = parent::static_size;
+    static constexpr std::ptrdiff_t static_size  = parent::static_size;
 
     /// Type of dimensions' size
     using size_type = typename parent::value_type;
