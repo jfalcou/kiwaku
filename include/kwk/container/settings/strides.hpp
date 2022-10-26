@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/extent.hpp>
 #include <kwk/container/settings/category.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
@@ -20,7 +21,7 @@ namespace kwk
   KWK_FORCEINLINE constexpr auto pick(Category c, detail::strides_, Settings const& opts)
   {
     using shape_type = rbr::result::fetch_t<size,Settings>;
-    static_assert ( !requires{typename shape_type::contents_type; }
+    static_assert ( !concepts::descriptor<shape_type>
                   , "[kwk] - kwk::extent can't be used as dynamic size options"
                   );
 
