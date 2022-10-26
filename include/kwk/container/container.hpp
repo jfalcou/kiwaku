@@ -76,7 +76,7 @@ namespace kwk
       auto shp = v.shape();
       if constexpr( container::static_order < 3)
       {
-        for_each_index( [&](auto e, auto i0, auto... i)
+        for_each_index( [&](auto e, auto i0, auto...)
                         {
                           if(i0 == 0) os << spaces << "[ ";
                           os << e << ' ';
@@ -87,7 +87,7 @@ namespace kwk
       }
       else
       {
-        for_each_index( [&](auto e, auto i0, auto i1, auto i2, auto... i)
+        for_each_index( [&](auto e, auto i0, auto i1, auto i2, auto... )
                         {
                           if(i0 == 0)
                           {
