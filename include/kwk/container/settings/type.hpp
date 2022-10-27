@@ -27,7 +27,7 @@ namespace kwk
 
     if constexpr( Settings::contains(source) )
     {
-      return as<typename source_traits<decltype(pick(c,source,opts))>::base_type>;
+      return as<typename source_traits<decltype(pick(c,source,opts))>::value_type>;
     }
     else
     {
@@ -46,7 +46,7 @@ namespace kwk
     }
     else
     {
-      return as<typename source_traits<decltype(pick(c,source,opts))>::base_type>;
+      return as<typename source_traits<decltype(pick(c,source,opts))>::value_type>;
     }
   }
 }

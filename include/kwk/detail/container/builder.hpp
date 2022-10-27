@@ -41,7 +41,7 @@ namespace kwk::detail
     using accessor                = detail::accessor<shape, stride>;
 
     // Computes data_block type
-    using memory  = block_type_t<options_t>;
+    using memory  = block_type_t<shape, options_t>;
 
     // Computes metadata type;
     using metadata    = detail::metadata<result::pick_t<label, options_t>>;

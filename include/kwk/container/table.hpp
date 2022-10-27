@@ -61,6 +61,23 @@ namespace kwk
                     }
     {}
 
+    /// Move constructor
+    constexpr table(table&&) = default;
+
+    /// Move assignment operator
+    constexpr table& operator=(table&&) = default;
+
+    /// Copy constructor
+    constexpr table(table const& other) : table(other.settings()) {}
+
+    /// Copy assignment operator
+    constexpr table& operator=(table const& other)
+    {
+      table local(other.settings());
+      parent::swap(local);
+      return *this;
+    }
+
     //==============================================================================================
     //! @}
     //==============================================================================================

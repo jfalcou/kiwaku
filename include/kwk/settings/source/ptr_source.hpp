@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 #include <kwk/utility/container/shape.hpp>
+#include <kwk/detail/memory/shallow_block.hpp>
 
 namespace kwk::detail { struct source_; }
 
@@ -36,17 +37,8 @@ namespace kwk
   template<typename T>
   constexpr auto storage(ptr_source<T> src) noexcept
   {
-    return src;
+    return detail::shallow_block{src.data_};
   }
-
-  template<typename T>
-  constexpr auto reset(ptr_source<T>& src, T* ptr) noexcept
-  {
-    return std::exchange(src.data_, ptr);
-  }
-
-  template<typename T>
-  constexpr auto data(ptr_source<T> const& src) noexcept { return src.data_; }
 
   template<typename T>
   constexpr auto default_shape(ptr_source<T> const&)  noexcept { return shape<_1D>{0};  }
@@ -54,7 +46,6 @@ namespace kwk
   template<typename T> struct source_traits;
   template<typename T> struct source_traits<ptr_source<T>>
   {
-    using span_type = ptr_source<T>;
-    using base_type = T;
+    using value_type = T;
   };
 }

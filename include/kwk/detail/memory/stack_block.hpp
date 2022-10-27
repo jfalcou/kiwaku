@@ -27,7 +27,7 @@ namespace kwk::detail
     constexpr auto get_data()       noexcept { return &data_[0]; }
     constexpr auto get_data() const noexcept { return &data_[0]; }
 
-    constexpr void assign(auto const& src)
+    constexpr void assign(auto const& src, auto)
     {
       std::copy(data(src), data(src) + Size, get_data());
     }

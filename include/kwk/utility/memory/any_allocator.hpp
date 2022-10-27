@@ -88,6 +88,7 @@ namespace kwk
 
     /// Swap the contents of two instance of kwk::heap_allocator
     void swap(any_allocator& other) noexcept { object.swap(other.object); }
+    friend void swap(any_allocator& a, any_allocator& b) noexcept { a.swap(b); }
 
     /// Access to internal allocator pointer
     api_t* get() const { return object.get(); }

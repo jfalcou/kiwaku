@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 #include <kwk/utility/memory/any_allocator.hpp>
+#include <kwk/utility/memory/heap_allocator.hpp>
 #include <algorithm>
 #include <memory>
 
@@ -24,11 +25,9 @@ namespace kwk::detail
     struct deleter
     {
       any_allocator   allocator_;
-      std::ptrdiff_t  size_;
 
-      deleter() : size_(0) {}
-      template<typename A> deleter(A a, auto s) : allocator_(a), size_(s) {}
-
+      deleter()  {}
+      template<typename A> deleter(A a) : allocator_(a) {}
       void operator()(void* p) { deallocate(allocator_,(value_type*)(p)); }
     };
 
@@ -36,37 +35,20 @@ namespace kwk::detail
 
     template<typename Allocator>
     constexpr heap_block( Allocator a, auto size)
-                        : data_ ( (value_type*)(allocate(a,size*sizeof(T)))
-                                , deleter(a,size)
-                                )
+                        : data_ ( (value_type*)(allocate(a,size*sizeof(T))), deleter(a) )
     {}
 
-    constexpr heap_block(heap_block&&)            = default;
-    constexpr heap_block& operator=(heap_block&&) = default;
+    constexpr heap_block() : heap_block(heap_allocator{},0) {}
 
-    constexpr heap_block(heap_block const& other)
-    {
-      auto del = other.data_.get_deleter();
-      auto local = heap_block( del.allocator_, del.size_ , del.offset_);
-      this->swap(local);
-    }
-
-    constexpr heap_block& operator=(heap_block const& other)
-    {
-      auto that(other);
-      this->swap(that);
-      return *this;
-    }
-
-    constexpr         void swap(heap_block& other)            { data_.swap(other.data_); }
-    constexpr friend  void swap(heap_block& a,heap_block& b)  { a.swap(b); }
+    constexpr         void swap(heap_block& other)            noexcept { data_.swap(other.data_); }
+    constexpr friend  void swap(heap_block& a,heap_block& b)  noexcept { a.swap(b); }
 
     constexpr auto get_data()       noexcept { return data_.get(); }
     constexpr auto get_data() const noexcept { return data_.get(); }
 
-    constexpr void assign(auto const& src)
+    constexpr void assign(auto const& src, auto sz)
     {
-      std::copy(data(src), data(src) + data_.get_deleter().size_, get_data());
+      std::copy(data(src), data(src) + sz, get_data());
     }
   };
 

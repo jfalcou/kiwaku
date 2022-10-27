@@ -51,16 +51,18 @@ namespace kwk
 
     using MetaData::label;
 
+    void swap(container& other) noexcept
+    {
+      MetaData::swap(other);
+      Data::swap(other);
+      Access::swap(other);
+    }
+
+    friend void swap(container& a,container& b) noexcept { a.swap(b); }
+
     constexpr auto settings() const noexcept
     {
-      if constexpr(has_label)
-      {
-        return rbr::settings(Tag,kwk::label = label(),source = get_data(),this->shape());
-      }
-      else
-      {
-        return rbr::settings(Tag,source = get_data(),this->shape());
-      }
+      return rbr::settings(Tag,source = pointer(get_data()), this->shape());
     }
 
     friend std::ostream& operator<<(std::ostream& os, container const& v)

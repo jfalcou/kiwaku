@@ -60,6 +60,12 @@ namespace kwk
                     }
     {}
 
+    /// Shallow copy constructor
+    constexpr view(view const&) = default;
+
+    /// Shallow copy assignment operator
+    constexpr view& operator=(view const&) = default;
+
     //==============================================================================================
     //! @}
     //==============================================================================================
