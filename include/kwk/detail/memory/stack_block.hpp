@@ -24,12 +24,21 @@ namespace kwk::detail
 
     value_type data_[Size];
 
+    constexpr stack_block() {}
+
+    template<rbr::concepts::settings Settings>
+    constexpr stack_block(Settings const& p)
+    {
+      if constexpr( Settings::contains(kwk::source) )
+        assign( storage(pick(kwk::source, p)), pick(kwk::size,p).numel() );
+    }
+
     constexpr auto get_data()       noexcept { return &data_[0]; }
     constexpr auto get_data() const noexcept { return &data_[0]; }
 
     constexpr void assign(auto const& src, auto)
     {
-      std::copy(data(src), data(src) + Size, get_data());
+      std::copy(src, src + Size, get_data());
     }
 
     constexpr void swap(stack_block& other) noexcept

@@ -21,7 +21,11 @@ namespace kwk::detail
 
     pointer data_;
 
-    constexpr shallow_block( pointer p) : data_ (p) {}
+    constexpr shallow_block() : data_{nullptr} {}
+
+    template<rbr::concepts::settings Settings>
+    constexpr shallow_block(Settings const& p) : data_(storage(pick(kwk::source,p)))
+    {}
 
     constexpr         void swap(shallow_block& o) noexcept  { std::swap(data_, o.data_); }
     constexpr friend  void swap(shallow_block& a,shallow_block& b)  noexcept { a.swap(b); }

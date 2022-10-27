@@ -31,14 +31,24 @@ namespace kwk::detail
       void operator()(void* p) { deallocate(allocator_,(value_type*)(p)); }
     };
 
-    std::unique_ptr<value_type, deleter> data_;
+    using ptr_t = std::unique_ptr<value_type, deleter>;
+    ptr_t data_;
 
-    template<typename Allocator>
-    constexpr heap_block( Allocator a, auto size)
-                        : data_ ( (value_type*)(allocate(a,size*sizeof(T))), deleter(a) )
-    {}
+    constexpr heap_block() : data_(nullptr, deleter{heap_allocator{}}) {}
 
-    constexpr heap_block() : heap_block(heap_allocator{},0) {}
+    template<rbr::concepts::settings Settings>
+    constexpr heap_block(Settings const& p)
+            : data_ ( [&]()
+                      {
+                        auto a = pick(kwk::allocator,p);
+                        auto s = pick(kwk::size,p);
+                        return ptr_t{(value_type*)(allocate(a,s.numel()*sizeof(T))), deleter(a)};
+                      }()
+                    )
+    {
+      if constexpr( Settings::contains(kwk::source) )
+        assign( storage(pick(kwk::source, p)), pick(kwk::size,p).numel() );
+    }
 
     constexpr         void swap(heap_block& other)            noexcept { data_.swap(other.data_); }
     constexpr friend  void swap(heap_block& a,heap_block& b)  noexcept { a.swap(b); }
@@ -48,7 +58,7 @@ namespace kwk::detail
 
     constexpr void assign(auto const& src, auto sz)
     {
-      std::copy(data(src), data(src) + sz, get_data());
+      std::copy(src, src + sz, get_data());
     }
   };
 

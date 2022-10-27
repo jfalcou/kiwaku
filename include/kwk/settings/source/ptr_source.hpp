@@ -7,7 +7,6 @@
 //==================================================================================================
 #pragma once
 #include <kwk/utility/container/shape.hpp>
-#include <kwk/detail/memory/shallow_block.hpp>
 
 namespace kwk::detail { struct source_; }
 
@@ -37,7 +36,7 @@ namespace kwk
   template<typename T>
   constexpr auto storage(ptr_source<T> src) noexcept
   {
-    return detail::shallow_block{src.data_};
+    return src.data_;
   }
 
   template<typename T>

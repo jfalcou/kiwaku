@@ -40,7 +40,7 @@ namespace kwk
 
     constexpr container(rbr::concepts::settings auto const& params)
             : MetaData{ params }
-            , Data    { detail::block(params) }
+            , Data    { params }
             , Access  { params }
     {}
 

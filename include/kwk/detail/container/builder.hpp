@@ -21,7 +21,7 @@ namespace kwk::detail
     static constexpr auto options  = rbr::settings{Tag,Os...};
     using options_t                = decltype(options);
 
-    // Computes view_access type
+    // Computes shape type
     static constexpr auto shape   = []()
     {
       if constexpr(!concepts::descriptor<result::pick_t<size, options_t>>)
@@ -30,20 +30,25 @@ namespace kwk::detail
         return kwk::shape<pick(size, options)>{};
     }();
 
+    // Computes stride type
     static constexpr auto stride  =  []()
     {
       if constexpr(!concepts::descriptor<result::pick_t<size, options_t>>)
         return pick(strides, options);
       else
-        return pick(Tag, strides, rbr::settings(shape));
+        return pick(strides, rbr::settings(shape));
     }();
 
-    using accessor                = detail::accessor<shape, stride>;
+    // Builds accessor
+    using accessor  = detail::accessor<shape, stride>;
 
-    // Computes data_block type
-    using memory  = block_type_t<shape, options_t>;
+    // Builds metadata type;
+    using metadata  = detail::metadata<result::pick_t<label, options_t>>;
 
-    // Computes metadata type;
-    using metadata    = detail::metadata<result::pick_t<label, options_t>>;
+    // Computes value type
+    using value_type  = typename result::pick_t<kwk::type,options_t>::type;
+
+    // Builds data_block type
+    using memory  = block_t<Tag, shape, value_type, options_t>;
   };
 }
