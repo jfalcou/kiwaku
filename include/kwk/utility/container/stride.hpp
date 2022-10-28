@@ -121,7 +121,7 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, stride const& s)
     {
       os << "[";
-      kumi::for_each( [&](auto e) { os << " " << +e; }, s);
+      kumi::for_each_index( [&](auto i, auto) { os << " " << s.template extent<i>(); }, s);
       return os << " ]";
     }
 

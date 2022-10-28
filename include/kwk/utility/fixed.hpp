@@ -55,7 +55,7 @@ namespace kwk
   {
     friend std::ostream& operator<<(std::ostream& os, constant)
     {
-      return os << "fixed<" << +N << ">";
+      return os << +N << "_c";
     }
   };
 

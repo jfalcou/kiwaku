@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include "kwk/detail/kumi.hpp"
 #include <kwk/detail/sequence/prefilled.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/sequence/extent_builder.hpp>
@@ -347,7 +348,7 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, shape const& s)
     {
       os << "[";
-      kumi::for_each( [&](auto e) { os << " " << +e; }, s);
+      kumi::for_each_index( [&](auto i, auto) { os << " " << s.template extent<i>(); }, s);
       return os << " ]";
     }
 

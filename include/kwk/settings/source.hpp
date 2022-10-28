@@ -13,7 +13,6 @@
 #include <kwk/settings/source/array_source.hpp>
 #include <kwk/settings/source/range_source.hpp>
 #include <kwk/concepts/range.hpp>
-#include <array>
 
 namespace kwk::detail
 {

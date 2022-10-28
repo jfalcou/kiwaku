@@ -36,7 +36,7 @@ namespace kwk::detail
       if constexpr(!concepts::descriptor<result::pick_t<size, options_t>>)
         return pick(strides, options);
       else
-        return pick(strides, rbr::settings(shape));
+        return pick(strides, rbr::settings(Tag, shape));
     }();
 
     // Builds accessor
