@@ -13,6 +13,7 @@
 #include <kwk/settings/source/array_source.hpp>
 #include <kwk/settings/source/range_source.hpp>
 #include <kwk/concepts/range.hpp>
+#include <type_traits>
 
 namespace kwk::detail
 {
@@ -25,9 +26,9 @@ namespace kwk::detail
     constexpr auto operator=( Array&& a) const noexcept
     {
       using a_t = std::remove_reference_t<Array>;
-      return array_source < detail::value_type_of<a_t>
-                          , detail::static_size_v<a_t>
-                          >{std::data(KWK_FWD(a))};
+      return array_source < typename detail::array_traits<a_t>::value_type
+                          , detail::array_traits<a_t>::sizes
+                          >{detail::array_traits<a_t>::data(KWK_FWD(a))};
     }
 
     // ContiguousRange with .data()

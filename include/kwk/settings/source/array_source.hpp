@@ -12,9 +12,9 @@ namespace kwk::detail { struct source_; }
 
 namespace kwk
 {
-  template<typename T, std::size_t N> struct array_source
+  template<typename T, auto Szs> struct array_source
   {
-    using stored_value_type = array_source<T,N>;
+    using stored_value_type = array_source<T,Szs>;
     using keyword_type      = detail::source_;
 
     using value_type      = std::remove_const_t<T>;
@@ -30,17 +30,14 @@ namespace kwk
     T*  data_;
   };
 
-  template<typename T, std::size_t N>
-  constexpr auto storage(array_source<T,N> const& src) noexcept
-  {
-    return src.data_;
-  }
+  template<typename T, auto Szs>
+  constexpr auto storage(array_source<T, Szs> const& src) noexcept { return src.data_; }
 
-  template<typename T, std::size_t N>
-  constexpr auto default_shape(array_source<T,N> const&)  noexcept { return of_size(fixed<N>);  }
+  template<typename T, auto Szs>
+  constexpr auto default_shape(array_source<T, Szs> const&)  noexcept { return of_size( Szs ); }
 
   template<typename T> struct source_traits;
-  template<typename T, std::size_t N> struct source_traits<array_source<T,N>>
+  template<typename T, auto Szs> struct source_traits<array_source<T,Szs>>
   {
     using value_type = T;
   };

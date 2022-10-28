@@ -36,7 +36,7 @@ namespace kwk::concepts
 
   /// Concept for types exposing a compile-time size value
   template<typename T>
-  concept has_static_size = detail::static_size<std::remove_cvref_t<T>>::value;
+  concept has_static_size = detail::array_traits<std::remove_cvref_t<T>>::value;
 
   /// Concept for Contiguous Range exposing a compile-time size value
   template<typename T>
