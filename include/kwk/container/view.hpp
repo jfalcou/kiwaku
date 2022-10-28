@@ -39,6 +39,9 @@ namespace kwk
     /// Associated const pointer type
     using const_pointer     = typename parent::const_pointer;
 
+    /// Associated @ref kwk::shape type
+    using shape_type = typename parent::shape_type;
+
     /// Compile-time @ref glossary-order
     static constexpr auto static_order = parent::static_order;
 
@@ -61,10 +64,17 @@ namespace kwk
     {}
 
     /// Shallow copy constructor
-    constexpr view(view const&) = default;
+    constexpr view(concepts::container<as<value_type>, shape_type{}> auto const& other)
+            : view(other.settings())
+    {}
 
-    /// Shallow copy assignment operator
-    constexpr view& operator=(view const&) = default;
+    /// Shallow assignment operator
+    constexpr view& operator=(concepts::container<as<value_type>, shape_type{}> auto const& other)
+    {
+      view local(other);
+      parent::swap(local);
+      return *this;
+    }
 
     //==============================================================================================
     //! @}
@@ -78,17 +88,26 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  view(O const&...) -> view < typename detail::builder<view_,O{}...>::memory
-                            , typename detail::builder<view_,O{}...>::accessor
-                            , typename detail::builder<view_,O{}...>::metadata
-                            >;
+  view(O const&...)
+    ->  view< typename detail::builder<view_,rbr::settings(view_, O{}...)>::memory
+            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::accessor
+            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::metadata
+            >;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
   template<rbr::concepts::option... O>
-  view(rbr::settings<O...> const&)  -> view < typename detail::builder<view_,O{}...>::memory
-                                            , typename detail::builder<view_,O{}...>::accessor
-                                            , typename detail::builder<view_,O{}...>::metadata
-                                            >;
+  view(rbr::settings<O...> const&)
+    ->  view< typename detail::builder<view_,rbr::settings(view_, O{}...)>::memory
+            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::accessor
+            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::metadata
+            >;
+
+  /// This deduction guide is provided for kwk::view to allow deduction from another container
+  template<concepts::container C>
+  view(C const&)  -> view < typename detail::builder<view_,C::archetype()>::memory
+                          , typename detail::builder<view_,C::archetype()>::accessor
+                          , typename detail::builder<view_,C::archetype()>::metadata
+                          >;
 
   //================================================================================================
   //! @}
@@ -97,9 +116,9 @@ namespace kwk
   /// Type helper
   template<auto... Settings> struct make_view
   {
-    using type = view < typename detail::builder<view_,Settings...>::memory
-                      , typename detail::builder<view_,Settings...>::accessor
-                      , typename detail::builder<view_,Settings...>::metadata
+    using type = view < typename detail::builder<view_,rbr::settings(view_,Settings...)>::memory
+                      , typename detail::builder<view_,rbr::settings(view_,Settings...)>::accessor
+                      , typename detail::builder<view_,rbr::settings(view_,Settings...)>::metadata
                       >;
   };
 

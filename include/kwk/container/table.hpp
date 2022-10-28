@@ -40,6 +40,9 @@ namespace kwk
     /// Associated const pointer type
     using const_pointer     = typename parent::const_pointer;
 
+    /// Associated @ref kwk::shape type
+    using shape_type = typename parent::shape_type;
+
     /// Compile-time @ref glossary-order
     static constexpr auto static_order = parent::static_order;
 
@@ -68,12 +71,14 @@ namespace kwk
     constexpr table& operator=(table&&) = default;
 
     /// Copy constructor
-    constexpr table(table const& other) : table(other.settings()) {}
+    constexpr table(concepts::container<as<value_type>, shape_type{}> auto const& other)
+            : table(other.settings())
+    {}
 
     /// Copy assignment operator
-    constexpr table& operator=(table const& other)
+    constexpr table& operator=(concepts::container<as<value_type>, shape_type{}> auto const& other)
     {
-      table local(other.settings());
+      table local(other);
       parent::swap(local);
       return *this;
     }
@@ -90,17 +95,26 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::table to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  table(O const&...) -> table < typename detail::builder<table_,O{}...>::memory
-                              , typename detail::builder<table_,O{}...>::accessor
-                              , typename detail::builder<table_,O{}...>::metadata
-                              >;
+  table(O const&...)
+    ->  table < typename detail::builder<table_,rbr::settings(table_, O{}...)>::memory
+              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::accessor
+              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::metadata
+              >;
 
   /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
   template<rbr::concepts::option... O>
-  table(rbr::settings<O...> const&)  -> table < typename detail::builder<table_,O{}...>::memory
-                                              , typename detail::builder<table_,O{}...>::accessor
-                                              , typename detail::builder<table_,O{}...>::metadata
-                                              >;
+  table(rbr::settings<O...> const&)
+    ->  table < typename detail::builder<table_,rbr::settings(table_, O{}...)>::memory
+              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::accessor
+              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::metadata
+              >;
+
+  /// This deduction guide is provided for kwk::table to allow deduction from another container
+  template<concepts::container C>
+  table(C const&) ->  table < typename detail::builder<table_,C::archetype()>::memory
+                            , typename detail::builder<table_,C::archetype()>::accessor
+                            , typename detail::builder<table_,C::archetype()>::metadata
+                            >;
 
   //================================================================================================
   //! @}
@@ -109,9 +123,9 @@ namespace kwk
   /// Type helper
   template<auto... Settings> struct make_table
   {
-    using type = table< typename detail::builder<table_,Settings...>::memory
-                      , typename detail::builder<table_,Settings...>::accessor
-                      , typename detail::builder<table_,Settings...>::metadata
+    using type = table< typename detail::builder<table_,rbr::settings(table_,Settings...)>::memory
+                      , typename detail::builder<table_,rbr::settings(table_,Settings...)>::accessor
+                      , typename detail::builder<table_,rbr::settings(table_,Settings...)>::metadata
                       >;
   };
 

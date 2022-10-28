@@ -23,12 +23,13 @@ namespace kwk
     using const_reference   = typename Data::const_reference;
     using pointer           = typename Data::pointer;
     using const_pointer     = typename Data::const_pointer;
+    using shape_type        = typename Access::shape_type;
     using container_kind    = decltype(Tag);
 
     static constexpr auto static_order    = Access::static_order;
     static constexpr auto has_label       = MetaData::has_label;
 
-    constexpr container( container_kind )
+    constexpr container( container_kind ) noexcept
             : MetaData{ }
             , Data    { }
             , Access  { }
@@ -59,6 +60,11 @@ namespace kwk
     }
 
     friend void swap(container& a,container& b) noexcept { a.swap(b); }
+
+    static constexpr auto archetype() noexcept
+    {
+      return rbr::settings(Tag, as<value_type>, shape_type{});
+    }
 
     constexpr auto settings() const noexcept
     {

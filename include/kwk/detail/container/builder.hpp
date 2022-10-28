@@ -15,10 +15,10 @@
 
 namespace kwk::detail
 {
-  template<auto Tag, auto... Os>
+  template<auto Tag, rbr::concepts::settings auto Options>
   struct  builder
   {
-    static constexpr auto options  = rbr::settings{Tag,Os...};
+    static constexpr auto options  = Options;
     using options_t                = decltype(options);
 
     // Computes shape type
