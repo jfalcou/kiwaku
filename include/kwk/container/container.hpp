@@ -61,9 +61,9 @@ namespace kwk
 
     friend void swap(container& a,container& b) noexcept { a.swap(b); }
 
-    static constexpr auto archetype() noexcept
+    static constexpr auto archetype(auto tag) noexcept
     {
-      return rbr::settings(Tag, as<value_type>, shape_type{});
+      return rbr::settings(tag, as<value_type>, shape_type{});
     }
 
     constexpr auto settings() const noexcept

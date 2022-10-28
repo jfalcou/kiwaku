@@ -111,9 +111,9 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::table to allow deduction from another container
   template<concepts::container C>
-  table(C const&) ->  table < typename detail::builder<C::archetype()>::memory
-                            , typename detail::builder<C::archetype()>::accessor
-                            , typename detail::builder<C::archetype()>::metadata
+  table(C const&) ->  table < typename detail::builder<C::archetype(table_)>::memory
+                            , typename detail::builder<C::archetype(table_)>::accessor
+                            , typename detail::builder<C::archetype(table_)>::metadata
                             >;
 
   //================================================================================================

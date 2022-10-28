@@ -104,9 +104,9 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::view to allow deduction from another container
   template<concepts::container C>
-  view(C const&)  -> view < typename detail::builder<C::archetype()>::memory
-                          , typename detail::builder<C::archetype()>::accessor
-                          , typename detail::builder<C::archetype()>::metadata
+  view(C const&)  -> view < typename detail::builder<C::archetype(view_)>::memory
+                          , typename detail::builder<C::archetype(view_)>::accessor
+                          , typename detail::builder<C::archetype(view_)>::metadata
                           >;
 
   //================================================================================================
