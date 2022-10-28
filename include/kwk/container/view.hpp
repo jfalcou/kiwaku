@@ -89,24 +89,24 @@ namespace kwk
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
   view(O const&...)
-    ->  view< typename detail::builder<view_,rbr::settings(view_, O{}...)>::memory
-            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::accessor
-            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::metadata
+    ->  view< typename detail::builder<rbr::settings(view_, O{}...)>::memory
+            , typename detail::builder<rbr::settings(view_, O{}...)>::accessor
+            , typename detail::builder<rbr::settings(view_, O{}...)>::metadata
             >;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
   template<rbr::concepts::option... O>
   view(rbr::settings<O...> const&)
-    ->  view< typename detail::builder<view_,rbr::settings(view_, O{}...)>::memory
-            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::accessor
-            , typename detail::builder<view_,rbr::settings(view_, O{}...)>::metadata
+    ->  view< typename detail::builder<rbr::settings(view_, O{}...)>::memory
+            , typename detail::builder<rbr::settings(view_, O{}...)>::accessor
+            , typename detail::builder<rbr::settings(view_, O{}...)>::metadata
             >;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another container
   template<concepts::container C>
-  view(C const&)  -> view < typename detail::builder<view_,C::archetype()>::memory
-                          , typename detail::builder<view_,C::archetype()>::accessor
-                          , typename detail::builder<view_,C::archetype()>::metadata
+  view(C const&)  -> view < typename detail::builder<C::archetype()>::memory
+                          , typename detail::builder<C::archetype()>::accessor
+                          , typename detail::builder<C::archetype()>::metadata
                           >;
 
   //================================================================================================
@@ -116,9 +116,9 @@ namespace kwk
   /// Type helper
   template<auto... Settings> struct make_view
   {
-    using type = view < typename detail::builder<view_,rbr::settings(view_,Settings...)>::memory
-                      , typename detail::builder<view_,rbr::settings(view_,Settings...)>::accessor
-                      , typename detail::builder<view_,rbr::settings(view_,Settings...)>::metadata
+    using type = view < typename detail::builder<rbr::settings(view_,Settings...)>::memory
+                      , typename detail::builder<rbr::settings(view_,Settings...)>::accessor
+                      , typename detail::builder<rbr::settings(view_,Settings...)>::metadata
                       >;
   };
 

@@ -15,40 +15,32 @@
 
 namespace kwk::detail
 {
-  template<auto Tag, rbr::concepts::settings auto Options>
+  template<rbr::concepts::settings auto Options>
   struct  builder
   {
-    static constexpr auto options  = Options;
-    using options_t                = decltype(options);
+    static constexpr auto options   = Options;
+    static constexpr auto kind      = Options[category];
+    using options_t                 = decltype(options);
+    using shape_t                   = result::pick_t<size, options_t>;
 
     // Computes shape type
     static constexpr auto shape   = []()
     {
-      if constexpr(!concepts::descriptor<result::pick_t<size, options_t>>)
-        return pick(size, options);
-      else
-        return kwk::shape<pick(size, options)>{};
+      if constexpr(!concepts::descriptor<shape_t>)  return pick(size, options);
+      else                                          return kwk::shape<pick(size, options)>{};
     }();
 
     // Computes stride type
     static constexpr auto stride  =  []()
     {
-      if constexpr(!concepts::descriptor<result::pick_t<size, options_t>>)
-        return pick(strides, options);
-      else
-        return pick(strides, rbr::settings(Tag, shape));
+      if constexpr(!concepts::descriptor<shape_t>)  return pick(strides, options);
+      else                                          return pick(strides, rbr::settings(kind,shape));
     }();
 
-    // Builds accessor
-    using accessor  = detail::accessor<shape, stride>;
-
-    // Builds metadata type;
-    using metadata  = detail::metadata<result::pick_t<label, options_t>>;
-
-    // Computes value type
+    // Builds all elements of a container: accessor, metadata, memory block
+    using accessor    = detail::accessor<shape, stride>;
+    using metadata    = detail::metadata<result::pick_t<label, options_t>>;
     using value_type  = typename result::pick_t<kwk::type,options_t>::type;
-
-    // Builds data_block type
-    using memory  = block_t<Tag, shape, value_type, options_t>;
+    using memory      = block_t<kind, shape, value_type, options_t>;
   };
 }

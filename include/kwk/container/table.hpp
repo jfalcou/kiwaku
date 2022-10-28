@@ -96,24 +96,24 @@ namespace kwk
   /// This deduction guide is provided for kwk::table to allow deduction from a list of options
   template<rbr::concepts::option... O>
   table(O const&...)
-    ->  table < typename detail::builder<table_,rbr::settings(table_, O{}...)>::memory
-              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::accessor
-              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::metadata
+    ->  table < typename detail::builder<rbr::settings(table_, O{}...)>::memory
+              , typename detail::builder<rbr::settings(table_, O{}...)>::accessor
+              , typename detail::builder<rbr::settings(table_, O{}...)>::metadata
               >;
 
   /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
   template<rbr::concepts::option... O>
   table(rbr::settings<O...> const&)
-    ->  table < typename detail::builder<table_,rbr::settings(table_, O{}...)>::memory
-              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::accessor
-              , typename detail::builder<table_,rbr::settings(table_, O{}...)>::metadata
+    ->  table < typename detail::builder<rbr::settings(table_, O{}...)>::memory
+              , typename detail::builder<rbr::settings(table_, O{}...)>::accessor
+              , typename detail::builder<rbr::settings(table_, O{}...)>::metadata
               >;
 
   /// This deduction guide is provided for kwk::table to allow deduction from another container
   template<concepts::container C>
-  table(C const&) ->  table < typename detail::builder<table_,C::archetype()>::memory
-                            , typename detail::builder<table_,C::archetype()>::accessor
-                            , typename detail::builder<table_,C::archetype()>::metadata
+  table(C const&) ->  table < typename detail::builder<C::archetype()>::memory
+                            , typename detail::builder<C::archetype()>::accessor
+                            , typename detail::builder<C::archetype()>::metadata
                             >;
 
   //================================================================================================
@@ -123,9 +123,9 @@ namespace kwk
   /// Type helper
   template<auto... Settings> struct make_table
   {
-    using type = table< typename detail::builder<table_,rbr::settings(table_,Settings...)>::memory
-                      , typename detail::builder<table_,rbr::settings(table_,Settings...)>::accessor
-                      , typename detail::builder<table_,rbr::settings(table_,Settings...)>::metadata
+    using type = table< typename detail::builder<rbr::settings(table_,Settings...)>::memory
+                      , typename detail::builder<rbr::settings(table_,Settings...)>::accessor
+                      , typename detail::builder<rbr::settings(table_,Settings...)>::metadata
                       >;
   };
 
