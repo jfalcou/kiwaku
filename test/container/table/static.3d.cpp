@@ -2,14 +2,12 @@
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
-  SPDX-License-Identifier:   KIWAKU - Containers Well Made
-  Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
 #include "test.hpp"
 #include <kwk/container.hpp>
-#include <algorithm>
+#include <kwk/algorithm/for_each.hpp>
 #include <array>
 #include <vector>
 
@@ -29,10 +27,9 @@ TTS_CASE( "Build a 3D table from a C array" )
   TTS_EXPECT( v.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&v(0,0,0),&ref[0]);
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(v);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-        TTS_EQUAL(v(i0,i1,i2), ref[i0+kwk::dim<0>(v)*(i1+kwk::dim<1>(v)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+4*(i1+i2*3)]); }
+                      , v
+                      );
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(3_c, 4_c, 2_c) };
 
@@ -42,10 +39,9 @@ TTS_CASE( "Build a 3D table from a C array" )
   TTS_EXPECT( w.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&w(0,0,0),&ref[0]);
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(w);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-        TTS_EQUAL(w(i0,i1,i2), ref[i0+kwk::dim<0>(w)*(i1+kwk::dim<1>(w)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+3*(i1+i2*4)]); }
+                      , w
+                      );
 };
 
 TTS_CASE( "Build a 3D table from std::array" )
@@ -64,10 +60,9 @@ TTS_CASE( "Build a 3D table from std::array" )
   TTS_EXPECT( v.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&v(0,0,0),&ref[0]);
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(v);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-        TTS_EQUAL(v(i0,i1,i2), ref[i0+kwk::dim<0>(v)*(i1+kwk::dim<1>(v)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+4*(i1+i2*3)]); }
+                      , v
+                      );
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(3_c, 4_c, 2_c) };
 
@@ -77,10 +72,9 @@ TTS_CASE( "Build a 3D table from std::array" )
   TTS_EXPECT( w.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&w(0,0,0),&ref[0]);
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(w);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-        TTS_EQUAL(w(i0,i1,i2), ref[i0+kwk::dim<0>(w)*(i1+kwk::dim<1>(w)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+3*(i1+i2*4)]); }
+                      , w
+                      );
 };
 
 TTS_CASE( "Build a 3D table with constexpr shape settings from a ContiguousRange" )
@@ -99,10 +93,9 @@ TTS_CASE( "Build a 3D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( v.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&v(0,0,0),&ref[0]);
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(v);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-        TTS_EQUAL(v(i0,i1,i2), ref[i0+kwk::dim<0>(v)*(i1+kwk::dim<1>(v)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+4*(i1+i2*3)]); }
+                      , v
+                      );
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(3_c, 4_c, 2_c) };
 
@@ -112,10 +105,9 @@ TTS_CASE( "Build a 3D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( w.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&w(0,0,0),&ref[0]);
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(w);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-        TTS_EQUAL(w(i0,i1,i2), ref[i0+kwk::dim<0>(w)*(i1+kwk::dim<1>(w)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+3*(i1+i2*4)]); }
+                      , w
+                      );
 };
 
 TTS_CASE( "Build a 3D table with constexpr shape settings from a pointer" )
@@ -134,10 +126,9 @@ TTS_CASE( "Build a 3D table with constexpr shape settings from a pointer" )
   TTS_EXPECT( v.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&v(0,0,0),&ref[0]);
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(v);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-        TTS_EQUAL(v(i0,i1,i2), ref[i0+kwk::dim<0>(v)*(i1+kwk::dim<1>(v)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+4*(i1+i2*3)]); }
+                      , v
+                      );
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(3_c, 4_c, 2_c) };
 
@@ -147,8 +138,7 @@ TTS_CASE( "Build a 3D table with constexpr shape settings from a pointer" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)      );
   TTS_EXPECT( w.shape().is_fully_static           );
 
-  for(std::size_t i2 = 0;i2<kwk::dim<2>(w);++i2)
-    for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-      for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-        TTS_EQUAL(w(i0,i1,i2), ref[i0+kwk::dim<0>(w)*(i1+kwk::dim<1>(w)*i2)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2) { TTS_EQUAL(e, ref[i0+3*(i1+i2*4)]); }
+                      , w
+                      );
 };

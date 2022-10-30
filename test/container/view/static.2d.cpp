@@ -2,14 +2,12 @@
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
-  SPDX-License-Identifier:   KIWAKU - Containers Well Made
-  Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
 #include "test.hpp"
 #include <kwk/container.hpp>
-#include <algorithm>
+#include <kwk/algorithm/for_each.hpp>
 #include <array>
 #include <vector>
 
@@ -26,9 +24,7 @@ TTS_CASE( "Build a 2D view from a C array" )
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-      TTS_EQUAL(v(i0,i1), ref[i0+i1*kwk::dim<0>(v)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
 
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(3_c, 4_c) };
 
@@ -37,9 +33,7 @@ TTS_CASE( "Build a 2D view from a C array" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-      TTS_EQUAL(w(i0,i1), ref[i0+i1*kwk::dim<0>(w)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
 };
 
 TTS_CASE( "Build a 2D view from std::array" )
@@ -55,9 +49,7 @@ TTS_CASE( "Build a 2D view from std::array" )
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-      TTS_EQUAL(v(i0,i1), ref[i0+i1*kwk::dim<0>(v)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
 
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(3_c, 4_c) };
 
@@ -66,9 +58,7 @@ TTS_CASE( "Build a 2D view from std::array" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-      TTS_EQUAL(w(i0,i1), ref[i0+i1*kwk::dim<0>(w)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
 };
 
 TTS_CASE( "Build a 2D view with constexpr shape settings from a ContiguousRange" )
@@ -84,9 +74,7 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a ContiguousRange"
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-      TTS_EQUAL(v(i0,i1), ref[i0+i1*kwk::dim<0>(v)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
 
   std::vector<float> const cref = {1,2,3,4,5,6,7,8,9,10,11,12};
 
@@ -97,9 +85,7 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a ContiguousRange"
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-      TTS_EQUAL(w(i0,i1), ref[i0+i1*kwk::dim<0>(w)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
 };
 
 
@@ -116,9 +102,7 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a pointer" )
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3));
   TTS_EXPECT( v.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(v);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(v);++i0)
-      TTS_EQUAL(v(i0,i1), ref[i0+i1*kwk::dim<0>(v)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
 
   std::vector<float> const cref = {1,2,3,4,5,6,7,8,9,10,11,12};
 
@@ -129,7 +113,5 @@ TTS_CASE( "Build a 2D view with constexpr shape settings from a pointer" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4));
   TTS_EXPECT( w.shape().is_fully_static   );
 
-  for(std::size_t i1 = 0;i1<kwk::dim<1>(w);++i1)
-    for(std::size_t i0 = 0;i0<kwk::dim<0>(w);++i0)
-      TTS_EQUAL(w(i0,i1), ref[i0+i1*kwk::dim<0>(w)]);
+  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
 };
