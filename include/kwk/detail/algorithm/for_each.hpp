@@ -27,7 +27,7 @@ namespace kwk
                                       {
                                         return [=](auto... is)
                                         {
-                                          for(std::size_t i = 0;i<m;++i)
+                                          for(decltype(m) i = 0;i<m;++i)
                                             acc(i,is...);
                                         };
                                       }
@@ -49,7 +49,7 @@ namespace kwk
                                       {
                                         return [=](auto... is)
                                         {
-                                          for(std::size_t i = 0;i<m;++i)
+                                          for(decltype(m) i = 0;i<m;++i)
                                             acc(i,is...);
                                         };
                                       }

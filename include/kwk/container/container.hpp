@@ -36,7 +36,7 @@ namespace kwk
     {}
 
     constexpr container( rbr::concepts::option auto const&... params )
-            : container{ rbr::settings(Tag, params...) }
+            : container{ rbr::merge(rbr::settings(params...), rbr::settings(Tag)) }
     {}
 
     constexpr container(rbr::concepts::settings auto const& params)
@@ -61,6 +61,11 @@ namespace kwk
 
     friend void swap(container& a,container& b) noexcept { a.swap(b); }
 
+    static constexpr auto archetype() noexcept
+    {
+      return rbr::settings(as<value_type>, shape_type{});
+    }
+
     static constexpr auto archetype(auto tag) noexcept
     {
       return rbr::settings(tag, as<value_type>, shape_type{});
@@ -68,7 +73,12 @@ namespace kwk
 
     constexpr auto settings() const noexcept
     {
-      return rbr::settings(Tag,source = pointer(get_data()), this->shape());
+      return rbr::settings(source = pointer(get_data()), this->shape());
+    }
+
+    constexpr auto settings(auto tag) const noexcept
+    {
+      return rbr::settings(tag, source = pointer(get_data()), this->shape());
     }
 
     friend std::ostream& operator<<(std::ostream& os, container const& v)
