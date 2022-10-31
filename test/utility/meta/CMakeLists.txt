@@ -6,6 +6,7 @@
 set ( SOURCES
       end.cpp
       fixed.cpp
+      ratio.cpp
     )
 
 make_unit("utility.meta" ${SOURCES})

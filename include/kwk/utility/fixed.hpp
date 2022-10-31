@@ -57,13 +57,21 @@ namespace kwk
     {
       return os << +N << "_c";
     }
+
+    constexpr auto operator-() noexcept { return constant<-N>{}; }
   };
 
   template<auto N, auto M>
-  constexpr auto operator-(constant<N>, constant<M>) noexcept
-  {
-    return constant<N-M>{};
-  }
+  constexpr auto operator+(constant<N>, constant<M>) noexcept { return constant<N+M>{}; }
+
+  template<auto N, auto M>
+  constexpr auto operator-(constant<N>, constant<M>) noexcept { return constant<N-M>{}; }
+
+  template<auto N, auto M>
+  constexpr auto operator*(constant<N>, constant<M>) noexcept { return constant<N*M>{}; }
+
+  template<auto N, auto M>
+  constexpr auto operator/(constant<N>, constant<M>) noexcept { return constant<N/M>{}; }
 
   //================================================================================================
   //! @ingroup utility
@@ -71,9 +79,8 @@ namespace kwk
   //!
   //! The underlying type is computed from the actual value to be the smallest fitting type.
   //! This means, for example, that kwk::fixed<123> is an instance of
-  //! `std::integral_constant<unsigned char,123>`. When negative values are used, signed integral
-  //! types are selected, i.e kwk::fixed<-999> is an instance of
-  //! `std::integral_constant<signed short,-999>`.
+  //! `kwk::constant<unsigned char,123>`. When negative values are used, signed integral
+  //! types are selected, i.e kwk::fixed<-999> is an instance of `kwk::constant<signed short,-999>`.
   //================================================================================================
   template<auto N>
   inline constexpr auto fixed = constant<N>{};
