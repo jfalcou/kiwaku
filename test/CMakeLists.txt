@@ -5,6 +5,7 @@
 ##==================================================================================================
 include(make_unit)
 
+add_subdirectory(concepts)
 add_subdirectory(container)
 add_subdirectory(docs)
 add_subdirectory(utility)
