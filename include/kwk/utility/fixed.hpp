@@ -76,11 +76,6 @@ namespace kwk
   //================================================================================================
   //! @ingroup utility
   //! @brief Provides a short-cut to define a `std::integral_constant` value from a literal integer
-  //!
-  //! The underlying type is computed from the actual value to be the smallest fitting type.
-  //! This means, for example, that kwk::fixed<123> is an instance of
-  //! `kwk::constant<unsigned char,123>`. When negative values are used, signed integral
-  //! types are selected, i.e kwk::fixed<-999> is an instance of `kwk::constant<signed short,-999>`.
   //================================================================================================
   template<auto N>
   inline constexpr auto fixed = constant<N>{};
@@ -97,6 +92,9 @@ namespace kwk
     //==============================================================================================
     //! @ingroup utility
     //! @brief User-defined literal suffix for compile-time constant
+    //!
+    //! The underlying type is computed from the actual value to be the smallest fitting type.
+    //! This means, for example, that `123_c` is an instance of `kwk::constant<unsigned char,123>`.
     //==============================================================================================
     template<char... c> constexpr auto operator"" _c() noexcept
     {

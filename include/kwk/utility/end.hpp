@@ -8,36 +8,89 @@
 #pragma once
 
 #include <kwk/utility/fixed.hpp>
+#include <kwk/utility/ratio.hpp>
 #include <type_traits>
+#include <iomanip>
 #include <ostream>
 
 namespace kwk
 {
-  template<typename T>
-  struct relative_end
-  {
-    T offset;
-    constexpr relative_end(T o = {}): offset(o) {}
-
-    template<typename U>
-    constexpr auto operator-(U o) const noexcept { return relative_end{offset+o}; }
-
-    friend
-    std::ostream& operator<<(std::ostream& os, relative_end t) { return os << "end - " << t.offset; }
-  };
-
-  template<typename T>
-  constexpr auto offset(relative_end<T> v) noexcept { return v.offset; }
-
+  template<typename O, typename R>
   struct end_t
   {
-    template<typename U>
-    constexpr auto operator-(U o) const noexcept { return relative_end{o}; }
+    // Exact final formula : (end * factor + offset) / divisor
+    O shift;
+    R frac;
 
-    friend std::ostream& operator<<(std::ostream& os, end_t) { return os << "end"; }
+    constexpr auto offset()   const noexcept { return shift;      }
+    constexpr auto ratio()    const noexcept { return frac;       }
+    constexpr auto divisor()  const noexcept { return frac.denum; }
+    constexpr auto factor()   const noexcept { return frac.num;   }
+
+    constexpr end_t(O o, R f) noexcept : shift(o), frac(f)
+    {}
+
+    friend
+    std::ostream& operator<<(std::ostream& os, end_t t)
+    {
+      if(t.factor()  != 1)  os << t.factor() << " * end"; else os << "end";
+      if(t.divisor() != 1)  os << '/' << t.divisor();
+      if(t.offset()    != 0)  os << std::showpos << t.offset() << std::noshowpos;
+      return os;
+    }
+
+    constexpr auto size(auto n) const noexcept
+    {
+      return (n * factor() + offset()) / divisor();
+    }
   };
 
-  constexpr inline auto offset(end_t) noexcept { return fixed<0L>; }
+  /// Deduction guide
+  template<typename O, typename R> end_t(O, R) -> end_t<O, R>;
 
-  inline constexpr end_t end = {};
+  template<typename O, typename R>
+  constexpr auto operator+(end_t<O,R> e, auto o) noexcept
+  {
+    return end_t{o * e.divisor(), e.frac};
+  }
+
+  template<typename O, typename R>
+  constexpr auto operator+(auto o, end_t<O,R> e) noexcept
+  {
+    return e+o;
+  }
+
+  template<typename O, typename R>
+  constexpr auto operator-(end_t<O,R> e, auto o) noexcept
+  {
+    return end_t{- o * e.divisor(), e.frac};
+  }
+
+  template<typename O, typename R>
+  constexpr auto operator-(auto o, end_t<O,R> e) noexcept
+  {
+    return end_t{o * e.divisor(), - e.frac};
+  }
+
+
+  template<typename O, typename R>
+  constexpr auto operator*(end_t<O,R> e, auto o) noexcept
+  {
+    return end_t{e.offset() * o, e.ratio() * o};
+  }
+
+  template<typename O, typename R>
+  constexpr auto operator*(auto o, end_t<O,R> e) noexcept
+  {
+    return e * o;
+  }
+
+  template<typename O, typename R>
+  constexpr auto operator/(end_t<O,R> e, auto o) noexcept
+  {
+    return end_t{e.offset(), e.ratio() / o};
+  }
+
+  /// Object representing a whole dimension in slicing
+  inline constexpr end_t end = {fixed<0>, ratio{fixed<1>,fixed<1>}};
 };

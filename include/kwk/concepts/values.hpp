@@ -16,8 +16,8 @@ namespace kwk::concepts
   };
 
   template<typename T>
-  concept extremum = requires(T const& t)
+  concept extremum = requires(T const& t, int n)
   {
-    { offset(t) };
+    { t.size(n) };
   };
 };

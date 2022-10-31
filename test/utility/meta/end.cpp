@@ -9,17 +9,68 @@
 #include <kwk/utility/end.hpp>
 #include <kwk/utility/fixed.hpp>
 
-TTS_CASE( "end offset generation" )
+TTS_CASE( "Check end default state" )
 {
-  using namespace kwk::literals;
+  using kwk::end;
 
-  auto d = kwk::end - 4;
-  auto m = (kwk::end - 4) - 9;
-  auto s = kwk::end - 8_c;
-
-  TTS_EQUAL(d.offset,  4);
-  TTS_EQUAL(m.offset, 13);
-
-  TTS_EQUAL(s.offset,  8);
-  TTS_EXPR_IS(s.offset, kwk::constant<std::uint8_t(8)>);
+  TTS_EQUAL(end.offset()   , 0);
+  TTS_EQUAL(end.factor() , 1);
+  TTS_EQUAL(end.divisor(), 1);
 };
+
+TTS_CASE( "Check end + k and k + end" )
+{
+  using kwk::end;
+
+  TTS_EQUAL((end + 3).offset() ,  3);
+  TTS_EQUAL((end + 3).ratio(), (kwk::ratio{1,1}));
+
+  TTS_EQUAL((5 + end).offset() ,  5);
+  TTS_EQUAL((5 + end).ratio(), (kwk::ratio{1,1}));
+};
+
+TTS_CASE( "Check end - k and k - end" )
+{
+  using kwk::end;
+
+  TTS_EQUAL((end - 3).offset() ,  -3);
+  TTS_EQUAL((end - 3).ratio(), (kwk::ratio{1,1}));
+
+  TTS_EQUAL((5 - end).offset() ,  5);
+  TTS_EQUAL((5 - end).ratio(), (kwk::ratio{-1,1}));
+};
+
+TTS_CASE( "Check end * k and k * end" )
+{
+  using kwk::end;
+
+  TTS_EQUAL((end * 3).offset() ,  0);
+  TTS_EQUAL((end * 3).ratio(), (kwk::ratio{3,1}));
+
+  TTS_EQUAL(((end + 2) * 3).offset() ,  2*3);
+  TTS_EQUAL(((end + 2) * 3).ratio(), (kwk::ratio{3,1}));
+
+  TTS_EQUAL((5 * end).offset() ,  0);
+  TTS_EQUAL((5 * end).ratio(), (kwk::ratio{5,1}));
+
+  TTS_EQUAL((5 * (end + 7)).offset() , 5 * 7);
+  TTS_EQUAL((5 * (end + 7)).ratio(), (kwk::ratio{5,1}));
+};
+
+TTS_CASE( "Check end / k and k / end and corner cases" )
+{
+  using kwk::end;
+
+  TTS_EQUAL((end / 3).offset(),  0);
+  TTS_EQUAL((end / 3).ratio() , (kwk::ratio{1,3}));
+
+  TTS_EQUAL(((end + 2) / 3).offset(),  2);
+  TTS_EQUAL(((end + 2) / 3).ratio() , (kwk::ratio{1,3}));
+
+  TTS_EQUAL(((2 * end) / 3 + 1).offset(),  3);
+  TTS_EQUAL(((2 * end) / 3 + 1).ratio() , (kwk::ratio{2,3}));
+
+  TTS_EQUAL((((2 * end) / 3 + 1) / 2).offset(),  3);
+  TTS_EQUAL((((2 * end) / 3 + 1) / 2).ratio() , (kwk::ratio{2,6}));
+};
+
