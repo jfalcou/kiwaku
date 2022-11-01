@@ -49,8 +49,8 @@ TTS_CASE("Check slicing with end for kwk::from")
   auto shp = kwk::of_size(d0, s1);
 
   TTS_EQUAL( shp(t0, t0), kwk::of_size(0, 0));
-  TTS_TYPED_EQUAL(shp(t0, t0).extent<0>(), 0L);
-  TTS_TYPED_EQUAL(shp(t0, t0).extent<1>(), fixed<0UL>);
+  TTS_TYPED_EQUAL(shp(t0, t0).extent<0>(), 0LL);
+  TTS_TYPED_EQUAL(shp(t0, t0).extent<1>(), fixed<0LL>);
 };
 
 TTS_CASE("Check slicing with end-n for kwk::from")

@@ -63,7 +63,8 @@ namespace kwk
   template<typename O, typename R>
   constexpr auto operator-(end_t<O,R> e, auto o) noexcept
   {
-    return end_t{- o * e.divisor(), e.frac};
+    // Prevent overflow when end - large_unsigned occurs
+    return end_t{(fixed<-1>*o) * e.divisor(), e.frac};
   }
 
   template<typename O, typename R>
@@ -71,7 +72,6 @@ namespace kwk
   {
     return end_t{o * e.divisor(), - e.frac};
   }
-
 
   template<typename O, typename R>
   constexpr auto operator*(end_t<O,R> e, auto o) noexcept

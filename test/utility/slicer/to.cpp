@@ -44,8 +44,7 @@ TTS_CASE("Check slicing with end for kwk::to")
   using kwk::fixed;
   using kwk::end;
 
-  constexpr std::ptrdiff_t d0 = 1;
-  constexpr std::size_t    d1 = 3;
+  constexpr std::ptrdiff_t d0 = 1, d1 = 3;
   auto s1 = kwk::fixed<d1>;
   auto t0 = to(end);
 
