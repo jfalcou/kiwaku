@@ -20,23 +20,7 @@ namespace kwk
   template<typename T> struct from
   {
     T value;
-    from(T b) : value(b)
-    {
-      if constexpr( concepts::static_constant<T> )
-      {
-        static_assert ( static_cast<std::ptrdiff_t>(T::value) >= 0
-                      , "[kwk] - Out of bound index for kwk::from"
-                      );
-      }
-
-      if constexpr( std::integral<T> )
-      {
-        KIWAKU_ASSERT ( static_cast<std::ptrdiff_t>(value) >= 0
-                      , "[kwk] - Out of bound index for kwk::from("
-                        << value << ")"
-                      );
-      }
-    }
+    constexpr from(T b) : value(b) {}
 
     friend std::ostream& operator<<(std::ostream& os, from f)
     {
@@ -50,21 +34,14 @@ namespace kwk
   template<typename T> from(T) -> from<T>;
 
   template<auto Desc, typename T, std::size_t N>
-  constexpr auto reshape( shape<Desc> const& sh
-                        , from<T> f
-                        , kumi::index_t<N> const&
-                        ) noexcept
+  constexpr auto reshape(shape<Desc> const& sh, from<T> f, kumi::index_t<N> const&) noexcept
   {
     const auto result = [&]()
     {
-      if constexpr(concepts::extremum<T>) return offset(f.value);
-      else                                return sh.template extent<N>() - f.value;
+      if constexpr(concepts::extremum<T>) return f.value.size(sh.template extent<N>());
+      else                                return f.value;
     }();
 
-    KIWAKU_ASSERT ( static_cast<decltype(get<N>(sh))>(result) <= get<N>(sh)
-                  , "[kwk] - Out of bound index for: " << f
-                  );
-
-    return result;
+    return sh.template extent<N>() - result;
   }
 }

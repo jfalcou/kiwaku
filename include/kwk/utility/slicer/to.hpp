@@ -18,37 +18,32 @@ namespace kwk
 
   template<typename T> struct to
   {
-    T end;
-    to(T e) : end(e) {}
+    T value;
+    constexpr to(T e) : value(e) {}
 
     friend std::ostream& operator<<(std::ostream& os, to t)
     {
-      return os << "to(" << +t.end << ")";
+      os << "to(";
+      if constexpr(std::integral<decltype(t.value)>)  os << +t.value;
+      else                                            os <<  t.value;
+      return os<< ")";
     }
   };
-  
+
   template<typename T> to(T) -> to<T>;
 
   template<auto Desc, typename T, std::size_t N>
   constexpr auto reshape( [[maybe_unused]] shape<Desc> const& sh
-                        , to<T> f
+                        , to<T> t
                         , kumi::index_t<N> const&
                         ) noexcept
   {
-    if constexpr (is_static_extent_v<N,Desc> && requires{ T::value; })
+    auto result = [&]()
     {
-      static_assert ( static_cast<ptrdiff_t>(T::value) <= static_cast<ptrdiff_t>(get<N>(Desc))
-                    , "[kwk] - Out of bound index for kwk::to"
-                    );
-    }
-    else
-    {
-      KIWAKU_ASSERT ( static_cast<ptrdiff_t>(f.end) <= static_cast<ptrdiff_t>(get<N>(sh))
-                    , "[kwk] - Out of bound index for kwk::to("
-                      << f.end << ") for size: " << get<N>(sh)
-                    );
-    }
+      if constexpr(concepts::extremum<T>) return t.value.size(sh.template extent<N>());
+      else                                return t.value;
+    }();
 
-    return f.end;
+    return result;
   }
 }
