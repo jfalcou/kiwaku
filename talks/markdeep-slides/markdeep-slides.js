@@ -33,7 +33,7 @@ function initSlides() {
     if (/[/.]+/.test(options.theme)) {
         link.setAttribute("href", options.theme);
     } else {
-        link.setAttribute("href", "markdeep-slides/themes/" + options.theme + ".css");
+        link.setAttribute("href", "../markdeep-slides/themes/" + options.theme + ".css");
     }
     document.body.appendChild(link);
 
@@ -190,7 +190,7 @@ function processMarkdeepSlidesOptions() {
 function initMathJax() {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = "markdeep-slides/lib/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_SVG";
+    script.src = "../markdeep-slides/lib/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_SVG";
     document.getElementsByTagName("head")[0].appendChild(script);
 }
 
