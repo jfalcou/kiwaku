@@ -43,9 +43,9 @@ namespace kwk
 
     template<auto Value> constexpr auto clamp()
     {
-            if constexpr (std::bit_width(Value) <=  8)  return static_cast<std::uint8_t>(Value);
-      else  if constexpr (std::bit_width(Value) <= 16)  return static_cast<std::uint16_t>(Value);
-      else  if constexpr (std::bit_width(Value) <= 32)  return static_cast<std::uint32_t>(Value);
+            if constexpr (std::bit_width(Value) <=  7)  return static_cast<std::int8_t>(Value);
+      else  if constexpr (std::bit_width(Value) <= 15)  return static_cast<std::int16_t>(Value);
+      else  if constexpr (std::bit_width(Value) <= 31)  return static_cast<std::int32_t>(Value);
       else                                              return Value;
     }
   }
@@ -58,7 +58,7 @@ namespace kwk
       return os << +N << "_c";
     }
 
-    constexpr auto operator-() noexcept { return constant<-N>{}; }
+    constexpr auto operator-() noexcept { return constant<-1 * N>{}; }
   };
 
   template<auto N, auto M>

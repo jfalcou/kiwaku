@@ -15,13 +15,13 @@ TTS_CASE( "1D mixed shape constructor" )
 
   auto s1 = kwk::of_size(7);
   TTS_CONSTEXPR_EQUAL(sizeof(s1), sizeof(int) );
-  TTS_EQUAL(s1.order()           , 1           );
+  TTS_EQUAL(s1.order()          , 1           );
   TTS_EQUAL(s1.numel()          , 7           );
   TTS_EQUAL(get<0>(s1)          , 7           );
 
   auto s2 = kwk::of_size<std::int16_t>(33);
   TTS_CONSTEXPR_EQUAL(sizeof(s2), sizeof(std::int16_t));
-  TTS_EQUAL(s2.order()           , 1                   );
+  TTS_EQUAL(s2.order()          , 1                   );
   TTS_EQUAL(s2.numel()          , 33                  );
   TTS_EQUAL(get<0>(s2)          , 33                  );
 
@@ -29,31 +29,31 @@ TTS_CASE( "1D mixed shape constructor" )
   TTS_CONSTEXPR_EQUAL(sizeof(ss2) , sizeof(std::int16_t));
   TTS_EQUAL(ss2.order()           , 1                   );
   TTS_EQUAL(ss2.numel()           , 33                  );
-  TTS_EQUAL(get<0>(ss2)         , 33                  );
+  TTS_EQUAL(get<0>(ss2)           , 33                  );
 
   auto s2d = kwk::of_size(std::int16_t{33});
   TTS_CONSTEXPR_EQUAL(sizeof(s2d), sizeof(std::int16_t) );
-  TTS_EQUAL(s2d.order()           , 1                    );
+  TTS_EQUAL(s2d.order()          , 1                    );
   TTS_EQUAL(s2d.numel()          , 33                   );
   TTS_EQUAL(get<0>(s2d)          , 33                   );
 
   auto s3 = kwk::of_size(kwk::fixed<9>);
   TTS_CONSTEXPR_EQUAL(sizeof(s3)        , 1ULL);
-  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3)), 8ULL);
+  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3)), 4LL );
   TTS_EQUAL(s3.order()           , 1          );
   TTS_EQUAL(s3.numel()           , 9L         );
   TTS_EQUAL(get<0>(s3)           , 9UL        );
 
   auto s3d = kwk::of_size(kwk::fixed<390>);
   TTS_CONSTEXPR_EQUAL(sizeof(s3d)         , 1ULL  );
-  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3d)) , 8ULL  );
+  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3d)) , 4LL   );
   TTS_EQUAL(s3d.order()                   , 1     );
   TTS_EQUAL(s3d.numel()                   , 390   );
   TTS_EQUAL(get<0>(s3d)                   , 390UL );
 
   auto s4 = kwk::of_size<std::uint8_t>(11_c);
   TTS_CONSTEXPR_EQUAL(sizeof(s4)        , 1ULL);
-  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s4)), 8ULL);
+  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s4)), 1LL );
   TTS_EQUAL(s4.order()           , 1          );
   TTS_EQUAL(s4.numel()          , 11          );
   TTS_EQUAL(get<0>(s4)          , 11U         );

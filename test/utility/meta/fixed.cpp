@@ -31,7 +31,7 @@ TTS_CASE( "fixed<N> behavior - Literal API" )
   TTS_EQUAL ( cst_1.value , short(16540) );
   TTS_EQUAL ( cst_2.value , 123456U      );
 
-  TTS_EXPR_IS( cst_0.value , std::uint8_t  const);
-  TTS_EXPR_IS( cst_1.value , std::uint16_t const);
-  TTS_EXPR_IS( cst_2.value , std::uint32_t const);
+  TTS_EXPR_IS( cst_0.value , std::int8_t  const);
+  TTS_EXPR_IS( cst_1.value , std::int16_t const);
+  TTS_EXPR_IS( cst_2.value , std::int32_t const);
 };

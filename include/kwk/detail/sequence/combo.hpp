@@ -41,9 +41,9 @@ namespace kwk::detail
       return combo<T,Elems...,joker>{kumi::push_back(data,_)};
     }
 
-    constexpr auto operator[](std::size_t i)  const
+    constexpr auto operator[](auto i)  const
     {
-      return combo<T,Elems...,std::size_t>{kumi::push_back(data,i)};
+      return combo<T,Elems...,base_type>{kumi::push_back(data,static_cast<base_type>(i))};
     }
 
     template<std::size_t N>
@@ -171,7 +171,7 @@ namespace kwk::detail
   {
     using base_type = T;
     constexpr auto operator()()               const { return combo<T,joker>{_}; }
-    constexpr auto operator[](std::size_t i)  const { return combo<T,std::size_t>{i}; }
+    constexpr auto operator[](auto i)  const { return combo<T,base_type>{static_cast<base_type>(i)}; }
   };
 }
 
