@@ -42,15 +42,15 @@ TTS_CASE("Check slicing with end for kwk::from")
   using kwk::fixed;
   using kwk::end;
 
-  constexpr std::ptrdiff_t d0 = 1, d1 = 3;
+  constexpr std::ptrdiff_t d0 = 1, d1 = 3, zero = 0;
   auto s1 = kwk::fixed<d1>;
   auto t0 = from(end);
 
   auto shp = kwk::of_size(d0, s1);
 
   TTS_EQUAL( shp(t0, t0), kwk::of_size(0, 0));
-  TTS_TYPED_EQUAL(shp(t0, t0).extent<0>(), 0LL);
-  TTS_TYPED_EQUAL(shp(t0, t0).extent<1>(), fixed<0LL>);
+  TTS_TYPED_EQUAL(shp(t0, t0).extent<0>(), zero);
+  TTS_TYPED_EQUAL(shp(t0, t0).extent<1>(), fixed<zero>);
 };
 
 TTS_CASE("Check slicing with end-n for kwk::from")

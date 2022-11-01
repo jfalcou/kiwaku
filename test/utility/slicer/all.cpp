@@ -28,20 +28,20 @@ TTS_CASE("Check static slicing for kwk::_")
   auto shp = kwk::of_size(2_c, 4_c, 5_c, 10_c);
 
   TTS_EQUAL(shp(kwk::_)            , kwk::of_size(400));
-  TTS_EQUAL(shp(kwk::_).extent<0>(), 400U);
+  TTS_EQUAL(shp(kwk::_).extent<0>(), 400);
 
   TTS_EQUAL(shp(kwk::_, kwk::_)            , kwk::of_size(2, 200));
-  TTS_EQUAL(shp(kwk::_, kwk::_).extent<0>(), 2U);
-  TTS_EQUAL(shp(kwk::_, kwk::_).extent<1>(), 200U);
+  TTS_EQUAL(shp(kwk::_, kwk::_).extent<0>(), 2);
+  TTS_EQUAL(shp(kwk::_, kwk::_).extent<1>(), 200);
 
   TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_)            , kwk::of_size(2, 4, 50));
-  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_).extent<0>(), 2U);
-  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_).extent<1>(), 4U);
-  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_).extent<2>(), 50U);
+  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_).extent<0>(), 2);
+  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_).extent<1>(), 4);
+  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_).extent<2>(), 50);
 
   TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_)            , shp);
-  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<0>(), 2U);
-  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<1>(), 4U);
-  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<2>(), 5U);
-  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<3>(), 10U);
+  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<0>(), 2);
+  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<1>(), 4);
+  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<2>(), 5);
+  TTS_EQUAL(shp(kwk::_, kwk::_, kwk::_, kwk::_).extent<3>(), 10);
 };

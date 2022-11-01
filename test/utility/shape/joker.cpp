@@ -23,13 +23,13 @@ TTS_CASE( "1D shape constructor with joker indexes" )
   TTS_EQUAL( get<0>(d3), 3);
 
   kwk::shape<kwk::extent[3]> s1(kwk::_);
-  TTS_EQUAL( get<0>(s1), 3UL);
+  TTS_EQUAL( get<0>(s1), 3);
 
   kwk::shape<kwk::extent[3]> s2(3);
-  TTS_EQUAL( get<0>(s2), 3UL);
+  TTS_EQUAL( get<0>(s2), 3);
 
   kwk::shape<kwk::extent[3]> s3(3_c);
-  TTS_EQUAL( get<0>(s3), 3UL);
+  TTS_EQUAL( get<0>(s3), 3);
 };
 
 // ------------------- Generalized cartesian product for testing

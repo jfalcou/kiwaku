@@ -27,7 +27,7 @@ TTS_CASE( "Default constructed shape behavior - Mixed 1D")
   TTS_EQUAL(shape_s.order()  , 1L  );
 
   TTS_EQUAL(get<0>(shape_d)  , 0L  );
-  TTS_EQUAL(get<0>(shape_s)  , 7UL );
+  TTS_EQUAL(get<0>(shape_s)  , 7L  );
 };
 
 TTS_CASE( "Default constructed shape behavior - Mixed 2D")
@@ -54,13 +54,13 @@ TTS_CASE( "Default constructed shape behavior - Mixed 2D")
 
   TTS_EQUAL(get<0>(shape_dd), 0L  );
   TTS_EQUAL(get<0>(shape_ds), 0L  );
-  TTS_EQUAL(get<0>(shape_sd), 7UL );
-  TTS_EQUAL(get<0>(shape_ss), 7UL );
+  TTS_EQUAL(get<0>(shape_sd), 7L );
+  TTS_EQUAL(get<0>(shape_ss), 7L );
 
-  TTS_EQUAL(get<1>(shape_dd), 1L  );
-  TTS_EQUAL(get<1>(shape_ds), 7UL );
-  TTS_EQUAL(get<1>(shape_sd), 1L  );
-  TTS_EQUAL(get<1>(shape_ss), 5UL );
+  TTS_EQUAL(get<1>(shape_dd), 1L );
+  TTS_EQUAL(get<1>(shape_ds), 7L );
+  TTS_EQUAL(get<1>(shape_sd), 1L );
+  TTS_EQUAL(get<1>(shape_ss), 5L );
 };
 
 TTS_CASE( "Default constructed shape behavior - Mixed 3D")
@@ -105,28 +105,28 @@ TTS_CASE( "Default constructed shape behavior - Mixed 3D")
   TTS_EQUAL(get<0>(shape_dds), 0L );
   TTS_EQUAL(get<0>(shape_dsd), 0L );
   TTS_EQUAL(get<0>(shape_dss), 0L );
-  TTS_EQUAL(get<0>(shape_sdd), 7UL);
-  TTS_EQUAL(get<0>(shape_sds), 7UL);
-  TTS_EQUAL(get<0>(shape_ssd), 7UL);
-  TTS_EQUAL(get<0>(shape_sss), 7UL);
+  TTS_EQUAL(get<0>(shape_sdd), 7L );
+  TTS_EQUAL(get<0>(shape_sds), 7L );
+  TTS_EQUAL(get<0>(shape_ssd), 7L );
+  TTS_EQUAL(get<0>(shape_sss), 7L );
 
   TTS_EQUAL(get<1>(shape_ddd), 1L );
   TTS_EQUAL(get<1>(shape_dds), 1L );
-  TTS_EQUAL(get<1>(shape_dsd), 7UL);
-  TTS_EQUAL(get<1>(shape_dss), 7UL);
+  TTS_EQUAL(get<1>(shape_dsd), 7L );
+  TTS_EQUAL(get<1>(shape_dss), 7L );
   TTS_EQUAL(get<1>(shape_sdd), 1L );
   TTS_EQUAL(get<1>(shape_sds), 1L );
-  TTS_EQUAL(get<1>(shape_ssd), 5UL);
-  TTS_EQUAL(get<1>(shape_sss), 5UL);
+  TTS_EQUAL(get<1>(shape_ssd), 5L );
+  TTS_EQUAL(get<1>(shape_sss), 5L );
 
   TTS_EQUAL(get<2>(shape_ddd), 1L );
-  TTS_EQUAL(get<2>(shape_dds), 7UL);
+  TTS_EQUAL(get<2>(shape_dds), 7L );
   TTS_EQUAL(get<2>(shape_dsd), 1L );
-  TTS_EQUAL(get<2>(shape_dss), 5UL);
+  TTS_EQUAL(get<2>(shape_dss), 5L );
   TTS_EQUAL(get<2>(shape_sdd), 1L );
-  TTS_EQUAL(get<2>(shape_sds), 5UL);
+  TTS_EQUAL(get<2>(shape_sds), 5L );
   TTS_EQUAL(get<2>(shape_ssd), 1L );
-  TTS_EQUAL(get<2>(shape_sss), 3UL);
+  TTS_EQUAL(get<2>(shape_sss), 3L );
 };
 
 
@@ -149,22 +149,22 @@ TTS_CASE( "Default constructed shape behavior - Mixed 4D")
   kwk::shape<kwk::extent[9][7][5]( )> shape_sssd;
   kwk::shape<kwk::extent[9][7][5][3]> shape_ssss;
 
-  TTS_EQUAL(sizeof(shape_dddd) , 32UL);
-  TTS_EQUAL(sizeof(shape_ddds) , 24UL);
-  TTS_EQUAL(sizeof(shape_ddsd) , 24UL);
-  TTS_EQUAL(sizeof(shape_ddss) , 16UL);
-  TTS_EQUAL(sizeof(shape_dsdd) , 24UL);
-  TTS_EQUAL(sizeof(shape_dsds) , 16UL);
-  TTS_EQUAL(sizeof(shape_dssd) , 16UL);
-  TTS_EQUAL(sizeof(shape_dsss) ,  8UL);
-  TTS_EQUAL(sizeof(shape_sddd) , 24UL);
-  TTS_EQUAL(sizeof(shape_sdds) , 16UL);
-  TTS_EQUAL(sizeof(shape_sdsd) , 16UL);
-  TTS_EQUAL(sizeof(shape_sdss) ,  8UL);
-  TTS_EQUAL(sizeof(shape_ssdd) , 16UL);
-  TTS_EQUAL(sizeof(shape_ssds) ,  8UL);
-  TTS_EQUAL(sizeof(shape_sssd) ,  8UL);
-  TTS_EQUAL(sizeof(shape_ssss) ,  1UL);
+  TTS_EQUAL(sizeof(shape_dddd) , 32UL );
+  TTS_EQUAL(sizeof(shape_ddds) , 24UL );
+  TTS_EQUAL(sizeof(shape_ddsd) , 24UL );
+  TTS_EQUAL(sizeof(shape_ddss) , 16UL );
+  TTS_EQUAL(sizeof(shape_dsdd) , 24UL );
+  TTS_EQUAL(sizeof(shape_dsds) , 16UL );
+  TTS_EQUAL(sizeof(shape_dssd) , 16UL );
+  TTS_EQUAL(sizeof(shape_dsss) ,  8UL );
+  TTS_EQUAL(sizeof(shape_sddd) , 24UL );
+  TTS_EQUAL(sizeof(shape_sdds) , 16UL );
+  TTS_EQUAL(sizeof(shape_sdsd) , 16UL );
+  TTS_EQUAL(sizeof(shape_sdss) ,  8UL );
+  TTS_EQUAL(sizeof(shape_ssdd) , 16UL );
+  TTS_EQUAL(sizeof(shape_ssds) ,  8UL );
+  TTS_EQUAL(sizeof(shape_sssd) ,  8UL );
+  TTS_EQUAL(sizeof(shape_ssss) ,  1UL );
 
   TTS_EQUAL(shape_dddd.nbdims(), 1L);
   TTS_EQUAL(shape_ddds.nbdims(), 4L);
@@ -208,66 +208,66 @@ TTS_CASE( "Default constructed shape behavior - Mixed 4D")
   TTS_EQUAL(get<0>(shape_dsds), 0L  );
   TTS_EQUAL(get<0>(shape_dssd), 0L  );
   TTS_EQUAL(get<0>(shape_dsss), 0L  );
-  TTS_EQUAL(get<0>(shape_sddd), 9UL );
-  TTS_EQUAL(get<0>(shape_sdds), 9UL );
-  TTS_EQUAL(get<0>(shape_sdsd), 9UL );
-  TTS_EQUAL(get<0>(shape_sdss), 9UL );
-  TTS_EQUAL(get<0>(shape_ssdd), 9UL );
-  TTS_EQUAL(get<0>(shape_ssds), 9UL );
-  TTS_EQUAL(get<0>(shape_sssd), 9UL );
-  TTS_EQUAL(get<0>(shape_ssss), 9UL );
+  TTS_EQUAL(get<0>(shape_sddd), 9L  );
+  TTS_EQUAL(get<0>(shape_sdds), 9L  );
+  TTS_EQUAL(get<0>(shape_sdsd), 9L  );
+  TTS_EQUAL(get<0>(shape_sdss), 9L  );
+  TTS_EQUAL(get<0>(shape_ssdd), 9L  );
+  TTS_EQUAL(get<0>(shape_ssds), 9L  );
+  TTS_EQUAL(get<0>(shape_sssd), 9L  );
+  TTS_EQUAL(get<0>(shape_ssss), 9L  );
 
   TTS_EQUAL(get<1>(shape_dddd), 1L  );
   TTS_EQUAL(get<1>(shape_ddds), 1L  );
   TTS_EQUAL(get<1>(shape_ddsd), 1L  );
   TTS_EQUAL(get<1>(shape_ddss), 1L  );
-  TTS_EQUAL(get<1>(shape_dsdd), 7UL );
-  TTS_EQUAL(get<1>(shape_dsds), 7UL );
-  TTS_EQUAL(get<1>(shape_dssd), 7UL );
-  TTS_EQUAL(get<1>(shape_dsss), 7UL );
+  TTS_EQUAL(get<1>(shape_dsdd), 7L  );
+  TTS_EQUAL(get<1>(shape_dsds), 7L  );
+  TTS_EQUAL(get<1>(shape_dssd), 7L  );
+  TTS_EQUAL(get<1>(shape_dsss), 7L  );
   TTS_EQUAL(get<1>(shape_sddd), 1L  );
   TTS_EQUAL(get<1>(shape_sdds), 1L  );
   TTS_EQUAL(get<1>(shape_sdsd), 1L  );
   TTS_EQUAL(get<1>(shape_sdss), 1L  );
-  TTS_EQUAL(get<1>(shape_ssdd), 7UL );
-  TTS_EQUAL(get<1>(shape_ssds), 7UL );
-  TTS_EQUAL(get<1>(shape_sssd), 7UL );
-  TTS_EQUAL(get<1>(shape_ssss), 7UL );
+  TTS_EQUAL(get<1>(shape_ssdd), 7L  );
+  TTS_EQUAL(get<1>(shape_ssds), 7L  );
+  TTS_EQUAL(get<1>(shape_sssd), 7L  );
+  TTS_EQUAL(get<1>(shape_ssss), 7L  );
 
   TTS_EQUAL(get<2>(shape_dddd), 1L  );
   TTS_EQUAL(get<2>(shape_ddds), 1L  );
-  TTS_EQUAL(get<2>(shape_ddsd), 7UL );
-  TTS_EQUAL(get<2>(shape_ddss), 7UL );
+  TTS_EQUAL(get<2>(shape_ddsd), 7L  );
+  TTS_EQUAL(get<2>(shape_ddss), 7L  );
   TTS_EQUAL(get<2>(shape_dsdd), 1L  );
   TTS_EQUAL(get<2>(shape_dsds), 1L  );
-  TTS_EQUAL(get<2>(shape_dssd), 5UL );
-  TTS_EQUAL(get<2>(shape_dsss), 5UL );
+  TTS_EQUAL(get<2>(shape_dssd), 5L  );
+  TTS_EQUAL(get<2>(shape_dsss), 5L  );
   TTS_EQUAL(get<2>(shape_sddd), 1L  );
   TTS_EQUAL(get<2>(shape_sdds), 1L  );
-  TTS_EQUAL(get<2>(shape_sdsd), 7UL );
-  TTS_EQUAL(get<2>(shape_sdss), 7UL );
+  TTS_EQUAL(get<2>(shape_sdsd), 7L  );
+  TTS_EQUAL(get<2>(shape_sdss), 7L  );
   TTS_EQUAL(get<2>(shape_ssdd), 1L  );
   TTS_EQUAL(get<2>(shape_ssds), 1L  );
-  TTS_EQUAL(get<2>(shape_sssd), 5UL );
-  TTS_EQUAL(get<2>(shape_ssss), 5UL );
+  TTS_EQUAL(get<2>(shape_sssd), 5L  );
+  TTS_EQUAL(get<2>(shape_ssss), 5L  );
 
   TTS_EQUAL(get<3>(shape_dddd), 1L  );
-  TTS_EQUAL(get<3>(shape_ddds), 7UL );
+  TTS_EQUAL(get<3>(shape_ddds), 7L  );
   TTS_EQUAL(get<3>(shape_ddsd), 1L  );
-  TTS_EQUAL(get<3>(shape_ddss), 5UL );
+  TTS_EQUAL(get<3>(shape_ddss), 5L  );
   TTS_EQUAL(get<3>(shape_dsdd), 1L  );
-  TTS_EQUAL(get<3>(shape_dsds), 5UL );
+  TTS_EQUAL(get<3>(shape_dsds), 5L  );
   TTS_EQUAL(get<3>(shape_dssd), 1L  );
-  TTS_EQUAL(get<3>(shape_dsss), 3UL );
-  TTS_EQUAL(get<2>(shape_ssss), 5UL );
+  TTS_EQUAL(get<3>(shape_dsss), 3L  );
+  TTS_EQUAL(get<2>(shape_ssss), 5L  );
   TTS_EQUAL(get<3>(shape_sddd), 1L  );
-  TTS_EQUAL(get<3>(shape_sdds), 7UL );
+  TTS_EQUAL(get<3>(shape_sdds), 7L  );
   TTS_EQUAL(get<3>(shape_sdsd), 1L  );
-  TTS_EQUAL(get<3>(shape_sdss), 5UL );
+  TTS_EQUAL(get<3>(shape_sdss), 5L  );
   TTS_EQUAL(get<3>(shape_ssdd), 1L  );
-  TTS_EQUAL(get<3>(shape_ssds), 5UL );
+  TTS_EQUAL(get<3>(shape_ssds), 5L  );
   TTS_EQUAL(get<3>(shape_sssd), 1L  );
-  TTS_EQUAL(get<3>(shape_ssss), 3UL );
+  TTS_EQUAL(get<3>(shape_ssss), 3L  );
 };
 
 TTS_CASE_TPL( "Default constructed shape behavior - Dynamic 5D -> 10D", sizes<5>)
@@ -285,4 +285,3 @@ TTS_CASE_TPL( "Default constructed shape behavior - Dynamic 5D -> 10D", sizes<5>
   for(int i = 1;i<sh.order();++i)
     TTS_EQUAL(sh[i] , 1);
 };
-
