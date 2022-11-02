@@ -24,7 +24,159 @@ Joël FALCOU, Hadrien GRASLAND, David CHAMONT.
 
 ---
 
+## Idée de plan
+
+  - 2 slides d'intro
+  - 4 slides sur les templates & concepts
+  - 4 slides sur constexpr etc
+  - 2 slide avec exemples / conclusions
+  - (ou alors 3, 3, 4 à voir)
+
+---
+
+## Problématique HPC et calcul en physique des hautes énergies (Intro 1/3)
+
+### Ergonomie et performances difficiles à concilier
+  * Nécessite des algorithmes performants
+  * Exécution sur architectures parallèles modernes
+  * Temps de développement colossal pour des non experts
+  * => code souvent complexe ou mauvaises performances
+
+### Devrait être accessible aux non experts
+  * Code de haut niveau compréhensible écrit par et pour des scientifiques
+  * Abstraction de la complexité matérielle et algorithmique sous-jacente
+  * => Structures de données et algorithmes de haut niveau, faciles à manier mais performants
+
+---
+
+## Intro 1/3
+
+### Problèmes de performances et d'ergonomie en C++
+- Habituellement on se base sur l'utilisation de templates pour être à la fois efficace et avoir un code agréable à manipuler.
+- Mais c'est compliqué de faire des choses compliquées avec les "templates à l'ancienne" (avant C++20).
+- Les messages d'erreur sont très longs et peu explicites.
+
+---
+
+## Intro 2/3
+
+### En C++20, le commité de standardisation a proposé des solutions
+  - Simplification du code des templates avec constexpr etc. (calculs à la compilation)
+  - Templates contraints par les concepts
+  - Exemples pour montrer ce à quoi ça ressemble, comment ça s'utilise et les problèmes que ça résout + (à la fin ?) donner le use-case avec la bibliothèque Kiwaku
+
+---
+
+## Concepts - Plan pour les concepts (redondant)
+
+- 1 slide d'explication de ce que c'est
+- 1 exemple avec les concepts du standard : std::same_as, std::default_constructible etc.
+- 1 exemple simple (est-ce que je suis un type arithmétique, ie pouvoir faire a+b et a*b etc)
+- 1 exemple avec de la combination de concepts (arithmétique et streamable par ex)
+- 1 gros exemple (de Joël) avec un concept qui correspond à la totalité des types algébriques
+- Slide où on dit qu'on peut aussi surcharger des fonction avec (ou surcharger des structures)
+- (2x3 bullets points pour expliquer la problématique et la solution)
+
+---
+
+## Concepts - Explication des concepts
+
+---
+
+## Concepts - Exemple avec les concepts du standard
+- std::same_as
+- std::default_constructible
+- etc.
+
+---
+
+## Concepts - Exemple simple
+- Concept de type arithmétique (i.e. pouvoir faire a+b et a*b)
+
+---
+
+## Concepts - Exemple avec de la combination de concepts
+- Combinaison de concept arithmétique et streamable par exemple
+
+---
+
+## Concepts - Gros exemple (de Joël)
+- Avec un concept qui correspond à la totalité des types algébriques
+
+---
+
+## Concepts - Surcharge de fonction
+
+- Slide où on dit qu'on peut aussi surcharger des fonction avec (ou surcharger des structures)
+
+---
+
+## Constexpr - Plan pour constexpr (redondant)
+
+- Notion de calcul à la compilation : avant c'était nul mais maintenant on a constexpr qu'on met où on veut
+- fonctions constexpr
+- valeurs constexpr
+- if constexpr
+- exemple
+- paramètres template non typés (ex avoir des structures en paramètre template et non juste des entiers ou des types) (shape, extent[]() ce sont des nttp, non template type parameters)
+
+---
+
+## Constexpr - Notion de calcul à la compilation
+- Avant c'était nul mais maintenant on a constexpr qu'on met où on veut
+
+---
+
+## Constexpr - Fonctions constexpr
+
+---
+
+## Constexpr - Valeurs constexpr
+
+---
+
+## Constexpr - if constexpr
+
+---
+
+## Constexpr - exemple
+
+---
+
+## Constexpr - Paramètres template non typés
+- ex avoir des structures en paramètre template et non juste des entiers ou des types
+- shape, extent[]() sont des nttp, non template type parameters
+
+---
+
+## Exemples / Conclusions
+- 1, 2, 3 ou 4 slides ici.
+
+---
+
+
+## Exemples avec Kiwaku
+
+- Et 2-3 exemples réalises avec Kiwaku.
+
+- On va prendre un exemple qui ressemble au code moche de Detray mais pas une copie directe pour ne risquer de froisser personne. ("c'est pas ça être générique") Les concepts permettent une généricité claire et propre.
+
+- Montrer ce à quoi ressemblent nos interfaces, propres et avec peu de templates.
+
+- On peut écrire un exemple avec beaucoup trop de templates (12m10). Et montrer qu'avec des constexpr et des concepts c'est beaucoup plus lisible et agréable à développer.
+
+---
+
+ANCIENS SLIDES
+
+---
+
 ## Idées plan
+
+* 1 slide d'intro qui résume en bullet points ce bloc de texte :
+> Dans le contexte du calcul haute performance et d'autant plus dans le cas du calcul scientifique et de la physique des hautes énergies, l'ergonomie et la performance du code de calcul sont deux aspects souvent antagonistes
+
+> Le code se doit d’être performant au niveau algorithmique et au niveau de son adéquation avec les architectures parallèles modernes. Au niveau ergonomie, il est vital que le code écrit par et pour des scientifiques soit compréhensibles par ces derniers. Afin de bénéficier du meilleur de ces deux aspects, il convient d'utiliser des structures de données de haut niveau et des algorithmes permettant de simplifier le code tout en conservant un haut niveau de performance.
 
 ---
 
