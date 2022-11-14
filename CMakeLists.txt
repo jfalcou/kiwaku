@@ -35,7 +35,7 @@ option( KIWAKU_BUILD_DOCS  "Build docs for raberu"  OFF )
 if( KIWAKU_BUILD_TEST )
   enable_testing()
   include(CTest)
-  add_custom_target(kwk-unit)
+  add_custom_target(unit)
   add_subdirectory(test)
 endif()
 

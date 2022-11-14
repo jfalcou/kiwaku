@@ -7,8 +7,11 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/concept.hpp>
-#include <kwk/allocator.hpp>
+/// @brief Main **KIWAKU** namespace
+namespace kwk {}
+
+#include <kwk/concepts.hpp>
+#include <kwk/utility.hpp>
 #include <kwk/container.hpp>
-#include <kwk/algorithm.hpp>
-#include <kwk/options.hpp>
+// #include <kwk/algorithm.hpp>
+#include <kwk/settings.hpp>

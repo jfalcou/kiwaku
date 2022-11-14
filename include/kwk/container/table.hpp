@@ -7,13 +7,9 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/algorithm/for_each.hpp>
-#include <kwk/container/options.hpp>
-#include <kwk/container/components/container.hpp>
+#include <kwk/container/container.hpp>
 #include <kwk/detail/raberu.hpp>
-#include <kwk/options.hpp>
 #include <type_traits>
-
 
 namespace kwk
 {
@@ -24,12 +20,10 @@ namespace kwk
   //!   @tparam Type  Type of the underlying data
   //!   @tparam Os    Variadic list of settings describing current's table behavior
   //================================================================================================
-  template<typename Type, auto... Os>
-  struct  table  : container<tag::table_,Type,Os...>
+  template<typename Data, typename Access, typename MetaData>
+  struct  table  : container<kwk::table_,Data,Access,MetaData>
   {
-    using parent = container<tag::table_,Type,Os...>;
-
-    static constexpr auto tag = parent::tag;
+    using parent = container<kwk::table_,Data,Access,MetaData>;
 
     /// Underlying value type
     using value_type        = typename parent::value_type;
@@ -46,6 +40,9 @@ namespace kwk
     /// Associated const pointer type
     using const_pointer     = typename parent::const_pointer;
 
+    /// Associated @ref kwk::shape type
+    using shape_type = typename parent::shape_type;
+
     /// Compile-time @ref glossary-order
     static constexpr auto static_order = parent::static_order;
 
@@ -54,37 +51,41 @@ namespace kwk
     //! @{
     //==============================================================================================
 
-    constexpr table() : parent{rbr::settings(Os...)} {}
+    /// Default constructor
+    constexpr table() : parent{kwk::table_} {}
 
     /// Construct a table from a list of options
-    constexpr table(rbr::concepts::option auto const&... opts) : parent{rbr::settings(opts...)} {}
+    constexpr table(rbr::concepts::option auto const&... opts) : table{rbr::settings{opts...}} {}
 
     /// Construct a table from a settings descriptor
-    constexpr table(rbr::concepts::settings auto const& params) : parent{ params } {}
+    constexpr table(rbr::concepts::settings auto const& opts)
+            : parent{ []<typename S>(S const& p)
+                      { return rbr::merge(rbr::settings{kwk::table_}, p); }(opts)
+                    }
+    {}
+
+    /// Move constructor
+    constexpr table(table&&) = default;
+
+    /// Move assignment operator
+    constexpr table& operator=(table&&) = default;
+
+    /// Copy constructor
+    constexpr table(concepts::container<as<value_type>, shape_type{}> auto const& other)
+            : table(other.settings())
+    {}
+
+    /// Copy assignment operator
+    constexpr table& operator=(concepts::container<as<value_type>, shape_type{}> auto const& other)
+    {
+      table local(other);
+      parent::swap(local);
+      return *this;
+    }
 
     //==============================================================================================
     //! @}
     //==============================================================================================
-
-    constexpr auto settings() const noexcept
-    {
-      auto const opts   = rbr::settings(Os...);
-
-      if constexpr(parent::has_label)
-      {
-        return rbr::merge ( rbr::settings ( size  = parent::shape()
-                                          , label = parent::label()
-                                          )
-                          , opts
-                          );
-      }
-      else
-      {
-        return rbr::merge ( rbr::settings(size = parent::shape())
-                          , opts
-                          );
-      }
-    }
   };
 
   //================================================================================================
@@ -94,14 +95,40 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::table to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  table(O const&...) -> table<typename options::element<tag::table_,rbr::settings<O...>>::type,O{}...>;
+  table(O const&...)
+    ->  table < typename detail::builder<rbr::settings(table_, O{}...)>::memory
+              , typename detail::builder<rbr::settings(table_, O{}...)>::accessor
+              , typename detail::builder<rbr::settings(table_, O{}...)>::metadata
+              >;
 
   /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
   template<rbr::concepts::option... O>
   table(rbr::settings<O...> const&)
-      -> table<typename options::element<tag::table_,rbr::settings<O...>>::type, O{}...>;
+    ->  table < typename detail::builder<rbr::settings(table_, O{}...)>::memory
+              , typename detail::builder<rbr::settings(table_, O{}...)>::accessor
+              , typename detail::builder<rbr::settings(table_, O{}...)>::metadata
+              >;
+
+  /// This deduction guide is provided for kwk::table to allow deduction from another container
+  template<concepts::container C>
+  table(C const&) ->  table < typename detail::builder<C::archetype(table_)>::memory
+                            , typename detail::builder<C::archetype(table_)>::accessor
+                            , typename detail::builder<C::archetype(table_)>::metadata
+                            >;
 
   //================================================================================================
   //! @}
   //================================================================================================
+
+  /// Type helper
+  template<auto... Settings> struct make_table
+  {
+    using type = table< typename detail::builder<rbr::settings(table_,Settings...)>::memory
+                      , typename detail::builder<rbr::settings(table_,Settings...)>::accessor
+                      , typename detail::builder<rbr::settings(table_,Settings...)>::metadata
+                      >;
+  };
+
+  template<auto... Settings>
+  using make_table_t = typename make_table<Settings...>::type;
 }

@@ -7,10 +7,8 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/container/options.hpp>
-#include <kwk/container/components/container.hpp>
+#include <kwk/container/container.hpp>
 #include <kwk/detail/raberu.hpp>
-#include <kwk/options.hpp>
 #include <type_traits>
 
 namespace kwk
@@ -19,15 +17,12 @@ namespace kwk
   //! @ingroup containers
   //! @brief Non-owning, contiguous multi-dimensional container
   //!
-  //!   @tparam Type  Type of the underlying data
-  //!   @tparam Os    Variadic list of settings describing current's view behavior
+  //! @tparam Os    Variadic list of settings describing current's view behavior
   //================================================================================================
-  template<typename Type, auto... Os>
-  struct  view  : container<tag::view_,Type,Os...>
+  template<typename Data, typename Access, typename MetaData>
+  struct  view  : container<kwk::view_,Data,Access,MetaData>
   {
-    using parent = container<tag::view_,Type,Os...>;
-
-    static constexpr auto tag = parent::tag;
+    using parent = container<kwk::view_,Data,Access,MetaData>;
 
     /// Underlying value type
     using value_type        = typename parent::value_type;
@@ -44,6 +39,9 @@ namespace kwk
     /// Associated const pointer type
     using const_pointer     = typename parent::const_pointer;
 
+    /// Associated @ref kwk::shape type
+    using shape_type = typename parent::shape_type;
+
     /// Compile-time @ref glossary-order
     static constexpr auto static_order = parent::static_order;
 
@@ -52,42 +50,35 @@ namespace kwk
     //! @{
     //==============================================================================================
 
+    /// Default constructor
+    constexpr view() : parent{kwk::view_} {}
+
     /// Construct a view from a list of options
-    constexpr view(rbr::concepts::option auto const&... opts) : parent{rbr::settings(opts...)} {}
+    constexpr view(rbr::concepts::option auto const&... opts) : view{rbr::settings{opts...}} {}
 
     /// Construct a view from a settings descriptor
-    constexpr view(rbr::concepts::settings auto const& params) : parent{ params } {}
+    constexpr view(rbr::concepts::settings auto const& opts)
+            : parent{ []<typename S>(S const& p)
+                      { return rbr::merge(rbr::settings{kwk::view_}, p); }(opts)
+                    }
+    {}
+
+    /// Shallow copy constructor
+    constexpr view(concepts::container<as<value_type>, shape_type{}> auto const& other)
+            : view(other.settings())
+    {}
+
+    /// Shallow assignment operator
+    constexpr view& operator=(concepts::container<as<value_type>, shape_type{}> auto const& other)
+    {
+      view local(other);
+      parent::swap(local);
+      return *this;
+    }
 
     //==============================================================================================
     //! @}
     //==============================================================================================
-
-    constexpr auto settings() const noexcept
-    {
-      // Retrieve all basic options + correct shape value
-      auto const base   = rbr::settings(Os...);
-      auto const opts   = rbr::merge( rbr::settings(size = parent::shape())
-                                    , base
-                                    );
-
-      // Retrieve potential offset to rebuild proper view target
-      auto const offset = options::offset(tag, opts);
-
-      if constexpr(parent::has_label)
-      {
-        return rbr::merge ( rbr::settings ( source = parent::data() + offset
-                                                , label = parent::label()
-                                                )
-                          , opts
-                          );
-      }
-      else
-      {
-        return rbr::merge ( rbr::settings(source = parent::data() + offset)
-                          , opts
-                          );
-      }
-    }
   };
 
   //================================================================================================
@@ -97,14 +88,40 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  view(O const&...) -> view<typename options::element<tag::view_,rbr::settings<O...>>::type,O{}...>;
+  view(O const&...)
+    ->  view< typename detail::builder<rbr::settings(view_, O{}...)>::memory
+            , typename detail::builder<rbr::settings(view_, O{}...)>::accessor
+            , typename detail::builder<rbr::settings(view_, O{}...)>::metadata
+            >;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
   template<rbr::concepts::option... O>
   view(rbr::settings<O...> const&)
-      -> view<typename options::element<tag::view_,rbr::settings<O...>>::type, O{}...>;
+    ->  view< typename detail::builder<rbr::settings(view_, O{}...)>::memory
+            , typename detail::builder<rbr::settings(view_, O{}...)>::accessor
+            , typename detail::builder<rbr::settings(view_, O{}...)>::metadata
+            >;
+
+  /// This deduction guide is provided for kwk::view to allow deduction from another container
+  template<concepts::container C>
+  view(C const&)  -> view < typename detail::builder<C::archetype(view_)>::memory
+                          , typename detail::builder<C::archetype(view_)>::accessor
+                          , typename detail::builder<C::archetype(view_)>::metadata
+                          >;
 
   //================================================================================================
   //! @}
   //================================================================================================
+
+  /// Type helper
+  template<auto... Settings> struct make_view
+  {
+    using type = view < typename detail::builder<rbr::settings(view_,Settings...)>::memory
+                      , typename detail::builder<rbr::settings(view_,Settings...)>::accessor
+                      , typename detail::builder<rbr::settings(view_,Settings...)>::metadata
+                      >;
+  };
+
+  template<auto... Settings>
+  using make_view_t = typename make_view<Settings...>::type;
 }

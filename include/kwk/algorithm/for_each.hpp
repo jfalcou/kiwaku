@@ -7,45 +7,35 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/container.hpp>
+#include <kwk/detail/algorithm/for_each.hpp>
+#include <kwk/detail/abi.hpp>
 #include <cstddef>
 #include <utility>
 
 namespace kwk
 {
-  namespace detail
-  {
-    //================================================================================================
-    // n-Dimensional for_each algorithm
-    //================================================================================================
-    template<typename Func, typename Dim, typename Container>
-    constexpr void for_each(Func f, Container&& c, Dim d)
-    {
-      for(std::ptrdiff_t i=get<0>(d);i<get<1>(d);++i) f(KWK_FWD(c), i);
-    }
-
-    template<typename Func, typename Container, typename Dim, typename... Dims>
-    constexpr void for_each(Func f, Container&& c, Dim d0, Dims... ds)
-    {
-      detail::for_each( [f,d0](auto&& x, auto... is)
-                        {
-                          for(std::ptrdiff_t i=get<0>(d0);i<get<1>(d0);++i)
-                            f(KWK_FWD(x), i,is...);
-                        }
-                      , KWK_FWD(c)
-                      , ds...
-                      );
-    }
-  }
-
   //================================================================================================
   // Order N for_each algorithm
   //================================================================================================
-  template<typename Func, typename Container>
-  constexpr void for_each(Func f, Container&& c)
+  template<typename Func, concepts::container Container>
+  constexpr auto for_each(Func&& f, Container&& c)
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      return detail::for_each(f, KWK_FWD(c), kumi::tuple{first<N>(c),last<N>(c)}... );
+      return detail::for_each(KWK_FWD(f), KWK_FWD(c), c.shape() );
+    }( std::make_index_sequence<std::remove_cvref_t<Container>::static_order>{} );
+  }
+
+  //================================================================================================
+  // Order N for_each_index algorithm
+  //================================================================================================
+  template<typename Func, concepts::container Container>
+  constexpr auto for_each_index(Func&& f, Container&& c)
+  {
+    return [&]<std::size_t... N>(std::index_sequence<N...> const&)
+    {
+      return detail::for_each_index(KWK_FWD(f), KWK_FWD(c), c.shape() );
     }( std::make_index_sequence<std::remove_cvref_t<Container>::static_order>{} );
   }
 }
