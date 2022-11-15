@@ -27,6 +27,36 @@ namespace kwk
   constexpr auto compress(shape<Desc> const& s) noexcept;
 
   //================================================================================================
+  //! @brief Generates a kwk::shape from a list of sizes
+  //! @tparam SizeType  Integral type used to store sizes. If unspecified, `std::ptrdiff_t` is used.
+  //! @param  ds        Variadic pack of sizes
+  //================================================================================================
+  template<typename SizeType, int..., concepts::extent<SizeType>... Ds>
+  constexpr auto of_size(Ds... ds) noexcept
+  {
+    return detail::make_extent<kwk::shape,SizeType>(ds...);
+  }
+
+  template<int..., concepts::extent<std::ptrdiff_t>... Ds>
+  constexpr auto of_size( Ds... ds) noexcept
+  {
+    using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
+    return of_size<type_t>(ds...);
+  }
+
+  template<int..., kumi::product_type Ds>
+  constexpr auto of_size( Ds ds) noexcept
+  {
+    return kumi::apply([](auto... s) { return of_size(s...); }, ds);
+  }
+
+  template<typename SizeType,int..., kumi::product_type Ds>
+  constexpr auto of_size( Ds ds) noexcept
+  {
+    return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
+  }
+
+  //================================================================================================
   //! @ingroup containers
   //! @brief  Fixed order shape with mixed size capability
   //!
@@ -376,9 +406,21 @@ namespace kwk
     //! @return   An instance of @ref kwk::shape corresponding to the shape of the selected
     //!           sub-volume
     //==============================================================================================
+    // has to be defined inline due to (Apple) Clang deficiencies
+    // https://github.com/llvm/llvm-project/issues/58952
+    // but also after of_size
+    //==============================================================================================
     template<typename... Slicers>
-    inline constexpr auto operator()(Slicers const&... s) const noexcept
-    requires( sizeof...(Slicers) <= static_order);
+    constexpr auto operator()(Slicers const&... s ) const noexcept
+    requires( sizeof...(Slicers) <= static_order )
+    {
+      auto  shd     = compress<sizeof...(s)>(*this);
+      auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return reshape(shd,m,i); }
+                                      , kumi::tie(s...)
+                                      );
+
+      return kumi::apply( [](auto... v) { return of_size(v...); }, sliced );
+    }
 
     protected:
     template<auto S2, typename Comp, typename Check>
@@ -444,50 +486,6 @@ namespace kwk
     shape<compress<N>(Desc)> that;
     static_cast<new_t&>(that) = compress<N>(static_cast<old_t const&>(s));
     return that;
-  }
-
-  //================================================================================================
-  //! @brief Generates a kwk::shape from a list of sizes
-  //! @tparam SizeType  Integral type used to store sizes. If unspecified, `std::ptrdiff_t` is used.
-  //! @param  ds        Variadic pack of sizes
-  //================================================================================================
-  template<typename SizeType, int..., concepts::extent<SizeType>... Ds>
-  constexpr auto of_size(Ds... ds) noexcept
-  {
-    return detail::make_extent<kwk::shape,SizeType>(ds...);
-  }
-
-  template<int..., concepts::extent<std::ptrdiff_t>... Ds>
-  constexpr auto of_size( Ds... ds) noexcept
-  {
-    using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
-    return of_size<type_t>(ds...);
-  }
-
-  template<int..., kumi::product_type Ds>
-  constexpr auto of_size( Ds ds) noexcept
-  {
-    return kumi::apply([](auto... s) { return of_size(s...); }, ds);
-  }
-
-  template<typename SizeType,int..., kumi::product_type Ds>
-  constexpr auto of_size( Ds ds) noexcept
-  {
-    return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
-  }
-
-  // Implementation of slicing interface
-  template<auto Shape>
-  template<typename... Slicers>
-  inline constexpr auto shape<Shape>::operator()(Slicers const&... s) const noexcept
-  requires( sizeof...(Slicers) <= static_order)
-  {
-    auto  shd     = compress<sizeof...(s)>(*this);
-    auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return reshape(shd,m,i); }
-                                    , kumi::tie(s...)
-                                    );
-
-    return kumi::apply( [](auto... v) { return of_size(v...); }, sliced );
   }
 }
 
