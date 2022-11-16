@@ -20,49 +20,91 @@ jobs:
         - {test: CPM                , mode: 2 }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Check KIWAKU works with ${{ matrix.cfg.test }}
         uses: ./.github/actions/integration
         with:
           branch: '${{ github.head_ref }}'
           mode: '${{ matrix.cfg.mode }}'
 
-  debug:
+  gcc-linux:
     runs-on: [ubuntu-latest]
     strategy:
       fail-fast: false
       matrix:
         cfg:
-        - { compiler: clang++, opts: "-stdlib=libc++ -O0" , linker: -stdlib=libc++  }
-        - { compiler: clang++, opts: -O0                  , linker:                 }
-        - { compiler: g++-12 , opts: -O0                  , linker:                 }
+        - { opts: -O0                   }
+        - { opts: -Ofast -flto -DNDEBUG }
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v3
-      - name: DEBUG - Kiwaku using ${{ matrix.cfg.compiler }} with ${{ matrix.cfg.opts }}
+      - name: DEBUG - Kiwaku using g++-12 with ${{ matrix.cfg.opts }}
         uses: ./.github/actions/run_docker
         with:
-          compiler:       '${{ matrix.cfg.compiler }}'
+          compiler:       'g++-12'
+          options:        '${{ matrix.cfg.opts }}'
+          linker_options: ''
+          cpu:            2
+
+  clang-linux:
+    runs-on: [ubuntu-latest]
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+        - { opts: -O0                                   , linker:                }
+        - { opts: "-Ofast -flto -DNDEBUG"               , linker:                }
+        - { opts: "-Ofast -flto -DNDEBUG -stdlib=libc++", linker: -stdlib=libc++ }
+        - { opts: "-O0 -stdlib=libc++"                  , linker: -stdlib=libc++ }
+    steps:
+      - name: Fetch current branch
+        uses: actions/checkout@v3
+      - name: DEBUG - Kiwaku using clang++ with ${{ matrix.cfg.opts }}
+        uses: ./.github/actions/run_docker
+        with:
+          compiler:       'clang++'
           options:        '${{ matrix.cfg.opts }}'
           linker_options: '${{ matrix.cfg.linker }}'
           cpu:            2
 
-  release:
-    runs-on: [ubuntu-latest]
+  clang-macosx:
+    runs-on: [macos-12]
     strategy:
       fail-fast: false
       matrix:
         cfg:
-        - { compiler: clang++, opts: "-stdlib=libc++ -Ofast -flto -DNDEBUG", linker: -stdlib=libc++ }
-        - { compiler: clang++, opts: -Ofast -flto -DNDEBUG                 , linker:                }
-        - { compiler: g++-12 , opts: -Ofast -flto -DNDEBUG                 , linker:                }
+        - { opts: -O0                                   , linker:                 }
+        - { opts: "-O0 -stdlib=libc++"                  , linker: -stdlib=libc++  }
+        - { opts: "-Ofast -flto -DNDEBUG"               , linker:                 }
+        - { opts: "-Ofast -flto -DNDEBUG -stdlib=libc++", linker: -stdlib=libc++  }
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v3
-      - name: Release - Kiwaku with ${{ matrix.cfg.compiler }}  with ${{ matrix.cfg.opts }}
-        uses: ./.github/actions/run_docker
-        with:
-          compiler:       '${{ matrix.cfg.compiler }}'
-          options:        '${{ matrix.cfg.opts }}'
-          linker_options: '${{ matrix.cfg.linker }}'
-          cpu:            2
+      - name: Running CMake for clang++ with ${{ matrix.cfg.opts }}
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.cfg.linker }}"
+      - name: Compiling Unit Tests
+        run:  cd build && make unit -j 2
+      - name: Running Unit Tests
+        run: cd build && ctest --output-on-failure -j 2
+
+  gcc-macosx:
+    runs-on: [macos-12]
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+        - { opts: -O0                   }
+        - { opts: -Ofast -flto -DNDEBUG }
+    steps:
+      - name: Fetch current branch
+        uses: actions/checkout@v3
+      - name: Running CMake for g++ with ${{ matrix.cfg.opts }}
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}"
+      - name: Compiling Unit Tests
+        run:  cd build && make unit -j 2
+      - name: Running Unit Tests
+        run: cd build && ctest --output-on-failure -j 2
