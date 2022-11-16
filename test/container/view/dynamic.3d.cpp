@@ -27,12 +27,7 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a C array" )
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
   TTS_EXPECT_NOT( v.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+sz*(i1+i2*(sz-1))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(sz-1,sz,sz-2) };
 
@@ -41,12 +36,7 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a C array" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
   TTS_EXPECT_NOT( w.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+(sz-1)*(i1+i2*sz)]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 3D view with dynamic shape settings from std::array" )
@@ -65,12 +55,7 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from std::array" )
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
   TTS_EXPECT_NOT( v.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+sz*(i1+i2*(sz-1))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(sz-1,sz,sz-2) };
 
@@ -79,12 +64,7 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from std::array" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
   TTS_EXPECT_NOT( w.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+(sz-1)*(i1+i2*sz)]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 3D view with dynamic shape settings from a ContiguousRange" )
@@ -103,12 +83,7 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a ContiguousRange" )
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
   TTS_EXPECT_NOT( v.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+sz*(i1+i2*(sz-1))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   std::vector<float> const cref = { 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
                                   ,13,14,15,16,17,18,19,20,21,22,23,24
@@ -121,12 +96,7 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a ContiguousRange" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
   TTS_EXPECT_NOT( w.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+(sz-1)*(i1+i2*sz)]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 3D view with dynamic shape settings from a pointer" )
@@ -145,12 +115,7 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a pointer" )
   TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
   TTS_EXPECT_NOT( v.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+sz*(i1+i2*(sz-1))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   std::vector<float> const cref = { 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12
                                   ,13,14,15,16,17,18,19,20,21,22,23,24
@@ -163,10 +128,5 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a pointer" )
   TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
   TTS_EXPECT_NOT( w.shape().is_fully_static                     );
 
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2)
-                      {
-                        TTS_EQUAL(e, ref[i0+(sz-1)*(i1+i2*sz)]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };

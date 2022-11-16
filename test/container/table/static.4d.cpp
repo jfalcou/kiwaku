@@ -29,12 +29,7 @@ TTS_CASE( "Build a 4D table from a C array" )
   TTS_EXPECT( v.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&v(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+2*(i1+3*(i2+2*i3))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::table{ kwk::source = ref
                     , kwk::of_size(3_c, 2_c, 2_c, 2_c)
@@ -46,12 +41,7 @@ TTS_CASE( "Build a 4D table from a C array" )
   TTS_EXPECT( w.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&w(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+3*(i1+2*(i2+2*i3))]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 4D table from std::array" )
@@ -73,12 +63,7 @@ TTS_CASE( "Build a 4D table from std::array" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&v(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+2*(i1+3*(i2+2*i3))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::table{ kwk::source = ref
                     , kwk::of_size(3_c, 2_c, 2_c, 2_c)
@@ -90,12 +75,7 @@ TTS_CASE( "Build a 4D table from std::array" )
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&w(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+3*(i1+2*(i2+2*i3))]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 4D table with constexpr shape settings from a ContiguousRange" )
@@ -116,12 +96,7 @@ TTS_CASE( "Build a 4D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&v(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+2*(i1+3*(i2+2*i3))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::table { kwk::source = ref
                       , kwk::of_size(3_c, 2_c, 2_c, 2_c)
@@ -133,12 +108,7 @@ TTS_CASE( "Build a 4D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&w(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+3*(i1+2*(i2+2*i3))]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 4D table with constexpr shape settings from a pointer" )
@@ -159,12 +129,7 @@ TTS_CASE( "Build a 4D table with constexpr shape settings from a pointer" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&v(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+2*(i1+3*(i2+2*i3))]);
-                      }
-                      , v
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::table { kwk::source = ref
                       , kwk::of_size(3_c, 2_c, 2_c, 2_c)
@@ -176,10 +141,5 @@ TTS_CASE( "Build a 4D table with constexpr shape settings from a pointer" )
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&w(0,0,0,0),&ref[0]);
-  kwk::for_each_index([&](auto e, auto i0, auto i1, auto i2, auto i3)
-                      {
-                        TTS_EQUAL(e, ref[i0+3*(i1+2*(i2+2*i3))]);
-                      }
-                      , w
-                      );
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };

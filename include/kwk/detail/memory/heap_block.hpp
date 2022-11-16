@@ -42,7 +42,8 @@ namespace kwk::detail
                       {
                         auto a = pick(kwk::allocator,p);
                         auto s = pick(kwk::size,p);
-                        return ptr_t{(value_type*)(allocate(a,s.numel()*sizeof(T))), deleter(a)};
+                        std::size_t sz = static_cast<std::size_t>(s.numel())*sizeof(T);
+                        return ptr_t{(value_type*)(allocate(a,sz)), deleter(a)};
                       }()
                     )
     {

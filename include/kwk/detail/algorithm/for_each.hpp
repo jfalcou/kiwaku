@@ -23,19 +23,16 @@ namespace kwk
     template<typename Func, typename Container, typename Dims>
     constexpr auto for_each(Func&& f, Container&& c, Dims const&ds)
     {
-      auto loops = kumi::fold_right ( [](auto acc, std::size_t m)
+      auto loops = kumi::fold_right ( [](auto acc, auto m)
                                       {
                                         return [=](auto... is)
                                         {
-                                          for(std::size_t i = 0;i<m;++i)
+                                          for(decltype(m) i = 0;i<m;++i)
                                             acc(i,is...);
                                         };
                                       }
                                     , ds
-                                    , [&](auto... is)
-                                      {
-                                        return KWK_FWD(f)(KWK_FWD(c)(static_cast<std::size_t>(is)...));
-                                      }
+                                    , [&](auto... is) { return KWK_FWD(f)(KWK_FWD(c)(is...)); }
                                     );
       loops();
       return f;
@@ -48,20 +45,18 @@ namespace kwk
     template<typename Func, typename Container, typename Dims>
     constexpr auto for_each_index(Func&& f, Container&& c, Dims const& ds)
     {
-      auto loops = kumi::fold_right ( [](auto acc, std::size_t m)
+      auto loops = kumi::fold_right ( [](auto acc, auto m)
                                       {
                                         return [=](auto... is)
                                         {
-                                          for(std::size_t i = 0;i<m;++i)
+                                          for(decltype(m) i = 0;i<m;++i)
                                             acc(i,is...);
                                         };
                                       }
                                     , ds
                                     , [&](auto... is)
                                       {
-                                        return KWK_FWD(f) ( KWK_FWD(c)(static_cast<std::size_t>(is)...)
-                                                          , static_cast<std::size_t>(is)...
-                                                          );
+                                        return KWK_FWD(f)(KWK_FWD(c)(is...), is...);
                                       }
                                     );
       loops();
