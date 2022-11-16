@@ -21,6 +21,6 @@ TTS_CASE_TPL( "Building a nD shape with kwk::of_shape(a1,...,an)", sizes<10>)
   auto sh = f(up_to<T>{});
   TTS_EQUAL(sh.order(), T::value  );
 
-  for(int i =0;i<T::value;++i)
-    TTS_EQUAL(sh[i], 3*(i+1) );
+  for(std::size_t i =0;i<T::value;++i)
+    TTS_EQUAL(sh[i], static_cast<std::ptrdiff_t>(3*(i+1)) );
 };

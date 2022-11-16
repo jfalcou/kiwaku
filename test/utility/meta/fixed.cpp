@@ -25,13 +25,13 @@ TTS_CASE( "fixed<N> behavior - Literal API" )
 
   constexpr auto cst_0 = 0_c;
   constexpr auto cst_1 = 16540_c;
-  constexpr auto cst_2 = 123456_c;
+  constexpr auto cst_2 = 1234567_c;
 
-  TTS_EQUAL ( cst_0.value , 0            );
-  TTS_EQUAL ( cst_1.value , short(16540) );
-  TTS_EQUAL ( cst_2.value , 123456       );
+  TTS_EQUAL ( cst_0.value , std::uint8_t(0)       );
+  TTS_EQUAL ( cst_1.value , std::uint16_t(16540)  );
+  TTS_EQUAL ( cst_2.value , std::uint32_t(1234567));
 
-  TTS_EXPR_IS( cst_0.value , std::int8_t  const);
-  TTS_EXPR_IS( cst_1.value , std::int16_t const);
-  TTS_EXPR_IS( cst_2.value , std::int32_t const);
+  TTS_EXPR_IS( cst_0.value , std::uint8_t  const);
+  TTS_EXPR_IS( cst_1.value , std::uint16_t const);
+  TTS_EXPR_IS( cst_2.value , std::uint32_t const);
 };

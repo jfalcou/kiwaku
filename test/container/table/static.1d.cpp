@@ -25,7 +25,7 @@ TTS_CASE( "Build a 1D table from a C array" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL( &v(0), &ref[0] );
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
+  for(std::size_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(4_c) };
@@ -36,7 +36,7 @@ TTS_CASE( "Build a 1D table from a C array" )
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL( &w(0), &ref[0] );
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
+  for(std::size_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);
 };
 
@@ -54,7 +54,7 @@ TTS_CASE( "Build a 1D table from std::array" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL( &v(0), &ref[0] );
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
+  for(std::size_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(4_c) };
@@ -65,7 +65,7 @@ TTS_CASE( "Build a 1D table from std::array" )
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL( &w(0), &ref[0] );
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
+  for(std::size_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);
 };
 
@@ -83,7 +83,7 @@ TTS_CASE( "Build a 1D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( v.shape().is_fully_static           );
 
   TTS_NOT_EQUAL( &v(0), &ref[0] );
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
+  for(std::size_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
 
   std::vector<float> const cref = {1,2,3,4,5,6,7};
@@ -96,7 +96,7 @@ TTS_CASE( "Build a 1D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( w.shape().is_fully_static             );
 
   TTS_NOT_EQUAL( &w(0), &cref[0] );
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
+  for(std::size_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);
 };
 
@@ -114,7 +114,7 @@ TTS_CASE( "Build a 1D table with constexpr shape settings from a pointer" )
   TTS_EXPECT( v.shape().is_fully_static   );
 
   TTS_NOT_EQUAL( &v(0), &ref[0] );
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
+  for(std::size_t i = 0;i<v.size();++i)
     TTS_EQUAL(v(i), ref[i]);
 
   std::vector<float> const cref = {1,2,3,4,5,6,7};
@@ -127,6 +127,6 @@ TTS_CASE( "Build a 1D table with constexpr shape settings from a pointer" )
   TTS_EXPECT( w.shape().is_fully_static   );
 
   TTS_NOT_EQUAL( &w(0), &cref[0] );
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
+  for(std::size_t i = 0;i<w.size();++i)
     TTS_EQUAL(w(i), ref[i]);
 };

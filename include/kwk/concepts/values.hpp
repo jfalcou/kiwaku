@@ -16,7 +16,7 @@ namespace kwk::concepts
   };
 
   template<typename T>
-  concept extremum = requires(T const& t, int n)
+  concept extremum = requires(T const& t, std::ptrdiff_t n)
   {
     { t.size(n) };
   };

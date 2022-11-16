@@ -14,7 +14,7 @@ struct box
   box() noexcept : alloc(), data_(), size_() {}
 
   template<kwk::concepts::allocator A>
-  box ( std::ptrdiff_t n, A a)
+  box ( std::size_t n, A a)
       : alloc(std::move(a))
       , data_( reinterpret_cast<float*>(allocate(alloc, n*sizeof(float))) )
       , size_(n)
@@ -64,7 +64,7 @@ struct box
 
   kwk::any_allocator  alloc;
   float*              data_;
-  std::ptrdiff_t      size_;
+  std::size_t      size_;
 };
 
 TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
@@ -72,8 +72,8 @@ TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
   box b( 5, kwk::heap );
   box c( 7, kwk::heap );
 
-  for(int i=0;i<5;i++) b.get(i) = 1.f/(1+i);
-  for(int i=0;i<7;i++) c.get(i) = 1.5f*(1+i);
+  for(int i=0;i<5;i++) b.get(i) = 1.f/static_cast<float>(1+i);
+  for(int i=0;i<7;i++) c.get(i) = 1.5f*static_cast<float>(1+i);
 
   TTS_EQUAL ( b.get(0), 1.f   );
   TTS_EQUAL ( b.get(1), 1.f/2 );

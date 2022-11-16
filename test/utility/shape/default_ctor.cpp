@@ -282,6 +282,6 @@ TTS_CASE_TPL( "Default constructed shape behavior - Dynamic 5D -> 10D", sizes<5>
   TTS_EQUAL(sh.order()  , dims);
 
   TTS_EQUAL(get<0>(sh)  , 0);
-  for(int i = 1;i<sh.order();++i)
+  for(std::size_t i = 1;i<sh.order();++i)
     TTS_EQUAL(sh[i] , 1);
 };

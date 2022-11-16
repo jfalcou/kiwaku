@@ -11,6 +11,11 @@
 #include <kwk/utility/container/shape.hpp>
 #include <cstddef>
 
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 namespace kwk::detail
 {
   struct strides_;
@@ -171,10 +176,10 @@ namespace kwk
 
     /// Indexing interface
     template<std::convertible_to<size_type>... Is>
-    constexpr auto linearize(Is... is) const noexcept
+    constexpr size_type linearize(Is... is) const noexcept
     requires( sizeof...(Is) <= static_order )
     {
-      return kumi::inner_product(*this, kumi::tie(is...), 0);
+      return kumi::inner_product(*this, kumi::make_tuple(static_cast<size_type>(is)...), size_type{0});
     }
   };
 
@@ -221,3 +226,7 @@ struct  std::tuple_element<N, kwk::stride<Desc>>
 {
   using type = typename kwk::stride<Desc>::size_type;
 };
+
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic pop
+#endif
