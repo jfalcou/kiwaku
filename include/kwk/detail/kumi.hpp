@@ -1174,7 +1174,9 @@ namespace kumi
   template<typename Pred, product_type Tuple>
   [[nodiscard]] constexpr std::size_t count_if( Tuple const& ts, Pred p) noexcept
   {
-    return kumi::apply( [&](auto const&... m) { return ( (p(m)? 1 : 0)+ ... + 0); }, ts );
+    constexpr std::size_t o = 1ULL;
+    constexpr std::size_t z = 0ULL;
+    return kumi::apply( [&](auto const&... m) { return ( (p(m)? o : z)+ ... + z); }, ts );
   }
   template<product_type Tuple>
   [[nodiscard]] constexpr std::size_t count( Tuple const& ts ) noexcept

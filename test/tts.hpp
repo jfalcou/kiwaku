@@ -425,7 +425,8 @@ namespace tts::detail
       return test::acknowledge( { tg.name
                                 , [tg,body]() mutable
                                   {
-                                    std::mt19937 gen(::tts::random_seed());
+                                    auto ss = static_cast<std::size_t>(::tts::random_seed());
+                                    std::mt19937 gen(ss);
                                     ( ( (current_type = " with [T = " + typename_<Types> + "]")
                                       , std::apply(body, tg.generator(type<Types>{}, gen))
                                       ), ...
