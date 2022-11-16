@@ -17,8 +17,9 @@ namespace kwk
   //! @ingroup containers
   //! @brief Owning, contiguous multi-dimensional container
   //!
-  //!   @tparam Type  Type of the underlying data
-  //!   @tparam Os    Variadic list of settings describing current's table behavior
+  //! @tparam Data      Policy for data storage
+  //! @tparam Access    Policy for data access
+  //! @tparam MetaData  Complementary data
   //================================================================================================
   template<typename Data, typename Access, typename MetaData>
   struct  table  : container<kwk::table_,Data,Access,MetaData>

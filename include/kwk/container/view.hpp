@@ -17,7 +17,9 @@ namespace kwk
   //! @ingroup containers
   //! @brief Non-owning, contiguous multi-dimensional container
   //!
-  //! @tparam Os    Variadic list of settings describing current's view behavior
+  //! @tparam Data      Policy for data storage
+  //! @tparam Access    Policy for data access
+  //! @tparam MetaData  Complementary data
   //================================================================================================
   template<typename Data, typename Access, typename MetaData>
   struct  view  : container<kwk::view_,Data,Access,MetaData>

@@ -65,7 +65,7 @@ namespace kwk
   //!   kwk::shape< kwk::extent[2]( )[3]> s4( _, n, _);   // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
-  //! @tparam Shaper An instance of a [shape descriptor](@ref eve::extent)
+  //! @tparam Shape An instance of a [shape descriptor](@ref eve::extent)
   //================================================================================================
   template<auto Shape>
   struct shape : kwk::detail::prefilled<Shape>
@@ -236,7 +236,7 @@ namespace kwk
     //! @groupheader{Example}
     //! @godbolt{docs/shape/odd_sized.cpp}
     //!
-    //! @param other  Shape to copy
+    //! @param o  Shape to copy
     //==============================================================================================
     template<auto Other>
     constexpr explicit  shape( shape<Other> const& o ) noexcept

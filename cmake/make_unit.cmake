@@ -12,8 +12,10 @@ add_library(kiwaku_test INTERFACE)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   target_compile_options( kiwaku_test INTERFACE /W3 /EHsc /std:c++20)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options( kiwaku_test INTERFACE -std=c++20 -Werror -Wall -Wextra -Wdocumentation -Wunused-variable)
 else()
-  target_compile_options( kiwaku_test INTERFACE -std=c++20 -Werror -Wall -Wextra)
+  target_compile_options( kiwaku_test INTERFACE -std=c++20 -Werror -Wall -Wextra -Wunused-variable)
 endif()
 
 target_include_directories( kiwaku_test INTERFACE
