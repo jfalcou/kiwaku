@@ -77,8 +77,7 @@ namespace kwk::detail
     constexpr       accessor(rbr::concepts::settings auto const&) noexcept {}
     constexpr void  swap( accessor& ) noexcept {}
 
-    template<std::integral... Is>
-    constexpr auto index(Is... is) const noexcept { return Stride.linearize(is...); }
+    constexpr auto index(std::integral auto... is) const noexcept { return Stride.linearize(is...); }
   };
 
   //================================================================================================
@@ -98,10 +97,10 @@ namespace kwk::detail
               : shape_ ( pick(kwk::size,opts) )
     {}
 
-    constexpr auto        size()                    const noexcept  { return get<0>(shape_);  }
-    constexpr auto        shape()                   const noexcept  { return shape_;          }
-    constexpr stride_type stride()                  const noexcept  { return {};              }
-    constexpr auto        index(std::ptrdiff_t is)  const noexcept  { return is;              }
+    constexpr auto        size()          const noexcept  { return get<0>(shape_);  }
+    constexpr auto        shape()         const noexcept  { return shape_;          }
+    constexpr stride_type stride()        const noexcept  { return {};              }
+    constexpr auto        index(auto is)  const noexcept  { return is;              }
 
     constexpr void reshape( shape_type const& s ) noexcept { shape_ = s; }
     constexpr void swap( accessor& other )        noexcept { shape_.swap( other.shape_ ); }

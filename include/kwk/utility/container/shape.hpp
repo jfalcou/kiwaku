@@ -17,6 +17,11 @@
 #include <kwk/utility/slicer.hpp>
 #include <cstddef>
 
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 namespace kwk::detail { struct size_; }
 
 namespace kwk
@@ -295,8 +300,8 @@ namespace kwk
     constexpr bool operator==( shape<Shaper2> const& other) const noexcept
     {
       return compare( other
-                    , [](std::ptrdiff_t a, std::ptrdiff_t b) { return a == b; }
-                    , [](auto a) { return a == 1; }
+                    , [](size_type a, size_type b) { return a == b; }
+                    , [](size_type a) { return a == 1; }
                     );
     }
 
@@ -500,3 +505,7 @@ struct  std::tuple_element<N, kwk::shape<Desc>>
 {
   using type = typename kwk::shape<Desc>::size_type;
 };
+
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic pop
+#endif

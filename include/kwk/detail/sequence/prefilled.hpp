@@ -51,10 +51,10 @@ namespace kwk::detail
     static constexpr  bool        is_dynamic      = !is_fully_static;
 
     static constexpr
-    auto index  = kumi::map ( [k=0]<typename V>(V) mutable
+    auto index  = kumi::map ( [k=0ULL]<typename V>(V) mutable
                               {
                                 if constexpr(kwk::is_joker_v<V>) return k++;
-                                else return -1;
+                                else return static_size+1;
                               }
                             , Desc
                             );
@@ -62,15 +62,13 @@ namespace kwk::detail
     static constexpr
     auto location = kumi::apply ( [](auto... m)
                                   {
-                                    return std::array < std::ptrdiff_t
-                                                      , static_size
-                                                      >{static_cast<std::ptrdiff_t>(m)...};
+                                    return std::array<std::size_t, static_size>{m...};
                                   }
                                 , index
                                 );
 
     // Do we have runtime storage for a given index ?
-    static bool constexpr contains(std::size_t i) { return location[i] != -1; }
+    static bool constexpr contains(std::size_t i) { return location[i] != static_size+1; }
 
     // Default constructor
     constexpr prefilled() : storage_t{} {}
@@ -99,7 +97,7 @@ namespace kwk::detail
         constexpr auto i = N::value;
         if constexpr( std::is_convertible_v<S,value_type> )
         {
-          if constexpr(contains(i)) v[location[i]] = vs;
+          if constexpr(contains(i)) v[location[i]] = static_cast<value_type>(vs);
           else  KIWAKU_ASSERT ( vs == get<i>(descriptor)
                               , "[KWK] - Runtime/Compile-time mismatch in constructor"
                               );
@@ -187,10 +185,11 @@ namespace kwk::detail
   constexpr auto compress(prefilled<Desc> const& s)  noexcept
   {
     using t_t = prefilled<compress<N>(Desc)>;
+    using v_t = typename t_t::value_type;
     t_t t;
 
     kumi::for_each_index
-    ( [&](auto i, auto m) { if constexpr(i < N && t_t::contains(i)) t[i] = m; }, s);
+    ( [&](auto i, auto m) { if constexpr(i < N && t_t::contains(i)) t[i] = static_cast<v_t>(m); }, s);
 
     kumi::for_each_index
     ( [&](auto i, auto m) { if constexpr(i >= N && t_t::contains(N-1)) t[N-1] *= m; }, s);

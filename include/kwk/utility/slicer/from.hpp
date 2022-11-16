@@ -13,6 +13,11 @@
 #include <kwk/utility/fixed.hpp>
 #include <ostream>
 
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 namespace kwk
 {
   template<auto Desc> struct shape;
@@ -45,3 +50,7 @@ namespace kwk
     return sh.template extent<N>() - result;
   }
 }
+
+#if !defined(_MSC_VER)
+#pragma GCC diagnostic pop
+#endif

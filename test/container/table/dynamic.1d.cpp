@@ -25,8 +25,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a C array" )
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
 
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
-    TTS_EQUAL(v(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   sz = 4;
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(sz) };
@@ -36,8 +35,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a C array" )
   TTS_EQUAL ( w.shape(), kwk::of_size(4)    );
   TTS_EXPECT_NOT( w.shape().is_fully_static );
 
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
-    TTS_EQUAL(w(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 1D table with dynamic shape settings from std::array" )
@@ -54,8 +52,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from std::array" )
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
 
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
-    TTS_EQUAL(v(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   sz = 4;
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(sz) };
@@ -65,8 +62,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from std::array" )
   TTS_EQUAL ( w.shape(), kwk::of_size(4)    );
   TTS_EXPECT_NOT( w.shape().is_fully_static );
 
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
-    TTS_EQUAL(w(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 1D table with dynamic shape settings from a ContiguousRange" )
@@ -83,8 +79,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a ContiguousRange" 
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
 
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
-    TTS_EQUAL(v(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   sz = 5;
   std::vector<float> const cref = {1,2,3,4,5,6,7};
@@ -96,8 +91,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a ContiguousRange" 
   TTS_EQUAL ( w.shape(), kwk::of_size(5)     );
   TTS_EXPECT_NOT( w.shape().is_fully_static  );
 
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
-    TTS_EQUAL(w(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 1D table with dynamic shape settings from a pointer" )
@@ -114,8 +108,7 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a pointer" )
   TTS_EQUAL ( v.shape(), kwk::of_size(7)    );
   TTS_EXPECT_NOT( v.shape().is_fully_static );
 
-  for(std::ptrdiff_t i = 0;i<v.size();++i)
-    TTS_EQUAL(v(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   std::vector<float> const cref = {1,2,3,4,5,6,7};
 
@@ -127,6 +120,5 @@ TTS_CASE( "Build a 1D table with dynamic shape settings from a pointer" )
   TTS_EQUAL ( w.shape(), kwk::of_size(5)     );
   TTS_EXPECT_NOT( w.shape().is_fully_static  );
 
-  for(std::ptrdiff_t i = 0;i<w.size();++i)
-    TTS_EQUAL(w(i), ref[i]);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };

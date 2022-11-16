@@ -25,7 +25,7 @@ TTS_CASE( "Build a 2D table from a C array" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&ref[0], &v(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(3_c, 4_c) };
 
@@ -35,7 +35,7 @@ TTS_CASE( "Build a 2D table from a C array" )
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&ref[0], &w(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 2D table from std::array" )
@@ -52,7 +52,7 @@ TTS_CASE( "Build a 2D table from std::array" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&ref[0], &v(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(3_c, 4_c) };
 
@@ -62,7 +62,7 @@ TTS_CASE( "Build a 2D table from std::array" )
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&ref[0], &w(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 2D table with constexpr shape settings from a ContiguousRange" )
@@ -79,7 +79,7 @@ TTS_CASE( "Build a 2D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&ref[0], &v(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   std::vector<float> const cref = {1,2,3,4,5,6,7,8,9,10,11,12};
 
@@ -91,7 +91,7 @@ TTS_CASE( "Build a 2D table with constexpr shape settings from a ContiguousRange
   TTS_EXPECT( w.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&cref[0], &w(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
 
 TTS_CASE( "Build a 2D table with constexpr shape settings from a pointer" )
@@ -108,7 +108,7 @@ TTS_CASE( "Build a 2D table with constexpr shape settings from a pointer" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&ref[0], &v(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*4]); }, v);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   std::vector<float> const cref = {1,2,3,4,5,6,7,8,9,10,11,12};
 
@@ -120,5 +120,5 @@ TTS_CASE( "Build a 2D table with constexpr shape settings from a pointer" )
   TTS_EXPECT( w.shape().is_fully_static           );
 
   TTS_NOT_EQUAL(&cref[0], &w(0,0));
-  kwk::for_each_index([&](auto e, auto i0, auto i1) { TTS_EQUAL(e, ref[i0+i1*3]); }, w);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
