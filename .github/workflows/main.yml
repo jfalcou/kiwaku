@@ -27,40 +27,42 @@ jobs:
           branch: '${{ github.head_ref }}'
           mode: '${{ matrix.cfg.mode }}'
 
-  gcc:
-    runs-on: ubuntu-latest
+  debug:
+    runs-on: [ubuntu-latest]
     strategy:
       fail-fast: false
+      matrix:
+        cfg:
+        - { compiler: clang++, opts: "-stdlib=libc++ -O0" , linker: -stdlib=libc++  }
+        - { compiler: clang++, opts: -O0                  , linker:                 }
+        - { compiler: g++-12 , opts: -O0                  , linker:                 }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v2
-      - name: Testing Kiwaku with g++
+        uses: actions/checkout@v3
+      - name: DEBUG - Kiwaku using ${{ matrix.cfg.compiler }} with ${{ matrix.cfg.opts }}
         uses: ./.github/actions/run_docker
         with:
-          compiler:   'g++'
-          cpu:        2
-  clang:
-    runs-on: ubuntu-latest
+          compiler:       '${{ matrix.cfg.compiler }}'
+          options:        '${{ matrix.cfg.opts }}'
+          linker_options: '${{ matrix.cfg.linker }}'
+          cpu:            2
+
+  release:
+    runs-on: [ubuntu-latest]
     strategy:
       fail-fast: false
+      matrix:
+        cfg:
+        - { compiler: clang++, opts: "-stdlib=libc++ -O3 -DNDEBUG" , linker: -stdlib=libc++  }
+        - { compiler: clang++, opts: -O3  -DNDEBUG                 , linker:                 }
+        - { compiler: g++-12 , opts: -O3  -DNDEBUG                 , linker:                 }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v2
-      - name: Testing Kiwaku with clang++
+        uses: actions/checkout@v3
+      - name: Release - Kiwaku with ${{ matrix.cfg.compiler }}  with ${{ matrix.cfg.opts }}
         uses: ./.github/actions/run_docker
         with:
-          compiler: 'clang++'
-          cpu:      2
-  clang-libcpp:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    steps:
-      - name: Fetch current branch
-        uses: actions/checkout@v2
-      - name: Testing Kiwaku with clang++
-        uses: ./.github/actions/run_docker
-        with:
-          compiler: 'clang++'
-          cpu:      2
-          options: '-DCMAKE_CXX_FLAGS="-stdlib=libc++" -DCMAKE_EXE_LINKER_FLAGS="-stdlib=libc++"'
+          compiler:       '${{ matrix.cfg.compiler }}'
+          options:        '${{ matrix.cfg.opts }}'
+          linker_options: '${{ matrix.cfg.linker }}'
+          cpu:            2
