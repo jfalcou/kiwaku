@@ -40,7 +40,7 @@ namespace kwk
   //! Free the heap memory from a pointer. If the deallocated memory was not allocated by an
   //! instance of kwk::heap_allocator, the behavior is undefined.
   //!
-  //! @param  b Pointer to the memory to deallocate
+  //! @param ptr Pointer to the memory to deallocate
   //================================================================================================
   inline void deallocate(heap_allocator const&,void* ptr) noexcept { if(ptr) free(ptr); }
 }

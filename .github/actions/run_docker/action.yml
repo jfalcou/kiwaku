@@ -14,6 +14,10 @@ inputs:
     description: 'Compiler options'
     required: false
     default: ''
+  linker_options:  # Special options
+    description: 'Linker options'
+    required: false
+    default: ''
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -21,3 +25,4 @@ runs:
     - ${{ inputs.compiler }}
     - ${{ inputs.cpu }}
     - ${{ inputs.options }}
+    - ${{ inputs.linker_options }}

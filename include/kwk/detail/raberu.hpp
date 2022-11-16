@@ -88,9 +88,6 @@ namespace rbr::concepts
   //!
   //! rbr::concepts::exactly is to be used to constraint functions template parameter to be an
   //! instantiation of a precise [Keyword](@ref rbr::concepts::keyword)
-  //!
-  //! @tparam Option  Type to constraint
-  //! @tparam Keyword Keyword to match
   //================================================================================================
   template<typename Option, auto Keyword>
   concept exactly = std::same_as< typename Option::keyword_type
@@ -246,11 +243,6 @@ namespace rbr
     Func callable;
   };
 
-  //================================================================================================
-  //! @ingroup stng
-  //! @brief Callable object wrapper for functional default value
-  //! @tparam Func Callable object to keep
-  //================================================================================================
   template<concepts::keyword Keyword, typename Value> struct option
   {
     using stored_value_type    = Value;
@@ -956,7 +948,7 @@ namespace rbr
   //! @brief Retrieved the list of all value stored in a settings
   //!
   //! @tparam List  A n-ary template type to hold the result
-  //! @param s      Settings to inspect
+  //! @param o      Settings to inspect
   //! @return an instance of rbr::type containing all the values from a rbr::settings.
   //!
   //! ## Helper Types
@@ -988,7 +980,8 @@ namespace rbr
   //! Two rbr::settings are equivalent if they contain the same exact set of keywords irregardless
   //! of their values or value types.
   //!
-  //! @tparam S1, S2 rbr::settings to compare
+  //! @tparam S1 rbr::settings to compare
+  //! @tparam S2 rbr::settings to compare
   //!
   //! ## Helper Value
   //! @code

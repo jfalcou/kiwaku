@@ -59,7 +59,7 @@ namespace kwk
   //!   kwk::stride< kwk::extent[1]( )[3]> s4( _, n, _);   // Order 3 stride with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
-  //! @tparam Strider An instance of a stride descriptor
+  //! @tparam Strides An instance of a stride descriptor
   //================================================================================================
   template<auto Strides>
   struct stride  : detail::stride_base<Strides>::type
