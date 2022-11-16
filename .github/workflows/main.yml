@@ -53,9 +53,9 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-        - { compiler: clang++, opts: "-stdlib=libc++ -O3 -DNDEBUG" , linker: -stdlib=libc++  }
-        - { compiler: clang++, opts: -O3  -DNDEBUG                 , linker:                 }
-        - { compiler: g++-12 , opts: -O3  -DNDEBUG                 , linker:                 }
+        - { compiler: clang++, opts: "-stdlib=libc++ -Ofast -flto -DNDEBUG", linker: -stdlib=libc++ }
+        - { compiler: clang++, opts: -Ofast -flto -DNDEBUG                 , linker:                }
+        - { compiler: g++-12 , opts: -Ofast -flto -DNDEBUG                 , linker:                }
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v3
