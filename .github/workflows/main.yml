@@ -90,7 +90,7 @@ jobs:
         run: cd build && ctest --output-on-failure -j 2
 
   gcc-macosx:
-    runs-on: [macos-12]
+    runs-on: [macos-11]
     strategy:
       fail-fast: false
       matrix:
