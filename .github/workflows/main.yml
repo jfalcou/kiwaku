@@ -103,7 +103,7 @@ jobs:
       - name: Running CMake for g++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}"
+          cmake .. -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}"
       - name: Compiling Unit Tests
         run:  cd build && make unit -j 2
       - name: Running Unit Tests
