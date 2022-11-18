@@ -10,7 +10,7 @@
     --link-color: #9bacc4;
     --text-font: "Source Serif Pro";
     --accent-font: "Libre Franklin";
-    --code-font: "Jetbrains Mono", "Iosevka";
+    --code-font: "Consolas", "Monospace", "Iosevka";
 }
 
 body {

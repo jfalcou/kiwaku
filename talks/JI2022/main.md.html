@@ -1,0 +1,738 @@
+<!------------------------------------------------------------------------------------------------->
+<!--
+  Copyright 2022 Sylvain Joube & Joel Falcou
+  Licensed under the terms of the Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)
+-->
+<!------------------------------------------------------------------------------------------------->
+
+<meta charset="utf-8" lang="en">
+<!------------------------------------------------------------------------------------------------->
+
+**Calcul performant et pratique avec C++20**
+    <em>14 - 17 novembre 2022 &nbsp;&nbsp;&nbsp; 14e Journées Informatiques IN2P3/IRFU</em>
+<small></small>
+<br>
+Sylvain JOUBE
+<br>
+<small>
+Joël FALCOU, Hadrien GRASLAND, David CHAMONT.
+</small>
+<br>
+<center><small>![](images/lisn.png style="height: 3rem")&nbsp;&nbsp;&nbsp;![](images/ijclab.png style="height: 3rem")</small></center>
+<center>![](images/ccby40.png style="height: 0.7rem")</center>
+<small><small>Powered by Markdeep and Markdeep-Slides</small></small>
+
+---
+
+## Problématiques de calcul pour la HEP : Ergonomie vs Performance
+
+  * Comment diminuer le temps de dév. des non experts en calcul (ex : physiciens) ?
+  * Comment garantir une maintenance simple par les scientifiques ?
+  * Comment s'abstraire de la complexité du matériel ?
+  * Python : bonne ergonomie mais seulement runtime donc mauvaises performances
+
+### Une semi-solution: C++
+  * *Zero Cost Abstraction* via plusieurs mécanismes dont les *templates* (l'objet n'est pas performant)
+  * Les *templates* ont plusieurs problèmes :
+    * Difficiles à prendre en main et à écrire
+    * Binaires énormes
+    * Très long à compiler
+    * Messages d'erreurs longs et cryptiques
+  * Choix entre Ergonomie et Performances ?
+
+---
+
+<!-- ## Exemple template de base, pour rafraîchir la mémoire des pythonsistes
+
+- Focaliser l'exemple templates classiques sur des types. Avoir le type en template et montrer que c'est au moment de la compilation que les types sont substitués. Tout est défini à la compilation pour que ça aille vite, tout est typé parce que C++, et substitution compile-time à l’instanciation de la fonction.
+
+- (27m30) Expliquer que le template ça permet de faire du type une variable qui sera décidée à chaque utilisation et à la compilation, contrairement à Python qui va tout gérer au runtime. Ça permet de mettre le type qu'on veut, et tout sera éliminé et pré-traité en compilation, avec une vérification du typage fort pour vérifier qu'on ne fait que des trucs autorisés. Exemple de comment c'est pénible à écrire et exemple de message d'erreur long et cryptique.
+
+- Mais y a de l'espoir avec C++20 pour un peu plus réconcilier performances et ergonomie (slide suivante ->)
+
+--- -->
+
+## Somme de deux instances de types ayant un membre nommé `value`
+
+### Avant substitution
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+struct S1 { int value; S1(int v) : value(v) {} };
+struct S2 { int value; S2(int v) : value(v) {} };
+
+
+template<typename A, typename B>
+auto sum(A a, B b) -> decltype(a.value+b.value)
+{
+  return a.value + b.value;
+}
+
+int main()
+{
+  S1 s1{1};
+  S2 s2{2};
+  auto x = sum(s1, s2);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Somme de deux instances de types ayant un membre nommé `value`
+
+### Types substitués à la compilation
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+struct S1 { int value; S1(int v) : value(v) {} };
+struct S2 { int value; S2(int v) : value(v) {} };
+
+// Instanciation de la fonction avec les types S1 et S2
+/*template<typename A, typename B>*/
+int  sum(S1 a, S2 b) /*-> decltype(a.value+b.value)*/
+{
+  return a.value + b.value;
+}
+
+int main()
+{
+  S1 s1{1};
+  S2 s2{2};
+  auto x = sum(s1, s2);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Template attendant un conteneur
+
+### Utilisation avec std::array
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+// Retourne la valeur de l'élément à la position n
+template <typename T>
+auto get_nth(T const& c, int n)
+{
+  assert(n < std::size(c));
+  auto b = std::begin(c);
+  for(int i = 0; i<n; ++i) b++;
+  return *b;
+};
+
+int main()
+{
+    std::array<float, 8> a;
+    auto x1 = get_nth(a, 2); // Compile
+    auto x2 = get_nth(1, 2); // Grosse erreur sur le terminal
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Template attendant un conteneur : Message d'erreur long et peu clair
+
+
+<small>
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+main.cpp:22:14: error: no matching function for call to 'size'
+  assert(n < std::size(c));
+             ^~~~~~~~~
+/usr/include/assert.h:93:27: note: expanded from macro 'assert'
+     (static_cast <bool> (expr)                                         \
+                          ^~~~
+main.cpp:36:14: note: in instantiation of function template specialization 'get_nth<int>' requested here
+    auto x = get_nth(1,2);
+             ^
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:264:5: note: candidate template ignored: substitution failure [with _Container = int]: member reference base type 'const int' is not a structure or union
+    size(const _Container& __cont) noexcept(noexcept(__cont.size()))
+    ^
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:274:5: note: candidate template ignored: could not match 'const _Tp[_Nm]' against 'const int'
+    size(const _Tp (&)[_Nm]) noexcept
+    ^
+main.cpp:24:12: error: no matching function for call to 'begin'
+  auto b = std::begin(c);
+           ^~~~~~~~~~
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/initializer_list:90:5: note: candidate template ignored: could not match 'initializer_list<_Tp>' against 'int'
+    begin(initializer_list<_Tp> __ils) noexcept
+    ^
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:52:5: note: candidate template ignored: substitution failure [with _Container = const int]: member reference base type 'const int' is not a structure or union
+    begin(_Container& __cont) -> decltype(__cont.begin())
+    ^                                           ~
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:63:5: note: candidate template ignored: substitution failure [with _Container = int]: member reference base type 'const int' is not a structure or union
+    begin(const _Container& __cont) -> decltype(__cont.begin())
+    ^                                                 ~
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:95:5: note: candidate template ignored: could not match '_Tp[_Nm]' against 'const int'
+    begin(_Tp (&__arr)[_Nm]) noexcept
+    ^
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:113:31: note: candidate template ignored: could not match 'valarray<_Tp>' against 'const int'
+  template<typename _Tp> _Tp* begin(valarray<_Tp>&) noexcept;
+                              ^
+/opt/compiler-explorer/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:114:37: note: candidate template ignored: could not match 'const valarray<_Tp>' against 'const int'
+  template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+                                    ^
+2 errors generated.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+</small>
+
+---
+
+## Problématiques de calcul pour la HEP
+
+### Une solution performante et plus ergonomique : C++20
+  * C++20 introduit :
+    * **Concepts** : généricité contrainte
+    * **Calculs à la compilation** via `constexpr`
+  * Potentiel pour améliorer l'Ergonomie et les Performances ?
+
+---
+
+## Concepts - généricité contrainte, explication
+
+### Principes généraux
+  * Idée : contraindre les paramètres template (sans avoir recours aux méta-monstruosités)
+  * Utilisable pour optimiser/spécialiser les fonctions selon les types
+
+### Bénéfices attendus
+  * Code plus simple à comprendre et à écrire
+  * Gains en temps de compilation
+  * Messages d'erreur plus clairs
+
+<!-- (info) Et je vais me servir des concepts de plus bas niveau dans la surcharge de fonction en interne pour écrire mon code de manière simple. -->
+
+>>> plus le concept est riche et complexe (mis haut dans le code), meilleure sera la qualité du message d'erreur. (ne compacte pas la stacktrace des templates, il faut attraper les erreurs tôt).
+>>> contrainte la plus forte sélectionnée
+>>> (info) Si on me pose la question de savoir si c'est comme les traits de Rust ou les méta-classes de Haskell : oui (mais en détail non, mais globalement oui)
+
+---
+
+## Concepts - message d'erreur
+
+<small>
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+main.cpp:29:14: error: no matching function for call to 'get_nth'
+    auto x = get_nth(1,2);
+             ^~~~~~~
+main.cpp:13:6: note: candidate template ignored: constraints not satisfied [with c:auto = int]
+auto get_nth(container auto const& c, int n)
+     ^
+main.cpp:13:14: note: because 'int' does not satisfy 'container'
+auto get_nth(container auto const& c, int n)
+             ^
+main.cpp:8:5: note: because 'std::begin(c)' would be invalid: no matching function for call to 'begin'
+  { std::begin(c) } -> std::forward_iterator;
+    ^
+1 error generated.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+</small>
+
+* Ne parle que du code écrit par l'utilisateur
+* Plus clair et concis
+
+---
+
+## Concepts - Une écriture qui reste complexe
+
+### Un concept vérifie certaines contraintes à la compilation
+    * Validité d'une expression arbitraire
+    * Propriétés des valeurs de retour
+    * Présence d'un type interne
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+template<typename T>
+concept streamable = requires(T const& t, std::ostream& os)
+{
+  { os << t }; // Expression à vérifier
+};
+
+template<typename P, typename... Args>
+concept predicate = requires(P pred, Args&&... args)
+{
+  { pred(std::forward<Args>(args)...)  } -> std::same_as<bool>;
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+>>>La clause requires introduit les éléments permettant de faire cette vérification
+>>>
+
+---
+
+## Concepts - Une écriture qui reste complexe
+### Combinaison et Raffinement
+  * Un concept peut se définir à partir d'un autre
+  * Sémantique proche de l'héritage d'interface
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+template<typename T>
+concept container = std::regular<T> && requires(T const& c)
+{
+  { std::begin(c) } -> std::forward_iterator;
+  { std::end(c)   } -> std::forward_iterator;
+  { std::size(c)  } -> std::integral;
+};
+
+template<typename T>
+concept random_access_container = container<T> && requires(T const& c, int i)
+{
+  { c[i] };
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+>>>(1h10) On vérifie que `std::regular<T>` dit bien true. (slide 6). On peut créer un template "is floating point" qui permet de n'accepter qu'un type flottant.
+>>>
+
+---
+
+## Concepts - Une utilisation très simple
+### Spécialisation de fonction avec syntaxe compacte (surcharge)
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+// Cas général
+auto get_nth(container auto const& c, int n)
+{
+  assert(n < std::size(c));
+  auto b = std::begin(c);
+  for(int i = 0;i<n;++i) b++;
+  return *b;
+};
+
+// Spécialisation
+auto get_nth(random_access_container auto const& c, int n)
+{
+  assert(n < std::size(c));
+  return c[n];
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+* Contrainte la plus forte choisie
+
+<!-- ---
+
+## Concepts - Mise en oeuvre
+### Message d'erreur sans concepts
+
+<small>
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+main.cpp:33:3: error: no matching function for call to 'get_nth'
+  auto x = get_nth(5,2);
+           ^~~~~~~
+main.cpp:33:3: note: in instantiation of function template specialization 'get_nth<int>' requested here
+  auto x = get_nth(5,2);
+           ^
+/usr/include/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/initializer_list:90:5: note: candidate template ignored: could not match 'initializer_list<_Tp>' against 'int'
+    begin(initializer_list<_Tp> __ils) noexcept
+    ^
+/usr/include/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:52:5: note: candidate template ignored: substitution failure [with _Container = const int]: member reference base type 'const int' is not a structure or union
+    begin(_Container& __cont) -> decltype(__cont.begin())
+    ^                                           ~
+/usr/include/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:63:5: note: candidate template ignored: substitution failure [with _Container = int]: member reference base type 'const int' is not a structure or union
+    begin(const _Container& __cont) -> decltype(__cont.begin())
+    ^                                                 ~
+/usr/include/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:95:5: note: candidate template ignored: could not match '_Tp[_Nm]' against 'const int'
+    begin(_Tp (&__arr)[_Nm]) noexcept
+    ^
+/usr/include/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:113:31: note: candidate template ignored: could not match 'valarray<_Tp>' against 'const int'
+  template<typename _Tp> _Tp* begin(valarray<_Tp>&) noexcept;
+                              ^
+/usr/include/gcc-12.2.0/lib/gcc/x86_64-linux-gnu/12.2.0/../../../../include/c++/12.2.0/bits/range_access.h:114:37: note: candidate template ignored: could not match 'const valarray<_Tp>' against 'const int'
+  template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+                                    ^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+</small>
+
+---
+
+## Concepts - Mise en oeuvre
+### Message d'erreur avec concepts
+
+<small>
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+main.cpp:33:3: error: no matching function for call to 'get_nth'
+  auto x = get_nth(5,2);
+           ^~~~~~~
+main.cpp:18:28: note: candidate template ignored: constraints not satisfied [with C = int]
+template<container C> auto get_nth(C const& c, int n)
+                           ^
+main.cpp:18:10: note: because 'int' does not satisfy 'container'
+template<container C> auto get_nth(C const& c, int n)
+         ^
+main.cpp:7:5: note: because 'begin(c)' would be invalid: use of undeclared identifier 'begin'
+  { std::begin(c) } -> std::forward_iterator;
+
+main.cpp:26:42: note: candidate template ignored: constraints not satisfied [with C = int]
+template<random_access_container C> auto get_nth(C const& c, int n)
+                                         ^
+main.cpp:26:10: note: because 'int' does not satisfy 'random_access_container'
+template<random_access_container C> auto get_nth(C const& c, int n)
+         ^
+main.cpp:13:35: note: because 'int' does not satisfy 'container'
+concept random_access_container = container<T> && requires(T const& c, int i)
+                                  ^
+main.cpp:7:5: note: because 'begin(c)' would be invalid: use of undeclared identifier 'begin'
+  { std::begin(c) } -> std::forward_iterator;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+</small> -->
+
+---
+
+## Constexpr
+
+### Objectif
+  * Être plus ergonomique que des macros
+  * Calcul élaboré de constante de compilation (exemple : taille de tableau)
+  * Ressembler à du C++ classique
+
+### Mise en oeuvre
+  * Fonctions constexpr
+  * `if constexpr`
+
+>>>Dans quel contexte c'est utile ?
+>>>A quel besoin ça répond ?
+>>>Constexpr => fonctions et variables évaluables à la compilation
+>>>Variables exploitables à la compilation
+>>>if constexpr : sélection de code à la compilation
+>>> arguments constexpr *lorsque besoin du résultat à la compilation*
+>>>
+>>>Calcul élaboré de constante de compilation : on rend (1h31)
+
+---
+
+## Constexpr -  Fonctions constexpr
+
+### Avant `constexpr`
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+template<int N> struct factorial    { static const int value = N * factorial<N-1>::value; };
+template<>      struct factorial<0> { static const int value = 1; };
+
+std::array<float, factorial<4>::value>> x; // appel dans un contexte compile-time
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+### Stratégie `constexpr`
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+constexpr int factorial(int n)
+{
+  int r = 1;
+  for(int i=2;i<=n;++i) r *= i;
+  return r;
+}
+
+std::array<float, factorial(4)> x; // appel dans un contexte compile-time
+auto y = factorial(7);             // appel dans un contexte runtime
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+>>> Fonctions qui ont *explicitement* le droit être exécutées à la compilation
+>>> (18m) Pour ce qu'il est possible de passer au templates : en plus des types on avait mis des entiers (ex tailles de tableaux fixés à la compilation), et y a des petits malins qui s'en sont servis pour faire du calcul sur des entiers à la compilation (exemple des slides : factorial). Mais pas flexible et pas ergonomique, maintenant on a constexpr qui est beaucoup mieux (calcul à la compile dans une fonction).
+
+---
+
+## Constexpr - `if constexpr`
+
+### Sélection de code à la compilation : avant if constexpr
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <type_traits>
+
+template<typename T, typename Enable = void>
+struct has_size : std::false_type {};
+
+template<typename T>
+struct has_size<T, std::void_t<decltype(std::declval<T>().size())>> : std::true_type {};
+
+template<typename T> auto taille(T const& t, std::false_type) { return 1; }
+
+template<typename T> auto taille(T const& t, std::true_type) { return t.size(); }
+
+template<typename T> auto taille(T const& t){ return taille(t,typename has_size<T>::type{}); }
+
+auto n = taille(std::vector<int>(58));  //  n == 58
+auto m = taille(8);                     //  m == 1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Constexpr - `if constexpr`
+
+### Sélection de code à la compilation : avec if constexpr
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+template<typename T>
+auto taille(T const& t)
+{
+  if constexpr(requires(T const& t) { t.size(); }) return t.size();
+  else                                             return 1;
+}
+
+auto n = taille(std::vector<int>(58));  //  n == 58
+auto m = taille(8);                     //  m == 1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+* `if constexpr` permet la sélection de code à la compilation ergonomique
+* Combinaison avec des contraintes sur les types
+* Une seule fonction est nécessaire
+
+>>> ## Constexpr - `if constexpr`
+>>>
+>>>   * Méthode .size() envoie un entier => appel méthode, sinon retourne 1.
+>>>
+>>>   * if classique : 1) compile tout  2) élague ce qui est connu statiquement et faux
+>>>   * if constexpr : compilation sélective du code
+>>>     * 1) évaluation de la branche à prendre
+>>>     * 2) compilation de la bonne branche, autre branche ignorée
+>>>     * à la manière d'une macro mais en plus ergonomique
+>>>     * exemple : vérification de la présence d'un membre à la compilation puis utilisation de ce membre
+>>>     * n'aurait pas pu compiler sans constexpr : code invalide si membre non présent
+>>>     * remarque : attention aux bugs *cachés* par constexpr car jamais compilés !
+>>>
+>>> (27m) on pouvait faire du if à la compilation avant, mais c'était horrible à écrire. C'est géré en amont avant la compilation.
+
+<!-- * Ancien TODO : à transformer en bullet point avec moins de texte
+* Le if normal compile toutes les branches puis élague en fonction de ce qui est statique. Le if constexpr permet de ne compiler que les branches qui sont nécessaires, et donc de permettre l'exécution de code qui n'aurait pas pu compiler sans parce qu'invalide dans le contexte utilisé. Mais du coup ça peut faire en sorte de passer à côté de bugs éventuels. Un if constexpr est l'équivalent d'un #ifdef, "si la condition est fausse je jette le code sans même le regarder ni la compiler". -->
+
+
+---
+
+## Illustration : Kiwaku
+
+### Objectif et composants de base
+
+  * *(yet another)* Bibliothèque de tableaux multidimensionnels
+  * Vues *(non owning)* et tables *(owning)*
+  * Algorithmes de parcours optimisés et ergonomiques
+  * Support de multiples contextes d'exécution (GPU, CPU, vectorisation...)
+  * Non pris en charge : algèbre linéaire, expression templates, calculs
+  <!-- Bien expliquer à l'oral pourquoi on fait pas ça, pour ce 1h41
+  Tout ce qui est écrit dans les slides n'est pas à dire à l'oral, raconter une histoire cohérente.
+  Mieux faire 1 exemple bien que 3 exemples pas ouf : un exemple avec detray vs un exemple avec Kiwaku
+-->
+
+
+### Principes d'implémentation
+
+  * **Utilise C++20** : meilleure ergonomie à performances égales
+  * Programmation générative via `templates`, `concepts`, `constexpr`
+  * Tableaux (conteneurs) définissables via des paramètres de haut niveau
+  * Squelettes algorithmiques
+
+<!-- ### principes d'implémentation (choix techniques qu'on a faits : reprendre ce qu'on a fait dans reprises) -->
+
+>>>TODO : Montrer un exemple de comment c'est écrit à l'intérieur pour montrer que c'est ergonomique pour le développeur de Kiwaku
+>>>TODO : Prendre un exemple d'algo, le faire tourner en C à la main, puis en kiwaku (reprendre l'exemple des vieux slides en le mettant à jour) et montrer qu'on a les mêmes perfs et que ça autovectorise comme il faut.
+
+
+<!-- * C'est une bibliothèque qu'on développe qui gère les conteneurs nD : leur stockage et leur traitement. Le but est de mettre à profit les nouveautés du C++20 pour avoir une meilleure ergonomie tout en conservant les performances. (dans la même mentalité que le standard C++). -->
+
+>>>Abstraction de la complexité sous-jacente
+>>>
+
+---
+
+## Exemples avec Kiwaku
+
+### Création et manipulation de vue avec concepts
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <kwk/kwk.hpp>
+
+// Attend uniquement une vue 1D de float : contrainte via les concepts C++20
+void square_each(  kwk::concepts::view<kwk::_1D, kwk::as<float>>   auto&&  v  )
+{
+  // Pour tous les index i                :   élever au carré à la position i
+  for(std::ptrdiff_t i=0; i<v.numel(); ++i)   v(i) *= v(i);
+}
+
+// Construction d'une vue 1D de float à partir d'un pointeur et élévation au carré
+void demo_kiwaku_view(float* data, int view_size)
+{
+  kwk::view v { kwk::size = view_size, kwk::source = data };
+  square_each(v);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Exemples avec Kiwaku
+
+### Création et manipulation de vue avec concepts : équivalent compact
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <kwk/kwk.hpp>
+
+void demo_kiwaku_view(float* data, int view_size)
+{
+  kwk::view v { kwk::size = view_size, kwk::source = data };
+
+  // Élévation au carré
+  kwk::for_each([](auto& e) { e*= e; }, v);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+---
+
+## Exemples avec Kiwaku
+
+### Cas d'une vue 2D
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <kwk/kwk.hpp>
+
+void demo_kiwaku_view(float* data, int d1, int d2)
+{
+  kwk::view v { kwk::size = kwk::of_size(d1, d2), kwk::source = data };
+
+  // Élévation au carré
+  kwk::for_each([](auto& e) { e*= e; }, v);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+<!-- using namespace kwk::literals; -->
+
+---
+
+## Exemples avec Kiwaku
+
+### Peu importe l'ordre des options !
+
+<script type="preformatted">
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ c++
+#include <kwk/kwk.hpp>
+
+void demo_kiwaku_view(float* data, int d1, int d2)
+{
+  kwk::view v { kwk::source = data, kwk::size = kwk::of_size(d1, d2) };
+
+  // Élévation au carré
+  kwk::for_each([](auto& e) { e*= e; }, v);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</script>
+
+<!-- using namespace kwk::literals; -->
+
+---
+
+## Conclusion
+
+### Nouveautés C++20 : meilleure ergonomie, mêmes performances
+  * Concepts :
+    * Généricité contrainte via prédicat compile-time
+    * Combinaisons possibles et spécialisation (surcharge) de fonctions aisée
+  * Constexpr :
+    * Similaire à du C++ classique, plus ergonomique que les macros
+    * Permet de passer des valeurs plus complexes en paramètres de template
+
+### Kiwaku et Future work
+  * Stockage et traitement performants pour tableaux multidimensionnels en C++20
+  * Ergonomique pour les développeurs et les utilisateurs
+  * Algorithmes de parcours optimisés
+  * Futur support des contextes d'exécution GPU via SYCL
+
+
+
+>>>Pour qu'il n'y ait que les exmeples à faire
+>>>- réinstaller godbolt
+>>>Questions :
+>>>- slide 5/20 : pourquoi std::begin au lieu de .begin ?
+>>>C++ ergonomique des deux côté (développeur et utilisateur)
+>>>lien vers Kiwaku pour les gens intéressés
+>>>2 blocs : qu'est-ce qu'on a montré et future work
+>>>Compiler Explorer à installer
+>>>
+
+<!------------------------------------------------------------------------------------------------->
+
+---
+
+
+# Merci !
+
+* Kiwaku : https://github.com/jfalcou/kiwaku
+
+<!-- ---
+
+# Backups Godbolt
+
+---
+
+## Exemples avec Kiwaku
+
+### Création et manipulation de vue avec concepts
+
+<!-- 192.168.0.169
+
+<iframe width="100%" height="70%" src="http://localhost:10240/e?readOnly=false&hideEditorToolbars=true#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:18,fontUsePx:'0',j:1,lang:c%2B%2B,selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:'%23include+%3Ckwk/kwk.hpp%3E%0A%0Avoid+g(+kwk::concepts::view%3Ckwk::_1D,+kwk::as%3Cfloat%3E%3E+auto%26%26+v)%0A%7B%0A++for(std::ptrdiff_t+i%3D0%3Bi%3Cv.numel()%3B%2B%2Bi)%0A++++v(i)+*%3D+v(i)%3B%0A%7D%0A%0Avoid+f_kwk(float*+ptr,+int+n)%0A%7B%0A++kwk::view+v+%7B+kwk::size+++%3D+n%0A++++++++++++++,+kwk::source+%3D+ptr%0A++++++++++++++%7D%3B%0A++g(v)%3B%0A%7D++'),l:'5',n:'0',o:'C%2B%2B+source+%231',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0'),(g:!((h:compiler,i:(compiler:clang,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'0',directives:'0',execute:'1',intel:'0',libraryCode:'0',trim:'1'),flagsViewOpen:'1',fontScale:18,fontUsePx:'0',j:1,lang:c%2B%2B,libs:!(),options:'-std%3Dc%2B%2B20+-O3+-I/home/data_sync/academique/These/Kiwaku/kiwaku-operation-porcelain/include',selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:1,tree:'1'),l:'5',n:'0',o:'Intel+-+Clang+15+(C%2B%2B,+Editor+%231,+Compiler+%231)',t:'0')),header:(),k:50,l:'4',n:'0',o:'',s:0,t:'0')),l:'2',n:'0',o:'',t:'0')),version:4"></iframe>
+
+
+---
+
+## Exemples avec Kiwaku
+
+### Algorithmes sur les vues
+
+<iframe width="100%" height="70%" src="http://localhost:10240/e?readOnly=false&hideEditorToolbars=true#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:22,fontUsePx:'0',j:1,lang:c%2B%2B,selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:'%23include+%3Ckwk/kwk.hpp%3E%0A%0Avoid+f_kwk(float*+ptr,+int+n)%0A%7B%0A++using+namespace+kwk::literals%3B%0A%0A++kwk::view+v+%7B+kwk::source+%3D+ptr%0A++++++++++++++,+kwk::size+++%3D+kwk::of_size(16_c,+n)%0A++++++++++++++%7D%3B%0A%0A++kwk::for_each(%5B%5D(auto%26+e)+%7B+e*%3D+e%3B+%7D,+v)%3B%0A%7D'),l:'5',n:'0',o:'C%2B%2B+source+%231',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0'),(g:!((h:compiler,i:(compiler:clang,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'0',directives:'0',execute:'1',intel:'0',libraryCode:'1',trim:'1'),flagsViewOpen:'1',fontScale:22,fontUsePx:'0',j:1,lang:c%2B%2B,libs:!(),options:'-std%3Dc%2B%2B20+-O3+-I/home/data_sync/academique/These/Kiwaku/kiwaku-operation-porcelain/include+-mavx2',selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:1,tree:'1'),l:'5',n:'0',o:'Intel+-+Clang+15+(C%2B%2B,+Editor+%231,+Compiler+%231)',t:'0')),header:(),k:50,l:'4',n:'0',o:'',s:0,t:'0')),l:'2',n:'0',o:'',t:'0')),version:4"></iframe> -->
+
+
+<!------------------------------------------------------------------------------------------------->
+<!-- Markdeep slides stuff -->
+<script>
+    markdeepSlidesOptions = {
+        aspectRatio: 16 / 9,
+        theme: 'lri',
+        fontSize: 22,
+        diagramZoom: 1.0,
+        totalSlideNumber: true,
+        progressBar: true,
+        breakOnHeadings: false,
+        slideChangeHook: (oldSlide, newSlide) => {},
+        modeChangeHook: (newMode) => {}
+    };
+</script>
+<link rel="stylesheet" href="../markdeep-slides/lib/markdeep-relative-sizes/1.09/relativize.css">
+<link rel="stylesheet" href="../markdeep-slides/markdeep-slides.css">
+<script src="../markdeep-slides/markdeep-slides.js"></script>
+
+<!-- Markdeep stuff -->
+<script>
+    markdeepOptions = {
+        tocStyle: 'none',
+        detectMath: false,
+        onLoad: function() {
+            initSlides();
+        }
+    };
+</script>
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
+<script src="../markdeep-slides/lib/markdeep/1.09/markdeep.min.js" charset="utf-8"></script>
+<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
