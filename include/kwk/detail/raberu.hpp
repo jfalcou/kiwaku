@@ -9,6 +9,7 @@
 #define RABERU_HPP_INCLUDED
 
 #include <array>
+#include <compare>
 #include <cstring>
 #include <ostream>
 #include <string_view>
@@ -29,20 +30,37 @@
 //! @{
 //!   @defgroup kwds Keywords definitions and handling
 //!   @brief    Functions and types to handle RABERU keywords
-//!
+//! @}
+//==================================================================================================
+
+//==================================================================================================
 //!   @defgroup stng Settings definitions and handling
 //!   @brief    Functions and types to handle RABERU settings
 //! @}
-//!
+//==================================================================================================
+
+//==================================================================================================
 //! @defgroup utility   Helper types and function
 //! @brief    Tools for interacting with Raberu components
-//!
+//==================================================================================================
+
+//==================================================================================================
 //! @ingroup  utility
 //! @{
 //!   @defgroup udls   User-defined Literal operators
 //!   @brief    UDL operators
 //! @}
 //==================================================================================================
+
+// Fix for non-conformant libcpp
+namespace rbr::stdfix
+{
+  template<typename T, typename U >
+  concept is_same_impl = std::is_same_v<T, U>;
+
+  template<typename T, typename U >
+  concept same_as = is_same_impl<T, U> && is_same_impl<U, T>;
+}
 
 //==================================================================================================
 //! @namespace rbr::concepts
@@ -58,7 +76,7 @@ namespace rbr::concepts
   template<typename K> concept keyword = requires( K k )
   {
     typename K::tag_type;
-    { K::template accept<int>() } -> std::same_as<bool>;
+    { K::template accept<int>() } -> stdfix::same_as<bool>;
   };
 
   //================================================================================================
@@ -70,7 +88,7 @@ namespace rbr::concepts
   template<typename O> concept option = requires( O const& o )
   {
     { o(typename std::remove_cvref_t<O>::keyword_type{}) }
-    -> std::same_as<typename std::remove_cvref_t<O>::stored_value_type>;
+    -> stdfix::same_as<typename std::remove_cvref_t<O>::stored_value_type>;
   };
 
   //================================================================================================
@@ -90,7 +108,7 @@ namespace rbr::concepts
   //! instantiation of a precise [Keyword](@ref rbr::concepts::keyword)
   //================================================================================================
   template<typename Option, auto Keyword>
-  concept exactly = std::same_as< typename Option::keyword_type
+  concept exactly = stdfix::same_as< typename Option::keyword_type
                                 , std::remove_cvref_t<decltype(Keyword)>
                                 >;
 }
@@ -134,7 +152,7 @@ namespace rbr::detail
   template<typename K, typename Ks> struct contains;
 
   template<typename... Ks, typename K>
-  struct  contains<K, keys<Ks...>> : std::bool_constant<(std::same_as<K,Ks> || ...)>
+  struct  contains<K, keys<Ks...>> : std::bool_constant<(stdfix::same_as<K,Ks> || ...)>
   {};
 
   template<typename K, typename Ks, bool>  struct append_if_impl;
@@ -243,6 +261,12 @@ namespace rbr
     Func callable;
   };
 
+  //================================================================================================
+  //! @ingroup stng
+  //! @brief Callable object wrapper for functional default value
+  //! @tparam Keyword Keyword for the option
+  //! @tparam Value   Value stored in the option
+  //================================================================================================
   template<concepts::keyword Keyword, typename Value> struct option
   {
     using stored_value_type    = Value;
@@ -287,7 +311,7 @@ namespace rbr
     //! @snippet doc/accept.cpp Custom Accept
     //==============================================================================================
     template<typename T>
-    static constexpr bool accept() requires (!std::same_as<std::remove_cvref_t<T>,as_keyword>)
+    static constexpr bool accept() requires (!stdfix::same_as<std::remove_cvref_t<T>,as_keyword>)
     {
       if constexpr( requires(Keyword) { Keyword::template check<T>(); } )
         return Keyword::template check<T>();
@@ -296,7 +320,7 @@ namespace rbr
     }
 
     template<typename T>
-    static constexpr bool accept() requires (std::same_as<std::remove_cvref_t<T>,as_keyword>)
+    static constexpr bool accept() requires (stdfix::same_as<std::remove_cvref_t<T>,as_keyword>)
     {
       return true;
     }
@@ -495,9 +519,9 @@ namespace rbr
     template<typename O0, typename O1, typename... Os>
     constexpr decltype(auto) operator()(O0&&, O1&&, Os&&... ) const
     {
-      return    std::same_as<keyword_type, typename std::remove_cvref_t<O0>::keyword_type>
-            ||  std::same_as<keyword_type, typename std::remove_cvref_t<O1>::keyword_type>
-            || (std::same_as<keyword_type, typename std::remove_cvref_t<Os>::keyword_type> || ...);
+      return    stdfix::same_as<keyword_type, typename std::remove_cvref_t<O0>::keyword_type>
+            ||  stdfix::same_as<keyword_type, typename std::remove_cvref_t<O1>::keyword_type>
+            || (stdfix::same_as<keyword_type, typename std::remove_cvref_t<Os>::keyword_type> || ...);
     }
   };
 
@@ -581,8 +605,7 @@ namespace rbr
   // Option calls aggregator
   template<concepts::option... Ts> struct aggregator : Ts...
   {
-    constexpr aggregator() noexcept : Ts{}... {}
-    constexpr aggregator(Ts const&...t) noexcept requires(sizeof...(Ts)>0) : Ts(t)... {}
+    constexpr aggregator(Ts const&...t) noexcept : Ts(t)... {}
     using Ts::operator()...;
 
     template<concepts::keyword K> constexpr auto operator()(K const &) const noexcept
@@ -606,11 +629,8 @@ namespace rbr
     using rbr_settings = void;
     using base = aggregator<Opts...>;
 
-    /// Default constructor
-    constexpr settings()  : content_{} {}
-
     /// Constructor from a variadic pack of rbr::concepts::option
-    constexpr settings(Opts const&... opts) requires(sizeof...(Opts)>0) : content_(opts...) {}
+    constexpr settings(Opts const&... opts) : content_(opts...) {}
 
     /// Number of options in current rbr::settings
     static constexpr std::ptrdiff_t size() noexcept { return sizeof...(Opts); }
@@ -627,7 +647,7 @@ namespace rbr
     static constexpr auto contains([[maybe_unused]] Key const& kw) noexcept
     {
       using found = decltype((std::declval<base>())(Key{}));
-      return std::bool_constant<!std::same_as<found, unknown_key> >{};
+      return std::bool_constant<!stdfix::same_as<found, unknown_key> >{};
     }
 
     //==============================================================================================
@@ -768,7 +788,7 @@ namespace rbr
       template<typename T> constexpr auto operator+(keys<T> const&) const
       {
         using kw_t = typename T::keyword_type;
-        if constexpr(!std::same_as<K, typename kw_t::tag_type>)  return filter<K, Kept..., kw_t>{};
+        if constexpr(!stdfix::same_as<K, typename kw_t::tag_type>)  return filter<K, Kept..., kw_t>{};
         else                                            return *this;
       }
     };
@@ -948,7 +968,7 @@ namespace rbr
   //! @brief Retrieved the list of all value stored in a settings
   //!
   //! @tparam List  A n-ary template type to hold the result
-  //! @param o      Settings to inspect
+  //! @param s      Settings to inspect
   //! @return an instance of rbr::type containing all the values from a rbr::settings.
   //!
   //! ## Helper Types
@@ -968,9 +988,9 @@ namespace rbr
   //! @include doc/values.cpp
   //================================================================================================
   template<template<typename...> class List, typename... Opts>
-  auto values(rbr::settings<Opts...> const& o)
+  auto values(rbr::settings<Opts...> const& s)
   {
-    return result::values_t<rbr::settings<Opts...>,List>{ o[typename Opts::keyword_type{}]... };
+    return result::values_t<rbr::settings<Opts...>,List>{ s[typename Opts::keyword_type{}]... };
   }
 
   //================================================================================================

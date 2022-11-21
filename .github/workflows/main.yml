@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v3
-      - name: DEBUG - Kiwaku using g++-12 with ${{ matrix.cfg.opts }}
+      - name: Kiwaku using g++-12 with ${{ matrix.cfg.opts }}
         uses: ./.github/actions/run_docker
         with:
           compiler:       'g++-12'
@@ -59,7 +59,7 @@ jobs:
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v3
-      - name: DEBUG - Kiwaku using clang++ with ${{ matrix.cfg.opts }}
+      - name: Kiwaku using clang++ with ${{ matrix.cfg.opts }}
         uses: ./.github/actions/run_docker
         with:
           compiler:       'clang++'
