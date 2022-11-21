@@ -22,9 +22,13 @@ void test_strides(auto values)
     kumi::for_each( [&](auto o, auto e) { TTS_EQUAL(o,e); }, the_stride, m );
 
     if constexpr( std::same_as<decltype(1_c), kumi::element_t<0,decltype(m)>>)
+    {
       TTS_CONSTEXPR_EXPECT( the_stride.is_unit );
+    }
     else
+    {
       TTS_CONSTEXPR_EXPECT_NOT( the_stride.is_unit );
+    }
   }
   , values
   );
