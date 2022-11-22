@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/values.hpp>
+#include <kwk/detail/stdfix.hpp>
 #include <type_traits>
 #include <cstdint>
 #include <bit>
