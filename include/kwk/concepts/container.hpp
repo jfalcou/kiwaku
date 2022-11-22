@@ -9,6 +9,7 @@
 
 #include <concepts>
 #include <kwk/detail/raberu.hpp>
+#include <kwk/detail/stdfix.hpp>
 #include <kwk/settings/size.hpp>
 #include <kwk/settings/type.hpp>
 #include <kwk/container/settings/category.hpp>

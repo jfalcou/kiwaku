@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/utility/joker.hpp>
+#include <kwk/detail/stdfix.hpp>
 #include <type_traits>
 
 namespace kwk::concepts
