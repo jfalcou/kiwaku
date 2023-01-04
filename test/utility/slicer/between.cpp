@@ -8,10 +8,12 @@
 #include "test.hpp"
 #include <kwk/utility/container/shape.hpp>
 
-TTS_CASE("Check dynamic slicing for kwk::between")
+TTS_CASE("Check dynamic slicing for kwk::from/kwk::to combo")
 {
   using namespace kwk::literals;
-  using kwk::between;
+  using kwk::range;
+  using kwk::from;
+  using kwk::to;
   using kwk::fixed;
   using kwk::of_size;
 
@@ -20,10 +22,10 @@ TTS_CASE("Check dynamic slicing for kwk::between")
 
   constexpr unsigned int v0 = 1, v1 = 4, v2 = 8, v3 = 9, v4 = 11;
 
-  auto b0 = between(v0, v1); auto c0 = between(fixed<v0>, fixed<v1>);
-  auto b1 = between(v1, v2); auto c1 = between(fixed<v1>, fixed<v2>);
-  auto b2 = between(v2, v3); auto c2 = between(fixed<v2>, fixed<v3>);
-  auto b3 = between(v3, v4); auto c3 = between(fixed<v3>, fixed<v4>);
+  auto b0 = range(from = v0, to = v1); auto c0 = range(from = fixed<v0>, to = fixed<v1>);
+  auto b1 = range(from = v1, to = v2); auto c1 = range(from = fixed<v1>, to = fixed<v2>);
+  auto b2 = range(from = v2, to = v3); auto c2 = range(from = fixed<v2>, to = fixed<v3>);
+  auto b3 = range(from = v3, to = v4); auto c3 = range(from = fixed<v3>, to = fixed<v4>);
 
   TTS_EQUAL ( shp(b0)             , of_size(v1 - v0));
   TTS_EQUAL ( shp(b0, b1)         , of_size(v1 - v0, v2 - v1));
@@ -50,10 +52,12 @@ TTS_CASE("Check dynamic slicing for kwk::between")
   TTS_EQUAL(shp(c0, c1, c2, c3).extent<3>() , v4 - v3);
 };
 
-TTS_CASE("Check static slicing for kwk::between")
+TTS_CASE("Check static slicing for kwk::from/kwk::to combo")
 {
   using namespace kwk::literals;
-  using kwk::between;
+  using kwk::range;
+  using kwk::from;
+  using kwk::to;
   using kwk::fixed;
   using kwk::of_size;
 
@@ -66,10 +70,10 @@ TTS_CASE("Check static slicing for kwk::between")
 
   constexpr unsigned int v0 = 1, v1 = 4, v2 = 8, v3 = 9, v4 = 11;
 
-  auto b0 = between(v0, v1); auto c0 = between(fixed<v0>, fixed<v1>);
-  auto b1 = between(v1, v2); auto c1 = between(fixed<v1>, fixed<v2>);
-  auto b2 = between(v2, v3); auto c2 = between(fixed<v2>, fixed<v3>);
-  auto b3 = between(v3, v4); auto c3 = between(fixed<v3>, fixed<v4>);
+  auto b0 = range(from = v0, to = v1); auto c0 = range(from = fixed<v0>, to = fixed<v1>);
+  auto b1 = range(from = v1, to = v2); auto c1 = range(from = fixed<v1>, to = fixed<v2>);
+  auto b2 = range(from = v2, to = v3); auto c2 = range(from = fixed<v2>, to = fixed<v3>);
+  auto b3 = range(from = v3, to = v4); auto c3 = range(from = fixed<v3>, to = fixed<v4>);
 
   TTS_EQUAL ( shp(b0)             , of_size(v1 - v0));
   TTS_EQUAL ( shp(b0, b1)         , of_size(v1 - v0, v2 - v1));

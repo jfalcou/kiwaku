@@ -49,7 +49,6 @@ endfunction()
 function(make_unit)
   foreach(file ${ARGN})
     source_to_target( "exe" ${file} test)
-    message(STATUS "Test: ${test}")
     add_executable(${test} ${file})
 
     add_target_parent(${test})

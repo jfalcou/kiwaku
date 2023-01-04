@@ -9,10 +9,15 @@
 
 #include <kwk/concepts/values.hpp>
 #include <kwk/detail/stdfix.hpp>
-#include <type_traits>
-#include <cstdint>
 #include <bit>
+#include <cstdint>
 #include <ostream>
+#include <type_traits>
+
+#if defined(_MSC_VER)
+#pragma warning( push )
+#pragma warning( disable : 4146 )
+#endif
 
 namespace kwk
 {
@@ -103,3 +108,7 @@ namespace kwk
     }
   }
 }
+
+#if defined(_MSC_VER)
+#pragma warning( pop )
+#endif
