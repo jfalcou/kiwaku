@@ -136,18 +136,20 @@ namespace kwk::detail
     }
 
     // Dynamic access
-    KWK_FORCEINLINE constexpr auto operator[](std::size_t i) const noexcept
+    KWK_FORCEINLINE constexpr auto operator[](std::convertible_to<std::size_t> auto i) const noexcept
     {
-      KIWAKU_ASSERT(i<static_size , "[KWK] - Out of bounds access");
-      if constexpr(static_size == 0) return 1; else return as_array()[i];
+      auto const idx = static_cast<std::size_t>(i);
+      KIWAKU_ASSERT(idx<static_size , "[KWK] - Out of bounds access");
+      if constexpr(static_size == 0) return 1; else return as_array()[idx];
     }
 
-    KWK_FORCEINLINE constexpr auto& operator[](std::size_t i) noexcept
+    KWK_FORCEINLINE constexpr auto& operator[](std::convertible_to<std::size_t> auto i) noexcept
     requires( is_dynamic && static_size>0)
     {
-      KIWAKU_ASSERT ( i<static_size , "[KWK] - Out of bounds access"                  );
-      KIWAKU_ASSERT ( contains(i)   , "[KWK] - Access overwrites a compile-time value");
-      return storage()[location[i]];
+      auto const idx = static_cast<std::size_t>(i);
+      KIWAKU_ASSERT( idx<static_size , "[KWK] - Out of bounds access"                  );
+      KIWAKU_ASSERT( contains(idx)   , "[KWK] - Access overwrites a compile-time value");
+      return storage()[location[idx]];
     }
 
     // Total size of the array
