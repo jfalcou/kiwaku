@@ -26,11 +26,11 @@ target_include_directories( kiwaku_test INTERFACE
 ##==================================================================================================
 ## Turn a filename to a dot-separated target name
 ##==================================================================================================
-function(source_to_target root ext filename testname)
+function(source_to_target ext filename testname)
   string(REPLACE ".cpp" ".${ext}" base ${filename})
   string(REPLACE "/"    "." base ${base})
   string(REPLACE "\\"   "." base ${base})
-  SET(${testname} "${root}.${base}" PARENT_SCOPE)
+  set(${testname} "${base}" PARENT_SCOPE)
 endfunction()
 
 function(setup_location test location)
@@ -46,9 +46,10 @@ endfunction()
 ##==================================================================================================
 ## Process a list of source files to generate corresponding test target
 ##==================================================================================================
-function(make_unit root)
+function(make_unit)
   foreach(file ${ARGN})
-    source_to_target( ${root} "exe" ${file} test)
+    source_to_target( "exe" ${file} test)
+    message(STATUS "Test: ${test}")
     add_executable(${test} ${file})
 
     add_target_parent(${test})
@@ -57,4 +58,12 @@ function(make_unit root)
     setup_location( ${test} "unit")
     target_link_libraries(${test} PUBLIC kiwaku_test)
   endforeach()
+endfunction()
+
+##==================================================================================================
+## Generate tests from a GLOB
+##==================================================================================================
+function(glob_unit relative pattern)
+  file(GLOB files CONFIGURE_DEPENDS RELATIVE ${relative} ${pattern})
+  make_unit(${files})
 endfunction()
