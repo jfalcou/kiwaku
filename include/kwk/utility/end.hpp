@@ -16,6 +16,9 @@
 #if !defined(_MSC_VER)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
+#else
+#pragma warning( push )
+#pragma warning( disable : 4146 )
 #endif
 
 namespace kwk
@@ -102,4 +105,6 @@ namespace kwk
 
 #if !defined(_MSC_VER)
 #pragma GCC diagnostic pop
+#else
+#pragma warning( pop )
 #endif
