@@ -11,6 +11,7 @@
 TTS_CASE("Check basic slicing for kwk::to")
 {
   using namespace kwk::literals;
+  using kwk::range;
   using kwk::to;
   using kwk::fixed;
 
@@ -18,10 +19,10 @@ TTS_CASE("Check basic slicing for kwk::to")
   auto s2 = kwk::fixed<d2>;
   auto s3 = kwk::fixed<d3>;
 
-  auto t0 = to(d0);
-  auto t1 = to(fixed<d1>);
-  auto t2 = to(d2);
-  auto t3 = to(fixed<d3>);
+  auto t0 = range(to = d0);
+  auto t1 = range(to = fixed<d1>);
+  auto t2 = range(to = d2);
+  auto t3 = range(to = fixed<d3>);
 
   auto shp = kwk::of_size(d0, d1, s2, s3);
 
@@ -40,13 +41,14 @@ TTS_CASE("Check basic slicing for kwk::to")
 TTS_CASE("Check slicing with end for kwk::to")
 {
   using namespace kwk::literals;
+  using kwk::range;
   using kwk::to;
   using kwk::fixed;
   using kwk::end;
 
   constexpr std::ptrdiff_t d0 = 1, d1 = 3;
   auto s1 = kwk::fixed<d1>;
-  auto t0 = to(end);
+  auto t0 = range(to = end);
 
   auto shp = kwk::of_size(d0, s1);
 
@@ -58,6 +60,7 @@ TTS_CASE("Check slicing with end for kwk::to")
 TTS_CASE("Check slicing with end-n for kwk::to")
 {
   using namespace kwk::literals;
+  using kwk::range;
   using kwk::to;
   using kwk::fixed;
   using kwk::end;
@@ -68,8 +71,8 @@ TTS_CASE("Check slicing with end-n for kwk::to")
 
   constexpr std::size_t v0 = 1;
   auto c0 = fixed<v0>;
-  auto t0 = to(end-v0);
-  auto t1 = to(end-c0);
+  auto t0 = range(to = end-v0);
+  auto t1 = range(to = end-c0);
 
   auto shp = kwk::of_size(d0, s1, d2, s3);
 
@@ -84,6 +87,7 @@ TTS_CASE("Check slicing with end-n for kwk::to")
 TTS_CASE("Check slicing with end/n for kwk::to")
 {
   using namespace kwk::literals;
+  using kwk::range;
   using kwk::to;
   using kwk::fixed;
   using kwk::end;
@@ -94,8 +98,8 @@ TTS_CASE("Check slicing with end/n for kwk::to")
 
   constexpr std::size_t v0 = 2;
   auto c0 = fixed<v0>;
-  auto t0 = to(end/v0);
-  auto t1 = to(end/c0);
+  auto t0 = range(to = end/v0);
+  auto t1 = range(to = end/c0);
 
   auto shp = kwk::of_size(d0, s1, d2, s3);
 
@@ -110,6 +114,7 @@ TTS_CASE("Check slicing with end/n for kwk::to")
 TTS_CASE("Check slicing with (k * end / q) for kwk::to")
 {
   using namespace kwk::literals;
+  using kwk::range;
   using kwk::to;
   using kwk::fixed;
   using kwk::end;
@@ -125,10 +130,10 @@ TTS_CASE("Check slicing with (k * end / q) for kwk::to")
   auto fc = fixed<f>;
   auto dc = fixed<d>;
 
-  auto tdd = to(end*f/d);
-  auto tdc = to(end*f/dc);
-  auto tcd = to(end*fc/d);
-  auto tcc = to(end*fc/dc);
+  auto tdd = range(to = end*f/d);
+  auto tdc = range(to = end*f/dc);
+  auto tcd = range(to = end*fc/d);
+  auto tcc = range(to = end*fc/dc);
 
   auto shp = kwk::of_size(d0, d1, d2, d3, s4, s5, s6, s7);
 
@@ -150,6 +155,7 @@ TTS_CASE("Check slicing with (k * end / q) for kwk::to")
 TTS_CASE("Check slicing with (k * end / q + dynamic_offset) for kwk::to")
 {
   using namespace kwk::literals;
+  using kwk::range;
   using kwk::to;
   using kwk::fixed;
   using kwk::end;
@@ -166,10 +172,10 @@ TTS_CASE("Check slicing with (k * end / q + dynamic_offset) for kwk::to")
   auto fc = fixed<f>;
   auto dc = fixed<d>;
 
-  auto tdd = to(end*f /d  + od);
-  auto tdc = to(end*f /dc + od);
-  auto tcd = to(end*fc/d  + od);
-  auto tcc = to(end*fc/dc + od);
+  auto tdd = range(to = end*f /d  + od);
+  auto tdc = range(to = end*f /dc + od);
+  auto tcd = range(to = end*fc/d  + od);
+  auto tcc = range(to = end*fc/dc + od);
 
   auto shp = kwk::of_size(d0, d1, d2, d3, s4, s5, s6, s7);
 
@@ -192,6 +198,7 @@ TTS_CASE("Check slicing with (k * end / q + dynamic_offset) for kwk::to")
 TTS_CASE("Check slicing with (k * end / q + static_offset) for kwk::to")
 {
   using namespace kwk::literals;
+  using kwk::range;
   using kwk::to;
   using kwk::fixed;
   using kwk::end;
@@ -208,10 +215,10 @@ TTS_CASE("Check slicing with (k * end / q + static_offset) for kwk::to")
   auto fc = fixed<f>;
   auto dc = fixed<d>;
 
-  auto tdd = to(end*f /d  + oc);
-  auto tdc = to(end*f /dc + oc);
-  auto tcd = to(end*fc/d  + oc);
-  auto tcc = to(end*fc/dc + oc);
+  auto tdd = range(to = end*f /d  + oc);
+  auto tdc = range(to = end*f /dc + oc);
+  auto tcd = range(to = end*fc/d  + oc);
+  auto tcc = range(to = end*fc/dc + oc);
 
   auto shp = kwk::of_size(d0, d1, d2, d3, s4, s5, s6, s7);
 

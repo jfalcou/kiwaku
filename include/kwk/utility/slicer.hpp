@@ -8,11 +8,13 @@
 #pragma once
 
 #include <kwk/concepts/values.hpp>
-#include <kwk/detail/kumi.hpp>
+#include <kwk/detail/raberu.hpp>
 #include <kwk/utility/end.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <kwk/utility/joker.hpp>
 #include <kwk/utility/traits/extent.hpp>
+
+#include <concepts>
 #include <ostream>
 
 #if !defined(_MSC_VER)
@@ -22,32 +24,37 @@
 
 namespace kwk
 {
+  //================================================================================================
+  // Keyword for range(...) specifications
+  //================================================================================================
+  namespace detail
+  {
+    struct to_   {};
+    struct from_ {};
+    struct by_   {};
+  }
+
+  inline constexpr auto to    = rbr::keyword(detail::to_  {});
+  inline constexpr auto from  = rbr::keyword(detail::from_{});
+  inline constexpr auto by    = rbr::keyword(detail::by_  {});
+
   template<auto D> struct shape;
 
+  //================================================================================================
+  // range(...) specifications
+  //================================================================================================
   template<typename Begin, typename Step, typename End>
   struct slicer
   {
-    kumi::tuple<Begin,Step,End> storage;
+    Begin begin;
+    Step  step;
+    End   end;
 
     static constexpr bool has_begin = !std::same_as<Begin,joker>;
     static constexpr bool has_step  = !std::same_as<Step,joker>;
     static constexpr bool has_end   = !std::same_as<End,joker>;
 
-    slicer(Begin b, Step s, End e) : storage{b,s,e} {}
-
-    template<typename S>
-    constexpr auto by(S s) const noexcept requires(!concepts::extremum<S>)
-    {
-      if constexpr(has_step)
-      {
-        auto stp = s*get<1>(storage);
-        return slicer<Begin,decltype(stp),End>{get<0>(storage),stp,get<2>(storage)};
-      }
-      else
-      {
-        return slicer<Begin,S,End>{get<0>(storage),s,get<2>(storage)};
-      }
-    }
+    slicer(Begin b, Step s, End e) : begin{b},step{s},end{e} {}
 
     template<auto D, std::size_t N>
     constexpr auto reshape(shape<D> const& sh, kumi::index_t<N> const&) const noexcept
@@ -61,9 +68,9 @@ namespace kwk
         else                                return s;
       };
 
-      auto b = fix_extremum(get<0>(storage), fixed<0>);
-      auto s = fix_extremum(get<1>(storage), fixed<1>);
-      auto e = fix_extremum(get<2>(storage), count);
+      auto b = fix_extremum(begin, fixed<0>);
+      auto s = fix_extremum(step , fixed<1>);
+      auto e = fix_extremum(end  , count   );
 
       auto eval = [&]<typename S, typename B>(S s, B b)
       {
@@ -80,9 +87,9 @@ namespace kwk
 
     friend std::ostream& operator<<(std::ostream& os, slicer const& f)
     {
-      if constexpr(has_begin) os << get<0>(f.storage)<< ':'; else os << "begin:";
-      if constexpr(has_step)  os << get<1>(f.storage) << ':';
-      if constexpr(has_end)   os << get<2>(f.storage); else os << "end";
+      if constexpr(has_begin) os << f.begin << ':'; else os << "begin:";
+      if constexpr(has_step)  os << f.step  << ':';
+      if constexpr(has_end)   os << f.end; else os << "end";
       return os;
     }
   };
@@ -97,12 +104,18 @@ namespace kwk
     else                                                return fixed<1>;
   }
 
-  constexpr auto by     (auto n)         noexcept { return slicer{_,n,_}; }
-  constexpr auto from   (auto b)         noexcept { return slicer{b,_,_}; }
-  constexpr auto to     (auto e)         noexcept { return slicer{_,_,e}; }
-  constexpr auto between(auto b, auto e) noexcept { return slicer{b,_,e}; }
+  //================================================================================================
+  // range constructor
+  //================================================================================================
+  template<rbr::concepts::option... Os>
+  constexpr auto range(Os... os) noexcept requires(rbr::settings<Os...>::contains_only(to,from,by))
+  {
+    auto const opts = rbr::settings{os...};
+    return slicer{opts[from | _], opts[by | _], opts[to | _]};
+  }
 }
 
 #if !defined(_MSC_VER)
 #pragma GCC diagnostic pop
 #endif
+
