@@ -8,7 +8,7 @@
 #include "test.hpp"
 #include <kwk/utility/container/shape.hpp>
 
-TTS_CASE("Check dynamic slicing for kwk::between")
+TTS_CASE("Check dynamic slicing for kwk::from/kwk::to combo")
 {
   using namespace kwk::literals;
   using kwk::range;
@@ -52,7 +52,7 @@ TTS_CASE("Check dynamic slicing for kwk::between")
   TTS_EQUAL(shp(c0, c1, c2, c3).extent<3>() , v4 - v3);
 };
 
-TTS_CASE("Check static slicing for kwk::between")
+TTS_CASE("Check static slicing for kwk::from/kwk::to combo")
 {
   using namespace kwk::literals;
   using kwk::range;
