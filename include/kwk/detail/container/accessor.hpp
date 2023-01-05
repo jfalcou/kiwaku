@@ -33,7 +33,6 @@ namespace kwk::detail
               , stride_( pick(kwk::strides,opts) )
     {}
 
-    constexpr auto index(auto i0)     const noexcept { return i0*get<0>(stride_);       }
     constexpr auto index(auto... is)  const noexcept { return stride_.linearize(is...); }
 
     constexpr void reshape( shape_type const& s ) noexcept
@@ -128,12 +127,12 @@ namespace kwk::detail
     constexpr std::ptrdiff_t  size()  const noexcept { return shape_.numel();  }
     constexpr auto            shape() const noexcept { return shape_;          }
 
-    constexpr auto stride() const noexcept { return stride_type{fixed<1>,get<0>(shape_)}; }
+    constexpr auto stride() const noexcept { return stride_type{fixed<1>,get<1>(shape_)}; }
 
     constexpr void reshape( shape_type const& s ) { shape_ = s; }
 
     constexpr auto index(auto i0)           const noexcept { return i0; }
-    constexpr auto index(auto i0, auto i1)  const noexcept { return i0 + i1*get<0>(shape_); }
+    constexpr auto index(auto i0, auto i1)  const noexcept { return i1 + i0*get<1>(shape_); }
 
     constexpr void swap( accessor& other ) noexcept { shape_.swap( other.shape_ ); }
 

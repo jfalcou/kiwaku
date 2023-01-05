@@ -77,11 +77,11 @@ namespace kwk
     /// Type of dimensions' size
     using size_type = typename parent::value_type;
 
-    /// Checks a @ref kwk::stride is unit - ie it's first value is statically known to be 1
+    /// Checks a @ref kwk::stride is unit - ie it's innermost value is statically known to be 1
     static constexpr auto is_unit = []()
     {
-      auto first = get<0>(parent::descriptor);
-      if constexpr(!is_joker_v<decltype(first)>) return first == 1; else return false;
+      auto innermost = kumi::back(parent::descriptor);
+      if constexpr(!is_joker_v<decltype(innermost)>) return innermost == 1; else return false;
     }();
 
     //==============================================================================================
@@ -188,11 +188,11 @@ namespace kwk
   template<auto Shape>
   constexpr auto as_stride(shape<Shape> const& s) noexcept
   {
-    constexpr auto prod = [](auto acc, auto m) { return push_back(acc, back(acc) * m); };
+    constexpr auto prod = [](auto acc, auto m) { return push_front(acc, front(acc) * m); };
 
     // Build the perfect descriptor and the suitable values tuple
-    constexpr auto d = kumi::pop_back(kumi::fold_right(prod, Shape, kumi::tuple{1}));
-              auto v = kumi::pop_back(kumi::fold_right(prod, s    , kumi::tuple{1}));
+    constexpr auto d = kumi::pop_front(kumi::fold_left(prod, Shape, kumi::tuple{1}));
+              auto v = kumi::pop_front(kumi::fold_left(prod, s    , kumi::tuple{1}));
 
     // Turn into a stride
     return kumi::apply([&](auto... e) { return stride<detail::to_combo<int>(d)>{e...}; }, v);
