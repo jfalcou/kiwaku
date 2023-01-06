@@ -12,6 +12,7 @@
 #include <kwk/detail/container/builder.hpp>
 #include <kwk/detail/memory/block.hpp>
 #include <type_traits>
+#include <iostream>
 
 namespace kwk
 {
@@ -87,38 +88,26 @@ namespace kwk
       auto lbl    = [&]() { if constexpr(has_label) os << v.label() << ":\n"; };
 
       lbl();
-      if( v.empty() )
-      {
-        return os << spaces << "[ ]";
-      }
+      if( v.empty() ) return os << spaces << "[ ]";
 
       auto shp = v.shape();
-      if constexpr( container::static_order < 3)
-      {
-        for_each_index( [&](auto e, auto i0, auto...)
+      for_each_index( [&](auto e, auto idx)
+                      {
+                        if constexpr( container::static_order >= 3)
                         {
-                          if(i0 == 0) os << spaces << "[ ";
-                          os << e << ' ';
-                          if(i0 == get<0>(shp)-1) os << "]\n";
+                          auto panel = kumi::extract(idx,kumi::index<container::static_order-2>);
+                          if(     panel == kumi::tuple{0,0}
+                              &&  kumi::get<container::static_order-3>(idx) > 0
+                            )
+                          os << '\n';
                         }
-                      , v
-                      );
-      }
-      else
-      {
-        for_each_index( [&](auto e, auto i0, auto i1, auto i2, auto... )
-                        {
-                          if(i0 == 0)
-                          {
-                            if(i1 == 0 && i2 > 0) os << '\n';
-                            os << spaces << "[ ";
-                          }
-                          os << e << ' ';
-                          if(i0 == get<0>(shp)-1) os << "]\n";
-                        }
-                      , v
-                      );
-      }
+
+                        if(back(idx) == 0) os << spaces << "[ ";
+                        os << e << ' ';
+                        if(back(idx) == kumi::back(shp)-1) os << "]\n";
+                      }
+                    , v
+                    );
 
       return os;
     }
