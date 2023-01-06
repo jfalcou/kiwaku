@@ -330,6 +330,13 @@ namespace kwk
       return compare( other , [](auto a, auto b) { return a>=b;}, [](auto) { return true; } );
     }
 
+    /// @overload
+    template<std::integral... Ss>
+    constexpr bool contains( Ss... s) const noexcept
+    {
+      return contains(of_size(s...));
+    }
+
     //==============================================================================================
     //! @brief Check if current shape contains the volume of another one exactly
     //!
@@ -343,6 +350,13 @@ namespace kwk
     constexpr bool strictly_contains( shape<Shaper2> const& other) const noexcept
     {
       return compare( other , [](auto a, auto b) { return a>b;}, [](auto) { return true; } );
+    }
+
+    /// @overload
+    template<std::integral... Ss>
+    constexpr bool strictly_contains( Ss... s) const noexcept
+    {
+      return strictly_contains(of_size(s...));
     }
 
     /// Number of dimensions
