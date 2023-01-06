@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/range.hpp>
+#include <kwk/detail/assert.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/utility/container/stride.hpp>
 #include <utility>
@@ -23,8 +24,12 @@ namespace kwk
   //! @return The linear index equivalent to (idx...) for the current shape
   //================================================================================================
   template<auto Shaper, std::integral... Index>
-  auto linear_index( shape<Shaper> const& sh, Index... idx )
+  constexpr auto linear_index( shape<Shaper> const& sh, Index... idx ) noexcept
   {
+    KIWAKU_ASSERT ( sh.strictly_contains(idx...)
+                  , "Linearizing out of bounds indexes "
+                    << kumi::tuple{idx...} << " within shape " << sh
+                  );
     return as_stride(sh).linearize(idx...);
   }
 
@@ -37,22 +42,22 @@ namespace kwk
   //! @return The linear index equivalent to (idx...) for the current shape
   //================================================================================================
   template<auto Shaper, kumi::sized_product_type<Shaper.size()> Indexes>
-  auto linear_index( shape<Shaper> const& sh, Indexes idx )
+  constexpr auto linear_index( shape<Shaper> const& sh, Indexes idx ) noexcept
   {
     return kumi::apply( [&](auto... i) { return linear_index(sh,i...); }, idx);
   }
 
   //================================================================================================
   //! @ingroup utility
-  //! @brief  Computes a linear index from a range of N  indexes
+  //! @brief  Computes a linear index from a range of N indexes
   //!
-  //! @param sh   Shape used as a reference
-  //! @param indexes  Range of integer representing the order N index to linearize
+  //! @param sh      Shape used as a reference
+  //! @param indexes Range of integer representing the order N index to linearize
   //! @return The linear index equivalent to (indexes[0], ...) for the current shape
   //================================================================================================
   template<auto Shaper, kwk::concepts::range Indexes>
   requires( !kumi::sized_product_type<Indexes,Shaper.size()> )
-  auto linear_index( shape<Shaper> const& sh, Indexes const& indexes)
+  constexpr auto linear_index( shape<Shaper> const& sh, Indexes const& indexes) noexcept
   {
     return [&]<std::size_t... I>(std::index_sequence<I...>  const&)
     {
