@@ -24,3 +24,15 @@ TTS_CASE( "Convert a shapes to strides" )
   TTS_EQUAL( kwk::as_stride(kwk::shape(2,4,6,8)), kwk::with_strides(1_c, 2, 8, 48) );
   TTS_EQUAL( kwk::as_stride(kwk::shape(2,4,6,8)).is_unit, true );
 };
+
+TTS_CASE( "Convert a shapes of small types to strides" )
+{
+  using namespace kwk::literals;
+
+  std::uint8_t d0 = 17, d1 = 19, d2 = 21, d3 = 23;
+
+  TTS_EQUAL( kwk::as_stride(kwk::shape(d0)), kwk::with_strides(1_c) );
+  TTS_EQUAL( kwk::as_stride(kwk::shape(d0,d1)), kwk::with_strides(1_c, d0) );
+  TTS_EQUAL( kwk::as_stride(kwk::shape(d0,d1,d2)), kwk::with_strides(1_c, d0, d0*d1) );
+  TTS_EQUAL( kwk::as_stride(kwk::shape(d0,d1,d2,d3)), kwk::with_strides(1_c, d0, d0*d1, d0*d1*d2) );
+};
