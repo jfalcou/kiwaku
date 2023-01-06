@@ -29,7 +29,7 @@ TTS_CASE( "2D behavior of linear_index" )
   {
     for(int i0 = 0; i0 < 3; ++i0)
     {
-      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh, i1, i0)) ) << "\n";
+      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh, i1, i0)) );
       TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh,kumi::tuple{i1,i0})) );
       TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh,std::array<int,2>{i1,i0})) );
     }

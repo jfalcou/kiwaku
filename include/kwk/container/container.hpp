@@ -12,7 +12,6 @@
 #include <kwk/detail/container/builder.hpp>
 #include <kwk/detail/memory/block.hpp>
 #include <type_traits>
-#include <iostream>
 
 namespace kwk
 {

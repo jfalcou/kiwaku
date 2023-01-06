@@ -25,7 +25,7 @@ TTS_CASE( "Build a 2D table from a C array" )
   TTS_EXPECT( v.shape().is_fully_static         );
 
   TTS_NOT_EQUAL(&ref[0], &v(0,0));
-  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]) << i << "\n"; }, v);
+  kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::table{ kwk::source = ref, kwk::of_size(3_c, 4_c) };
 
