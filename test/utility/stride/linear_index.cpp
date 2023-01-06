@@ -29,9 +29,9 @@ TTS_CASE( "2D behavior of linear_index" )
   {
     for(int i0 = 0; i0 < 3; ++i0)
     {
-      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh, i0, i1)) );
-      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh,kumi::tuple{i0,i1})) );
-      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh,std::array<int,2>{i0,i1})) );
+      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh, i1, i0)) ) << "\n";
+      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh,kumi::tuple{i1,i0})) );
+      TTS_EQUAL((i0+3*i1), (kwk::linear_index(sh,std::array<int,2>{i1,i0})) );
     }
   }
 };
@@ -46,9 +46,9 @@ TTS_CASE( "3D behavior of linear_index" )
     {
       for(int i0 = 0; i0 < 2; ++i0)
       {
-        TTS_EQUAL((i0+2*i1+6*i2), (kwk::linear_index(sh, i0, i1, i2)) );
-        TTS_EQUAL((i0+2*i1+6*i2), (kwk::linear_index(sh,kumi::tuple{i0,i1,i2})) );
-        TTS_EQUAL((i0+2*i1+6*i2), (kwk::linear_index(sh,std::array<int,3>{i0,i1,i2})) );
+        TTS_EQUAL((i0+2*i1+6*i2), (kwk::linear_index(sh, i2,i1,i0 )) );
+        TTS_EQUAL((i0+2*i1+6*i2), (kwk::linear_index(sh,kumi::tuple{i2,i1,i0})) );
+        TTS_EQUAL((i0+2*i1+6*i2), (kwk::linear_index(sh,std::array<int,3>{i2,i1,i0})) );
       }
     }
   }
@@ -66,9 +66,9 @@ TTS_CASE( "4D behavior of linear_index" )
       {
         for(int i0 = 0; i0 < 2; ++i0)
         {
-          TTS_EQUAL((i0+2*i1+6*i2+24*i3), (kwk::linear_index(sh, i0, i1, i2, i3)) );
-          TTS_EQUAL((i0+2*i1+6*i2+24*i3), (kwk::linear_index(sh,kumi::tuple{i0,i1,i2,i3})) );
-          TTS_EQUAL((i0+2*i1+6*i2+24*i3), (kwk::linear_index(sh,std::array<int,4>{i0,i1,i2,i3})) );
+          TTS_EQUAL((i0+2*i1+6*i2+24*i3), (kwk::linear_index(sh, i3,i2,i1,i0 )) );
+          TTS_EQUAL((i0+2*i1+6*i2+24*i3), (kwk::linear_index(sh,kumi::tuple{i3,i2,i1,i0})) );
+          TTS_EQUAL((i0+2*i1+6*i2+24*i3), (kwk::linear_index(sh,std::array<int,4>{i3,i2,i1,i0})) );
         }
       }
     }
