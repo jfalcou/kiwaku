@@ -1,9 +1,9 @@
 //==================================================================================================
-/**
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: BSL-1.0
-**/
+*/
 //==================================================================================================
 #include "test.hpp"
 #include <kwk/utility/linear_index.hpp>
