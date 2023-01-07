@@ -8,6 +8,7 @@
 #include "test.hpp"
 #include <kwk/utility/container/stride.hpp>
 #include <kwk/utility/fixed.hpp>
+#include <type_traits>
 
 using namespace kwk::literals;
 auto in = kumi::tuple{1_c,2_c,9};
@@ -21,7 +22,7 @@ void test_strides(auto values)
 
     kumi::for_each( [&](auto o, auto e) { TTS_EQUAL(o,e); }, the_stride, m );
 
-    if constexpr( std::same_as<decltype(1_c), kumi::element_t<0,decltype(m)>>)
+    if constexpr(std::same_as<decltype(1_c),std::remove_cvref_t<kumi::result::back_t<decltype(m)>>>)
     {
       TTS_CONSTEXPR_EXPECT( the_stride.is_unit );
     }

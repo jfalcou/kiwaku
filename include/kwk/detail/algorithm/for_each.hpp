@@ -23,12 +23,12 @@ namespace kwk
     template<typename Func, typename Container, typename Dims>
     constexpr auto for_each(Func&& f, Container&& c, Dims const&ds)
     {
-      auto loops = kumi::fold_right ( [](auto acc, auto m)
+      auto loops = kumi::fold_left ( [](auto acc, auto m)
                                       {
                                         return [=](auto... is)
                                         {
                                           for(decltype(m) i = 0;i<m;++i)
-                                            acc(i,is...);
+                                            acc(is...,i);
                                         };
                                       }
                                     , ds
@@ -45,18 +45,18 @@ namespace kwk
     template<typename Func, typename Container, typename Dims>
     constexpr auto for_each_index(Func&& f, Container&& c, Dims const& ds)
     {
-      auto loops = kumi::fold_right ( [](auto acc, auto m)
+      auto loops = kumi::fold_left ( [](auto acc, auto m)
                                       {
                                         return [=](auto... is)
                                         {
                                           for(decltype(m) i = 0;i<m;++i)
-                                            acc(i,is...);
+                                            acc(is...,i);
                                         };
                                       }
                                     , ds
                                     , [&](auto... is)
                                       {
-                                        return KWK_FWD(f)(KWK_FWD(c)(is...), is...);
+                                        return KWK_FWD(f)(KWK_FWD(c)(is...), kumi::tie(is...));
                                       }
                                     );
       loops();
