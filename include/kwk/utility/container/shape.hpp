@@ -37,26 +37,26 @@ namespace kwk
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
   template<typename SizeType, int..., concepts::extent<SizeType>... Ds>
-  [[gnu::pure]] constexpr auto of_size(Ds... ds) noexcept
+  KWK_PURE constexpr auto of_size(Ds... ds) noexcept
   {
     return detail::make_extent<kwk::shape,SizeType>(ds...);
   }
 
   template<int..., concepts::extent<std::ptrdiff_t>... Ds>
-  [[gnu::pure]] constexpr auto of_size( Ds... ds) noexcept
+  KWK_PURE constexpr auto of_size( Ds... ds) noexcept
   {
     using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
     return of_size<type_t>(ds...);
   }
 
   template<int..., kumi::product_type Ds>
-  [[gnu::pure]] constexpr auto of_size( Ds ds) noexcept
+  KWK_PURE constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size(s...); }, ds);
   }
 
   template<typename SizeType,int..., kumi::product_type Ds>
-  [[gnu::pure]] constexpr auto of_size( Ds ds) noexcept
+  KWK_PURE constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
   }
@@ -400,7 +400,7 @@ namespace kwk
     //!         `ref` is matched with an equal value in the current shape.
     //==============================================================================================
     template<auto R>
-    [[gnu::pure]] constexpr auto fit_constraints(shape<R> const& ref) const noexcept
+    KWK_PURE constexpr auto fit_constraints(shape<R> const& ref) const noexcept
     {
       if      constexpr(shape<R>::is_fully_dynamic                  ) return true;
       else if constexpr(shape<R>::static_order != static_order      ) return false;

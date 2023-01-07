@@ -22,3 +22,10 @@
 #    define KWK_FORCEINLINE inline
 #  endif
 #endif
+
+// PURE attribute
+#if defined(_MSC_VER)
+#  define KWK_PURE
+#else
+#  define KWK_PURE [[gnu::pure]]
+#endif
