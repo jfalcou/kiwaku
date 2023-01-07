@@ -37,26 +37,26 @@ namespace kwk
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
   template<typename SizeType, int..., concepts::extent<SizeType>... Ds>
-  KWK_PURE constexpr auto of_size(Ds... ds) noexcept
+  KWK_CONST constexpr auto of_size(Ds... ds) noexcept
   {
     return detail::make_extent<kwk::shape,SizeType>(ds...);
   }
 
   template<int..., concepts::extent<std::ptrdiff_t>... Ds>
-  KWK_PURE constexpr auto of_size( Ds... ds) noexcept
+  KWK_CONST constexpr auto of_size( Ds... ds) noexcept
   {
     using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
     return of_size<type_t>(ds...);
   }
 
   template<int..., kumi::product_type Ds>
-  KWK_PURE constexpr auto of_size( Ds ds) noexcept
+  KWK_CONST constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size(s...); }, ds);
   }
 
   template<typename SizeType,int..., kumi::product_type Ds>
-  KWK_PURE constexpr auto of_size( Ds ds) noexcept
+  KWK_CONST constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
   }
