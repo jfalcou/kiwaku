@@ -36,7 +36,6 @@ STRIP_FROM_INC_PATH    = ../include
 SEPARATE_MEMBER_PAGES  = YES
 TAB_SIZE               = 2
 
-ALIASES += "godbolt{1}=@include \1"
 ALIASES += "groupheader{1}=<h2 class=\"groupheader\"> \1 </h2>"  \
 ALIASES += "nullable=[NullablePointer](https://en.cppreference.com/w/cpp/named_req/NullablePointer)"
 ALIASES += "semiregular=<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>" \
@@ -568,9 +567,9 @@ EXCLUDE_SYMBOLS        = spy*  \
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = ../test/doc \
-                         ../examples \
-                         .
+EXAMPLE_PATH = ../test/
+EXAMPLE_PATH += .
+
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and

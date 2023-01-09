@@ -176,7 +176,7 @@ namespace kwk
     //! behavior.
     //!
     //! @groupheader{Example}
-    //! @godbolt{docs/shape/mixed.cpp}
+    //! @include docs/shape/mixed.cpp
     //!
     //! @param dims  Variadic list of dimension/size association
     //==============================================================================================
@@ -209,7 +209,7 @@ namespace kwk
     //! non-compatible layout.
     //!
     //! @groupheader{Example}
-    //! @godbolt{docs/shape/compatible.cpp}
+    //! @include docs/shape/compatible.cpp
     //!
     //! @param other  Source kwk::shape to copy
     //==============================================================================================
@@ -244,7 +244,7 @@ namespace kwk
     //! Lower order axis must be equivalent.
     //!
     //! @groupheader{Example}
-    //! @godbolt{docs/shape/odd_sized.cpp}
+    //! @include docs/shape/odd_sized.cpp
     //!
     //! @param other  Shape to copy
     //==============================================================================================
@@ -296,7 +296,7 @@ namespace kwk
     //! specified at runtime.
     //!
     //! @groupheader{Example}
-    //! @godbolt{docs/shape/odd_sized.cpp}
+    //! @include docs/shape/odd_sized.cpp
     //!
     //! @param o  Shape to copy
     //==============================================================================================
