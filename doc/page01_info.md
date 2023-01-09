@@ -86,12 +86,12 @@ The resulting HTML files will be available in the `doc` folder.
 
 Once installed, you can compile the following code to check if everything is alright.
 
-@godbolt{examples/quick-start/sanity-check.cpp}
+@include integration/main.cpp
 
 To do so, use your C++20 aware favorite compiler, for example g++.
 
 @verbatim
-$ g++ test.cpp -std=c++20  -march=native -O3 -DNDEBUG -I/path/to/install/include -o output
+$ g++ test.cpp -std=c++20 -O3 -DNDEBUG -I/path/to/install/include -o output
 @endverbatim
 
 Don't forget the `--std=c++20` option to be sure to activate C++20 support. If you use a different compiler, check your compiler user's manual to use the proper option.
@@ -102,13 +102,15 @@ The `-DNDEBUG` setting can be omitted but then asserts will be inserted into the
 
 ## Execution
 
-Once done, execute the binary. If you compiled for SSE4.1 for example, you'll end up with the
-following results:
+Once done, execute the binary adn you should be looking at the following results:
 
 @verbatim
 $ ./output
+ Test matrix:
+    [ 1 2 3 ]
+    [ 4 5 6 ]
+    [ 7 8 9 ]
+    [ 10 11 12 ]
 @endverbatim
 
 That's it, **KIWAKU** is properly installed and ready to use.
-
-# Advanced options
