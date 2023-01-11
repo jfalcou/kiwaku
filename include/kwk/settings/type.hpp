@@ -52,32 +52,32 @@ namespace kwk
   template<typename T> constexpr inline detail::type_::info<T> as{};
 
   /// Pre-defined type settings for float
-  constexpr inline auto single_ = as<float>;
+  constexpr inline auto real32  = as<float>;
 
   /// Pre-defined type settings for double
-  constexpr inline auto double_ = as<double>;
+  constexpr inline auto real64  = as<double>;
 
   /// Pre-defined type settings for std::int8_t
-  constexpr inline auto int8_   = as<std::int8_t>;
+  constexpr inline auto int8    = as<std::int8_t>;
 
   /// Pre-defined type settings for std::int16_t
-  constexpr inline auto int16_  = as<std::int16_t>;
+  constexpr inline auto int16   = as<std::int16_t>;
 
   /// Pre-defined type settings for std::int32_t
-  constexpr inline auto int32_  = as<std::int32_t>;
+  constexpr inline auto int32   = as<std::int32_t>;
 
   /// Pre-defined type settings for std::int64_t
-  constexpr inline auto int64_  = as<std::int64_t>;
+  constexpr inline auto int64   = as<std::int64_t>;
 
   /// Pre-defined type settings for std::uint8_t
-  constexpr inline auto uint8_  = as<std::uint8_t>;
+  constexpr inline auto uint8   = as<std::uint8_t>;
 
   /// Pre-defined type settings for std::uint16_t
-  constexpr inline auto uint16_ = as<std::uint16_t>;
+  constexpr inline auto uint16=  as<std::uint16_t>;
 
   /// Pre-defined type settings for std::uint32_t
-  constexpr inline auto uint32_ = as<std::uint32_t>;
+  constexpr inline auto uint32=  as<std::uint32_t>;
 
   /// Pre-defined type settings for std::uint64_t
-  constexpr inline auto uint64_ = as<std::uint64_t>;
+  constexpr inline auto uint64=  as<std::uint64_t>;
 }

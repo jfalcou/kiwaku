@@ -36,11 +36,11 @@ STRIP_FROM_INC_PATH    = ../include
 SEPARATE_MEMBER_PAGES  = YES
 TAB_SIZE               = 2
 
-ALIASES += "groupheader{1}=<h2 class=\"groupheader\"> \1 </h2>"  \
+ALIASES += "groupheader{1}=<h2 class=\"groupheader\"> \1 </h2>"
 ALIASES += "nullable=[NullablePointer](https://en.cppreference.com/w/cpp/named_req/NullablePointer)"
-ALIASES += "semiregular=<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>" \
-ALIASES += "regular=<a href=\"https://en.cppreference.com/w/cpp/concepts/regular\">Regular</a>" \
-ALIASES += "swappable=<a href=\"https://en.cppreference.com/w/cpp/concepts/swappable\">Swappable</a>" \
+ALIASES += "semiregular=<a href=\"https://en.cppreference.com/w/cpp/concepts/semiregular\">SemiRegular</a>"
+ALIASES += "regular=<a href=\"https://en.cppreference.com/w/cpp/concepts/regular\">Regular</a>"
+ALIASES += "swappable=<a href=\"https://en.cppreference.com/w/cpp/concepts/swappable\">Swappable</a>"
 ALIASES += "callable=[Callable Object](https://en.cppreference.com/w/cpp/named_req/Callable)"
 ALIASES += "container=[Container](https://en.cppreference.com/w/cpp/named_req/Container)"
 ALIASES += "iterator=[Input Iterator](https://en.cppreference.com/w/cpp/named_req/Inputterator)"
@@ -49,6 +49,8 @@ ALIASES += "callable{1}=[Callable Object\1](https://en.cppreference.com/w/cpp/na
 ALIASES += "container{1}=[Container\1](https://en.cppreference.com/w/cpp/named_req/Container)"
 ALIASES += "iterator{1}=[Input Iterator\1](https://en.cppreference.com/w/cpp/named_req/Inputterator)"
 ALIASES += "raiterator{1}=[Random Access Iterator\1](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator"
+ALIASES += "view{1}=[view\1](@ref kwk::view)"
+ALIASES += "view=[view](@ref kwk::view)"
 
 EXTENSION_MAPPING      =
 MARKDOWN_SUPPORT       = YES

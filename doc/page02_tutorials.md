@@ -12,6 +12,10 @@ own code.
 
 - \subpage tutorial-01
 
+- table
+- subview/subtable indexing
+- algorithm
+
 **Interaction with the Hardware**
 
 **Customization Points**

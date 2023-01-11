@@ -10,10 +10,10 @@
 namespace kwk
 {
   //================================================================================================
-  //! @defgroup containers Miscellaneous helper
+  //! @defgroup containers Containers
   //! @brief Container-like types and related functions
   //!
-  //! This module defines th emain **KIWAKU**'s classes for handlign data.
+  //! This module defines the main **KIWAKU**'s classes for handling data.
   //================================================================================================
 }
 
