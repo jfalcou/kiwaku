@@ -7,13 +7,13 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/utility/joker.hpp>
+#include <kwk/concepts/axis.hpp>
 #include <kwk/detail/kumi.hpp>
 
 namespace kwk
 {
   template<std::size_t N, auto Desc>
-  inline constexpr bool is_dynamic_extent_v = is_joker_v<kumi::element_t<N,decltype(Desc)>>;
+  inline constexpr bool is_dynamic_extent_v = concepts::dynamic_axis<kumi::element_t<N,decltype(Desc)>>;
 
   template<std::size_t N, auto Desc>
   inline constexpr bool is_static_extent_v = !is_dynamic_extent_v<N,Desc>;
@@ -52,7 +52,6 @@ namespace kwk
   //! @endcode
   //!
   //================================================================================================
-
   template<std::size_t N, auto Desc>
   struct is_static_extent : std::bool_constant<is_static_extent_v<N,Desc>>
   {};

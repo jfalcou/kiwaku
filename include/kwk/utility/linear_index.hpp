@@ -26,7 +26,7 @@ namespace kwk
   template<auto Shaper, std::integral... Index>
   constexpr auto linear_index( shape<Shaper> const& sh, Index... idx ) noexcept
   {
-    KIWAKU_ASSERT ( sh.strictly_contains(idx...)
+    KIWAKU_ASSERT ( sh.contains(idx...)
                   , "Linearizing out of bounds indexes "
                     << kumi::tuple{idx...} << " within shape " << sh
                   );

@@ -11,9 +11,9 @@
 
 namespace kwk
 {
-  struct axis
+  struct extent_placeholder
   {
-    axis& operator=(std::ptrdiff_t s) { size = s; return *this;}
+    extent_placeholder& operator=(std::ptrdiff_t s) { size = s; return *this;}
     std::size_t     dims;
     std::ptrdiff_t  size;
   };
@@ -25,7 +25,7 @@ namespace kwk
   struct joker
   {
     friend std::ostream& operator<<(std::ostream& os, joker const&) { return os << "_"; }
-    constexpr auto operator[](std::size_t d) const noexcept { return axis{d,0}; }
+    constexpr auto operator[](std::size_t d) const noexcept { return extent_placeholder{d,0}; }
 
     friend constexpr joker operator*(joker, joker) noexcept { return {}; }
     friend constexpr joker operator*(joker,  auto) noexcept { return {}; }
