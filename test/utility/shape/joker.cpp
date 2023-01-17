@@ -63,15 +63,15 @@ inline auto v3 = kumi::tuple{1,9,33};
 
 TTS_CASE( "2D shape constructor with joker indexes" )
 {
-  test_sizes( kumi::cartesian_product(d0,d1), kumi::cartesian_product(v0,v1));
+  test_sizes( kumi::cartesian_product(d1,d0), kumi::cartesian_product(v1,v0));
 };
 
 TTS_CASE( "3D shape constructor with joker indexes" )
 {
-  test_sizes( kumi::cartesian_product(d0,d1,d2), kumi::cartesian_product(v0,v1, v2));
+  test_sizes( kumi::cartesian_product(d2,d1,d0), kumi::cartesian_product(v2,v1,v0));
 };
 
 TTS_CASE( "4D shape constructor with joker indexes" )
 {
-  test_sizes( kumi::cartesian_product(d0,d1,d2,d3), kumi::cartesian_product(v0,v1,v2,v3));
+  test_sizes( kumi::cartesian_product(d3,d2,d1,d0), kumi::cartesian_product(v3,v2,v1,v0));
 };
