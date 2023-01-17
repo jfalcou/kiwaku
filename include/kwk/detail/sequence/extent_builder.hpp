@@ -7,37 +7,127 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/concepts/extent.hpp>
-#include <kwk/detail/sequence/combo.hpp>
+#include <kwk/concepts/axis.hpp>
+#include <kwk/concepts/values.hpp>
 #include <kwk/detail/kumi.hpp>
+#include <kwk/detail/sequence/combo.hpp>
+#include <kwk/settings/axis.hpp>
+#include <kwk/utility/fixed.hpp>
+#include <utility>
 
 namespace kwk::detail
 {
-  // Convert a sequence of values to a proper extent type
-  template<typename SizeType, typename ... Ds>
-  constexpr auto as_extent(Ds... ds) noexcept
+  //================================================================================================
+  // Converts a sequence of value/joker/axis into a shape/stride descriptor type
+  //================================================================================================
+  template<typename SizeType, typename... Args>
+  KWK_FORCEINLINE constexpr auto as_descriptor(Args... args)
   {
-    return kumi::fold_right( []<typename T>(auto a, T)
-                            {
-                              if constexpr( requires{ T::value; } ) return a[T::value];
-                              else                                  return a();
-                            }
-                          , kumi::tie(ds...)
-                          , detail::combo<SizeType>{}
-                          );
+    if constexpr(sizeof...(Args) == 0) return combo<SizeType>{};
+    else
+    {
+      auto const convert = []<typename M, typename I>(M, I)
+      {
+        constexpr auto sz = sizeof...(Args) - 1;
+
+        // integral : runtime indexed axis
+        if constexpr(std::integral<M> || is_joker_v<M>) return along<sz - I::value>;
+        // static integral : compile-time indexed axis
+        else if constexpr(concepts::static_constant<M>) return along<sz - I::value>[M::value];
+        // named axis
+        else if constexpr(rbr::concepts::option<M>)
+        {
+          using key_t   = typename M::keyword_type;
+          using value_t = typename M::stored_value_type;
+
+        // name : runtime named axis
+          if constexpr(std::integral<value_t> || is_joker_v<value_t>) return key_t{};
+          // static integral : compile-time indexed axis
+          else if constexpr(concepts::static_constant<value_t>)       return key_t{}[value_t::value];
+        }
+        else return along<0>;
+      };
+
+      return [&]<std::size_t... N>(std::index_sequence<N...>)
+      {
+        return make_combo<SizeType>((convert(args, kumi::index<N>) * ...));
+      }(std::index_sequence_for<Args...>{});
+    }
   }
 
+  //================================================================================================
+  // Converts a value/joker/axis into its storable representation
+  //================================================================================================
+  template<typename Arg, typename Index>
+  KWK_FORCEINLINE constexpr auto as_axis(Arg arg, Index) noexcept
+  {
+    // integral : runtime indexed axis
+    if constexpr(std::integral<Arg>)                  return arg;
+    else if constexpr(is_joker_v<Arg>)                return Index::value ? 1 : 0;
+    // static integral : compile-time indexed axis
+    else if constexpr(concepts::static_constant<Arg>) return fixed<Arg::value>;
+    // named axis
+    else if constexpr(rbr::concepts::option<Arg>)
+    {
+      using value_t = typename Arg::stored_value_type;
+
+      // name : runtime named axis
+      if constexpr(std::integral<value_t>)                        return arg.contents;
+      else if constexpr(is_joker_v<value_t>)                      return Index::value ? 1 : 0;
+      // static integral : compile-time indexed axis
+      else if constexpr(kwk::concepts::static_constant<value_t>)  return fixed<value_t::value>;
+    }
+  }
+
+  //================================================================================================
+  // Helpers for require clauses of make_extent
+  //================================================================================================
+  // Check no axis is duplicated
+  template<typename T> inline constexpr bool duplicate_axis = false;
+
+  template<typename T, template<class...> class Holder, typename... Axis>
+  inline constexpr bool duplicate_axis<Holder<T,Axis...>>
+                      = !kwk::detail::all_unique<typename Axis::axis_kind...>;
+
+  // Check we dont make a nD axis sequence with too much indexed axis
+  template<typename T, std::size_t Size> inline constexpr bool has_valid_index = false;
+
+  template<typename T, template<class...> class Holder, typename... Axis, std::size_t Size>
+  inline constexpr bool has_valid_index<Holder<T,Axis...>,Size> = []()
+  {
+    std::ptrdiff_t max_index = std::max({Axis::static_index...});
+    return (max_index == -1) || max_index < static_cast<std::ptrdiff_t>(Size);
+  }();
+
+  //================================================================================================
+  // Constructs a type described by a sequence of axis and fill it with their values
+  //================================================================================================
   template< template<auto> class Wrapper
           , typename SizeType
-          , concepts::extent<SizeType>... Ds
+          , typename... Args
           >
-  constexpr auto make_extent(Ds... ds) noexcept
+  constexpr auto make_extent(Args... args)
+  requires( !duplicate_axis<decltype(as_descriptor<SizeType>(args...))>
+          && (has_valid_index<decltype(as_descriptor<SizeType>(args...)),sizeof...(Args)>)
+          )
   {
-    return kumi::apply( [](auto... v)
-                        {
-                          return  Wrapper<as_extent<SizeType>(Ds{}...)>(v...);
-                        }
-                      , kumi::tuple{ds...}
-                      );
+    return [&]<std::size_t... N>(std::index_sequence<N...>)
+    {
+      constexpr auto sz = sizeof...(Args) - 1;
+      return Wrapper<as_descriptor<SizeType>(Args{}...)>{as_axis(args,kumi::index<sz-N>)...};
+    }(std::index_sequence_for<Args...>{});
   }
+
+  //================================================================================================
+  // If an error occurs here:
+  //  - you tried to build a shape/stride with duplicate axis name or index.
+  //    e.g: of_shape(width = 4, width = 90);
+  //  - you tried to build a shape/stride with an index greater than the order of the shape/stride
+  //    e.g: of_shape(along<5> = 90);
+  //================================================================================================
+  template< template<auto> class, typename SizeType, typename... Args>
+  constexpr auto make_extent(Args... args)
+  requires( duplicate_axis<decltype(as_descriptor<SizeType>(args...))>
+          || !has_valid_index<decltype(as_descriptor<SizeType>(args...)),sizeof...(Args)>
+          ) = delete;
 }

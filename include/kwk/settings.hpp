@@ -17,6 +17,7 @@ namespace kwk
 }
 
 #include <kwk/settings/allocator.hpp>
+#include <kwk/settings/axis.hpp>
 #include <kwk/settings/category.hpp>
 #include <kwk/settings/extent.hpp>
 #include <kwk/settings/label.hpp>

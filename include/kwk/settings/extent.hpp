@@ -87,10 +87,8 @@ namespace kwk
   inline constexpr auto _4D = _3D();
 
   template<std::size_t N>
-  inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...> const&) constexpr
-                              {
-                                return detail::combo< std::ptrdiff_t
-                                                    , std::remove_cv_t<decltype((I,joker{}))>...
-                                                    >{};
-                              }(std::make_index_sequence<N>{});
+  inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...>)
+  {
+    return make_combo<std::ptrdiff_t>(along<N-I-1>...);
+  }(std::make_index_sequence<N>{});
 }
