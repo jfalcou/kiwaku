@@ -9,6 +9,7 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/utility/container/shape.hpp>
+#include <kwk/detail/sequence/prefilled.hpp>
 #include <cstddef>
 
 #if !defined(_MSC_VER)
@@ -23,7 +24,7 @@ namespace kwk::detail
   template<auto Strides>
   struct stride_base
   {
-    static constexpr auto desc = combo_cast<std::ptrdiff_t>(Strides);
+    static constexpr auto desc = make_combo<std::ptrdiff_t>(Strides);
     using type = prefilled<desc>;
   };
 }
@@ -81,7 +82,7 @@ namespace kwk
     static constexpr auto is_unit = []()
     {
       auto innermost = kumi::back(parent::descriptor);
-      if constexpr(!is_joker_v<decltype(innermost)>) return innermost == 1; else return false;
+      if constexpr(concepts::static_axis<decltype(innermost)>) return innermost.value == 1; else return false;
     }();
 
     //==============================================================================================
@@ -122,34 +123,33 @@ namespace kwk
       parent::fill(vals...);
     }
 
-    template<auto OtherDesc>
-    constexpr explicit stride( stride<OtherDesc> const& other ) noexcept
-              requires(   stride<OtherDesc>::static_order == static_order
-                      &&  Strides.is_compatible(OtherDesc)
-                      )
-    {
-      auto& v = parent::storage();
-      kumi::for_each_index( [&]<typename I>(I, auto const& m)
-                            {
-                              constexpr auto i = I::value;
-                              if constexpr(parent::contains(i)) v[parent::location[i]] = m;
-                              else
-                              {
-                                KIWAKU_ASSERT( m == get<i>(Strides)
-                                            , "[KWK] - Static/Dynamic mismatch in constructor"
-                                            );
-                              }
-                            }
-                          , other
-                          );
-    }
-
+    // template<auto OtherDesc>
+    // constexpr explicit stride( stride<OtherDesc> const& other ) noexcept
+    //           requires(   stride<OtherDesc>::static_order == static_order
+    //                   &&  Strides.is_compatible(OtherDesc)
+    //                   )
+    // {
+    //   auto& v = parent::storage();
+    //   kumi::for_each_index( [&]<typename I>(I, auto const& m)
+    //                         {
+    //                           constexpr auto i = I::value;
+    //                           if constexpr(parent::contains(i)) v[parent::location[i]] = m;
+    //                           else
+    //                           {
+    //                             KIWAKU_ASSERT( m == get<i>(Strides)
+    //                                         , "[KWK] - Static/Dynamic mismatch in constructor"
+    //                                         );
+    //                           }
+    //                         }
+    //                       , other
+    //                       );
+    // }
 
     /// Stream insertion operator
     friend std::ostream& operator<<(std::ostream& os, stride const& s)
     {
       os << "[";
-      kumi::for_each_index( [&](auto i, auto) { os << " " << s.template extent<i>(); }, s);
+      kumi::for_each_index( [&](auto i, auto) { os << " " << get<i>(s); }, s);
       return os << " ]";
     }
 
@@ -161,26 +161,26 @@ namespace kwk
     using parent::swap;
 
     /// Equality comparison operator
-    template<auto Strides2>
-    constexpr bool operator==( stride<Strides2> const& other) const noexcept
-    {
-      return kumi::to_tuple(*this) == kumi::to_tuple(other);
-    }
+    // template<auto Strides2>
+    // constexpr bool operator==( stride<Strides2> const& other) const noexcept
+    // {
+    //   return kumi::to_tuple(*this) == kumi::to_tuple(other);
+    // }
 
     /// Inequality comparison operator
-    template<auto Strides2>
-    constexpr bool operator!=( stride<Strides2> const& other) const noexcept
-    {
-      return kumi::to_tuple(*this) != kumi::to_tuple(other);
-    }
+    // template<auto Strides2>
+    // constexpr bool operator!=( stride<Strides2> const& other) const noexcept
+    // {
+    //   return kumi::to_tuple(*this) != kumi::to_tuple(other);
+    // }
 
     /// Indexing interface
-    template<std::convertible_to<size_type>... Is>
-    constexpr size_type linearize(Is... is) const noexcept
-    requires( sizeof...(Is) <= static_order )
-    {
-      return kumi::inner_product(*this, kumi::make_tuple(static_cast<size_type>(is)...), size_type{0});
-    }
+    // template<std::convertible_to<size_type>... Is>
+    // constexpr size_type linearize(Is... is) const noexcept
+    // requires( sizeof...(Is) <= static_order )
+    // {
+    //   return kumi::inner_product(*this, kumi::make_tuple(static_cast<size_type>(is)...), size_type{0});
+    // }
   };
 
   /// Converts a @ref kwk::shape into its corresponding @ref kwk::stride, conserving as much static
@@ -188,21 +188,26 @@ namespace kwk
   template<auto Shape>
   constexpr auto as_stride(shape<Shape> const& s) noexcept
   {
-    constexpr auto prod = [](auto acc, auto m) { return push_front(acc, front(acc) * m); };
+    if constexpr(Shape.size() == 1) return stride<kumi::back(Shape)[1]>{};
+    else
+    {
+      auto const d = kumi::fold_left( [](auto a, auto m){ return push_front(a, m * front(a)); }
+                                    , s
+                                    , kumi::tuple{fixed<1>}
+                                    );
 
-    // Build the perfect descriptor and the suitable values tuple
-    constexpr auto d = kumi::pop_front(kumi::fold_left(prod, Shape, kumi::tuple{1}));
-              auto v = kumi::pop_front(kumi::fold_left(prod, s    , kumi::tuple{1}));
-
-    // Turn into a stride
-    return kumi::apply([&](auto... e) { return stride<detail::to_combo<int>(d)>{e...}; }, v);
+      return [&]<std::size_t... I>(std::index_sequence<I...>, auto t)
+      {
+        return with_strides( (get<I>(Shape).base() = get<I>(t))...);
+      }(std::make_index_sequence<Shape.size()>{}, pop_front(d));
+    }
   }
 
   //================================================================================================
   //! @brief Generates a kwk::stride from a list of stride value or joker
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
-  template<concepts::extent<std::ptrdiff_t>... Ds>
+  template<typename... Ds>
   constexpr auto with_strides(Ds... ds) noexcept
   {
     return detail::make_extent<kwk::stride,std::ptrdiff_t>(ds...);

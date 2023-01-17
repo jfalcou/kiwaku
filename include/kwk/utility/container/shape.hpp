@@ -187,7 +187,7 @@ namespace kwk
     template<rbr::concepts::option Axis0, rbr::concepts::option... Axis>
     constexpr shape(Axis0 arg0, Axis... args) noexcept
     requires(   (concepts::axis<typename Axis::keyword_type> && ... && concepts::axis<typename Axis0::keyword_type>)
-            &&  Shape.is_equivalent(detail::as_descriptor<size_type>(Axis0{}, Axis{}...))
+            &&  make_combo<size_type>(Shape).is_equivalent(detail::as_descriptor<size_type>(Axis0{}, Axis{}...))
             )
     : shape { [&]<std::size_t... N>(std::index_sequence<N...>)
               {
@@ -221,7 +221,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShape>
     constexpr shape( shape<OtherShape> const& other ) noexcept
-    requires(Shape.is_equivalent(OtherShape) && Shape.is_compatible(OtherShape) )
+    requires(   make_combo<size_type>(Shape).is_equivalent(OtherShape)
+            &&  make_combo<size_type>(Shape).is_compatible(OtherShape)
+            )
     {
       auto& v = parent::storage();
       kumi::for_each_index( [&]<typename I>(I, auto const& m)
@@ -230,9 +232,9 @@ namespace kwk
                               if constexpr(parent::contains(i)) v[parent::location[i]] = m;
                               else
                               {
-                                KIWAKU_ASSERT ( m == this->template extent<i>()
+                                KIWAKU_ASSERT ( m == get<i>(*this)
                                               , "[KWK] - Static/Dynamic mismatch in constructor."
-                                                << " Expected: " << this->template extent<i>()
+                                                << " Expected: " << get<i>(*this)
                                                 << " but found " << m << " instead."
                                               );
                               }
@@ -255,7 +257,7 @@ namespace kwk
     template<auto Other>
     constexpr explicit shape( shape<Other> const& other ) noexcept
               requires(   shape<Other>::static_order < static_order
-                      &&  Shape.is_equivalent(Other, kumi::index<shape<Other>::static_order>)
+                      &&  make_combo<size_type>(Shape).is_equivalent(Other, kumi::index<shape<Other>::static_order>)
                       )
     {
       constexpr auto dz = static_order - shape<Other>::static_order;
@@ -279,9 +281,9 @@ namespace kwk
           if constexpr(parent::contains(i)) (*this)[i] = other[Idx::value];
           else
           {
-            KIWAKU_ASSERT ( other[Idx::value] == this->template extent<i>()
+            KIWAKU_ASSERT ( other[Idx::value] == get<i>(*this)
                           , "[KWK] - Static/Dynamic mismatch in constructor."
-                            << " Expected: " << this->template extent<i>()
+                            << " Expected: " << get<i>(*this)
                             << " but found " << other[Idx::value] << " instead."
                           );
           }
@@ -430,7 +432,7 @@ namespace kwk
         {
           auto check = []<typename A>(A a,auto b) { return std::integral<A> || a == b; };
 
-          return (true && ... && check(ref.template extent<N>(), this->template extent<N>()) );
+          return (true && ... && check(get<N>(ref), get<N>(*this)) );
         }(std::make_index_sequence<static_order>{});
       }
     }
@@ -451,7 +453,7 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, shape const& s)
     {
       os << "[";
-      kumi::for_each_index( [&](auto i, auto) { os << " " << s.template extent<i>(); }, s);
+      kumi::for_each_index( [&](auto i, auto) { os << " " << get<i>(s); }, s);
       return os << " ]";
     }
 

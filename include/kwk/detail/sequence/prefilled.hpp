@@ -170,26 +170,11 @@ namespace kwk::detail
 
     // Static tuple access
     template<int N>
-    KWK_FORCEINLINE constexpr auto extent() const noexcept
-    {
-      if constexpr(is_dynamic_extent_v<N,Desc>)
-      {
-        //std::cout << "(" << N << " : " << location[N] << ")\n";
-        return storage()[location[N]];
-      }
-      else
-      {
-        //std::cout << "[" << N << " : " << get<N>(Desc) << "]\n";
-        return fixed<get<N>(Desc).value>;
-      }
-    }
-
-    template<int N>
     friend KWK_FORCEINLINE constexpr auto get(prefilled const& s) noexcept
     requires(N>=0 && N<static_size)
     {
       if constexpr(is_dynamic_extent_v<N,Desc>) return s.storage()[location[N]];
-      else return get<N>(Desc).value;
+      else return fixed<get<N>(Desc).value>;
     }
 
     template<int N>
@@ -197,7 +182,7 @@ namespace kwk::detail
     requires(N>=0 && N<static_size)
     {
       if constexpr(is_dynamic_extent_v<N,Desc>) return s.storage()[location[N]];
-      else return get<N>(Desc).value;
+      else return fixed<get<N>(Desc).value>;
     }
 
     template<concepts::axis A>
@@ -289,5 +274,5 @@ struct  std::tuple_size<kwk::detail::prefilled<Desc>>
 template<std::size_t N, auto Desc>
 struct  std::tuple_element<N, kwk::detail::prefilled<Desc>>
 {
-  using type = typename kwk::detail::prefilled<Desc>::value_type;
+  using type = std::remove_cvref_t<decltype(get<N>(std::declval<kwk::detail::prefilled<Desc>>()))>;
 };
