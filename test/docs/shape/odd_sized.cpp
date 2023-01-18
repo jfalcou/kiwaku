@@ -10,11 +10,11 @@
 
 int main()
 {
-  // x will contains 4 x 32
-  kwk::shape< kwk::_2D > x(kwk::of_size(4, 8, 2, 2));
+  // x will contains 160 x 2
+  kwk::shape< kwk::_2D > x(kwk::of_size(4, 8, 5, 2));
   std::cout << x << "\n";
 
-  // y will contains 7 x 1 x 1
-  kwk::shape< kwk::_3D > y{kwk::of_size(7)};
+  // y will contains 1 x 1 x 7
+  kwk::shape< kwk::_3D > y(kwk::of_size(7));
   std::cout << y << "\n";
 }

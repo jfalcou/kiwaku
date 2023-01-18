@@ -159,12 +159,11 @@ namespace kwk
     //! This constructor will not take part in overload resolution if the number of values exceed
     //! shape's order or if any value is neither convertible to kwk::shape::size_type nor kwk::_.
     //!
-    //! @param  args Variadic list of dimensions' values
+    //! @param  vals Variadic list of dimensions' values
     //==============================================================================================
-    template<std::convertible_to<size_type>... A>
-    constexpr shape(A const&... args) noexcept
+    constexpr shape(std::convertible_to<size_type> auto... vals) noexcept
     {
-       this->fill(args...);
+       this->fill(vals...);
     }
 
     //==============================================================================================
@@ -253,9 +252,7 @@ namespace kwk
     //==============================================================================================
     template<auto Other>
     constexpr explicit shape( shape<Other> const& other ) noexcept
-              requires(   shape<Other>::static_order < static_order
-                      &&  make_combo<size_type>(Shape).is_equivalent(Other, kumi::index<shape<Other>::static_order>)
-                      )
+              requires(shape<Other>::static_order < static_order)
     {
       constexpr auto dz = static_order - shape<Other>::static_order;
 

@@ -81,8 +81,8 @@ namespace kwk
     /// Checks a @ref kwk::stride is unit - ie it's innermost value is statically known to be 1
     static constexpr auto is_unit = []()
     {
-      auto innermost = kumi::back(parent::descriptor);
-      if constexpr(concepts::static_axis<decltype(innermost)>) return innermost.value == 1; else return false;
+      auto d0 = kumi::back(parent::descriptor);
+      if constexpr(concepts::static_axis<decltype(d0)>) return d0.value == 1; else return false;
     }();
 
     //==============================================================================================
@@ -116,11 +116,39 @@ namespace kwk
     //!
     //! @param  s Variadic list of dimensions' values
     //==============================================================================================
-    constexpr stride(concepts::extent<size_type> auto... vals) noexcept
+    constexpr stride(std::convertible_to<size_type> auto... vals) noexcept
     requires( sizeof...(vals) == static_order )
     : stride()
     {
       parent::fill(vals...);
+    }
+
+    //==============================================================================================
+    //! @brief Construct from a subset of runtime dimension values
+    //!
+    //! This constructor takes a variadic list of arguments specifying the size specified for a
+    //! given runtime dimension. Those sizes are passed by using an axis descriptor
+    //!
+    //! Passing a dimension specifier to overwrite one of the compile-time dimensions is undefined
+    //! behavior.
+    //!
+    //! This constructor will not take part in overload resolution if the shape is fully static.
+    //!
+    //! @groupheader{Example}
+    //! @godbolt{docs/shape/mixed.cpp}
+    //!
+    //! @param args  Variadic list of dimension/size association
+    //==============================================================================================
+    template<concepts::extent<size_type>... A>
+    constexpr stride(A const&... args) noexcept
+    requires( !(std::convertible_to<A,size_type> && ...)
+            && make_combo<size_type>(Strides).is_equivalent(detail::as_descriptor<size_type>(A{}...))
+            )
+    {
+      [&]<std::size_t... N>(std::index_sequence<N...>)
+      {
+        this->fill(detail::as_axis(args,get<N>(Strides),kumi::index<static_order-N-1>)...);
+      }(std::make_index_sequence<sizeof...(A)>{});
     }
 
     // template<auto OtherDesc>
@@ -161,26 +189,19 @@ namespace kwk
     using parent::swap;
 
     /// Equality comparison operator
-    // template<auto Strides2>
-    // constexpr bool operator==( stride<Strides2> const& other) const noexcept
-    // {
-    //   return kumi::to_tuple(*this) == kumi::to_tuple(other);
-    // }
-
-    /// Inequality comparison operator
-    // template<auto Strides2>
-    // constexpr bool operator!=( stride<Strides2> const& other) const noexcept
-    // {
-    //   return kumi::to_tuple(*this) != kumi::to_tuple(other);
-    // }
+    template<auto Strides2>
+    constexpr bool operator==( stride<Strides2> const& other) const noexcept
+    {
+      return kumi::to_tuple(*this) == kumi::to_tuple(other);
+    }
 
     /// Indexing interface
-    // template<std::convertible_to<size_type>... Is>
-    // constexpr size_type linearize(Is... is) const noexcept
-    // requires( sizeof...(Is) <= static_order )
-    // {
-    //   return kumi::inner_product(*this, kumi::make_tuple(static_cast<size_type>(is)...), size_type{0});
-    // }
+    template<std::convertible_to<size_type>... Is>
+    constexpr size_type linearize(Is... is) const noexcept
+    requires( sizeof...(Is) <= static_order )
+    {
+      return kumi::inner_product(*this, kumi::make_tuple(static_cast<size_type>(is)...), size_type{0});
+    }
   };
 
   /// Converts a @ref kwk::shape into its corresponding @ref kwk::stride, conserving as much static

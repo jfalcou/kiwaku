@@ -890,7 +890,7 @@ namespace rbr
     template<auto Keyword, concepts::option... Os>
     struct fetch<Keyword, Os...>
     {
-      using type = decltype( rbr::fetch(Keyword, Os{}...) );
+      using type = decltype( rbr::fetch(Keyword, std::declval<Os>()...) );
     };
 
     template<auto Keyword, concepts::settings Settings>

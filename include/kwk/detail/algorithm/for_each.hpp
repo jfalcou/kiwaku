@@ -27,7 +27,7 @@ namespace kwk
                                       {
                                         return [=](auto... is)
                                         {
-                                          for(decltype(m) i = 0;i<m;++i)
+                                          for(to_int_t<decltype(m)> i = 0;i<m;++i)
                                             acc(is...,i);
                                         };
                                       }
@@ -49,7 +49,7 @@ namespace kwk
                                       {
                                         return [=](auto... is)
                                         {
-                                          for(decltype(m) i = 0;i<m;++i)
+                                          for(to_int_t<decltype(m)> i = 0;i<m;++i)
                                             acc(is...,i);
                                         };
                                       }
