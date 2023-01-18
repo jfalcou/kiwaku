@@ -29,7 +29,7 @@ namespace kwk::concepts
   //! A **KIWAKU** Dynamic Axis is an Axis type which size will be set at runtime.
   //================================================================================================
   template<typename T>
-  concept dynamic_axis = axis<T> && !std::integral<typename T::value_type>;
+  concept dynamic_axis = axis<T> && !std::integral<typename T::content_type>;
 
   //================================================================================================
   //! @brief Statically-sized axis concept
@@ -37,5 +37,5 @@ namespace kwk::concepts
   //! A **KIWAKU** Static Axis is an Axis type which size will be set at compile-time.
   //================================================================================================
   template<typename T>
-  concept static_axis = axis<T> && std::integral<typename T::value_type>;
+  concept static_axis = axis<T> && std::integral<typename T::content_type>;
 }

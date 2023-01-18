@@ -33,7 +33,7 @@ namespace kwk::detail
         // integral : runtime indexed axis
         if constexpr(std::integral<M> || is_joker_v<M>) return along<sz - I::value>;
         // static integral : compile-time indexed axis
-        else if constexpr(!concepts::axis<M> && concepts::static_constant<M>) return along<sz - I::value>[M::value];
+        else if constexpr(concepts::static_constant<M>) return along<sz - I::value>[M::value];
         // named axis
         else if constexpr(rbr::concepts::option<M>)
         {
@@ -65,7 +65,7 @@ namespace kwk::detail
     if constexpr(std::integral<Arg>)                  return arg;
     else if constexpr(is_joker_v<Arg>)                return Index::value ? 1 : 0;
     // static integral : compile-time indexed axis
-    else if constexpr(!concepts::axis<Arg> && concepts::static_constant<Arg>) return fixed<Arg::value>;
+    else if constexpr(concepts::static_constant<Arg>) return fixed<Arg::value>;
     // named axis
     else if constexpr(rbr::concepts::option<Arg>)
     {

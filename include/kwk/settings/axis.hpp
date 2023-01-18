@@ -24,9 +24,9 @@ namespace kwk::detail
   struct axis_ : rbr::as_keyword<axis_<Name,Content>>
   {
     using is_product_type = void;
-    using axis_kind  = axis_<Name,joker>;
-    using value_type = Content;
-    using base_type  = std::ptrdiff_t;
+    using axis_kind       = axis_<Name,joker>;
+    using content_type    = Content;
+    using base_type       = std::ptrdiff_t;
 
     // Size info
     static constexpr std::ptrdiff_t static_size = 1;
@@ -34,6 +34,9 @@ namespace kwk::detail
 
     static constexpr std::ptrdiff_t static_index  = -1;
     static constexpr std::ptrdiff_t index() noexcept { return static_index; }
+
+    static constexpr axis_kind const base() { return {}; }
+
 
     using rbr::as_keyword<axis_<Name,Content>>::operator=;
 
@@ -82,7 +85,7 @@ namespace kwk::detail
   {
     using is_product_type = void;
     using axis_kind       = indexed_axis_<N,joker>;
-    using value_type      = Content;
+    using content_type    = Content;
     using base_type       = std::ptrdiff_t;
 
     static constexpr std::ptrdiff_t static_index  = N;
@@ -91,6 +94,7 @@ namespace kwk::detail
     // Size info
     static constexpr std::ptrdiff_t static_size = 1;
     static constexpr std::ptrdiff_t size() noexcept { return static_size; }
+    static constexpr axis_kind const base() { return {}; }
 
     constexpr indexed_axis_() {}
     constexpr indexed_axis_(auto v) :value(v) {}
