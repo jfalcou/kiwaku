@@ -22,3 +22,17 @@
 #    define KWK_FORCEINLINE inline
 #  endif
 #endif
+
+// CONST attribute
+#if defined(_MSC_VER)
+#  define KWK_CONST
+#else
+#  define KWK_CONST [[gnu::const]]
+#endif
+
+// PURE attribute
+#if defined(_MSC_VER)
+#  define KWK_PURE
+#else
+#  define KWK_PURE [[gnu::pure]]
+#endif

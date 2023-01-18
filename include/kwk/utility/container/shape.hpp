@@ -7,9 +7,9 @@
 //==================================================================================================
 #pragma once
 
-#include "kwk/detail/kumi.hpp"
-#include <kwk/detail/sequence/prefilled.hpp>
 #include <kwk/detail/abi.hpp>
+#include <kwk/detail/kumi.hpp>
+#include <kwk/detail/sequence/prefilled.hpp>
 #include <kwk/detail/sequence/extent_builder.hpp>
 #include <kwk/settings/extent.hpp>
 #include <kwk/utility/joker.hpp>
@@ -37,26 +37,26 @@ namespace kwk
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
   template<typename SizeType, int..., concepts::extent<SizeType>... Ds>
-  constexpr auto of_size(Ds... ds) noexcept
+  KWK_CONST constexpr auto of_size(Ds... ds) noexcept
   {
     return detail::make_extent<kwk::shape,SizeType>(ds...);
   }
 
   template<int..., concepts::extent<std::ptrdiff_t>... Ds>
-  constexpr auto of_size( Ds... ds) noexcept
+  KWK_CONST constexpr auto of_size( Ds... ds) noexcept
   {
     using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
     return of_size<type_t>(ds...);
   }
 
   template<int..., kumi::product_type Ds>
-  constexpr auto of_size( Ds ds) noexcept
+  KWK_CONST constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size(s...); }, ds);
   }
 
   template<typename SizeType,int..., kumi::product_type Ds>
-  constexpr auto of_size( Ds ds) noexcept
+  KWK_CONST constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
   }
@@ -393,12 +393,27 @@ namespace kwk
       else return kumi::fold_left([](auto a, auto b){ return a*b; }, *this, std::ptrdiff_t{1});
     }
 
-    /// Stream insertion operator
-    friend std::ostream& operator<<(std::ostream& os, shape const& s)
+    //==============================================================================================
+    //! @brief Check if a shape fit current's shape constraints on size and dimension
+    //! @param ref Shape to use as a reference extent
+    //! @return `true` if both shape has the same order and if each statically set dimension of
+    //!         `ref` is matched with an equal value in the current shape.
+    //==============================================================================================
+    template<auto R>
+    KWK_PURE constexpr auto fit_constraints(shape<R> const& ref) const noexcept
     {
-      os << "[";
-      kumi::for_each_index( [&](auto i, auto) { os << " " << s.template extent<i>(); }, s);
-      return os << " ]";
+      if      constexpr(shape<R>::is_fully_dynamic                  ) return true;
+      else if constexpr(shape<R>::static_order != static_order      ) return false;
+      else if constexpr(shape<R>::is_fully_static && is_fully_static) return R.is_compatible(Shape);
+      else
+      {
+        return [&]<std::size_t... N>(std::index_sequence<N...>)
+        {
+          auto check = []<typename A>(A a,auto b) { return std::integral<A> || a == b; };
+
+          return (true && ... && check(ref.template extent<N>(), this->template extent<N>()) );
+        }(std::make_index_sequence<static_order>{});
+      }
     }
 
     template<typename T, typename... E>
@@ -411,6 +426,14 @@ namespace kwk
     constexpr bool is_similar( shape<S2> const& ) const noexcept
     {
       return descriptor.is_similar(S2);
+    }
+
+    /// Stream insertion operator
+    friend std::ostream& operator<<(std::ostream& os, shape const& s)
+    {
+      os << "[";
+      kumi::for_each_index( [&](auto i, auto) { os << " " << s.template extent<i>(); }, s);
+      return os << " ]";
     }
 
     //==============================================================================================
