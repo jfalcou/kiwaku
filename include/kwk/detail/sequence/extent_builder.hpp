@@ -14,6 +14,7 @@
 #include <kwk/settings/axis.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <utility>
+#include <algorithm>
 
 namespace kwk::detail
 {
@@ -107,7 +108,7 @@ namespace kwk::detail
   template<typename T, template<class...> class Holder, typename... Axis, std::size_t Size>
   inline constexpr bool has_valid_index<Holder<T,Axis...>,Size> = []()
   {
-    std::ptrdiff_t max_index = std::max({Axis::static_index...});
+    std::ptrdiff_t max_index = std::max({Axis::index()...});
     return (max_index == -1) || max_index < static_cast<std::ptrdiff_t>(Size);
   }();
 
