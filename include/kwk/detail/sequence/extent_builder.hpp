@@ -45,7 +45,6 @@ namespace kwk::detail
           // static integral : compile-time indexed axis
           else if constexpr(concepts::static_constant<value_t>)       return key_t{}[value_t::value];
         }
-        else return along<0>;
       };
 
       return [&]<std::size_t... N>(std::index_sequence<N...>)
@@ -55,15 +54,28 @@ namespace kwk::detail
     }
   }
 
+  template<typename SizeType, typename A>
+  KWK_FORCEINLINE constexpr auto as_descriptor(A const&)
+  requires requires(A) { A::descriptor; }
+  {
+    return A::descriptor;
+  }
+
   //================================================================================================
   // Converts a value/joker/axis into its storable representation
   //================================================================================================
-  template<typename Arg, typename Index>
-  KWK_FORCEINLINE constexpr auto as_axis(Arg arg, Index) noexcept
+  template<typename Arg, typename Desc, typename Index>
+  KWK_FORCEINLINE constexpr auto as_axis(Arg arg, Desc d, Index) noexcept
   {
+    auto const default_value = [&]()
+    {
+      if constexpr(is_joker_v<typename Desc::content_type>) return Index::value ? 1 : 0;
+      else return d.value;
+    }();
+
     // integral : runtime indexed axis
     if constexpr(std::integral<Arg>)                  return arg;
-    else if constexpr(is_joker_v<Arg>)                return Index::value ? 1 : 0;
+    else if constexpr(is_joker_v<Arg>)                return default_value;
     // static integral : compile-time indexed axis
     else if constexpr(concepts::static_constant<Arg>) return fixed<Arg::value>;
     // named axis
@@ -73,7 +85,7 @@ namespace kwk::detail
 
       // name : runtime named axis
       if constexpr(std::integral<value_t>)                        return arg.contents;
-      else if constexpr(is_joker_v<value_t>)                      return Index::value ? 1 : 0;
+      else if constexpr(is_joker_v<value_t>)                      return default_value;
       // static integral : compile-time indexed axis
       else if constexpr(kwk::concepts::static_constant<value_t>)  return fixed<value_t::value>;
     }
@@ -114,7 +126,12 @@ namespace kwk::detail
     return [&]<std::size_t... N>(std::index_sequence<N...>)
     {
       constexpr auto sz = sizeof...(Args) - 1;
-      return Wrapper<as_descriptor<SizeType>(Args{}...)>{as_axis(args,kumi::index<sz-N>)...};
+      return  Wrapper<as_descriptor<SizeType>(Args{}...)>
+              { as_axis ( args
+                        , get<N>(as_descriptor<SizeType>(Args{}...))
+                        , kumi::index<sz-N>
+                        )...
+              };
     }(std::index_sequence_for<Args...>{});
   }
 

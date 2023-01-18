@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include "kwk/concepts/extent.hpp"
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/detail/raberu.hpp>
@@ -37,7 +38,7 @@ namespace kwk
   //! @tparam SizeType  Integral type used to store sizes. If unspecified, `std::ptrdiff_t` is used.
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
-  template<typename SizeType, int..., typename... Ds>
+  template<std::integral SizeType, int..., concepts::extent<SizeType>... Ds>
   KWK_CONST constexpr auto of_size(Ds... ds) noexcept
   {
     return detail::make_extent<kwk::shape,SizeType>(ds...);
@@ -45,22 +46,21 @@ namespace kwk
 
   /// @overload
   template<int..., typename... Ds>
-  KWK_CONST constexpr auto of_size( Ds... ds) noexcept
+  KWK_CONST constexpr   auto of_size( Ds... ds) noexcept
+          ->  decltype(of_size<typename detail::largest_integral<Ds...>::type>(ds...)  )
   {
-    using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
-    return of_size<type_t>(ds...);
+    return of_size<typename detail::largest_integral<Ds...>::type>(ds...);
   }
 
   /// @overload
   template<int..., kumi::product_type Ds>
   KWK_CONST constexpr auto of_size( Ds ds) noexcept
-        ->  decltype(kumi::apply([](auto... s) { return of_size(s...); }, ds))
   {
     return kumi::apply([](auto... s) { return of_size(s...); }, ds);
   }
 
   /// @overload
-  template<typename SizeType,int..., kumi::product_type Ds>
+  template<std::integral SizeType,int..., kumi::product_type Ds>
   KWK_CONST constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
@@ -159,12 +159,12 @@ namespace kwk
     //! This constructor will not take part in overload resolution if the number of values exceed
     //! shape's order or if any value is neither convertible to kwk::shape::size_type nor kwk::_.
     //!
-    //! @param  s Variadic list of dimensions' values
+    //! @param  args Variadic list of dimensions' values
     //==============================================================================================
-    KWK_FORCEINLINE constexpr shape(concepts::extent<size_type> auto... vals) noexcept
-    requires( sizeof...(vals) <= static_order ) : shape{}
+    template<std::convertible_to<size_type>... A>
+    constexpr shape(A const&... args) noexcept
     {
-      parent::fill(vals...);
+       this->fill(args...);
     }
 
     //==============================================================================================
@@ -181,22 +181,19 @@ namespace kwk
     //! @groupheader{Example}
     //! @godbolt{docs/shape/mixed.cpp}
     //!
-    //! @param arg0  First dimension/size association
     //! @param args  Variadic list of dimension/size association
     //==============================================================================================
-    template<rbr::concepts::option Axis0, rbr::concepts::option... Axis>
-    constexpr shape(Axis0 arg0, Axis... args) noexcept
-    requires(   (concepts::axis<typename Axis::keyword_type> && ... && concepts::axis<typename Axis0::keyword_type>)
-            &&  make_combo<size_type>(Shape).is_equivalent(detail::as_descriptor<size_type>(Axis0{}, Axis{}...))
+    template<concepts::extent<size_type>... A>
+    constexpr shape(A const&... args) noexcept
+    requires( !(std::convertible_to<A,size_type> && ...)
+            && make_combo<size_type>(Shape).is_equivalent(detail::as_descriptor<size_type>(A{}...))
             )
-    : shape { [&]<std::size_t... N>(std::index_sequence<N...>)
-              {
-                return shape{ as_axis(arg0,kumi::index<static_order>)
-                            , as_axis(args,kumi::index<static_order-N-1>)...
-                            };
-              }(std::make_index_sequence<sizeof...(Axis)>{})
-            }
-    {}
+    {
+      [&]<std::size_t... N>(std::index_sequence<N...>)
+      {
+        this->fill(detail::as_axis(args,get<N>(Shape),kumi::index<static_order-N-1>)...);
+      }(std::make_index_sequence<sizeof...(A)>{});
+    }
 
     //==============================================================================================
     //! @brief Constructs from a shape with compatible layout
@@ -487,11 +484,8 @@ namespace kwk
   };
 
   /// Deduction guide for @ref kwk::shape
-  template<concepts::extent<std::ptrdiff_t>... T>
+  template<typename... T>
   shape(T...) -> shape< detail::as_descriptor<std::ptrdiff_t>(T{}...) >;
-
-  template<rbr::concepts::option... Dims>
-  shape(Dims... ) -> shape< detail::as_descriptor<std::ptrdiff_t>(Dims{}...) >;
 
   //================================================================================================
   //! @brief Compress a kwk::shape to a given order

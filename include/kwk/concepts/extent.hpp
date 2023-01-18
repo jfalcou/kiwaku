@@ -7,8 +7,9 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/utility/joker.hpp>
 #include <kwk/detail/stdfix.hpp>
+#include <kwk/detail/raberu.hpp>
+#include <kwk/utility/joker.hpp>
 #include <type_traits>
 
 namespace kwk::concepts
@@ -16,9 +17,9 @@ namespace kwk::concepts
   /// Concept for types acting as a joker value
   template<typename T> concept joker = is_joker_v<T>;
 
-  /// Concept for types usable as shape and stride extent values
+  /// Concept for types usable as shape and stride construction
   template<typename T, typename S>
-  concept extent = std::convertible_to<T,S> || joker<T>;
+  concept extent = std::convertible_to<T,S> || joker<T> || rbr::concepts::option<T>;
 
   /// Concept for shape and stride extent descriptor
   template<typename T>
