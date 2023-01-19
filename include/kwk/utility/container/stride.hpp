@@ -134,7 +134,7 @@ namespace kwk
     //! This constructor will not take part in overload resolution if the shape is fully static.
     //!
     //! @groupheader{Example}
-    //! @godbolt{docs/shape/mixed.cpp}
+    //! @include docs/shape/mixed.cpp
     //!
     //! @param args  Variadic list of dimension/size association
     //==============================================================================================

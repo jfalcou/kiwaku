@@ -94,19 +94,19 @@ namespace kwk
   //!   kwk::shape s2 = kwk::of_size(n, m);                            // Order 2 shape with dynamic sizes
   //!   kwk::shape s3 = kwk::of_size(kwk::fixed<2>,kwk::fixed<2>, n);  // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  //!   <br/>
   //!
   //! - defining the layout of the kwk::shape and manually initializing it. The description of the
-  //!   kwk::shape layout is done with the kwk::extent object or one of the pre-defined layouts.
+  //!   kwk::shape layout is done with the kwk::extent object, one of the pre-defined layouts or.
+  //!   by combining axis descriptors.
   //!
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-  //!   kwk::shape< kwk::extent[5] >      s1;             // Order 1 shape with static size
-  //!   kwk::shape< kwk::_2D >            s2(n, m);       // Order 2 shape with dynamic sizes
-  //!   kwk::shape< kwk::extent[2][2]( )> s3( _[2] = n);  // Order 3 shape with mixed sizes
-  //!   kwk::shape< kwk::extent[2]( )[3]> s4( _, n, _);   // Order 3 shape with mixed sizes
+  //!   kwk::shape< kwk::extent[5] >          s1;                   // Order 1 shape with static size
+  //!   kwk::shape< kwk::_2D >                s2(n, m);             // Order 2 shape with dynamic sizes
+  //!   kwk::shape< kwk::width * kwk::height> s3(n,kwk::fixed<3>);  // Order 2 shape with mixed sizes
+  //!   kwk::shape< kwk::extent[2]()[3]>      s4( _, n, _);         // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
-  //! @tparam Shape An instance of a [shape descriptor](@ref eve::extent)
+  //! @tparam Shape An instance of a shape descriptor
   //================================================================================================
   template<auto Shape>
   struct shape : kwk::detail::prefilled<Shape>
@@ -157,6 +157,7 @@ namespace kwk
     //! @param  values Variadic list of dimensions' values
     //==============================================================================================
     constexpr shape(std::convertible_to<size_type> auto... values) noexcept
+    requires( sizeof...(values) <= static_order )
     {
       this->fill(values...);
     }
@@ -172,8 +173,14 @@ namespace kwk
     //! default value for this dimension, i.e 0 for the first dimension, 1 for others or the fixed
     //! size if it is provided.
     //!
-    //! Passing a dimension specifier to overwrite one of the compile-time dimensions is undefined
-    //! behavior.
+    //! If you pass kwk::_ as a dimension's value, it means that the shape will be using the
+    //! default value for this dimension, i.e 0 for the innermost dimension, 1 for others or the
+    //! fixed size if it is provided.
+    //!
+    //! Passing a dimension to overwrite a compile-time dimensions is undefined behavior.
+    //!
+    //! This constructor will not take part in overload resolution if its parameters doesn't
+    //! conform to the shape descriptor specified or deduced.
     //!
     //! @groupheader{Example}
     //! @include docs/shape/mixed.cpp
@@ -457,7 +464,7 @@ namespace kwk
     //! Does not participate in overload resolution if the number of parameters is not equal to the
     //! shape order.
     //!
-    //! @param s  Variadic list of [slicers](@ref kwk::concepts::slicer) instance
+    //! @param s  Variadic list of slicer instances
     //! @return   An instance of @ref kwk::shape corresponding to the shape of the selected
     //!           sub-volume
     //==============================================================================================

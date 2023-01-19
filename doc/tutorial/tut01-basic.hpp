@@ -30,7 +30,7 @@ its data. To do so, we create a @view instance. The definition of our
 Those API choices are very important for **KIWAKU** as we want to make the mental burden of
 remembering which parameter (type or value alike) come after which other or if any
 parameter has a potentially non-trivial default value. We'll go over each parameters as we continue
-this tutorial.
+this serie of tutorials.
 
 Once done, we can just print the contents of the @view. The result here should be:
 
@@ -44,30 +44,6 @@ Displaying data on the standard output is fine but, maybe, we want to do some ac
 @view.
 
 
-# Configuring a View
-@ref kwk::view supports various named parameters or [settings](@ref settings). Let's have a look at
-the most common ones.
-
-## Data source
-
-## Type
-
-## Shape
-
-## Label
-Finally, we can assign a text label to a given @view. This label can be of any type
-convertible to `std::string`. Label has no effect on the @view behavior but is
-displayed when an instance of @ref kwk::view is passed to an output stream:
-
-@include tutorial/tutorial-01-label.cpp
-
-In this case, the expected output is:
-
-```
-The Original Data:
-  [ 1.2 3.4 5.6 ]
-  [ 7.8 9.1 11.12 ]
-```
 
 # Conclusion
 In this first tutorial, we managed to:

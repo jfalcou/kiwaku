@@ -16,7 +16,7 @@ namespace kwk
 {
   //================================================================================================
   //! @ingroup settings
-  //! @var    extent
+  //! @var kwk::detail::combo<std::ptrdiff_t>  extent
   //! @brief  Constexpr generator for extent lists
   //!
   //! <hr/>
@@ -54,7 +54,7 @@ namespace kwk
   //!
   //! @groupheader{Examples}
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-  //! #include<kwk/container/shape.hpp>
+  //! #include <kwk/kwk.hpp>
   //!
   //! // Shape descriptors with runtime sizes
   //! kwk::shape< kwk::extent()() > d1(6, 8); // Order 1 shape with runtime size 6 x 8
@@ -63,16 +63,16 @@ namespace kwk
   //! kwk::shape< kwk::extent_of<short>()() > s1(6, 8); // Order 1 shape with runtime size 6 x 8 stored as short
   //!
   //! // Shape descriptors with compile-time sizes
-  //! kwk::shape< kwk::extent[4]    > s1;   // Order 1 shape with compile-time size 4
-  //! kwk::shape< kwk::extent[2][2] > s2;   // Order 2 shape with compile-time sizes 2 x 2
+  //! kwk::shape< kwk::extent[4]    > s2;   // Order 1 shape with compile-time size 4
+  //! kwk::shape< kwk::extent[2][2] > s3;   // Order 2 shape with compile-time sizes 2 x 2
   //!
   //! // Shape descriptor mixing runtime and compile-time sizes
-  //! kwk::shape< kwk::extent[3]()[3]() > h;  // Order 4 shape with size 3 x 1 x 3 x 1
+  //! kwk::shape< kwk::extent[3]()[3]() > h1;  // Order 4 shape with size 3 x 1 x 3 x 1
   //!
   //! // Pre-made descriptors
   //! kwk::shape< kwk::_2D    > p1; // Order 2 shape with default runtime size
   //! kwk::shape< kwk::_nD<7> > p2; // Order 7 shape with default runtime size
-  //! kwk::shape< kwk::_3D[3] > h;  // Order 4 shape with size 0 x 1 x 1 x 3
+  //! kwk::shape< kwk::_3D[3] > h2;  // Order 4 shape with size 0 x 1 x 1 x 3
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
   //================================================================================================
