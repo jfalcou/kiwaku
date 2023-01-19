@@ -7,95 +7,93 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/kumi.hpp>
+#include <kwk/concepts/axis.hpp>
 #include <kwk/detail/abi.hpp>
-#include <kwk/utility/joker.hpp>
-#include <type_traits>
+#include <kwk/detail/kumi.hpp>
+#include <kwk/detail/traits.hpp>
+#include <kwk/settings/axis.hpp>
 #include <ostream>
+
+// Forward declaration & Helpers
+namespace kwk
+{
+  struct joker;
+  namespace detail { struct size_; }
+}
 
 namespace kwk::detail
 {
-  struct size_;
-
+  //================================================================================================
   // combo sequence allow for constructing sequence of static value and placeholders
-  template<typename T, typename... Elems> struct combo
+  // It behaves as a tuple for easy access/algorithm applications.
+  // It is meant to only be used as a constexpr object in shape/stride template parameters
+  //================================================================================================
+  template<typename T, concepts::axis... Axis>
+  struct combo
   {
     using is_product_type = void;
-    using base_type       = T;
-    using contents_type   = kumi::tuple<Elems...>;
+    using base_type       = std::conditional_t<std::same_as<joker,T>,std::ptrdiff_t,T>;
+    using contents_type   = kumi::tuple<Axis...>;
 
-    // shape is its self option keyword
-    using stored_value_type = combo<T,Elems...>;
+    // combo is its self option keyword
+    using stored_value_type = combo<T,Axis...>;
     using keyword_type      = detail::size_;
-
-    static constexpr  std::size_t static_size = sizeof...(Elems);
-
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
-    static constexpr auto size() noexcept { return sizeof...(Elems); }
+    // Size info
+    static constexpr auto static_size = sizeof...(Axis);
+    static constexpr auto size() noexcept { return static_size; }
 
-    friend std::ostream& operator<<(std::ostream& os, combo c) { return os << c.data; }
+    // Ctor from list of axis
+    constexpr combo(Axis const&... x) : storage{x...} {}
 
-    constexpr auto operator()() const
+    // Display helper
+    friend std::ostream& operator<<(std::ostream& os, combo a)
     {
-      return combo<T,Elems...,joker>{kumi::push_back(data,_)};
+      os << front(a.storage);
+      kumi::for_each([&](auto m) { os << " x " << m; }, pop_front(a.storage));
+      return os;
     }
 
-    constexpr auto operator[](auto i)  const
-    {
-      return combo<T,Elems...,base_type>{kumi::push_back(data,static_cast<base_type>(i))};
-    }
+    // Tuple interface
+    template<std::size_t N>
+    friend constexpr decltype(auto) get(combo& s) noexcept { return get<N>(s.storage); }
 
     template<std::size_t N>
-    friend constexpr decltype(auto) get(combo& s) noexcept { return get<N>(s.data); }
-
-    template<std::size_t N>
-    friend constexpr decltype(auto) get(combo const& s) noexcept { return get<N>(s.data); }
+    friend constexpr decltype(auto) get(combo const& s) noexcept { return get<N>(s.storage); }
 
     // combo sequences are compatible if they have the same size
     // and don't contain conflicting static values
     template< typename T0, typename... E0>
     constexpr bool is_compatible(combo<T0,E0...> const& other) const noexcept
     {
-      if constexpr(sizeof...(Elems) != sizeof...(E0))  return false;
+      if constexpr(static_size != combo<T0,E0...>::static_size)  return false;
       else
       {
-        return kumi::fold_left( [](bool acc, auto const& t)
-                                {
-                                  auto[e,f] = t;
-                                  // _ _ or _ k is OK by design
-                                  if constexpr(is_joker_v<decltype(e)>) return acc;
-                                  // k _ is OK but checks later
-                                  else if constexpr ( !is_joker_v<decltype(e)>
-                                                    && is_joker_v<decltype(f)>
-                                                    )                   return acc;
-                                  // k1 k2 requires e == f
-                                  else                                  return acc && (e == f);
-                                }
-                              , kumi::zip(*this,other)
-                              , true
-                              );
+        return  kumi::fold_left
+                ( [](bool acc, auto const& t)
+                  {
+                    auto[e,f] = t;
+                    return checker(e, f, acc, acc);
+                  }
+                , kumi::zip(*this,other)
+                , true
+                );
       }
     }
 
+    // combo sequences are similar if they have the same size
+    // and have the same static/dynamic layout
     template< typename T0, typename... E0>
     constexpr bool is_similar(combo<T0,E0...> const& other) const noexcept
     {
-      if constexpr(sizeof...(Elems) != sizeof...(E0))  return false;
+      if constexpr(static_size != combo<T0,E0...>::static_size)  return false;
       else
       {
         return kumi::fold_left( [](bool acc, auto const& t)
                                 {
                                   auto[e,f] = t;
-
-                                  // _ _ or _ k is OK by design
-                                  if constexpr(is_joker_v<decltype(e)>) return acc;
-                                  // k _ is KO
-                                  else if constexpr ( !is_joker_v<decltype(e)>
-                                                    && is_joker_v<decltype(f)>
-                                                    )                   return false;
-                                  // k1 k2 requires e == f
-                                  else                                  return acc && (e == f);
+                                  return checker(e, f, false, acc);
                                 }
                               , kumi::zip(*this,other)
                               , true
@@ -103,76 +101,127 @@ namespace kwk::detail
       }
     }
 
+    // Helper when we call is_similar in shape/stride require clauses
     template<typename S2>
     constexpr bool is_similar( S2 const& ) const noexcept
     {
       return is_similar(S2::descriptor);
     }
 
-    kumi::tuple<Elems...> data;
+    // combo are equivalent if they have the same order/name of axis
+    template< typename T0, typename... E0>
+    requires(static_size == combo<T0,E0...>::static_size)
+    constexpr bool is_equivalent(combo<T0,E0...> const&) const noexcept
+    {
+      return (is_along_v<Axis,E0> && ... );
+    }
+
+    template< typename T0, typename... E0>
+    requires(static_size != combo<T0,E0...>::static_size)
+    constexpr bool is_equivalent(combo<T0,E0...> const&) const noexcept
+    {
+      return false;
+    }
+
+    template<typename N, typename T0, typename... E0>
+    constexpr bool is_equivalent(combo<T0,E0...> const& that, N idx) const noexcept
+    {
+      auto ref = make_combo<T>(kumi::extract(storage,idx));
+      return ref.is_equivalent(that);
+    }
+
+    //==============================================================================================
+    // Combination expansion operators
+    // Those operators helps build combo from user code via either
+    //  - the extent generator: extent[4]()() etc
+    //  - the * operator to combine with axis
+    //==============================================================================================
+    KWK_FORCEINLINE constexpr auto operator()() const noexcept
+    {
+      auto renum = kumi::map([]<typename M>( M m) { return make_axis(m); } , storage);
+      return make_combo<T>(push_back(renum,detail::indexed_axis_<0>{}));
+    }
+
+    KWK_FORCEINLINE constexpr auto operator[](std::integral auto i) const noexcept
+    {
+      auto renum = kumi::map([]<typename M>( M m) { return make_axis(m); } , storage);
+      return make_combo<T>(push_back(renum,detail::indexed_axis_<0,decltype(i)>{i}));
+    }
+
+    KWK_FORCEINLINE
+    friend constexpr auto operator*(combo const& l, concepts::axis auto const& o) noexcept
+    {
+      return make_combo<T>(push_back(l.storage,o));
+    }
+
+    KWK_FORCEINLINE
+    friend constexpr auto operator*(concepts::axis auto const& o,combo const& l) noexcept
+    {
+      return make_combo<T>(push_front(l.storage,o));
+    }
+
+    template<typename T2, typename... A2>
+    KWK_FORCEINLINE
+    friend constexpr auto operator*(combo const& lhs,combo<T2,A2...> const& rhs) noexcept
+    {
+      using type = std::conditional_t<std::same_as<T,kwk::joker>,T2,T>;
+      return make_combo<type>(cat(lhs.storage,rhs.storage));
+    }
+
+    // Storage tuple
+    contents_type storage;
+
+    private:
+
+    template<typename M>
+    static KWK_FORCEINLINE constexpr auto make_axis(M m) noexcept
+    {
+      if constexpr( requires(M) { M::static_index; })
+        return detail::indexed_axis_<M::static_index+1, decltype(m.value)>{m.value};
+      else
+        return m;
+    }
+
+    template<typename E, typename F>
+    static KWK_FORCEINLINE constexpr bool checker(E e, F f, auto def, auto acc) noexcept
+    {
+      if constexpr(concepts::dynamic_axis<E>)                                     return acc;
+      else if constexpr(!concepts::dynamic_axis<E> && concepts::dynamic_axis<F>)  return def;
+      else                                                return acc && (e.value == f.value);
+    }
   };
 
-  template<typename T, typename... E>
-  constexpr auto to_combo(kumi::tuple<E...> const& es) noexcept
+  // Builder function - Used by axis
+  template<typename T, typename... Axis> KWK_FORCEINLINE constexpr auto make_combo(Axis... ax)
   {
-    return combo<T,E...>{es};
+    return combo<T,Axis...>(ax...);
   }
 
-  template<typename U, typename T, typename... E>
-  constexpr auto combo_cast(combo<T,E...> const& es) noexcept
+  template<typename T> KWK_FORCEINLINE constexpr auto make_combo(kumi::product_type auto const& st)
   {
-    return to_combo<U>( kumi::map ( []<typename M>(M m)
-                                    {
-                                      if constexpr(is_joker_v<M>) return m;
-                                      else return static_cast<U>(m);
-                                    }
-                                  , es.data
-                                  )
-                      );
+    return kumi::apply( []<typename... M>(M... m) { return  combo<T,M...>(m...); },st);
+  }
+
+  // Axis combinator
+  KWK_FORCEINLINE
+  constexpr auto operator*(concepts::axis auto const& a, concepts::axis auto const& b) noexcept
+  {
+    return make_combo<kwk::joker>(a, b);
   }
 
   // Compress combo at a given size, projecting remaining elements
   template<std::size_t N, typename T, typename... E>
   constexpr auto compress(combo<T,E...> s)  noexcept
   {
-    auto tail = kumi::extract(s.data,kumi::index<N>);
-
-    //  We add a _ to the end of the first part
-    //    - if there is at least one _ in the tail
-    //    - if there is a _ in the last element of the head
-    if constexpr(   kumi::any_of(decltype(tail){},kumi::predicate<is_joker>())
-                ||  is_joker_v<kumi::element_t<N-1,typename combo<T,E...>::contents_type>>
-                )
-    {
-      // eg: [1][2][3]()() compress 2 -> [1]()
-      auto head = kumi::extract(s.data, kumi::index<0>, kumi::index<N-1>);
-      return to_combo<std::ptrdiff_t>(kumi::push_back(head,kwk::_));
-    }
+    constexpr auto sz = combo<T,E...>::static_size;
+    if constexpr(N == sz) return s;
     else
     {
-      // if there is no joker, we compute the product of all remaining elements and try
-      // to insert it in the last part eg: [1][4][5] compress 2 -> [1][20]
-      auto value = kumi::fold_left( [](auto acc, auto v) { return acc*v; }
-                                  , tail
-                                  , get<N-1>(s.data)
-                                  );
-      return to_combo<std::ptrdiff_t> ( kumi::push_back ( kumi::extract ( s.data
-                                                                        , kumi::index<0>
-                                                                        , kumi::index<N-1>
-                                                                        )
-                                                        , value
-                                                        )
-                                      );
+      auto [head,tail] = kumi::split(s.storage, kumi::index<sz-N+1>);
+      auto value = kumi::fold_right( [](auto acc, auto v) { return compress(acc,v); }, pop_front(head), get<0>(head));
+      return make_combo<std::ptrdiff_t>( kumi::push_front( tail, value ) );
     }
   }
-
-  // Special case for empty combo so to not instantiate kumi::tuple<>
-  template<typename T> struct combo<T>
-  {
-    using base_type = T;
-    constexpr auto operator()()               const { return combo<T,joker>{_}; }
-    constexpr auto operator[](auto i)  const { return combo<T,base_type>{static_cast<base_type>(i)}; }
-  };
 }
 
 // Tuple interface adaptation

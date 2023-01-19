@@ -652,7 +652,7 @@ namespace kumi
   {
     return [&]<std::size_t... N>(std::index_sequence<N...>)
     {
-      return kumi::tuple<std::tuple_element_t<N + I0, Tuple>...> {get<N + I0>(t)...};
+      return kumi::tuple<std::tuple_element_t<N + I0, Tuple>...> { static_cast<std::tuple_element_t<N + I0, Tuple>>(get<N + I0>(t))...};
     }
     (std::make_index_sequence<I1 - I0>());
   }

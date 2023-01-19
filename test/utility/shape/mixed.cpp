@@ -39,24 +39,17 @@ TTS_CASE( "1D mixed shape constructor" )
 
   auto s3 = kwk::of_size(kwk::fixed<9>);
   TTS_CONSTEXPR_EQUAL(sizeof(s3)        , 1ULL);
-  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3)), 4ULL);
+  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3)), 1ULL);
   TTS_EQUAL(s3.order()           , 1          );
   TTS_EQUAL(s3.numel()           , 9          );
   TTS_EQUAL(get<0>(s3)           , 9          );
 
   auto s3d = kwk::of_size(kwk::fixed<390>);
   TTS_CONSTEXPR_EQUAL(sizeof(s3d)         , 1ULL  );
-  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3d)) , 4ULL  );
+  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s3d)) , 1ULL  );
   TTS_EQUAL(s3d.order()                   , 1     );
   TTS_EQUAL(s3d.numel()                   , 390   );
   TTS_EQUAL(get<0>(s3d)                   , 390   );
-
-  auto s4 = kwk::of_size<std::uint8_t>(11_c);
-  TTS_CONSTEXPR_EQUAL(sizeof(s4)        , 1ULL);
-  TTS_CONSTEXPR_EQUAL(sizeof(get<0>(s4)), 1ULL);
-  TTS_EQUAL(s4.order()           , 1          );
-  TTS_EQUAL(s4.numel()          , 11          );
-  TTS_EQUAL(get<0>(s4)          , 11          );
 };
 
 TTS_CASE( "2D partial shape constructor" )

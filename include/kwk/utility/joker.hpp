@@ -11,13 +11,6 @@
 
 namespace kwk
 {
-  struct axis
-  {
-    axis& operator=(std::ptrdiff_t s) { size = s; return *this;}
-    std::size_t     dims;
-    std::ptrdiff_t  size;
-  };
-
   //================================================================================================
   //! @ingroup utility
   //! @brief  Type of the @ref kwk::_ object
@@ -25,7 +18,6 @@ namespace kwk
   struct joker
   {
     friend std::ostream& operator<<(std::ostream& os, joker const&) { return os << "_"; }
-    constexpr auto operator[](std::size_t d) const noexcept { return axis{d,0}; }
 
     friend constexpr joker operator*(joker, joker) noexcept { return {}; }
     friend constexpr joker operator*(joker,  auto) noexcept { return {}; }

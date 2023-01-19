@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/values.hpp>
+#include <kwk/detail/raberu.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <bit>
 #include <cstdint>
@@ -28,16 +29,22 @@ namespace kwk
     template<typename T>  struct  to_int        { using type = T;     };
     template<>            struct  to_int<joker> { using type = char;  };
 
+    template<rbr::concepts::option T>
+    struct to_int<T>
+    {
+      using type = typename T::stored_value_type;
+    };
+
     template<concepts::static_constant T>
     struct  to_int<T>
     {
       using type = typename T::value_type;
     };
 
-    template<typename T>      using   to_int_t = typename to_int<T>::type;
+    template<typename T> using   to_int_t = typename to_int<T>::type;
 
-    template<typename... T>   struct largest_type;
-    template<typename T>      struct largest_type<T> { using type = T; };
+    template<typename... T> struct largest_type;
+    template<typename T>    struct largest_type<T> { using type = T; };
 
     template<typename T0, typename T1>
     struct largest_type<T0,T1> : std::conditional<sizeof(T0)<sizeof(T1),T1,T0>
@@ -45,6 +52,10 @@ namespace kwk
 
     template<typename T0, typename T1, typename... T2>
     struct largest_type<T0, T1, T2...> : largest_type< typename largest_type<T0,T1>::type, T2...>
+    {};
+
+    template<typename... T>
+    struct largest_integral : largest_type< to_int_t<T>... >
     {};
 
     template<auto Value> constexpr auto clamp()

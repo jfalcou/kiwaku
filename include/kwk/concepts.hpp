@@ -11,4 +11,6 @@
 #include <kwk/concepts/container.hpp>
 #include <kwk/concepts/extent.hpp>
 #include <kwk/concepts/range.hpp>
+#include <kwk/concepts/axis.hpp>
+#include <kwk/concepts/values.hpp>
 // #include <kwk/concept/slicer.hpp>

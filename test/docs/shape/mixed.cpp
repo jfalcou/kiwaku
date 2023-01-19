@@ -10,26 +10,20 @@
 
 int main()
 {
+  using namespace kwk::literals;
+
   // _ is the dimension specifier
   using kwk::_;
 
-  // Defines a 3D shape type with dimension 2 fixed to 5
-  using shape_t = kwk::shape< kwk::extent()[5]() >;
+  // Constructs shape of 3 x 5 x 9
+  kwk::shape x(3, 5, 9);
+  std::cout << x << " : " << get<0>(x) << " x " << get<1>(x) << " x " << get<2>(x) << "\n";
 
-  // Constructs such a shape with dim0 = 7 and dim2 = 9
-  shape_t x( _[0] = 7, _[2] = 9);
-  std::cout << x << "\n";
+  // Constructs shape with width = 7 and height = 9 in this order
+  kwk::shape y(kwk::width = 7, kwk::height = 9);
+  std::cout << y << " : " << y[kwk::width] << " x " << y[kwk::height] << "\n";
 
-  // Dimensions specifiers are position independent
-  shape_t y( _[2] = 9, _[0] = 7 );
-  std::cout << y << "\n";
-
-  // Missing dimensions are filled to be coherent with default constructor
-  // w is a 11 x 5 x 1 shape
-  shape_t w( _[0] = 11 );
-  std::cout << w << "\n";
-
-  // z is a 0 x 5 x 9 shape
-  shape_t z( _[2] = 9 );
-  std::cout << z << "\n";
+  // Constructs shape with 4 x color = 10 with 4 being known at compile time
+  kwk::shape z(4_c, kwk::axis<"color"> = 9);
+  std::cout << z << " : " << get<0>(z) << " x " << z[kwk::axis<"color">] << "\n";
 }

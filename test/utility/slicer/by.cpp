@@ -21,20 +21,20 @@ TTS_CASE("Check kwk::by special cases")
   auto shp  = of_size(2, 2, 3_c, 3_c);
   auto shp0 = of_size(0, 0, 0_c, 0_c);
 
-  constexpr std::ptrdiff_t unit = 1, zero = 0;
+  constexpr auto unit = 1, zero = 0;
 
   TTS_EQUAL( shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c)), of_size(1,1,1,1));
   TTS_EQUAL( shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c)), of_size(0,0,0,0));
 
-  TTS_TYPED_EQUAL(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<0>(), unit);
-  TTS_TYPED_EQUAL(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<1>(), unit);
-  TTS_TYPED_EQUAL(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<2>(), unit);
-  TTS_TYPED_EQUAL(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<3>(), fixed<unit>);
+  TTS_TYPED_EQUAL(get<0>(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), unit);
+  TTS_TYPED_EQUAL(get<1>(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), unit);
+  TTS_TYPED_EQUAL(get<2>(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), unit);
+  TTS_TYPED_EQUAL(get<3>(shp(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), fixed<unit>);
 
-  TTS_TYPED_EQUAL(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<0>(), zero);
-  TTS_TYPED_EQUAL(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<1>(), zero);
-  TTS_TYPED_EQUAL(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<2>(), zero);
-  TTS_TYPED_EQUAL(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c)).extent<3>(), fixed<zero>);
+  TTS_TYPED_EQUAL(get<0>(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), zero);
+  TTS_TYPED_EQUAL(get<1>(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), zero);
+  TTS_TYPED_EQUAL(get<2>(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), zero);
+  TTS_TYPED_EQUAL(get<3>(shp0(range(by=4), range(by=5_c), range(by=6), range(by=7_c))), fixed<zero>);
 };
 
 TTS_CASE("Check slicing for kwk::by")
@@ -45,13 +45,13 @@ TTS_CASE("Check slicing for kwk::by")
   using kwk::fixed;
   using kwk::of_size;
 
-  constexpr std::ptrdiff_t d0 = 17, d1 = 29;
+  constexpr int d0 = 17, d1 = 29;
   auto d2 = fixed<23>;
   auto d3 = fixed<97>;
 
   auto shp = of_size(d0, d1, d2, d3);
 
-  constexpr std::ptrdiff_t v0 = 4, v2 = 6, one = 1;
+  constexpr int v0 = 4, v2 = 6, one = 1;
   auto v1 = fixed<5>;
   auto v3 = fixed<7>;
 
@@ -60,12 +60,12 @@ TTS_CASE("Check slicing for kwk::by")
   auto e2 = range(by=v2);
   auto e3 = range(by=v3);
 
-  TTS_EQUAL( shp(e0, e1, e2, e3), of_size(d0/v0+1, d1/v1+1, d2/v2+1, d3/v3+1));
+  TTS_EQUAL( shp(e0, e1, e2, e3), of_size(d0/v0+1, d1/v1+1,d2/v2+1, d3/v3+1));
 
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<0>(), d0/v0+one);
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<1>(), d1/v1+one);
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<2>(), d2/v2+one);
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<3>(), d3/v3+fixed<one>);
+  TTS_TYPED_EQUAL(get<0>(shp(e0, e1, e2, e3)), d0/v0+one);
+  TTS_TYPED_EQUAL(get<1>(shp(e0, e1, e2, e3)), d1/v1+one);
+  TTS_TYPED_EQUAL(get<2>(shp(e0, e1, e2, e3)), d2/v2+one);
+  TTS_TYPED_EQUAL(get<3>(shp(e0, e1, e2, e3)), d3/v3+fixed<one>);
 };
 
 TTS_CASE("Check exact slicing for kwk::by")
@@ -93,8 +93,8 @@ TTS_CASE("Check exact slicing for kwk::by")
 
   TTS_EQUAL( shp(e0, e1, e2, e3), of_size(d0/v0, d1/v1, d2/v2, d3/v3));
 
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<0>(), d0/v0);
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<1>(), d1/v1);
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<2>(), d2/v2);
-  TTS_TYPED_EQUAL(shp(e0, e1, e2, e3).extent<3>(), d3/v3);
+  TTS_TYPED_EQUAL(get<0>(shp(e0, e1, e2, e3)), d0/v0);
+  TTS_TYPED_EQUAL(get<1>(shp(e0, e1, e2, e3)), d1/v1);
+  TTS_TYPED_EQUAL(get<2>(shp(e0, e1, e2, e3)), d2/v2);
+  TTS_TYPED_EQUAL(get<3>(shp(e0, e1, e2, e3)), d3/v3);
 };

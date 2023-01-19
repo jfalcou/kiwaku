@@ -66,7 +66,7 @@ namespace kwk
       if constexpr(has_length) return len;
       else
       {
-        auto count = sh.template extent<N>();
+        auto count = get<N>(sh);
 
         auto fix_extremum = [&]<typename T>(T s, auto def)
         {
@@ -128,7 +128,7 @@ namespace kwk
   template<auto D, typename S, std::size_t N>
   constexpr auto reshape(shape<D> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
   {
-    if constexpr(std::same_as<S,joker>)                 return sh.template extent<N>();
+    if constexpr(std::same_as<S,joker>)                 return get<N>(sh);
     else if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);
     else                                                return fixed<1>;
   }

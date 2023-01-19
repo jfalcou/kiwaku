@@ -28,14 +28,14 @@ TTS_CASE("Check basic slicing for kwk::to")
 
   TTS_EQUAL( shp(t0, t1, t2, t3) , kwk::of_size(d0, d1, d2, d3));
 
-  // It is possible to get the compile-time extent<0> value, since the value
+  // It is possible to get the compile-time value, since the value
   // returned by to is static <=> its argument is static
   // (the shape does not have to be static since its value is not part
   // of the computation)
-  TTS_TYPED_EQUAL(shp(t0, t1, t2, t3).extent<0>(), d0);
-  TTS_TYPED_EQUAL(shp(t0, t1, t2, t3).extent<1>(), fixed<d1>);
-  TTS_TYPED_EQUAL(shp(t0, t1, t2, t3).extent<2>(), d2);
-  TTS_TYPED_EQUAL(shp(t0, t1, t2, t3).extent<3>(), fixed<d3>);
+  TTS_TYPED_EQUAL(get<0>(shp(t0, t1, t2, t3)), d0);
+  TTS_TYPED_EQUAL(get<1>(shp(t0, t1, t2, t3)), fixed<d1>);
+  TTS_TYPED_EQUAL(get<2>(shp(t0, t1, t2, t3)), d2);
+  TTS_TYPED_EQUAL(get<3>(shp(t0, t1, t2, t3)), fixed<d3>);
 };
 
 TTS_CASE("Check slicing with end for kwk::to")
@@ -53,8 +53,8 @@ TTS_CASE("Check slicing with end for kwk::to")
   auto shp = kwk::of_size(d0, s1);
 
   TTS_EQUAL( shp(t0, t0), kwk::of_size(d0, s1));
-  TTS_TYPED_EQUAL(shp(t0, t0).extent<0>(), d0);
-  TTS_TYPED_EQUAL(shp(t0, t0).extent<1>(), fixed<d1>);
+  TTS_TYPED_EQUAL(get<0>(shp(t0, t0)), d0);
+  TTS_TYPED_EQUAL(get<1>(shp(t0, t0)), fixed<d1>);
 };
 
 TTS_CASE("Check slicing with end-n for kwk::to")
@@ -78,10 +78,10 @@ TTS_CASE("Check slicing with end-n for kwk::to")
 
   TTS_EQUAL( shp(t0, t0, t1, t1), kwk::of_size(d0-v0, d1-v0, d2-c0, d3-c0));
 
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<0>(), d0-v0);
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<1>(), d1-v0);
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<2>(), d2-c0);
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<3>(), fixed<d3-c0>);
+  TTS_TYPED_EQUAL(get<0>(shp(t0, t0, t1, t1)), d0-v0);
+  TTS_TYPED_EQUAL(get<1>(shp(t0, t0, t1, t1)), d1-v0);
+  TTS_TYPED_EQUAL(get<2>(shp(t0, t0, t1, t1)), d2-c0);
+  TTS_TYPED_EQUAL(get<3>(shp(t0, t0, t1, t1)), fixed<d3-c0>);
 };
 
 TTS_CASE("Check slicing with end/n for kwk::to")
@@ -105,10 +105,10 @@ TTS_CASE("Check slicing with end/n for kwk::to")
 
   TTS_EQUAL( shp(t0, t0, t1, t1), kwk::of_size(d0/v0, d1/v0, d2/c0, d3/c0));
 
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<0>(), d0/v0);
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<1>(), d1/v0);
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<2>(), d2/c0);
-  TTS_TYPED_EQUAL(shp(t0, t0, t1, t1).extent<3>(), fixed<d3/c0>);
+  TTS_TYPED_EQUAL(get<0>(shp(t0, t0, t1, t1)), d0/v0);
+  TTS_TYPED_EQUAL(get<1>(shp(t0, t0, t1, t1)), d1/v0);
+  TTS_TYPED_EQUAL(get<2>(shp(t0, t0, t1, t1)), d2/c0);
+  TTS_TYPED_EQUAL(get<3>(shp(t0, t0, t1, t1)), fixed<d3/c0>);
 };
 
 TTS_CASE("Check slicing with (k * end / q) for kwk::to")
@@ -142,14 +142,14 @@ TTS_CASE("Check slicing with (k * end / q) for kwk::to")
             , kwk::of_size(d0*f/d, d1*f/d, d2*f/d, d3*f/d, d4*f/d, d5*f/d, d6*f/d, d7*f/d)
             );
 
-  TTS_TYPED_EQUAL(sliced.extent<0>(), d0*f/d);
-  TTS_TYPED_EQUAL(sliced.extent<1>(), d1*f/d);
-  TTS_TYPED_EQUAL(sliced.extent<2>(), d2*f/d);
-  TTS_TYPED_EQUAL(sliced.extent<3>(), d3*f/d);
-  TTS_TYPED_EQUAL(sliced.extent<4>(), d4*f/d);
-  TTS_TYPED_EQUAL(sliced.extent<5>(), d5*f/d);
-  TTS_TYPED_EQUAL(sliced.extent<6>(), d6*f/d);
-  TTS_TYPED_EQUAL(sliced.extent<7>(), fixed<d7*f/d>);
+  TTS_TYPED_EQUAL(get<0>(sliced), d0*f/d);
+  TTS_TYPED_EQUAL(get<1>(sliced), d1*f/d);
+  TTS_TYPED_EQUAL(get<2>(sliced), d2*f/d);
+  TTS_TYPED_EQUAL(get<3>(sliced), d3*f/d);
+  TTS_TYPED_EQUAL(get<4>(sliced), d4*f/d);
+  TTS_TYPED_EQUAL(get<5>(sliced), d5*f/d);
+  TTS_TYPED_EQUAL(get<6>(sliced), d6*f/d);
+  TTS_TYPED_EQUAL(get<7>(sliced), fixed<d7*f/d>);
 };
 
 TTS_CASE("Check slicing with (k * end / q + dynamic_offset) for kwk::to")
@@ -185,14 +185,14 @@ TTS_CASE("Check slicing with (k * end / q + dynamic_offset) for kwk::to")
             , d3*f/d+od, d4*f/d+od, d5*f/d+od, d6*f/d+od, d7*f/d+od)
             );
 
-  TTS_TYPED_EQUAL(sliced.extent<0>(), d0*f/d+od);
-  TTS_TYPED_EQUAL(sliced.extent<1>(), d1*f/d+od);
-  TTS_TYPED_EQUAL(sliced.extent<2>(), d2*f/d+od);
-  TTS_TYPED_EQUAL(sliced.extent<3>(), d3*f/d+od);
-  TTS_TYPED_EQUAL(sliced.extent<4>(), d4*f/d+od);
-  TTS_TYPED_EQUAL(sliced.extent<5>(), d5*f/d+od);
-  TTS_TYPED_EQUAL(sliced.extent<6>(), d6*f/d+od);
-  TTS_TYPED_EQUAL(sliced.extent<7>(), d7*f/d+od);
+  TTS_TYPED_EQUAL(get<0>(sliced), d0*f/d+od);
+  TTS_TYPED_EQUAL(get<1>(sliced), d1*f/d+od);
+  TTS_TYPED_EQUAL(get<2>(sliced), d2*f/d+od);
+  TTS_TYPED_EQUAL(get<3>(sliced), d3*f/d+od);
+  TTS_TYPED_EQUAL(get<4>(sliced), d4*f/d+od);
+  TTS_TYPED_EQUAL(get<5>(sliced), d5*f/d+od);
+  TTS_TYPED_EQUAL(get<6>(sliced), d6*f/d+od);
+  TTS_TYPED_EQUAL(get<7>(sliced), d7*f/d+od);
 };
 
 TTS_CASE("Check slicing with (k * end / q + static_offset) for kwk::to")
@@ -228,12 +228,12 @@ TTS_CASE("Check slicing with (k * end / q + static_offset) for kwk::to")
             , d3*f/d+oc, d4*f/d+oc, d5*f/d+oc, d6*f/d+oc, d7*f/d+oc)
             );
 
-  TTS_TYPED_EQUAL(sliced.extent<0>(), d0*f/d+oc);
-  TTS_TYPED_EQUAL(sliced.extent<1>(), d1*f/d+oc);
-  TTS_TYPED_EQUAL(sliced.extent<2>(), d2*f/d+oc);
-  TTS_TYPED_EQUAL(sliced.extent<3>(), d3*f/d+oc);
-  TTS_TYPED_EQUAL(sliced.extent<4>(), d4*f/d+oc);
-  TTS_TYPED_EQUAL(sliced.extent<5>(), d5*f/d+oc);
-  TTS_TYPED_EQUAL(sliced.extent<6>(), d6*f/d+oc);
-  TTS_TYPED_EQUAL(sliced.extent<7>(), fixed<d7*f/d+oc>);
+  TTS_TYPED_EQUAL(get<0>(sliced), d0*f/d+oc);
+  TTS_TYPED_EQUAL(get<1>(sliced), d1*f/d+oc);
+  TTS_TYPED_EQUAL(get<2>(sliced), d2*f/d+oc);
+  TTS_TYPED_EQUAL(get<3>(sliced), d3*f/d+oc);
+  TTS_TYPED_EQUAL(get<4>(sliced), d4*f/d+oc);
+  TTS_TYPED_EQUAL(get<5>(sliced), d5*f/d+oc);
+  TTS_TYPED_EQUAL(get<6>(sliced), d6*f/d+oc);
+  TTS_TYPED_EQUAL(get<7>(sliced), fixed<d7*f/d+oc>);
 };

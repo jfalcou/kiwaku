@@ -7,13 +7,15 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/extent.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/kumi.hpp>
-#include <kwk/detail/sequence/prefilled.hpp>
+#include <kwk/detail/raberu.hpp>
 #include <kwk/detail/sequence/extent_builder.hpp>
+#include <kwk/detail/sequence/prefilled.hpp>
 #include <kwk/settings/extent.hpp>
-#include <kwk/utility/joker.hpp>
 #include <kwk/utility/fixed.hpp>
+#include <kwk/utility/joker.hpp>
 #include <kwk/utility/slicer.hpp>
 #include <cstddef>
 
@@ -36,26 +38,29 @@ namespace kwk
   //! @tparam SizeType  Integral type used to store sizes. If unspecified, `std::ptrdiff_t` is used.
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
-  template<typename SizeType, int..., concepts::extent<SizeType>... Ds>
+  template<std::integral SizeType, int..., concepts::extent<SizeType>... Ds>
   KWK_CONST constexpr auto of_size(Ds... ds) noexcept
   {
     return detail::make_extent<kwk::shape,SizeType>(ds...);
   }
 
-  template<int..., concepts::extent<std::ptrdiff_t>... Ds>
-  KWK_CONST constexpr auto of_size( Ds... ds) noexcept
+  /// @overload
+  template<int..., typename... Ds>
+  KWK_CONST constexpr   auto of_size( Ds... ds) noexcept
+          ->  decltype(of_size<typename detail::largest_integral<Ds...>::type>(ds...)  )
   {
-    using type_t = typename detail::largest_type<detail::to_int_t<Ds>...>::type;
-    return of_size<type_t>(ds...);
+    return of_size<typename detail::largest_integral<Ds...>::type>(ds...);
   }
 
+  /// @overload
   template<int..., kumi::product_type Ds>
   KWK_CONST constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size(s...); }, ds);
   }
 
-  template<typename SizeType,int..., kumi::product_type Ds>
+  /// @overload
+  template<std::integral SizeType,int..., kumi::product_type Ds>
   KWK_CONST constexpr auto of_size( Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
@@ -133,9 +138,10 @@ namespace kwk
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     //==============================================================================================
-    //! @brief Constructs a default @ref kwk::shape equals to [0 1 ... 1]
+    //! @brief Constructs a default @ref kwk::shape equals to [1 1 ... 0]
     //==============================================================================================
-    constexpr shape() : parent([](auto i, auto) -> size_type { return i > 0;}) {}
+    KWK_FORCEINLINE constexpr shape()
+                : parent([](auto i, auto c) -> size_type { return i != c-1;}) {}
 
     //==============================================================================================
     //! @brief Constructor from set of dimensions
@@ -153,20 +159,18 @@ namespace kwk
     //! This constructor will not take part in overload resolution if the number of values exceed
     //! shape's order or if any value is neither convertible to kwk::shape::size_type nor kwk::_.
     //!
-    //! @param  s Variadic list of dimensions' values
+    //! @param  vals Variadic list of dimensions' values
     //==============================================================================================
-    constexpr shape(concepts::extent<size_type> auto... vals) noexcept
-    requires( sizeof...(vals) <= static_order )
-    : shape{}
+    constexpr shape(std::convertible_to<size_type> auto... vals) noexcept
     {
-      parent::fill(vals...);
+       this->fill(vals...);
     }
 
     //==============================================================================================
     //! @brief Construct from a subset of runtime dimension values
     //!
     //! This constructor takes a variadic list of arguments specifying the size specified for a
-    //! given runtime dimension. Those sizes are passed by using `kwk::_[i]` as a dimension value.
+    //! given runtime dimension. Those sizes are passed by using an axis descriptor
     //!
     //! Passing a dimension specifier to overwrite one of the compile-time dimensions is undefined
     //! behavior.
@@ -176,25 +180,18 @@ namespace kwk
     //! @groupheader{Example}
     //! @godbolt{docs/shape/mixed.cpp}
     //!
-    //! @param s  Variadic list of dimension/size association
+    //! @param args  Variadic list of dimension/size association
     //==============================================================================================
-    constexpr shape(std::same_as<axis> auto... dims) noexcept
-    requires( (sizeof...(dims) <= static_order) && !is_fully_static )
-    : shape{}
+    template<concepts::extent<size_type>... A>
+    constexpr shape(A const&... args) noexcept
+    requires( !(std::convertible_to<A,size_type> && ...)
+            && make_combo<size_type>(Shape).is_equivalent(detail::as_descriptor<size_type>(A{}...))
+            )
     {
-      auto& st = parent::storage();
-
-      // Fill the proper axis value with the corresponding size
-      kumi::for_each( [&](auto e)
-                      {
-                        KIWAKU_ASSERT ( parent::contains(e.dims)
-                                      , "[KWK] - Semi-dynamic construction overwrite static shape"
-                                      );
-
-                        st[parent::location[e.dims]] = static_cast<size_type>(e.size);
-                      }
-                    , kumi::tie(dims...)
-                    );
+      [&]<std::size_t... N>(std::index_sequence<N...>)
+      {
+        this->fill(detail::as_axis(args,get<N>(Shape),kumi::index<static_order-N-1>)...);
+      }(std::make_index_sequence<sizeof...(A)>{});
     }
 
     //==============================================================================================
@@ -203,12 +200,15 @@ namespace kwk
     //! Constructs a kwk::shape from another one with compatible layout but potentially different
     //! size_type.
     //!
-    //! Two kwk::shapes have compatible layout if they have the same @ref glossary-order and if each
-    //! dimension of the constructed @ref kwk::shape can hold its equivalent from the source shape,
-    //! i.e it's runtime specified or, if it's compile-time specified, has the same value than its
-    //! source.
+    //! Two kwk::shapes have compatible layout if :
+    //!   + All their axis match
+    //!   + They have the same @ref glossary-order
+    //!   + Each axis of the constructed @ref kwk::shape can hold its equivalent from the source
+    //!     shape, i.e it's runtime specified or, if it's compile-time specified, has the same
+    //!     value than its source.
     //!
-    //! This constructor doesn not participate in overload resolution if shape's orders are not equal.
+    //! This constructor doesn not participate in overload resolution if both shapes have
+    //! non-compatible layout.
     //!
     //! @groupheader{Example}
     //! @godbolt{docs/shape/compatible.cpp}
@@ -217,7 +217,9 @@ namespace kwk
     //==============================================================================================
     template<auto OtherShape>
     constexpr shape( shape<OtherShape> const& other ) noexcept
-    requires(shape<OtherShape>::static_size == static_order && Shape.is_compatible(OtherShape))
+    requires(   make_combo<size_type>(Shape).is_equivalent(OtherShape)
+            &&  make_combo<size_type>(Shape).is_compatible(OtherShape)
+            )
     {
       auto& v = parent::storage();
       kumi::for_each_index( [&]<typename I>(I, auto const& m)
@@ -226,9 +228,11 @@ namespace kwk
                               if constexpr(parent::contains(i)) v[parent::location[i]] = m;
                               else
                               {
-                                KIWAKU_ASSERT( m == get<i>(Shape)
-                                            , "[KWK] - Static/Dynamic mismatch in constructor"
-                                            );
+                                KIWAKU_ASSERT ( m == get<i>(*this)
+                                              , "[KWK] - Static/Dynamic mismatch in constructor."
+                                                << " Expected: " << get<i>(*this)
+                                                << " but found " << m << " instead."
+                                              );
                               }
                             }
                           , other
@@ -238,23 +242,48 @@ namespace kwk
     //==============================================================================================
     //! @brief Constructs from a shape with a lower order
     //!
-    //! Constructs a kwk::shape from a shape with higher orders, filling the missing sizes with 1
-    //!
-    //! This constructor does not participate in overload resolution of the shape is not fully
-    //! specified at runtime.
+    //! Constructs a kwk::shape from a shape with lower orders, filling the missing sizes with 1.
+    //! Lower order axis must be equivalent.
     //!
     //! @groupheader{Example}
     //! @godbolt{docs/shape/odd_sized.cpp}
     //!
     //! @param other  Shape to copy
     //==============================================================================================
-    template<auto OtherShaper>
-    constexpr explicit shape( shape<OtherShaper> const& other ) noexcept
-              requires( shape<OtherShaper>::static_order < static_order && is_fully_dynamic)
+    template<auto Other>
+    constexpr explicit shape( shape<Other> const& other ) noexcept
+              requires(shape<Other>::static_order < static_order)
     {
-      constexpr auto dz = std::min(shape<OtherShaper>::static_order,static_order);
-      for(std::size_t i = 0;  i < dz;++i)           parent::storage()[i] = other[i];
-      for(std::size_t i = dz; i < static_order;++i) parent::storage()[i] = 1;
+      constexpr auto dz = static_order - shape<Other>::static_order;
+
+      // Fill first new dimensions with 1
+      [&]<std::size_t... I>(std::index_sequence<I...>)
+      {
+        auto perf = [&]<typename Idx>(Idx)
+        {
+          if constexpr(parent::contains(Idx::value)) (*this)[Idx::value] = 1;
+        };
+        (perf(kumi::index<I>),...);
+      }(std::make_index_sequence<dz>{});
+
+      // Check and copy smaller shape into remaining axis
+      [&]<std::size_t... I>(std::index_sequence<I...>)
+      {
+        auto perf = [&]<typename Idx>(Idx)
+        {
+          constexpr auto i = Idx::value + dz;
+          if constexpr(parent::contains(i)) (*this)[i] = other[Idx::value];
+          else
+          {
+            KIWAKU_ASSERT ( other[Idx::value] == get<i>(*this)
+                          , "[KWK] - Static/Dynamic mismatch in constructor."
+                            << " Expected: " << get<i>(*this)
+                            << " but found " << other[Idx::value] << " instead."
+                          );
+          }
+        };
+        (perf(kumi::index<I>),...);
+      }(std::make_index_sequence<shape<Other>::static_order>{});
     }
 
     //==============================================================================================
@@ -283,81 +312,70 @@ namespace kwk
     /// Assignment operator
     //==============================================================================================
     template<auto Other>
-    requires( shape<Other>::static_order < static_order || Shape.is_compatible(Other) )
-    constexpr shape& operator=( shape<Other> const& other ) noexcept
+    requires std::constructible_from<shape, shape<Other>>
+    constexpr shape& operator=( shape<Other> const& other ) & noexcept
     {
       shape that(other);
       swap(that);
       return *this;
     }
 
+    //==============================================================================================
+    // If an error appears here, it means you try to assign a shape to a shape with non-equivalent
+    // axis description.
+    //  E.g:
+    //  shape<extent()()> x;
+    //  x = of_size(width = 4, height = 2);
+    //==============================================================================================
+    template<auto Other>
+    requires(!std::constructible_from<shape, shape<Other>>)
+    constexpr shape& operator=( shape<Other> const& other ) & noexcept = delete;
+
     /// Swap shapes' contents
     friend void swap( shape& x, shape& y ) noexcept { x.swap(y); }
     using parent::swap;
 
     /// Equality comparison operator
-    template<auto Shaper2>
-    constexpr bool operator==( shape<Shaper2> const& other) const noexcept
+    template<auto S2>
+    friend constexpr bool operator==(shape const& a, shape<S2> const& b) noexcept
+    requires(  compress<std::min(Shape.size(), S2.size())>(Shape)
+              .is_equivalent(compress<std::min(Shape.size(), S2.size())>(S2))
+            )
     {
-      return compare( other
-                    , [](size_type a, size_type b) { return a == b; }
-                    , [](size_type a) { return a == 1; }
-                    );
+      constexpr auto sz = std::min(Shape.size(), S2.size());
+      bool result = true;
+      kumi::for_each ( [&](auto aa, auto bb) { result = result && (aa == bb); }
+                            , compress<sz>(a)
+                            , compress<sz>(b)
+                            );
+      return result;
     }
 
-    /// Inequality comparison operator
-    template<auto Shaper2>
-    constexpr bool operator!=( shape<Shaper2> const& other) const noexcept
-    {
-      return compare( other
-                    , [](std::ptrdiff_t a, std::ptrdiff_t b) { return a != b; }
-                    , [](auto a) { return a == 1; }
-                    );
-    }
-
-    //==============================================================================================
-    //! @brief Check if current shape contains the volume of another one
-    //!
-    //! Check if a given shape's extents are all less or equal than current shape.
-    //!
-    //! @param other  Shape to compare with
-    //! @return `true` if all extent of other fits inside current shape. `false` otherwise.
-    //!
-    //==============================================================================================
-    template<auto Shaper2>
-    constexpr bool contains( shape<Shaper2> const& other) const noexcept
-    {
-      return compare( other , [](auto a, auto b) { return a>=b;}, [](auto) { return true; } );
-    }
-
-    /// @overload
-    template<std::integral... Ss>
-    constexpr bool contains( Ss... s) const noexcept
-    {
-      return contains(of_size(s...));
-    }
+    template<auto S2>
+    friend constexpr bool operator==(shape const& a, shape<S2> const& b) noexcept
+    requires(  !compress<std::min(Shape.size(), S2.size())>(Shape)
+              .is_equivalent(compress<std::min(Shape.size(), S2.size())>(S2))
+            ) = delete;
 
     //==============================================================================================
-    //! @brief Check if current shape contains the volume of another one exactly
+    //! @brief Check if a position fits into current shape volume
     //!
-    //! Check if a given shape's extents are all strictly less than current shape.
+    //! Check if all coordinates of a given position fits inside a shape volume
     //!
-    //! @param other  Shape to compare with
+    //! @param p  List of coordinates to check
     //! @return `true` if all extent of other fits exactly inside current shape. `false` otherwise.
     //!
     //==============================================================================================
-    template<auto Shaper2>
-    constexpr bool strictly_contains( shape<Shaper2> const& other) const noexcept
+    template<std::integral... Coords>
+    constexpr bool contains(Coords... p) const noexcept
+    requires(static_order == sizeof...(Coords))
     {
-      return compare( other , [](auto a, auto b) { return a>b;}, [](auto) { return true; } );
+      return kumi::apply( [&](auto... m) { return ((p < m) && ... && true); }, *this);
     }
 
-    /// @overload
-    template<std::integral... Ss>
-    constexpr bool strictly_contains( Ss... s) const noexcept
-    {
-      return strictly_contains(of_size(s...));
-    }
+    template<std::integral... Coords>
+    constexpr bool contains(Coords...) const noexcept
+    requires(static_order != sizeof...(Coords)) = delete;
 
     /// Number of dimensions
     static constexpr auto order() noexcept { return static_order; }
@@ -373,11 +391,8 @@ namespace kwk
       if constexpr(static_order == 0)  return 0;
       else
       {
-        std::ptrdiff_t r = get<0>(*this) == 1 ? 0 : 1;
-        kumi::for_each_index( [&r](std::ptrdiff_t i, auto m) { r = std::max(r, m == 1 ? 0 : i+1); }
-                            , *this
-                            );
-        return r;
+        auto first_non_trivial = kumi::locate(kumi::to_tuple(*this), [](auto m) { return m != 1; });
+        return static_order - first_non_trivial;
       }
     }
 
@@ -411,7 +426,7 @@ namespace kwk
         {
           auto check = []<typename A>(A a,auto b) { return std::integral<A> || a == b; };
 
-          return (true && ... && check(ref.template extent<N>(), this->template extent<N>()) );
+          return (true && ... && check(get<N>(ref), get<N>(*this)) );
         }(std::make_index_sequence<static_order>{});
       }
     }
@@ -432,7 +447,7 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, shape const& s)
     {
       os << "[";
-      kumi::for_each_index( [&](auto i, auto) { os << " " << s.template extent<i>(); }, s);
+      kumi::for_each_index( [&](auto i, auto) { os << " " << get<i>(s); }, s);
       return os << " ]";
     }
 
@@ -463,55 +478,14 @@ namespace kwk
 
       return kumi::apply( [](auto... v) { return of_size(v...); }, sliced );
     }
-
-    protected:
-    template<auto S2, typename Comp, typename Check>
-    constexpr bool compare( shape<S2> const& o, Comp const& op, Check const& check) const noexcept
-    {
-      constexpr auto o_size = shape<S2>::static_order;
-
-      if constexpr( static_order == o_size )
-      {
-        return [&]<std::size_t... I>(std::index_sequence<I...> const&)
-        {
-          return (true && ... && op ( get<I>(*this)
-                                    , get<I>(o)) ) ;
-        }(std::make_index_sequence<static_order>());
-      }
-      else
-      {
-        constexpr auto d = std::min(static_order, o_size);
-
-        // Compute equality over common slice of shape
-        bool result = true;
-        [&]<std::size_t... I>(std::index_sequence<I...> const&)
-        {
-          result = (result && ... && op(get<I>(*this),get<I>(o)) );
-        }(std::make_index_sequence<d>());
-
-        // Check that we have 1s everywhere in the other parts
-        if constexpr( static_order < o_size )
-        {
-          constexpr auto sz = o_size - static_order;
-          return [&]<std::size_t... I>(std::index_sequence<I...> const&)
-          {
-            return (result && ... && (get<static_order+I>(o) == 1));
-          }(std::make_index_sequence<sz>());
-        }
-        else if constexpr( static_order > o_size )
-        {
-          constexpr auto sz = static_order - o_size;
-          return [&]<std::size_t... I>(std::index_sequence<I...> const&)
-          {
-            return (result && ... && check(get<o_size+I>(*this)));
-          }(std::make_index_sequence<sz>());
-        }
-      }
-    }
   };
 
   /// Deduction guide for @ref kwk::shape
-  template<concepts::extent<std::ptrdiff_t>... T> shape(T...) -> shape< _nD<sizeof...(T)> >;
+  template<typename... T>
+  constexpr auto descriptor_from() { return detail::as_descriptor<std::ptrdiff_t>(T{}...); }
+
+  template<typename... T>
+  shape(T...) -> shape< descriptor_from<T...>() >;
 
   //================================================================================================
   //! @brief Compress a kwk::shape to a given order

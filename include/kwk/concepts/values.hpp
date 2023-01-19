@@ -13,6 +13,7 @@ namespace kwk::concepts
   concept static_constant = requires(T)
   {
     { T::value };
+    typename T::value_type;
   };
 
   template<typename T>

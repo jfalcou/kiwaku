@@ -37,19 +37,19 @@ TTS_CASE("Check slicing for kwk::length")
   TTS_EQUAL ( shp(c0, c1, c2)     , of_size(v0, v1, v2));
   TTS_EQUAL ( shp(c0, c1, c2, c3) , of_size(v0, v1, v2, v3));
 
-  TTS_EQUAL(shp(c0).extent<0>()             , v0);
+  TTS_EQUAL(get<0>(shp(c0))             , v0);
 
-  TTS_EQUAL(shp(c0, c1).extent<0>()         , v0);
-  TTS_EQUAL(shp(c0, c1).extent<1>()         , v1);
+  TTS_EQUAL(get<0>(shp(c0, c1))         , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1))         , v1);
 
-  TTS_EQUAL(shp(c0, c1, c2).extent<0>()     , v0);
-  TTS_EQUAL(shp(c0, c1, c2).extent<1>()     , v1);
-  TTS_EQUAL(shp(c0, c1, c2).extent<2>()     , v2);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2))     , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2))     , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2))     , v2);
 
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<0>() , v0);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<1>() , v1);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<2>() , v2);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<3>() , v3);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2, c3)) , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2, c3)) , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2, c3)) , v2);
+  TTS_EQUAL(get<3>(shp(c0, c1, c2, c3)) , v3);
 };
 
 TTS_CASE("Check slicing for kwk::length + kwk::from")
@@ -81,19 +81,19 @@ TTS_CASE("Check slicing for kwk::length + kwk::from")
   TTS_EQUAL ( shp(c0, c1, c2)     , of_size(v0, v1, v2));
   TTS_EQUAL ( shp(c0, c1, c2, c3) , of_size(v0, v1, v2, v3));
 
-  TTS_EQUAL(shp(c0).extent<0>()             , v0);
+  TTS_EQUAL(get<0>(shp(c0))             , v0);
 
-  TTS_EQUAL(shp(c0, c1).extent<0>()         , v0);
-  TTS_EQUAL(shp(c0, c1).extent<1>()         , v1);
+  TTS_EQUAL(get<0>(shp(c0, c1))         , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1))         , v1);
 
-  TTS_EQUAL(shp(c0, c1, c2).extent<0>()     , v0);
-  TTS_EQUAL(shp(c0, c1, c2).extent<1>()     , v1);
-  TTS_EQUAL(shp(c0, c1, c2).extent<2>()     , v2);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2))     , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2))     , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2))     , v2);
 
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<0>() , v0);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<1>() , v1);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<2>() , v2);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<3>() , v3);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2, c3)) , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2, c3)) , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2, c3)) , v2);
+  TTS_EQUAL(get<3>(shp(c0, c1, c2, c3)) , v3);
 };
 
 TTS_CASE("Check slicing for kwk::length + kwk::to")
@@ -125,19 +125,19 @@ TTS_CASE("Check slicing for kwk::length + kwk::to")
   TTS_EQUAL ( shp(c0, c1, c2)     , of_size(v0, v1, v2));
   TTS_EQUAL ( shp(c0, c1, c2, c3) , of_size(v0, v1, v2, v3));
 
-  TTS_EQUAL(shp(c0).extent<0>()             , v0);
+  TTS_EQUAL(get<0>(shp(c0))             , v0);
 
-  TTS_EQUAL(shp(c0, c1).extent<0>()         , v0);
-  TTS_EQUAL(shp(c0, c1).extent<1>()         , v1);
+  TTS_EQUAL(get<0>(shp(c0, c1))         , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1))         , v1);
 
-  TTS_EQUAL(shp(c0, c1, c2).extent<0>()     , v0);
-  TTS_EQUAL(shp(c0, c1, c2).extent<1>()     , v1);
-  TTS_EQUAL(shp(c0, c1, c2).extent<2>()     , v2);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2))     , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2))     , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2))     , v2);
 
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<0>() , v0);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<1>() , v1);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<2>() , v2);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<3>() , v3);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2, c3)) , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2, c3)) , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2, c3)) , v2);
+  TTS_EQUAL(get<3>(shp(c0, c1, c2, c3)) , v3);
 };
 
 TTS_CASE("Check slicing for kwk::length + kwk::by")
@@ -169,17 +169,17 @@ TTS_CASE("Check slicing for kwk::length + kwk::by")
   TTS_EQUAL ( shp(c0, c1, c2)     , of_size(v0, v1, v2));
   TTS_EQUAL ( shp(c0, c1, c2, c3) , of_size(v0, v1, v2, v3));
 
-  TTS_EQUAL(shp(c0).extent<0>()             , v0);
+  TTS_EQUAL(get<0>(shp(c0))             , v0);
 
-  TTS_EQUAL(shp(c0, c1).extent<0>()         , v0);
-  TTS_EQUAL(shp(c0, c1).extent<1>()         , v1);
+  TTS_EQUAL(get<0>(shp(c0, c1))         , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1))         , v1);
 
-  TTS_EQUAL(shp(c0, c1, c2).extent<0>()     , v0);
-  TTS_EQUAL(shp(c0, c1, c2).extent<1>()     , v1);
-  TTS_EQUAL(shp(c0, c1, c2).extent<2>()     , v2);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2))     , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2))     , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2))     , v2);
 
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<0>() , v0);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<1>() , v1);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<2>() , v2);
-  TTS_EQUAL(shp(c0, c1, c2, c3).extent<3>() , v3);
+  TTS_EQUAL(get<0>(shp(c0, c1, c2, c3)) , v0);
+  TTS_EQUAL(get<1>(shp(c0, c1, c2, c3)) , v1);
+  TTS_EQUAL(get<2>(shp(c0, c1, c2, c3)) , v2);
+  TTS_EQUAL(get<3>(shp(c0, c1, c2, c3)) , v3);
 };

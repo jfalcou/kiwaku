@@ -16,9 +16,9 @@ TTS_CASE( "nbdims behavior on nD shape" )
   TTS_EXPR_IS( kwk::of_size<std::ptrdiff_t>(4,2,6,9).nbdims() , std::ptrdiff_t );
 
   TTS_EQUAL( (kwk::of_size(4,2,6,9).nbdims()), 4);
-  TTS_EQUAL( (kwk::of_size(4,2,6,1).nbdims()), 3);
-  TTS_EQUAL( (kwk::of_size(4,2,1,1).nbdims()), 2);
-  TTS_EQUAL( (kwk::of_size(4,1,1,1).nbdims()), 1);
+  TTS_EQUAL( (kwk::of_size(1,4,2,6).nbdims()), 3);
+  TTS_EQUAL( (kwk::of_size(1,1,4,2).nbdims()), 2);
+  TTS_EQUAL( (kwk::of_size(1,1,1,4).nbdims()), 1);
   TTS_EQUAL( (kwk::of_size(1,1,1,1).nbdims()), 0);
 };
 
