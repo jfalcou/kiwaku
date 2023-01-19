@@ -32,7 +32,7 @@ namespace kwk::detail
   struct combo
   {
     using is_product_type = void;
-    using base_type       = std::conditional_t<std::same_as<joker,T>,std::ptrdiff_t,T>;
+    using base_type       = std::conditional_t<std::same_as<joker,T>,int,T>;
     using contents_type   = kumi::tuple<Axis...>;
 
     // combo is its self option keyword
@@ -41,8 +41,8 @@ namespace kwk::detail
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     // Size info
-    static constexpr auto static_size = sizeof...(Axis);
-    static constexpr auto size() noexcept { return static_size; }
+    static constexpr int static_size = sizeof...(Axis);
+    static constexpr int size() noexcept { return static_size; }
 
     // Ctor from list of axis
     constexpr combo(Axis const&... x) : storage{x...} {}
@@ -56,10 +56,10 @@ namespace kwk::detail
     }
 
     // Tuple interface
-    template<std::size_t N>
+    template<int N>
     friend constexpr decltype(auto) get(combo& s) noexcept { return get<N>(s.storage); }
 
-    template<std::size_t N>
+    template<int N>
     friend constexpr decltype(auto) get(combo const& s) noexcept { return get<N>(s.storage); }
 
     // combo sequences are compatible if they have the same size
@@ -210,10 +210,10 @@ namespace kwk::detail
   }
 
   // Compress combo at a given size, projecting remaining elements
-  template<std::size_t N, typename T, typename... E>
+  template<int N, typename T, typename... E>
   constexpr auto compress(combo<T,E...> s)  noexcept
   {
-    constexpr auto sz = combo<T,E...>::static_size;
+    constexpr int sz = combo<T,E...>::static_size;
     if constexpr(N == sz) return s;
     else
     {
@@ -227,7 +227,7 @@ namespace kwk::detail
 // Tuple interface adaptation
 template<typename T, typename... D>
 struct  std::tuple_size<kwk::detail::combo<T, D...>>
-      : std::integral_constant<std::size_t,sizeof...(D)>
+      : std::integral_constant<int,kwk::detail::combo<T, D...>::static_size>
 {};
 
 template<std::size_t N, typename T, typename... D>

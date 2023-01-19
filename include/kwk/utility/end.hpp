@@ -38,8 +38,7 @@ namespace kwk
     constexpr end_t(O o, R f) noexcept : shift(o), frac(f)
     {}
 
-    friend
-    std::ostream& operator<<(std::ostream& os, end_t t)
+    friend std::ostream& operator<<(std::ostream& os, end_t t)
     {
       if(t.factor()  != 1)  os << t.factor() << " * end"; else os << "end";
       if(t.divisor() != 1)  os << '/' << t.divisor();

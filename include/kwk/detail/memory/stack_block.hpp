@@ -43,7 +43,7 @@ namespace kwk::detail
 
     constexpr void swap(stack_block& other) noexcept
     {
-      for(std::size_t i=0;i<Size;++i)
+      for(std::ptrdiff_t i=0;i<Size;++i)
         std::swap(data_[i], other.data_[i]);
     }
   };

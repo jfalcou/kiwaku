@@ -26,17 +26,16 @@ namespace kwk::detail
     using is_product_type = void;
     using axis_kind       = axis_<Name,joker>;
     using content_type    = Content;
-    using base_type       = std::ptrdiff_t;
+    using base_type       = int;
 
     // Size info
-    static constexpr std::ptrdiff_t static_size = 1;
-    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
+    static constexpr int static_size = 1;
+    static constexpr int size() noexcept { return static_size; }
 
-    static constexpr std::ptrdiff_t static_index  = -1;
-    static constexpr std::ptrdiff_t index() noexcept { return static_index; }
+    static constexpr int static_index  = -1;
+    static constexpr int index() noexcept { return static_index; }
 
     static constexpr axis_kind const base() { return {}; }
-
 
     using rbr::as_keyword<axis_<Name,Content>>::operator=;
 
@@ -54,13 +53,11 @@ namespace kwk::detail
     }
 
     // Tuple interface
-    template<std::size_t I>
-    requires(I==0)
-    friend constexpr decltype(auto) get(axis_& s) noexcept { return s; }
+    template<int I>
+    friend constexpr decltype(auto) get(axis_& s) noexcept requires(I==0) { return s; }
 
-    template<std::size_t I>
-    requires(I==0)
-    friend constexpr decltype(auto) get(axis_ const& s) noexcept { return s; }
+    template<int I>
+    friend constexpr decltype(auto) get(axis_ const& s) noexcept requires(I==0) { return s; }
 
     // Axis combination
     template<rbr::literals::str_ M, typename C>
@@ -80,20 +77,20 @@ namespace kwk::detail
   };
 
   // Axis descriptor with a numerical index
-  template<std::ptrdiff_t N, typename Content = joker>
+  template<int N, typename Content = joker>
   struct indexed_axis_ : rbr::as_keyword<indexed_axis_<N,Content>>
   {
     using is_product_type = void;
     using axis_kind       = indexed_axis_<N,joker>;
     using content_type    = Content;
-    using base_type       = std::ptrdiff_t;
+    using base_type       = int;
 
-    static constexpr std::ptrdiff_t static_index  = N;
-    static constexpr std::ptrdiff_t index() noexcept { return static_index; }
+    static constexpr int static_index  = N;
+    static constexpr int index() noexcept { return static_index; }
 
     // Size info
-    static constexpr std::ptrdiff_t static_size = 1;
-    static constexpr std::ptrdiff_t size() noexcept { return static_size; }
+    static constexpr int static_size = 1;
+    static constexpr int size() noexcept { return static_size; }
     static constexpr axis_kind const base() { return {}; }
 
     constexpr indexed_axis_() {}
@@ -112,16 +109,14 @@ namespace kwk::detail
     }
 
     // Tuple interface
-    template<std::size_t I>
-    requires(I==0)
-    friend constexpr decltype(auto) get(indexed_axis_& s) noexcept { return s; }
+    template<int I>
+    friend constexpr decltype(auto) get(indexed_axis_& s) noexcept requires(I==0) { return s; }
 
-    template<std::size_t I>
-    requires(I==0)
-    friend constexpr decltype(auto) get(indexed_axis_ const& s) noexcept { return s; }
+    template<int I>
+    friend constexpr decltype(auto) get(indexed_axis_ const& s) noexcept requires(I==0) { return s; }
 
     // Axis combination
-    template<std::ptrdiff_t M, typename C>
+    template<int M, typename C>
     friend KWK_FORCEINLINE constexpr auto compress(indexed_axis_ a, indexed_axis_<M,C> b) noexcept
     {
       auto v = a.value * b.value;
@@ -163,18 +158,13 @@ namespace kwk
   template<rbr::literals::str_ Name>
   inline constexpr detail::axis_<Name>      axis    = {};
 
-  template<std::size_t N>
+  template<int N>
   inline constexpr detail::indexed_axis_<N> along   = {};
 }
 
 // Tuple interface adaptation
 template<kwk::concepts::axis T>
-struct  std::tuple_size<T>
-      : std::integral_constant<std::size_t,1>
-{};
+struct std::tuple_size<T> : std::integral_constant<int,1> {};
 
 template<std::size_t N, kwk::concepts::axis T>
-struct  std::tuple_element<N, T>
-{
-  using type = T;
-};
+struct std::tuple_element<N, T> { using type = T; };

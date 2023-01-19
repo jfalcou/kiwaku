@@ -12,10 +12,10 @@
 
 namespace kwk
 {
-  template<std::size_t N, auto Desc>
+  template<int N, auto Desc>
   inline constexpr bool is_dynamic_extent_v = concepts::dynamic_axis<kumi::element_t<N,decltype(Desc)>>;
 
-  template<std::size_t N, auto Desc>
+  template<int N, auto Desc>
   inline constexpr bool is_static_extent_v = !is_dynamic_extent_v<N,Desc>;
 
   //================================================================================================
@@ -28,12 +28,12 @@ namespace kwk
   //! **Helper value**
   //!
   //! @code{.cpp}
-  //! template<std::size_t N, auto Desc>
+  //! template<int N, auto Desc>
   //! inline constexpr bool is_dynamic_extent_v = is_dynamic_extent<T>::value;
   //! @endcode
   //!
   //================================================================================================
-  template<std::size_t N, auto Desc>
+  template<int N, auto Desc>
   struct is_dynamic_extent : std::bool_constant<is_dynamic_extent_v<N,Desc>>
   {};
 
@@ -47,12 +47,12 @@ namespace kwk
   //! **Helper value**
   //!
   //! @code{.cpp}
-  //! template<std::size_t N, auto Desc>
+  //! template<int N, auto Desc>
   //! inline constexpr bool is_static_extent_v = is_static_extent<T>::value;
   //! @endcode
   //!
   //================================================================================================
-  template<std::size_t N, auto Desc>
+  template<int N, auto Desc>
   struct is_static_extent : std::bool_constant<is_static_extent_v<N,Desc>>
   {};
 }

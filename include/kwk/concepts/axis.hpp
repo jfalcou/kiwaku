@@ -20,7 +20,7 @@ namespace kwk::concepts
   concept axis = requires(T)
   {
     typename T::axis_kind;
-    { std::integral_constant<std::ptrdiff_t, T::static_index>{} };
+    { std::integral_constant<int, T::static_index>{} };
   };
 
   //================================================================================================

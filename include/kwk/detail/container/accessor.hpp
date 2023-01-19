@@ -124,8 +124,8 @@ namespace kwk::detail
               : shape_ ( pick(kwk::size,opts) )
     {}
 
-    constexpr std::ptrdiff_t  size()  const noexcept { return shape_.numel();  }
-    constexpr auto            shape() const noexcept { return shape_;          }
+    constexpr auto  size()  const noexcept { return shape_.numel();  }
+    constexpr auto  shape() const noexcept { return shape_;          }
 
     constexpr auto stride() const noexcept { return stride_type{fixed<1>,get<1>(shape_)}; }
 

@@ -27,21 +27,21 @@ namespace kwk::detail
   // Compute the prefilled_array base class for prefilled storage
   //================================================================================================
   template< auto Desc
-          , std::size_t Size = kumi::count_if(Desc, kumi::predicate<check_dynamic>())
+          , int Size = kumi::count_if(Desc, kumi::predicate<check_dynamic>())
           >
   struct array_storage
   {
-    using descriptor_t                        = decltype(Desc);
-    using value_type                          = typename descriptor_t::base_type;
-    static constexpr std::size_t storage_size = Size;
-    using storage_type                        = std::array<value_type,storage_size>;
+    using descriptor_t                = decltype(Desc);
+    using value_type                  = typename descriptor_t::base_type;
+    static constexpr int storage_size = Size;
+    using storage_type                = std::array<value_type,storage_size>;
   };
 
-  template<auto Desc> struct array_storage<Desc, 0ULL>
+  template<auto Desc> struct array_storage<Desc, 0>
   {
-    using descriptor_t                          = decltype(Desc);
-    using value_type                            = typename descriptor_t::base_type;
-    static constexpr  std::size_t storage_size  = 0ULL;
+    using descriptor_t                  = decltype(Desc);
+    using value_type                    = typename descriptor_t::base_type;
+    static constexpr  int storage_size  = 0;
 
     struct storage_type {};
   };
@@ -56,11 +56,11 @@ namespace kwk::detail
     using storage_t       = typename array_storage<Desc>::storage_type;
     using is_product_type = void;
 
-    static constexpr  auto        descriptor      = Desc;
-    static constexpr  std::size_t static_size     = Desc.static_size;
-    static constexpr  std::size_t dynamic_size    = kumi::count_if(Desc,kumi::predicate<check_dynamic>());
-    static constexpr  bool        is_fully_static = (dynamic_size == 0);
-    static constexpr  bool        is_dynamic      = !is_fully_static;
+    static constexpr  auto  descriptor      = Desc;
+    static constexpr  int   static_size     = Desc.static_size;
+    static constexpr  int   dynamic_size    = kumi::count_if(Desc,kumi::predicate<check_dynamic>());
+    static constexpr  bool  is_fully_static = (dynamic_size == 0);
+    static constexpr  bool  is_dynamic      = !is_fully_static;
 
     // Static localisation of dynamic index
     static constexpr
@@ -105,7 +105,7 @@ namespace kwk::detail
     template<typename Filler>
     constexpr prefilled(Filler f)
     {
-      kumi::for_each_index( [&]<typename V>(auto i, V const&, auto m)
+      kumi::for_each_index( [&]<typename V>(int i, V const&, auto m)
                             {
                               if constexpr(concepts::dynamic_axis<V>)
                                 storage()[m] = f(i,static_size);
@@ -224,7 +224,7 @@ namespace kwk::detail
     }
 
     // Total size of the array
-    static constexpr auto size() noexcept { return static_size; }
+    static constexpr int size() noexcept { return static_size; }
 
     // Conversion to std::array
     constexpr decltype(auto) as_array() const noexcept
@@ -243,7 +243,7 @@ namespace kwk::detail
   };
 
   // Project elements in a N dimension prefilled instance
-  template<std::size_t N, auto Desc>
+  template<int N, auto Desc>
   constexpr auto compress(prefilled<Desc> const& s)  noexcept
   {
     using t_t = prefilled<compress<N>(Desc)>;
@@ -268,7 +268,7 @@ namespace kwk::detail
 //==================================================================================================
 template<auto Desc>
 struct  std::tuple_size<kwk::detail::prefilled<Desc>>
-      : std::integral_constant<std::size_t,kwk::detail::prefilled<Desc>::static_size>
+      : std::integral_constant<int,kwk::detail::prefilled<Desc>::static_size>
 {};
 
 template<std::size_t N, auto Desc>

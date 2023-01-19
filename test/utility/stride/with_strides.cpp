@@ -18,7 +18,7 @@ void test_strides(auto values)
   kumi::for_each( [](auto m)
   {
     auto the_stride = kwk::with_strides(m);
-    TTS_EQUAL(the_stride.size(), m.size());
+    TTS_EQUAL(the_stride.size(), int(m.size()));
 
     kumi::for_each( [&](auto o, auto e) { TTS_EQUAL(o,e); }, the_stride, m );
 

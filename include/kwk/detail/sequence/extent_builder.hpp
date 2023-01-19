@@ -62,6 +62,12 @@ namespace kwk::detail
     return A::descriptor;
   }
 
+  // Helper for MSVC
+  template<typename... T> constexpr auto descriptor_from()
+  {
+    return as_descriptor<typename largest_integral<T...>::type>(T{}...);
+  }
+
   //================================================================================================
   // Converts a value/joker/axis into its storable representation
   //================================================================================================
@@ -103,13 +109,13 @@ namespace kwk::detail
                       = !kwk::detail::all_unique<typename Axis::axis_kind...>;
 
   // Check we dont make a nD axis sequence with too much indexed axis
-  template<typename T, std::size_t Size> inline constexpr bool has_valid_index = false;
+  template<typename T,int Size> inline constexpr bool has_valid_index = false;
 
-  template<typename T, template<class...> class Holder, typename... Axis, std::size_t Size>
+  template<typename T, template<class...> class Holder, typename... Axis,int Size>
   inline constexpr bool has_valid_index<Holder<T,Axis...>,Size> = []()
   {
-    std::ptrdiff_t max_index = std::max({Axis::index()...});
-    return (max_index == -1) || max_index < static_cast<std::ptrdiff_t>(Size);
+    int max_index = std::max({Axis::index()...});
+    return (max_index == -1) || max_index < Size;
   }();
 
   //================================================================================================
@@ -126,7 +132,7 @@ namespace kwk::detail
   {
     return [&]<std::size_t... N>(std::index_sequence<N...>)
     {
-      constexpr auto sz = sizeof...(Args) - 1;
+      constexpr int sz = sizeof...(Args) - 1;
       return  Wrapper<as_descriptor<SizeType>(Args{}...)>
               { as_axis ( args
                         , get<N>(as_descriptor<SizeType>(Args{}...))
