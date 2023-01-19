@@ -75,7 +75,7 @@ namespace kwk::detail
     static constexpr
     auto location = kumi::apply ( [](auto... m)
                                   {
-                                    return std::array<std::size_t, static_size>{m...};
+                                    return std::array<std::size_t, static_size>{static_cast<std::size_t>(m)...};
                                   }
                                 , index
                                 );
@@ -193,10 +193,10 @@ namespace kwk::detail
 
     // Named access via Axis
     template<concepts::axis A>
-    constexpr auto operator[](A a) const noexcept
+    constexpr auto operator[](A) const noexcept
     requires(find_axis(A{}) < static_size)
     {
-      constexpr auto idx = find_axis(a);
+      constexpr auto idx = find_axis(A{});
       if constexpr(is_dynamic_extent_v<idx,Desc>) return storage()[location[idx]];
       else return fixed<get<idx>(Desc).value>;
     }

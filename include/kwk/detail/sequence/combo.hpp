@@ -110,13 +110,17 @@ namespace kwk::detail
 
     // combo are equivalent if they have the same order/name of axis
     template< typename T0, typename... E0>
+    requires(static_size == combo<T0,E0...>::static_size)
     constexpr bool is_equivalent(combo<T0,E0...> const&) const noexcept
     {
-      if constexpr(static_size != combo<T0,E0...>::static_size)  return false;
-      else
-      {
-        return (is_along_v<Axis,E0> && ... );
-      }
+      return (is_along_v<Axis,E0> && ... );
+    }
+
+    template< typename T0, typename... E0>
+    requires(static_size != combo<T0,E0...>::static_size)
+    constexpr bool is_equivalent(combo<T0,E0...> const&) const noexcept
+    {
+      return false;
     }
 
     template<typename N, typename T0, typename... E0>

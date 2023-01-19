@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include "kwk/concepts/extent.hpp"
+#include <kwk/concepts/extent.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/detail/raberu.hpp>
@@ -482,7 +482,10 @@ namespace kwk
 
   /// Deduction guide for @ref kwk::shape
   template<typename... T>
-  shape(T...) -> shape< detail::as_descriptor<std::ptrdiff_t>(T{}...) >;
+  constexpr auto descriptor_from() { return detail::as_descriptor<std::ptrdiff_t>(T{}...); }
+
+  template<typename... T>
+  shape(T...) -> shape< descriptor_from<T...>() >;
 
   //================================================================================================
   //! @brief Compress a kwk::shape to a given order
