@@ -29,7 +29,7 @@ namespace kwk::detail
   template< auto Desc
           , std::size_t Size = kumi::count_if(Desc, kumi::predicate<check_dynamic>())
           >
-  struct array_storage2
+  struct array_storage
   {
     using descriptor_t                        = decltype(Desc);
     using value_type                          = typename descriptor_t::base_type;
@@ -37,7 +37,7 @@ namespace kwk::detail
     using storage_type                        = std::array<value_type,storage_size>;
   };
 
-  template<auto Desc> struct array_storage2<Desc, 0ULL>
+  template<auto Desc> struct array_storage<Desc, 0ULL>
   {
     using descriptor_t                          = decltype(Desc);
     using value_type                            = typename descriptor_t::base_type;
@@ -49,11 +49,11 @@ namespace kwk::detail
   //================================================================================================
   // Main prefilled array structure
   //================================================================================================
-  template<auto Desc> struct prefilled : array_storage2<Desc>::storage_type
+  template<auto Desc> struct prefilled : array_storage<Desc>::storage_type
   {
     using descriptor_t    = decltype(Desc);
     using value_type      = typename descriptor_t::base_type;
-    using storage_t       = typename array_storage2<Desc>::storage_type;
+    using storage_t       = typename array_storage<Desc>::storage_type;
     using is_product_type = void;
 
     static constexpr  auto        descriptor      = Desc;

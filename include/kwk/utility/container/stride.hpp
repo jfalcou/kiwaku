@@ -151,28 +151,6 @@ namespace kwk
       }(std::make_index_sequence<sizeof...(A)>{});
     }
 
-    // template<auto OtherDesc>
-    // constexpr explicit stride( stride<OtherDesc> const& other ) noexcept
-    //           requires(   stride<OtherDesc>::static_order == static_order
-    //                   &&  Strides.is_compatible(OtherDesc)
-    //                   )
-    // {
-    //   auto& v = parent::storage();
-    //   kumi::for_each_index( [&]<typename I>(I, auto const& m)
-    //                         {
-    //                           constexpr auto i = I::value;
-    //                           if constexpr(parent::contains(i)) v[parent::location[i]] = m;
-    //                           else
-    //                           {
-    //                             KIWAKU_ASSERT( m == get<i>(Strides)
-    //                                         , "[KWK] - Static/Dynamic mismatch in constructor"
-    //                                         );
-    //                           }
-    //                         }
-    //                       , other
-    //                       );
-    // }
-
     /// Stream insertion operator
     friend std::ostream& operator<<(std::ostream& os, stride const& s)
     {
