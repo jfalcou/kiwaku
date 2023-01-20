@@ -24,7 +24,7 @@ namespace kwk::detail
   template<auto Strides>
   struct stride_base
   {
-    static constexpr auto desc = make_combo<int>(Strides);
+    static constexpr auto desc = make_combo<std::int32_t>(Strides);
     using type = prefilled<desc>;
   };
 }
@@ -73,7 +73,7 @@ namespace kwk
     using parent = typename detail::stride_base<Strides>::type;
 
     /// Compile-time value for @ref glossary-order
-    static constexpr int static_order = parent::static_size;
+    static constexpr std::int32_t static_order = parent::static_size;
 
     /// Type of dimensions' size
     using size_type = typename parent::value_type;
@@ -208,7 +208,7 @@ namespace kwk
   template<typename... Ds>
   constexpr auto with_strides(Ds... ds) noexcept
   {
-    return detail::make_extent<kwk::stride,int>(ds...);
+    return detail::make_extent<kwk::stride,std::int32_t>(ds...);
   }
 
   template<kumi::product_type Ds>
@@ -221,7 +221,7 @@ namespace kwk
 // Tuple interface adaptation
 template<auto Desc>
 struct  std::tuple_size<kwk::stride<Desc>>
-      : std::integral_constant<int,kwk::stride<Desc>::static_order>
+      : std::integral_constant<std::int32_t,kwk::stride<Desc>::static_order>
 {};
 
 template<std::size_t N, auto Desc>

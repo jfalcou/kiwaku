@@ -14,7 +14,7 @@ TTS_CASE( "Default constructed shape behavior - Mixed 1D")
   kwk::shape<kwk::extent()>   shape_d;
   kwk::shape<kwk::extent[7]>  shape_s;
 
-  TTS_EQUAL(sizeof(shape_d)  ,1*sizeof(int) );
+  TTS_EQUAL(sizeof(shape_d)  ,1*sizeof(std::int32_t) );
   TTS_EQUAL(sizeof(shape_s)  , 1UL );
 
   TTS_EQUAL(shape_d.nbdims() , 1   );
@@ -37,9 +37,9 @@ TTS_CASE( "Default constructed shape behavior - Mixed 2D")
   kwk::shape<kwk::extent[7]( )> shape_sd;
   kwk::shape<kwk::extent[7][5]> shape_ss;
 
-  TTS_EQUAL(sizeof(shape_dd), 2*sizeof(int));
-  TTS_EQUAL(sizeof(shape_ds), 1*sizeof(int));
-  TTS_EQUAL(sizeof(shape_sd), 1*sizeof(int));
+  TTS_EQUAL(sizeof(shape_dd), 2*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_ds), 1*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_sd), 1*sizeof(std::int32_t));
   TTS_EQUAL(sizeof(shape_ss),  1UL);
 
   TTS_EQUAL(shape_dd.nbdims() , 1L);
@@ -69,13 +69,13 @@ TTS_CASE( "Default constructed shape behavior - Mixed 3D")
   kwk::shape<kwk::extent[7][5]( )> shape_ssd;
   kwk::shape<kwk::extent[7][5][3]> shape_sss;
 
-  TTS_EQUAL(sizeof(shape_ddd) , 3*sizeof(int));
-  TTS_EQUAL(sizeof(shape_dds) , 2*sizeof(int));
-  TTS_EQUAL(sizeof(shape_dsd) , 2*sizeof(int));
-  TTS_EQUAL(sizeof(shape_dss) , 1*sizeof(int));
-  TTS_EQUAL(sizeof(shape_sdd) , 2*sizeof(int));
-  TTS_EQUAL(sizeof(shape_sds) , 1*sizeof(int));
-  TTS_EQUAL(sizeof(shape_ssd) , 1*sizeof(int));
+  TTS_EQUAL(sizeof(shape_ddd) , 3*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_dds) , 2*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_dsd) , 2*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_dss) , 1*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_sdd) , 2*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_sds) , 1*sizeof(std::int32_t));
+  TTS_EQUAL(sizeof(shape_ssd) , 1*sizeof(std::int32_t));
   TTS_EQUAL(sizeof(shape_sss) ,  1UL);
 
   TTS_EQUAL(shape_ddd.nbdims(), 1L);
@@ -125,21 +125,21 @@ TTS_CASE( "Default constructed shape behavior - Mixed 4D")
   kwk::shape<kwk::extent[9][7][5]( )> shape_sssd;
   kwk::shape<kwk::extent[9][7][5][3]> shape_ssss;
 
-  TTS_EQUAL(sizeof(shape_dddd) , 4*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_ddds) , 3*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_ddsd) , 3*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_ddss) , 2*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_dsdd) , 3*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_dsds) , 2*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_dssd) , 2*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_dsss) , 1*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_sddd) , 3*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_sdds) , 2*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_sdsd) , 2*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_sdss) , 1*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_ssdd) , 2*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_ssds) , 1*sizeof(int) );
-  TTS_EQUAL(sizeof(shape_sssd) , 1*sizeof(int) );
+  TTS_EQUAL(sizeof(shape_dddd) , 4*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_ddds) , 3*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_ddsd) , 3*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_ddss) , 2*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_dsdd) , 3*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_dsds) , 2*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_dssd) , 2*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_dsss) , 1*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_sddd) , 3*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_sdds) , 2*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_sdsd) , 2*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_sdss) , 1*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_ssdd) , 2*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_ssds) , 1*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_sssd) , 1*sizeof(std::int32_t) );
   TTS_EQUAL(sizeof(shape_ssss) ,  1UL );
 
   TTS_EQUAL(shape_dddd.nbdims(), 1L);
@@ -200,7 +200,7 @@ TTS_CASE_TPL( "Default constructed shape behavior - Dynamic 5D -> 10D", sizes<5>
   constexpr auto dims = 5+T::value;
   kwk::shape<kwk::_nD<dims>> sh;
 
-  TTS_EQUAL(sizeof(sh)  , dims*sizeof(int) );
+  TTS_EQUAL(sizeof(sh)  , dims*sizeof(std::int32_t) );
   TTS_EQUAL(sh.nbdims() , 1   );
   TTS_EQUAL(sh.numel()  , 0   );
   TTS_EQUAL(sh.order()  , dims);

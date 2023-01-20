@@ -109,12 +109,12 @@ namespace kwk::detail
                       = !kwk::detail::all_unique<typename Axis::axis_kind...>;
 
   // Check we dont make a nD axis sequence with too much indexed axis
-  template<typename T,int Size> inline constexpr bool has_valid_index = false;
+  template<typename T,std::int32_t Size> inline constexpr bool has_valid_index = false;
 
-  template<typename T, template<class...> class Holder, typename... Axis,int Size>
+  template<typename T, template<class...> class Holder, typename... Axis,std::int32_t Size>
   inline constexpr bool has_valid_index<Holder<T,Axis...>,Size> = []()
   {
-    int max_index = std::max({Axis::index()...});
+    auto max_index = std::max({Axis::index()...});
     return (max_index == -1) || max_index < Size;
   }();
 
@@ -132,7 +132,7 @@ namespace kwk::detail
   {
     return [&]<std::size_t... N>(std::index_sequence<N...>)
     {
-      constexpr int sz = sizeof...(Args) - 1;
+      constexpr std::int32_t sz = sizeof...(Args) - 1;
       return  Wrapper<as_descriptor<SizeType>(Args{}...)>
               { as_axis ( args
                         , get<N>(as_descriptor<SizeType>(Args{}...))

@@ -12,6 +12,7 @@
 #include <kwk/detail/kumi.hpp>
 #include <kwk/detail/traits.hpp>
 #include <kwk/settings/axis.hpp>
+#include <cstdint>
 #include <ostream>
 
 // Forward declaration & Helpers
@@ -32,7 +33,7 @@ namespace kwk::detail
   struct combo
   {
     using is_product_type = void;
-    using base_type       = std::conditional_t<std::same_as<joker,T>,int,T>;
+    using base_type       = std::conditional_t<std::same_as<joker,T>,std::int32_t,T>;
     using contents_type   = kumi::tuple<Axis...>;
 
     // combo is its self option keyword
@@ -41,8 +42,8 @@ namespace kwk::detail
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     // Size info
-    static constexpr int static_size = sizeof...(Axis);
-    static constexpr int size() noexcept { return static_size; }
+    static constexpr std::int32_t static_size = sizeof...(Axis);
+    static constexpr std::int32_t size() noexcept { return static_size; }
 
     // Ctor from list of axis
     constexpr combo(Axis const&... x) : storage{x...} {}
@@ -56,10 +57,10 @@ namespace kwk::detail
     }
 
     // Tuple interface
-    template<int N>
+    template<std::size_t N>
     friend constexpr decltype(auto) get(combo& s) noexcept { return get<N>(s.storage); }
 
-    template<int N>
+    template<std::size_t N>
     friend constexpr decltype(auto) get(combo const& s) noexcept { return get<N>(s.storage); }
 
     // combo sequences are compatible if they have the same size
@@ -213,7 +214,7 @@ namespace kwk::detail
   template<int N, typename T, typename... E>
   constexpr auto compress(combo<T,E...> s)  noexcept
   {
-    constexpr int sz = combo<T,E...>::static_size;
+    constexpr std::int32_t sz = combo<T,E...>::static_size;
     if constexpr(N == sz) return s;
     else
     {
@@ -227,7 +228,7 @@ namespace kwk::detail
 // Tuple interface adaptation
 template<typename T, typename... D>
 struct  std::tuple_size<kwk::detail::combo<T, D...>>
-      : std::integral_constant<int,kwk::detail::combo<T, D...>::static_size>
+      : std::integral_constant<std::int32_t,kwk::detail::combo<T, D...>::static_size>
 {};
 
 template<std::size_t N, typename T, typename... D>

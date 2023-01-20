@@ -45,7 +45,7 @@ namespace kwk
     using shape_type = typename parent::shape_type;
 
     /// Compile-time @ref glossary-order
-    static constexpr int static_order = parent::static_order;
+    static constexpr std::int32_t static_order = parent::static_order;
 
     //==============================================================================================
     //! @name Constructors

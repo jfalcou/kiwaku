@@ -30,7 +30,7 @@ namespace kwk
 {
   template<auto Shape> struct shape;
 
-  template<int N, auto Desc>
+  template<std::int32_t N, auto Desc>
   constexpr auto compress(shape<Desc> const& s) noexcept;
 
   //================================================================================================
@@ -117,7 +117,7 @@ namespace kwk
     static constexpr auto descriptor = Shape;
 
     /// Compile-time value for @ref glossary-order
-    static constexpr int static_order = parent::static_size;
+    static constexpr std::int32_t static_order = parent::static_size;
 
     /// Type of dimensions' size
     using size_type = typename parent::value_type;
@@ -384,7 +384,7 @@ namespace kwk
     //! Computes the number of non-trivial dimensions, i.e dimension with size equals to 1 and that
     //! doesn't participate to the shape's extent.
     //==============================================================================================
-    constexpr int nbdims() const noexcept
+    constexpr std::int32_t nbdims() const noexcept
     {
       if constexpr(static_order == 0)  return 0;
       else
@@ -400,10 +400,10 @@ namespace kwk
     //! Computes the number of elements storable in current kwk::shape, i.e the product of all
     //! dimensions' size.
     //==============================================================================================
-    constexpr int numel() const noexcept
+    constexpr std::int32_t numel() const noexcept
     {
       if constexpr(static_order == 0) return 0;
-      else return kumi::fold_left([](auto a, auto b){ return a*b; }, *this, int{1});
+      else return kumi::fold_left([](auto a, auto b){ return a*b; }, *this, std::int32_t{1});
     }
 
     //==============================================================================================
@@ -488,7 +488,7 @@ namespace kwk
   //! @param  s  Original shape to compress
   //! @return A new kwk::shape instance which order has been set to N by compressing dimensions.
   //================================================================================================
-  template<int N, auto Desc>
+  template<std::int32_t N, auto Desc>
   constexpr auto compress(shape<Desc> const& s) noexcept
   {
     using old_t = typename shape<Desc>::parent;
@@ -503,7 +503,7 @@ namespace kwk
 // Tuple interface adaptation
 template<auto Desc>
 struct  std::tuple_size<kwk::shape<Desc>>
-      : std::integral_constant<int,kwk::shape<Desc>::static_order>
+      : std::integral_constant<std::int32_t,kwk::shape<Desc>::static_order>
 {};
 
 template<std::size_t N, auto Desc>
