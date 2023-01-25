@@ -163,8 +163,24 @@ namespace kwk
 }
 
 // Tuple interface adaptation
-template<kwk::concepts::axis T>
-struct std::tuple_size<T> : std::integral_constant<std::int32_t,1> {};
+template<std::int32_t N, typename Content>
+struct  std::tuple_size<kwk::detail::indexed_axis_<N,Content>>
+      : std::integral_constant<std::int32_t,1>
+{};
 
-template<std::size_t N, kwk::concepts::axis T>
-struct std::tuple_element<N, T> { using type = T; };
+template<std::size_t N, std::int32_t I, typename Content>
+struct std::tuple_element<N, kwk::detail::indexed_axis_<I,Content>>
+{
+  using type = kwk::detail::indexed_axis_<I,Content>;
+};
+
+template<rbr::literals::str_ Name, typename Content>
+struct  std::tuple_size<kwk::detail::axis_<Name,Content>>
+      : std::integral_constant<std::int32_t,1>
+{};
+
+template<std::size_t N, rbr::literals::str_ Name, typename Content>
+struct std::tuple_element<N, kwk::detail::axis_<Name,Content>>
+{
+  using type = kwk::detail::axis_<Name,Content>;
+};
