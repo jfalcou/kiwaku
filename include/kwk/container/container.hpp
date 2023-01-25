@@ -26,13 +26,11 @@ namespace kwk
     using shape_type        = typename Access::shape_type;
     using container_kind    = decltype(Tag);
 
-    static constexpr auto static_order    = Access::static_order;
-    static constexpr auto has_label       = MetaData::has_label;
+    static constexpr std::int32_t static_order  = Access::static_order;
+    static constexpr bool         has_label     = MetaData::has_label;
 
     constexpr container( container_kind ) noexcept
-            : MetaData{ }
-            , Data    { }
-            , Access  { }
+            : MetaData{}, Data{}, Access{}
     {}
 
     constexpr container( rbr::concepts::option auto const&... params )
@@ -40,15 +38,13 @@ namespace kwk
     {}
 
     constexpr container(rbr::concepts::settings auto const& params)
-            : MetaData{ params }
-            , Data    { params }
-            , Access  { params }
+            : MetaData{ params }, Data{ params }, Access{ params }
     {}
 
-    static constexpr  auto kind()         noexcept  { return Tag;      }
-    constexpr         auto order() const  noexcept  { return this->shape().order(); }
-    constexpr         auto numel() const  noexcept  { return this->shape().numel(); }
-    constexpr         auto empty() const  noexcept  { return this->size() == 0;     }
+    static constexpr  auto          kind()         noexcept  { return Tag;      }
+    constexpr         std::int32_t  order() const  noexcept  { return this->shape().order(); }
+    constexpr         auto          numel() const  noexcept  { return this->shape().numel(); }
+    constexpr         bool          empty() const  noexcept  { return this->size() == 0;     }
 
     using MetaData::label;
 

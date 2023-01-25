@@ -30,12 +30,13 @@ namespace kwk
 {
   template<auto Shape> struct shape;
 
-  template<std::size_t N, auto Desc>
+  template<std::int32_t N, auto Desc>
   constexpr auto compress(shape<Desc> const& s) noexcept;
 
   //================================================================================================
   //! @brief Generates a kwk::shape from a list of sizes
-  //! @tparam SizeType  Integral type used to store sizes. If unspecified, `std::ptrdiff_t` is used.
+  //! @tparam SizeType  Integral type used to store sizes. If unspecified, the most fitting integral
+  //!                   type is used.
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
   template<std::integral SizeType, int..., concepts::extent<SizeType>... Ds>
@@ -116,8 +117,7 @@ namespace kwk
     static constexpr auto descriptor = Shape;
 
     /// Compile-time value for @ref glossary-order
-    static constexpr std::ptrdiff_t static_order = parent::static_size;
-    static constexpr std::ptrdiff_t static_size  = parent::static_size;
+    static constexpr std::int32_t static_order = parent::static_size;
 
     /// Type of dimensions' size
     using size_type = typename parent::value_type;
@@ -140,57 +140,55 @@ namespace kwk
     //==============================================================================================
     //! @brief Constructs a default @ref kwk::shape equals to [1 1 ... 0]
     //==============================================================================================
-    KWK_FORCEINLINE constexpr shape()
-                : parent([](auto i, auto c) -> size_type { return i != c-1;}) {}
+    KWK_FORCEINLINE constexpr shape() : parent([](int i, int c) -> size_type { return i != c-1;}) {}
 
     //==============================================================================================
     //! @brief Constructor from set of dimensions
     //!
-    //! Constructs a kwk::shape with a variadic list of dimension values.
-    //! Values can either be any integral value, any fixed integral value or kwk::_.
-    //!
-    //! If you pass kwk::_ as a dimension's value, it means that the shape will be using the
-    //! default value for this dimension, i.e 0 for the first dimension, 1 for others or the fixed
-    //! size if it is provided.
+    //! Constructs a kwk::shape with a variadic list of integral-convertible  dimension values.
+    //! Values can either be any integral value or any fixed integral value.
     //!
     //! Passing a runtime dimension size where a static size is provided is undefined behavior if
     //! both values are not equal.
     //!
     //! This constructor will not take part in overload resolution if the number of values exceed
-    //! shape's order or if any value is neither convertible to kwk::shape::size_type nor kwk::_.
+    //! shape's order or if any value is neither convertible to kwk::shape::size_type.
     //!
-    //! @param  vals Variadic list of dimensions' values
+    //! @param  values Variadic list of dimensions' values
     //==============================================================================================
-    constexpr shape(std::convertible_to<size_type> auto... vals) noexcept
+    constexpr shape(std::convertible_to<size_type> auto... values) noexcept
     {
-       this->fill(vals...);
+      this->fill(values...);
     }
 
     //==============================================================================================
-    //! @brief Construct from a subset of runtime dimension values
+    //! @brief Construct from a subset of runtime dimension values specifiers
     //!
     //! This constructor takes a variadic list of arguments specifying the size specified for a
-    //! given runtime dimension. Those sizes are passed by using an axis descriptor
+    //! given runtime dimension. Those sizes are passed by using an axis descriptor, an integral
+    //! convertible type or kwk::_.
+    //!
+    //! If you pass kwk::_ as a dimension's value, it means that the shape will be using the
+    //! default value for this dimension, i.e 0 for the first dimension, 1 for others or the fixed
+    //! size if it is provided.
     //!
     //! Passing a dimension specifier to overwrite one of the compile-time dimensions is undefined
     //! behavior.
     //!
-    //! This constructor will not take part in overload resolution if the shape is fully static.
-    //!
     //! @groupheader{Example}
     //! @godbolt{docs/shape/mixed.cpp}
     //!
-    //! @param args  Variadic list of dimension/size association
+    //! @param dims  Variadic list of dimension/size association
     //==============================================================================================
     template<concepts::extent<size_type>... A>
-    constexpr shape(A const&... args) noexcept
+    constexpr shape(A const&... dims) noexcept
     requires( !(std::convertible_to<A,size_type> && ...)
             && make_combo<size_type>(Shape).is_equivalent(detail::as_descriptor<size_type>(A{}...))
             )
     {
       [&]<std::size_t... N>(std::index_sequence<N...>)
       {
-        this->fill(detail::as_axis(args,get<N>(Shape),kumi::index<static_order-N-1>)...);
+        this->fill(detail::as_axis(dims,get<N>(Shape),kumi::index<static_order-N-1>)...);
       }(std::make_index_sequence<sizeof...(A)>{});
     }
 
@@ -386,7 +384,7 @@ namespace kwk
     //! Computes the number of non-trivial dimensions, i.e dimension with size equals to 1 and that
     //! doesn't participate to the shape's extent.
     //==============================================================================================
-    constexpr std::ptrdiff_t nbdims() const noexcept
+    constexpr std::int32_t nbdims() const noexcept
     {
       if constexpr(static_order == 0)  return 0;
       else
@@ -402,10 +400,10 @@ namespace kwk
     //! Computes the number of elements storable in current kwk::shape, i.e the product of all
     //! dimensions' size.
     //==============================================================================================
-    constexpr std::ptrdiff_t numel() const noexcept
+    constexpr std::int32_t numel() const noexcept
     {
-      if constexpr(static_order == 0) return 0LL;
-      else return kumi::fold_left([](auto a, auto b){ return a*b; }, *this, std::ptrdiff_t{1});
+      if constexpr(static_order == 0) return 0;
+      else return kumi::fold_left([](auto a, auto b){ return a*b; }, *this, std::int32_t{1});
     }
 
     //==============================================================================================
@@ -415,7 +413,7 @@ namespace kwk
     //!         `ref` is matched with an equal value in the current shape.
     //==============================================================================================
     template<auto R>
-    KWK_PURE constexpr auto fit_constraints(shape<R> const& ref) const noexcept
+    KWK_PURE constexpr bool fit_constraints(shape<R> const& ref) const noexcept
     {
       if      constexpr(shape<R>::is_fully_dynamic                  ) return true;
       else if constexpr(shape<R>::static_order != static_order      ) return false;
@@ -482,10 +480,7 @@ namespace kwk
 
   /// Deduction guide for @ref kwk::shape
   template<typename... T>
-  constexpr auto descriptor_from() { return detail::as_descriptor<std::ptrdiff_t>(T{}...); }
-
-  template<typename... T>
-  shape(T...) -> shape< descriptor_from<T...>() >;
+  shape(T...) -> shape< detail::descriptor_from<T...>() >;
 
   //================================================================================================
   //! @brief Compress a kwk::shape to a given order
@@ -493,7 +488,7 @@ namespace kwk
   //! @param  s  Original shape to compress
   //! @return A new kwk::shape instance which order has been set to N by compressing dimensions.
   //================================================================================================
-  template<std::size_t N, auto Desc>
+  template<std::int32_t N, auto Desc>
   constexpr auto compress(shape<Desc> const& s) noexcept
   {
     using old_t = typename shape<Desc>::parent;
@@ -508,7 +503,7 @@ namespace kwk
 // Tuple interface adaptation
 template<auto Desc>
 struct  std::tuple_size<kwk::shape<Desc>>
-      : std::integral_constant<std::size_t,kwk::shape<Desc>::static_order>
+      : std::integral_constant<std::int32_t,kwk::shape<Desc>::static_order>
 {};
 
 template<std::size_t N, auto Desc>

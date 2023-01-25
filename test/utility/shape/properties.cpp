@@ -10,10 +10,10 @@
 
 TTS_CASE( "nbdims behavior on nD shape" )
 {
-  TTS_EXPR_IS( kwk::of_size<std::uint8_t>(4,2,6,9).nbdims()   , std::ptrdiff_t );
-  TTS_EXPR_IS( kwk::of_size<short>(4,2,6,9).nbdims()          , std::ptrdiff_t );
-  TTS_EXPR_IS( kwk::of_size(4,2,6,9).nbdims()                 , std::ptrdiff_t );
-  TTS_EXPR_IS( kwk::of_size<std::ptrdiff_t>(4,2,6,9).nbdims() , std::ptrdiff_t );
+  TTS_EXPR_IS( kwk::of_size<std::uint8_t>(4,2,6,9).nbdims()   , std::int32_t );
+  TTS_EXPR_IS( kwk::of_size<short>(4,2,6,9).nbdims()          , std::int32_t );
+  TTS_EXPR_IS( kwk::of_size(4,2,6,9).nbdims()                 , std::int32_t );
+  TTS_EXPR_IS( kwk::of_size<std::ptrdiff_t>(4,2,6,9).nbdims() , std::int32_t );
 
   TTS_EQUAL( (kwk::of_size(4,2,6,9).nbdims()), 4);
   TTS_EQUAL( (kwk::of_size(1,4,2,6).nbdims()), 3);
@@ -24,12 +24,12 @@ TTS_CASE( "nbdims behavior on nD shape" )
 
 TTS_CASE( "numel behavior on nD shape" )
 {
-  TTS_EXPR_IS( kwk::of_size<std::uint8_t>(4,2,6,9).numel()  , std::ptrdiff_t);
-  TTS_EXPR_IS( kwk::of_size<short>(4,2,6,9).numel()         , std::ptrdiff_t);
-  TTS_EXPR_IS( kwk::of_size(4,2,6,9).numel()                , std::ptrdiff_t);
-  TTS_EXPR_IS( kwk::of_size<std::uint32_t>(4,2,6,9).numel() , std::ptrdiff_t);
-  TTS_EXPR_IS( kwk::of_size<std::ptrdiff_t>(4,2,6,9).numel(), std::ptrdiff_t);
-  TTS_EXPR_IS( kwk::of_size<std::size_t>(4,2,6,9).numel()   , std::ptrdiff_t);
+  TTS_EXPR_IS( kwk::of_size<std::uint8_t>(4,2,6,9).numel()  , std::int32_t);
+  TTS_EXPR_IS( kwk::of_size<short>(4,2,6,9).numel()         , std::int32_t);
+  TTS_EXPR_IS( kwk::of_size(4,2,6,9).numel()                , std::int32_t);
+  TTS_EXPR_IS( kwk::of_size<std::uint32_t>(4,2,6,9).numel() , std::int32_t);
+  TTS_EXPR_IS( kwk::of_size<std::ptrdiff_t>(4,2,6,9).numel(), std::int32_t);
+  TTS_EXPR_IS( kwk::of_size<std::size_t>(4,2,6,9).numel()   , std::int32_t);
 
   TTS_EQUAL( (kwk::of_size(4,2,6,9).numel()), 432 );
   TTS_EQUAL( (kwk::of_size(4,2,6,1).numel()), 48  );

@@ -24,7 +24,7 @@ namespace kwk::detail
   template<auto Strides>
   struct stride_base
   {
-    static constexpr auto desc = make_combo<std::ptrdiff_t>(Strides);
+    static constexpr auto desc = make_combo<std::int32_t>(Strides);
     using type = prefilled<desc>;
   };
 }
@@ -73,7 +73,7 @@ namespace kwk
     using parent = typename detail::stride_base<Strides>::type;
 
     /// Compile-time value for @ref glossary-order
-    static constexpr std::ptrdiff_t static_order = parent::static_size;
+    static constexpr std::int32_t static_order = parent::static_size;
 
     /// Type of dimensions' size
     using size_type = typename parent::value_type;
@@ -111,14 +111,13 @@ namespace kwk
     //! both values are not equal.
     //!
     //! This constructor will not take part in overload resolution if the number of values is not
-    //! equal to the stride's order or if any value is neither convertible to std::ptrdiff_t
+    //! equal to the stride's order or if any value is neither convertible to int
     //! nor kwk::_.
     //!
     //! @param  s Variadic list of dimensions' values
     //==============================================================================================
     constexpr stride(std::convertible_to<size_type> auto... vals) noexcept
-    requires( sizeof...(vals) == static_order )
-    : stride()
+    requires( sizeof...(vals) == static_order ) : stride()
     {
       parent::fill(vals...);
     }
@@ -209,7 +208,7 @@ namespace kwk
   template<typename... Ds>
   constexpr auto with_strides(Ds... ds) noexcept
   {
-    return detail::make_extent<kwk::stride,std::ptrdiff_t>(ds...);
+    return detail::make_extent<kwk::stride,std::int32_t>(ds...);
   }
 
   template<kumi::product_type Ds>
@@ -222,7 +221,7 @@ namespace kwk
 // Tuple interface adaptation
 template<auto Desc>
 struct  std::tuple_size<kwk::stride<Desc>>
-      : std::integral_constant<std::size_t,kwk::stride<Desc>::static_order>
+      : std::integral_constant<std::int32_t,kwk::stride<Desc>::static_order>
 {};
 
 template<std::size_t N, auto Desc>

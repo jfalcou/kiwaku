@@ -76,7 +76,7 @@ namespace kwk
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
   //================================================================================================
-  inline constexpr detail::combo<std::ptrdiff_t> extent  = {};
+  inline constexpr detail::combo<std::int32_t> extent  = {};
 
   template<typename T>
   inline constexpr detail::combo<T> extent_of  = {};
@@ -89,6 +89,6 @@ namespace kwk
   template<std::size_t N>
   inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...>)
   {
-    return make_combo<std::ptrdiff_t>(along<N-I-1>...);
+    return make_combo<std::int32_t>(along<N-I-1>...);
   }(std::make_index_sequence<N>{});
 }

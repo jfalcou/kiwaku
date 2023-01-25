@@ -39,10 +39,10 @@ namespace kwk
   //!
   //================================================================================================
   template<typename T>  struct is_joker               : std::false_type {};
-  template<>            struct is_joker<joker>        : std::true_type {};
-  template<>            struct is_joker<joker&>       : std::true_type {};
-  template<>            struct is_joker<joker const>  : std::true_type {};
-  template<>            struct is_joker<joker const&> : std::true_type {};
+  template<>            struct is_joker<joker>        : std::true_type  {};
+  template<>            struct is_joker<joker&>       : std::true_type  {};
+  template<>            struct is_joker<joker const>  : std::true_type  {};
+  template<>            struct is_joker<joker const&> : std::true_type  {};
 
   template<typename T>  inline constexpr bool is_joker_v = is_joker<T>::value;
 
