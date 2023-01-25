@@ -43,7 +43,7 @@ namespace kwk
 
     static constexpr  auto          kind()         noexcept  { return Tag;      }
     constexpr         std::int32_t  order() const  noexcept  { return this->shape().order(); }
-    constexpr         std::int32_t  numel() const  noexcept  { return this->shape().numel(); }
+    constexpr         auto          numel() const  noexcept  { return this->shape().numel(); }
     constexpr         bool          empty() const  noexcept  { return this->size() == 0;     }
 
     using MetaData::label;
