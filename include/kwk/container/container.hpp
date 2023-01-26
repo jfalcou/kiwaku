@@ -24,6 +24,7 @@ namespace kwk
     using pointer           = typename Data::pointer;
     using const_pointer     = typename Data::const_pointer;
     using shape_type        = typename Access::shape_type;
+    using size_type         = typename shape_type::size_type;
     using container_kind    = decltype(Tag);
 
     static constexpr std::int32_t static_order  = Access::static_order;
@@ -110,7 +111,7 @@ namespace kwk
     template<kumi::sized_product_type<static_order> Pos>
     const_reference operator()(Pos p) const noexcept
     {
-      return kumi::apply([&](auto... i) { return (*this)(i...); }, p);
+      return kumi::apply([&](auto... i) -> const_reference { return (*this)(i...); }, p);
     }
 
     template<kumi::sized_product_type<static_order> Pos>
@@ -118,7 +119,6 @@ namespace kwk
     {
       return kumi::apply([&](auto... i) -> reference { return (*this)(i...); }, p);
     }
-
 
     template<std::integral... Is>
     requires(sizeof...(Is) == static_order) const_reference operator()(Is... is) const noexcept
