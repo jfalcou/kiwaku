@@ -24,6 +24,7 @@ namespace kwk
   //================================================================================================
 }
 
+#include <kwk/utility/container/interpolator.hpp>
 #include <kwk/utility/container/shape.hpp>
 #include <kwk/utility/container/stride.hpp>
 #include <kwk/utility/memory/any_allocator.hpp>
