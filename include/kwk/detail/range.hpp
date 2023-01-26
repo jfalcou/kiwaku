@@ -30,7 +30,7 @@ namespace kwk::detail
   struct array_traits<std::array<T, N>> : std::true_type
   {
     using value_type            = typename array_traits<T>::value_type;
-    static constexpr auto sizes = kumi::push_back(array_traits<T>::sizes,fixed<N>);
+    static constexpr auto sizes = kumi::push_back(array_traits<T>::sizes, fixed<clamp<N>()>);
     static constexpr auto data(auto&& a) noexcept { return array_traits<T>::data(KWK_FWD(a)[0]); }
   };
 
@@ -38,7 +38,7 @@ namespace kwk::detail
   struct array_traits<T[N]> : std::true_type
   {
     using value_type            = typename array_traits<T>::value_type;
-    static constexpr auto sizes = kumi::push_back(array_traits<T>::sizes,fixed<N>);
+    static constexpr auto sizes = kumi::push_back(array_traits<T>::sizes, fixed<clamp<N>()>);
     static constexpr auto data(auto&& a) noexcept { return array_traits<T>::data(KWK_FWD(a)[0]); }
   };
 }
