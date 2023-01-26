@@ -1395,7 +1395,7 @@ namespace tts
           if(aa > bb) std::swap(aa, bb);
           auto z = static_cast<ui_t>(bb-aa);
           if( std::signbit(a) ^ std::signbit(b) ) ++z;
-          return z/2.;
+          return static_cast<double>(z)/2.;
         }
       }
       else if constexpr(std::is_integral_v<T> && !std::is_same_v<T, bool>)
