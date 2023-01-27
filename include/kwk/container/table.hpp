@@ -20,17 +20,9 @@ namespace kwk
   //! @tparam Builder  Policy generator for current table
   //================================================================================================
   template<typename Builder>
-  struct  table  : container < kwk::table_
-                            , typename Builder::memory
-                            , typename Builder::accessor
-                            , typename Builder::metadata
-                            >
+  struct  table  : container<kwk::table_,Builder>
   {
-    using parent = container< kwk::table_
-                            , typename Builder::memory
-                            , typename Builder::accessor
-                            , typename Builder::metadata
-                            >;
+    using parent = container<kwk::table_,Builder>;
 
     /// Underlying value type
     using value_type        = typename parent::value_type;

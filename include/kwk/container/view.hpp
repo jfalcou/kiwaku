@@ -20,17 +20,9 @@ namespace kwk
   //! @tparam Builder  Policy generator for current view
   //================================================================================================
   template<typename Builder>
-  struct  view  : container < kwk::view_
-                            , typename Builder::memory
-                            , typename Builder::accessor
-                            , typename Builder::metadata
-                            >
+  struct  view  : container<kwk::view_, Builder>
   {
-    using parent = container< kwk::view_
-                            , typename Builder::memory
-                            , typename Builder::accessor
-                            , typename Builder::metadata
-                            >;
+    using parent = container<kwk::view_, Builder>;
 
     /// Underlying value type
     using value_type        = typename parent::value_type;

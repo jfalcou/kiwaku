@@ -15,23 +15,26 @@
 
 namespace kwk
 {
-  template<auto Tag, typename Data, typename Access, typename MetaData>
-  struct  container : private MetaData, Data, Access
+  template<auto Tag, typename Builder>
+  struct  container : private Builder::metadata, Builder::memory, Builder::accessor
   {
-    using value_type        = typename Data::value_type;
-    using reference         = typename Data::reference;
-    using const_reference   = typename Data::const_reference;
-    using pointer           = typename Data::pointer;
-    using const_pointer     = typename Data::const_pointer;
-    using shape_type        = typename Access::shape_type;
+    using data_t            = typename Builder::memory;
+    using access_t          = typename Builder::accessor;
+    using meta_t            = typename Builder::metadata;
+    using value_type        = typename data_t::value_type;
+    using reference         = typename data_t::reference;
+    using const_reference   = typename data_t::const_reference;
+    using pointer           = typename data_t::pointer;
+    using const_pointer     = typename data_t::const_pointer;
+    using shape_type        = typename access_t::shape_type;
     using size_type         = typename shape_type::size_type;
     using container_kind    = decltype(Tag);
 
-    static constexpr std::int32_t static_order  = Access::static_order;
-    static constexpr bool         has_label     = MetaData::has_label;
+    static constexpr std::int32_t static_order  = access_t::static_order;
+    static constexpr bool         has_label     = meta_t::has_label;
 
     constexpr container( container_kind ) noexcept
-            : MetaData{}, Data{}, Access{}
+            : meta_t{}, data_t{}, access_t{}
     {}
 
     constexpr container( rbr::concepts::option auto const&... params )
@@ -39,7 +42,7 @@ namespace kwk
     {}
 
     constexpr container(rbr::concepts::settings auto const& params)
-            : MetaData{ params }, Data{ params }, Access{ params }
+            : meta_t{ params }, data_t{ params }, access_t{ params }
     {}
 
     static constexpr  auto          kind()         noexcept  { return Tag;      }
@@ -47,13 +50,13 @@ namespace kwk
     constexpr         auto          numel() const  noexcept  { return this->shape().numel(); }
     constexpr         bool          empty() const  noexcept  { return this->size() == 0;     }
 
-    using MetaData::label;
+    using meta_t::label;
 
     void swap(container& other) noexcept
     {
-      MetaData::swap(other);
-      Data::swap(other);
-      Access::swap(other);
+      meta_t::swap(other);
+      data_t::swap(other);
+      access_t::swap(other);
     }
 
     friend void swap(container& a,container& b) noexcept { a.swap(b); }
@@ -123,23 +126,23 @@ namespace kwk
     template<std::integral... Is>
     requires(sizeof...(Is) == static_order) const_reference operator()(Is... is) const noexcept
     {
-      return data(static_cast<Data const&>(*this))[ Access::index(is...) ];
+      return data(static_cast<data_t const&>(*this))[ access_t::index(is...) ];
     }
 
     template<std::integral... Is>
     requires(sizeof...(Is) == static_order) reference operator()(Is... is) noexcept
     {
-      return data(static_cast<Data&>(*this))[ Access::index(is...) ];
+      return data(static_cast<data_t&>(*this))[ access_t::index(is...) ];
     }
 
-    constexpr auto get_data() const  noexcept { return data(static_cast<Data const&>(*this)); }
-    constexpr auto get_data()        noexcept { return data(static_cast<Data&>(*this)); }
+    constexpr auto get_data() const  noexcept { return data(static_cast<data_t const&>(*this)); }
+    constexpr auto get_data()        noexcept { return data(static_cast<data_t&>(*this)); }
   };
 
-  template<std::size_t I, auto Tag, typename D, typename A, typename M>
-  constexpr auto dim(container<Tag,D,A,M> const& v) noexcept
+  template<std::size_t I, auto Tag, typename B>
+  constexpr auto dim(container<Tag,B> const& v) noexcept
   {
-    if constexpr(I<container<Tag,D,A,M>::static_order) return get<I>(v.shape());
+    if constexpr(I<container<Tag,B>::static_order) return get<I>(v.shape());
     else return 1;
   }
 }
