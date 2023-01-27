@@ -269,11 +269,11 @@ namespace rbr
   //================================================================================================
   template<concepts::keyword Keyword, typename Value> struct option
   {
-    using stored_value_type    = Value;
-    using keyword_type  = Keyword;
+    using stored_value_type = std::decay_t<Value>;
+    using keyword_type      = Keyword;
 
     constexpr stored_value_type operator()(keyword_type const&) const noexcept { return contents; }
-    Value contents;
+    stored_value_type contents;
   };
 
   //================================================================================================
@@ -337,7 +337,7 @@ namespace rbr
     template<typename Type>
     constexpr auto operator=(Type&& v) const noexcept requires( accept<Type>() )
     {
-      return option<Keyword,std::remove_cvref_t<Type>>{RBR_FWD(v)};
+      return option<Keyword,Type>{RBR_FWD(v)};
     }
 
     //==============================================================================================
@@ -432,7 +432,8 @@ namespace rbr
   struct typed_keyword  : as_keyword<typed_keyword<ID, Type>>
   {
     using as_keyword<typed_keyword<ID, Type>>::operator=;
-    template<typename T>  static constexpr bool check() { return std::is_same_v<T,Type>; }
+    template<typename T>
+    static constexpr bool check() { return std::is_same_v<std::remove_cvref_t<T>,Type>; }
 
     template<typename V>
     std::ostream& display(std::ostream& os, V const& v) const
