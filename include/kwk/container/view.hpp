@@ -17,14 +17,20 @@ namespace kwk
   //! @ingroup containers
   //! @brief Non-owning, contiguous multi-dimensional container
   //!
-  //! @tparam Data      Policy for data storage
-  //! @tparam Access    Policy for data access
-  //! @tparam MetaData  Complementary data
+  //! @tparam Builder  Policy generator for current view
   //================================================================================================
-  template<typename Data, typename Access, typename MetaData>
-  struct  view  : container<kwk::view_,Data,Access,MetaData>
+  template<typename Builder>
+  struct  view  : container < kwk::view_
+                            , typename Builder::memory
+                            , typename Builder::accessor
+                            , typename Builder::metadata
+                            >
   {
-    using parent = container<kwk::view_,Data,Access,MetaData>;
+    using parent = container< kwk::view_
+                            , typename Builder::memory
+                            , typename Builder::accessor
+                            , typename Builder::metadata
+                            >;
 
     /// Underlying value type
     using value_type        = typename parent::value_type;
@@ -91,25 +97,16 @@ namespace kwk
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
   view(O const&...)
-    ->  view< typename detail::builder<rbr::settings(view_, O{}...)>::memory
-            , typename detail::builder<rbr::settings(view_, O{}...)>::accessor
-            , typename detail::builder<rbr::settings(view_, O{}...)>::metadata
-            >;
+    ->  view<detail::builder<rbr::settings(view_, O{}...)>>;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
   template<rbr::concepts::option... O>
   view(rbr::settings<O...> const&)
-    ->  view< typename detail::builder<rbr::settings(view_, O{}...)>::memory
-            , typename detail::builder<rbr::settings(view_, O{}...)>::accessor
-            , typename detail::builder<rbr::settings(view_, O{}...)>::metadata
-            >;
+    ->  view< detail::builder<rbr::settings(view_, O{}...)>>;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another container
   template<concepts::container C>
-  view(C const&)  -> view < typename detail::builder<C::archetype(view_)>::memory
-                          , typename detail::builder<C::archetype(view_)>::accessor
-                          , typename detail::builder<C::archetype(view_)>::metadata
-                          >;
+  view(C const&)  -> view<detail::builder<C::archetype(view_)>>;
 
   //================================================================================================
   //! @}
@@ -118,10 +115,7 @@ namespace kwk
   /// Type helper
   template<auto... Settings> struct make_view
   {
-    using type = view < typename detail::builder<rbr::settings(view_,Settings...)>::memory
-                      , typename detail::builder<rbr::settings(view_,Settings...)>::accessor
-                      , typename detail::builder<rbr::settings(view_,Settings...)>::metadata
-                      >;
+    using type = view<detail::builder<rbr::settings(view_,Settings...)>>;
   };
 
   template<auto... Settings>

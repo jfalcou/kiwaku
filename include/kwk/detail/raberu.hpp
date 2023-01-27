@@ -742,7 +742,7 @@ namespace rbr
 
   /// rbr::settings deduction guide
   template<concepts::option... Opts>
-  settings(Opts&&... opts) -> settings<std::remove_cvref_t<Opts>...>;
+  settings(Opts const&... opts) -> settings<Opts...>;
 
   //================================================================================================
   //! @ingroup stng
