@@ -40,7 +40,8 @@ namespace kwk
   inline constexpr auto from    = rbr::keyword(__::from_{}  );
   inline constexpr auto length  = rbr::keyword(__::length_{});
 
-  template<auto... D> struct shape;
+  template<auto D> struct shape;
+  template<auto D> struct stride;
 
   //================================================================================================
   // range(...) specifications
@@ -61,20 +62,37 @@ namespace kwk
     slicer(Begin b, Step s, End e, Length l) : begin{b},step{s},end{e}, len{l} {}
 
     template<auto... D, std::size_t N>
+    constexpr auto reindex(shape<D...> const& sh, kumi::index_t<N> const&) const noexcept
+    {
+      auto count = get<N>(sh);
+      auto fix_extremum = [&]<typename T>(T s, auto def)
+      {
+        if constexpr(concepts::extremum<T>) return s.size(count);
+        else if constexpr(is_joker_v<T>)    return def;
+        else                                return s;
+      };
+
+      return fix_extremum(begin, 0);
+    }
+
+    template<auto... D, std::size_t N>
     constexpr auto reshape(shape<D...> const& sh, kumi::index_t<N> const&) const noexcept
     {
-      if constexpr(has_length) return len;
+      auto count = get<N>(sh);
+
+      auto fix_extremum = [&]<typename T>(T s, auto def)
+      {
+        if constexpr(concepts::extremum<T>) return s.size(count);
+        else if constexpr(is_joker_v<T>)    return def;
+        else                                return s;
+      };
+
+      if constexpr(has_length)
+      {
+        return fix_extremum(len, count);
+      }
       else
       {
-        auto count = get<N>(sh);
-
-        auto fix_extremum = [&]<typename T>(T s, auto def)
-        {
-          if constexpr(concepts::extremum<T>) return s.size(count);
-          else if constexpr(is_joker_v<T>)    return def;
-          else                                return s;
-        };
-
         auto b = fix_extremum(begin, fixed<0>);
         auto s = fix_extremum(step , fixed<1>);
         auto e = fix_extremum(end  , count   );
@@ -91,6 +109,19 @@ namespace kwk
 
         return eval(e-b,s);
       }
+    }
+
+    template<auto... D, std::size_t N>
+    constexpr auto restride(stride<D...> const& sh, kumi::index_t<N> const&) const noexcept
+    {
+      auto original_steps = get<N>(sh);
+      auto fix_extremum = [&]<typename T>(T s)
+      {
+        if constexpr(is_joker_v<T>) return original_steps;
+        else                        return s * original_steps;
+      };
+
+      return fix_extremum(step);
     }
 
     friend std::ostream& operator<<(std::ostream& os, slicer const& f)
@@ -125,12 +156,45 @@ namespace kwk
 
   template<typename B, typename S, typename E, typename L> slicer(B,S,E,L)  -> slicer<B,S,E,L>;
 
-  template<auto... D, typename S, std::size_t N>
-  constexpr auto reshape(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+  namespace __
   {
-    if constexpr(std::same_as<S,joker>)                 return get<N>(sh);
-    else if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);
-    else                                                return fixed<1>;
+    template<auto... D, typename S, std::size_t N>
+    constexpr auto reindex(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+    {
+      if      constexpr(std::same_as<S,joker>)            return 0;
+      else if constexpr(concepts::extremum<S>)            return s.size(get<N>(sh));
+      else if constexpr( requires{ s.reindex(sh,idx); } ) return s.reindex(sh,idx);
+      else                                                return s;
+    }
+
+    template<auto... D, typename S, std::size_t N>
+    constexpr auto reshape(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+    {
+      if      constexpr(std::same_as<S,joker>)            return get<N>(sh);
+      else if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);
+      else                                                return fixed<1>;
+    }
+
+    template<auto... D, typename S, std::size_t N>
+    constexpr auto restride(stride<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+    {
+      if constexpr( requires{ s.restride(sh,idx); } ) return s.restride(sh,idx);
+      else                                            return get<N>(sh);
+    }
+  }
+
+  //================================================================================================
+  // Slicing helper
+  //================================================================================================
+  template<auto... D, typename... Slicers>
+  auto origin(shape<D...> const& shp, Slicers... slice) noexcept
+  {
+    return  linear_index( compress<sizeof...(slice)>(shp)
+                        , kumi::map_index
+                          ( [&shp](auto i, auto e) { return detail::reindex(shp,e,i); }
+                          , kumi::tie(slice...)
+                          )
+                        );
   }
 
   //================================================================================================
