@@ -46,10 +46,7 @@ namespace kwk
       return os;
     }
 
-    constexpr auto size(auto n) const noexcept
-    {
-      return (n * factor() + offset()) / divisor();
-    }
+    constexpr auto size(auto n)   const noexcept { return (n * factor() + offset()) / divisor(); }
   };
 
   /// Deduction guide

@@ -66,6 +66,13 @@ namespace kwk
       else  if constexpr (std::bit_width(Value) <= 32)  return static_cast<std::uint32_t>(Value);
       else                                              return Value;
     }
+
+    template<char... c> constexpr auto b10()
+    {
+      auto value = 0ULL;
+      ((value = value * 10 + (c - '0')), ...);
+      return value;
+    }
   }
 
   template<auto N>
@@ -101,13 +108,6 @@ namespace kwk
 
   inline namespace literals
   {
-    template<char... c> constexpr auto b10()
-    {
-      auto value = 0ULL;
-      ((value = value * 10 + (c - '0')), ...);
-      return value;
-    }
-
     //==============================================================================================
     //! @ingroup utility
     //! @brief User-defined literal suffix for compile-time constant
@@ -117,7 +117,7 @@ namespace kwk
     //==============================================================================================
     template<char... c> KWK_TRIVIAL constexpr auto operator"" _c() noexcept
     {
-      return fixed<__::clamp<b10<c...>()>()>;
+      return fixed<__::clamp<__::b10<c...>()>()>;
     }
   }
 }

@@ -10,6 +10,7 @@
 #include <kwk/concepts/range.hpp>
 #include <kwk/detail/assert.hpp>
 #include <kwk/detail/kumi.hpp>
+#include <kwk/detail/stdfix.hpp>
 #include <kwk/utility/container/stride.hpp>
 #include <utility>
 
