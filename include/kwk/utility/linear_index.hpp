@@ -16,6 +16,8 @@
 
 namespace kwk
 {
+  template<auto S> struct shape;
+
   //================================================================================================
   //! @ingroup utility
   //! @brief  Computes a linear index from a order N list of indexes

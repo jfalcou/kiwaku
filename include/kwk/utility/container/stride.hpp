@@ -24,6 +24,9 @@ namespace kwk::__
 
 namespace kwk
 {
+  template<auto Strides> struct stride;
+  template<auto Shaper> struct shape;
+
   //================================================================================================
   //! @ingroup containers
   //! @brief  Fixed order stride with mixed size capability
@@ -135,7 +138,7 @@ namespace kwk
     constexpr auto operator()(Slicers const&... s ) const noexcept
     requires( sizeof...(Slicers) == static_order )
     {
-      auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return detail::restride(*this,m,i); }
+      auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return restride(*this,m,i); }
                                       , kumi::tie(s...)
                                       );
 
@@ -181,6 +184,13 @@ namespace kwk
         return stride{ (s.template axis<I>() =  get<I>(t))... };
       }(std::make_index_sequence<sizeof...(D)>{}, d);
     }
+  }
+
+  template<std::int32_t N, auto Desc>
+  constexpr auto compress(stride<Desc> const& s) noexcept
+  {
+    auto extracted = kumi::extract(s, kumi::index<stride<Desc>::static_size-N>);
+    return with_strides(extracted);
   }
 }
 

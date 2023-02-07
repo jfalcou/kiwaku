@@ -98,6 +98,18 @@ namespace kwk
     //==============================================================================================
     //! @}
     //==============================================================================================
+    template<typename... Slicers>
+    requires(sizeof...(Slicers) <= static_order)
+    auto slice(Slicers... slice) const noexcept
+    {
+      auto shp = this->shape();
+      auto str = compress<sizeof...(slice)>(this->stride());
+
+      return make_view( source = this->get_data() + origin(shp, slice...)
+                      , shp(slice...)
+                      , str(slice...)
+                      );
+    }
   };
 
   //================================================================================================
@@ -121,12 +133,9 @@ namespace kwk
   //! @}
   //================================================================================================
 
-  /// Type helper
-  template<typename... Settings> struct make_table
-  {
-    using type = table<__::builder<rbr::settings(table_,Settings{}...)>>;
-  };
+  template<rbr::concepts::option... Os> auto make_table(Os const&... os) { return table{os...}; };
 
-  template<typename... Settings>
-  using make_table_t = typename make_table<Settings...>::type;
+  /// Type helper
+  template<rbr::concepts::option auto... Os>
+  using make_table_t = table< __::builder<rbr::settings(table_, Os...)>>;
 }

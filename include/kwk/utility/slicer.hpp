@@ -12,6 +12,7 @@
 #include <kwk/utility/end.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <kwk/utility/joker.hpp>
+#include <kwk/utility/linear_index.hpp>
 #include <kwk/utility/traits/extent.hpp>
 
 #include <concepts>
@@ -65,14 +66,16 @@ namespace kwk
     constexpr auto reindex(shape<D...> const& sh, kumi::index_t<N> const&) const noexcept
     {
       auto count = get<N>(sh);
-      auto fix_extremum = [&]<typename T>(T s, auto def)
+      if constexpr(has_begin)
       {
-        if constexpr(concepts::extremum<T>) return s.size(count);
-        else if constexpr(is_joker_v<T>)    return def;
-        else                                return s;
-      };
-
-      return fix_extremum(begin, 0);
+        if constexpr(concepts::extremum<Begin>) return begin.size(count);
+        else                                    return begin;
+      }
+      else
+      {
+        if constexpr(has_step)    return step > 0 ? 0 : count - 1;
+        else                      return 0;
+      }
     }
 
     template<auto... D, std::size_t N>
@@ -84,7 +87,7 @@ namespace kwk
       {
         if constexpr(concepts::extremum<T>) return s.size(count);
         else if constexpr(is_joker_v<T>)    return def;
-        else                                return s;
+        else                                return s ;
       };
 
       if constexpr(has_length)
@@ -93,13 +96,9 @@ namespace kwk
       }
       else
       {
-        auto b = fix_extremum(begin, fixed<0>);
-        auto s = fix_extremum(step , fixed<1>);
-        auto e = fix_extremum(end  , count   );
-
         auto eval = [&]<typename S, typename B>(S s, B b)
         {
-          auto fix  = [] (auto v, auto n) { return (v % n != 0) + v/n; };
+          auto fix  = [&] (auto v, auto n) { auto w = n<0 ? -n : n; return (v % w != 0) + v/w; };
 
           if constexpr(concepts::static_constant<S> && concepts::static_constant<B>)
             return fixed<(S::value == 0) ? 0 : fix(S::value, B::value)>;
@@ -107,7 +106,26 @@ namespace kwk
             return (s == 0) ? 0 : fix(s, b);
         };
 
-        return eval(e-b,s);
+        auto s = fix_extremum(step , fixed<1>);
+
+        if constexpr(has_begin || has_end)
+        {
+          auto b = fix_extremum(begin, fixed<0>);
+          auto e = fix_extremum(end  , count   );
+
+          if constexpr(has_step)
+          {
+            return (s>=0) ? eval(e-b, s) : eval(b+1_c,s);
+          }
+          else
+          {
+            return eval(e-b, fixed<1>);
+          }
+        }
+        else
+        {
+          return eval(count,s);
+        }
       }
     }
 
@@ -189,9 +207,10 @@ namespace kwk
   template<auto... D, typename... Slicers>
   auto origin(shape<D...> const& shp, Slicers... slice) noexcept
   {
-    return  linear_index( compress<sizeof...(slice)>(shp)
+    auto c = compress<sizeof...(slice)>(shp);
+    return  linear_index( c
                         , kumi::map_index
-                          ( [&shp](auto i, auto e) { return detail::reindex(shp,e,i); }
+                          ( [&](auto i, auto e) { return __::reindex(c,e,i); }
                           , kumi::tie(slice...)
                           )
                         );

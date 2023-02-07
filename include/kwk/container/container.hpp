@@ -44,10 +44,10 @@ namespace kwk
             : meta_t{ params }, data_t{ params }, access_t{ params }
     {}
 
-    static constexpr  auto          kind()         noexcept  { return Tag;      }
-    constexpr         std::int32_t  order() const  noexcept  { return this->shape().order(); }
-    constexpr         auto          numel() const  noexcept  { return this->shape().numel(); }
-    constexpr         bool          empty() const  noexcept  { return this->size() == 0;     }
+    static constexpr  auto  kind()        noexcept  { return Tag;                   }
+    static constexpr  auto  order()       noexcept  { return static_order;          }
+    constexpr         auto  numel() const noexcept  { return this->shape().numel(); }
+    constexpr         bool  empty() const noexcept  { return this->size() == 0;     }
 
     using meta_t::label;
 
@@ -112,25 +112,25 @@ namespace kwk
     }
 
     template<kumi::sized_product_type<static_order> Pos>
-    const_reference operator()(Pos p) const noexcept
+    decltype(auto) operator()(Pos p) const noexcept
     {
-      return kumi::apply([&](auto... i) -> const_reference { return (*this)(i...); }, p);
+      return kumi::apply([&](auto... i) -> decltype(auto) { return (*this)(i...); }, p);
     }
 
     template<kumi::sized_product_type<static_order> Pos>
-    reference operator()(Pos p) noexcept
+    decltype(auto) operator()(Pos p) noexcept
     {
-      return kumi::apply([&](auto... i) -> reference { return (*this)(i...); }, p);
+      return kumi::apply([&](auto... i) -> decltype(auto) { return (*this)(i...); }, p);
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order) const_reference operator()(Is... is) const noexcept
+    requires(sizeof...(Is) == static_order) decltype(auto) operator()(Is... is) const noexcept
     {
       return data(static_cast<data_t const&>(*this))[ access_t::index(is...) ];
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order) reference operator()(Is... is) noexcept
+    requires(sizeof...(Is) == static_order) decltype(auto) operator()(Is... is) noexcept
     {
       return data(static_cast<data_t&>(*this))[ access_t::index(is...) ];
     }

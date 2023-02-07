@@ -143,7 +143,7 @@ namespace kwk::__
 
     constexpr auto  size()    const noexcept { return shape_.numel();  }
     constexpr auto  shape()   const noexcept { return shape_;          }
-    constexpr auto  stride() const noexcept { return stride_type{get<1>(shape_),fixed<1>}; }
+    constexpr auto  stride()  const noexcept { return stride_type{get<1>(shape_),fixed<1>}; }
 
     constexpr auto  index(auto i0)           const noexcept { return i0; }
     constexpr auto  index(auto i1, auto i0)  const noexcept { return i0 + i1*get<1>(shape_); }
