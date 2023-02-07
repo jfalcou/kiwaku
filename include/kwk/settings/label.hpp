@@ -10,7 +10,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <concepts>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct label_ : rbr::as_keyword<label_>
   {
@@ -34,5 +34,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Label setting for kwk::table and kwk::view
   //================================================================================================
-  inline constexpr detail::label_ label = {};
+  inline constexpr __::label_ label = {};
 }

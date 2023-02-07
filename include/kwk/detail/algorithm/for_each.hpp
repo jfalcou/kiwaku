@@ -14,7 +14,7 @@
 
 namespace kwk
 {
-  namespace detail
+  namespace __
   {
     //==============================================================================================
     // n-Dimensional for_each generator

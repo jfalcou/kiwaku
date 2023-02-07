@@ -94,15 +94,15 @@ namespace kwk
 
   /// This deduction guide is provided for kwk::table to allow deduction from a list of options
   template<rbr::concepts::option... O>
-  table(O const&...) -> table<detail::builder<rbr::settings(table_, O{}...)>>;
+  table(O const&...) -> table<__::builder<rbr::settings(table_, O{}...)>>;
 
   /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
   template<rbr::concepts::option... O>
-  table(rbr::settings<O...> const&) -> table<detail::builder<rbr::settings(table_, O{}...)>>;
+  table(rbr::settings<O...> const&) -> table<__::builder<rbr::settings(table_, O{}...)>>;
 
   /// This deduction guide is provided for kwk::table to allow deduction from another container
   template<concepts::container C>
-  table(C const&) -> table<detail::builder<C::archetype(table_)> >;
+  table(C const&) -> table<__::builder<C::archetype(table_)> >;
 
   //================================================================================================
   //! @}
@@ -111,7 +111,7 @@ namespace kwk
   /// Type helper
   template<auto... Settings> struct make_table
   {
-    using type = table<detail::builder<rbr::settings(table_,Settings...)>>;
+    using type = table<__::builder<rbr::settings(table_,Settings...)>>;
   };
 
   template<auto... Settings>

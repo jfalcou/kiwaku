@@ -17,7 +17,7 @@
 #include <kwk/utility/traits/extent.hpp>
 #include <array>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<typename M>
   struct check_dynamic : std::bool_constant<concepts::dynamic_axis<M>>
@@ -267,12 +267,12 @@ namespace kwk::detail
 // Tuple interface adaptation
 //==================================================================================================
 template<auto Desc>
-struct  std::tuple_size<kwk::detail::prefilled<Desc>>
-      : std::integral_constant<std::int32_t,kwk::detail::prefilled<Desc>::static_size>
+struct  std::tuple_size<kwk::__::prefilled<Desc>>
+      : std::integral_constant<std::int32_t,kwk::__::prefilled<Desc>::static_size>
 {};
 
 template<std::size_t N, auto Desc>
-struct  std::tuple_element<N, kwk::detail::prefilled<Desc>>
+struct  std::tuple_element<N, kwk::__::prefilled<Desc>>
 {
-  using type = std::remove_cvref_t<decltype(get<N>(std::declval<kwk::detail::prefilled<Desc>>()))>;
+  using type = std::remove_cvref_t<decltype(get<N>(std::declval<kwk::__::prefilled<Desc>>()))>;
 };

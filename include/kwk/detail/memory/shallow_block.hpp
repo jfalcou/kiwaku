@@ -8,7 +8,7 @@
 #pragma once
 #include <type_traits>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<typename T> struct shallow_block
   {

@@ -10,7 +10,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <cstdint>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct type_ : rbr::as_keyword<type_>
   {
@@ -43,13 +43,13 @@ namespace kwk::detail
 
 namespace kwk
 {
-  constexpr inline detail::type_ type{};
+  constexpr inline __::type_ type{};
 
   //================================================================================================
   //! @ingroup  settings
   //! @brief    Type setting for kwk::table
   //================================================================================================
-  template<typename T> constexpr inline detail::type_::info<T> as{};
+  template<typename T> constexpr inline __::type_::info<T> as{};
 
   /// Pre-defined type settings for float
   constexpr inline auto single_ = as<float>;

@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <memory>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<typename T> struct heap_block
   {

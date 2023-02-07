@@ -9,7 +9,7 @@
 
 #include <kwk/detail/kumi.hpp>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<typename... Coords>
   constexpr auto setup_linear_interpolation(Coords... p) noexcept
@@ -48,7 +48,7 @@ namespace kwk::detail
     {
       // setup_linear_interpolation computes the 2^N discrete coordinates and associated
       // coefficients
-      auto[coord,coeff] = detail::setup_linear_interpolation(p...);
+      auto[coord,coeff] = __::setup_linear_interpolation(p...);
 
       // Turn the discrete indexing into values
       auto pos = kumi::map( [&](auto v){ return data(v); }, coord );
@@ -75,10 +75,10 @@ namespace kwk
   //================================================================================================
   //! @brief Round-to-floor interpolation strategy
   //================================================================================================
-  inline constexpr detail::floor_ floor = {};
+  inline constexpr __::floor_ floor = {};
 
   //================================================================================================
   //! @brief Linear interpolation strategy
   //================================================================================================
-  inline constexpr detail::linear_ linear = {};
+  inline constexpr __::linear_ linear = {};
 }

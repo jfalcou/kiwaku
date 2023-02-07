@@ -8,14 +8,14 @@
 #pragma once
 #include <kwk/utility/container/shape.hpp>
 
-namespace kwk::detail { struct source_; }
+namespace kwk::__ { struct source_; }
 
 namespace kwk
 {
   template<typename T> struct ptr_source
   {
     using stored_value_type = ptr_source<T>;
-    using keyword_type      = detail::source_;
+    using keyword_type      = __::source_;
 
     using value_type      = std::remove_const_t<T>;
     using reference       = std::add_lvalue_reference_t<T>;

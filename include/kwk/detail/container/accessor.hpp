@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace kwk::detail
+namespace kwk::__
 {
   //================================================================================================
   // Order N general cases

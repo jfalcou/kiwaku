@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <algorithm>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<typename T, std::ptrdiff_t Size>
   struct stack_block

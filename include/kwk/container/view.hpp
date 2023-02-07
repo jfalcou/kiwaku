@@ -89,16 +89,16 @@ namespace kwk
   /// This deduction guide is provided for kwk::view to allow deduction from a list of options
   template<rbr::concepts::option... O>
   view(O const&...)
-    ->  view<detail::builder<rbr::settings(view_, O{}...)>>;
+    ->  view<__::builder<rbr::settings(view_, O{}...)>>;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another view's settings
   template<rbr::concepts::option... O>
   view(rbr::settings<O...> const&)
-    ->  view< detail::builder<rbr::settings(view_, O{}...)>>;
+    ->  view< __::builder<rbr::settings(view_, O{}...)>>;
 
   /// This deduction guide is provided for kwk::view to allow deduction from another container
   template<concepts::container C>
-  view(C const&)  -> view<detail::builder<C::archetype(view_)>>;
+  view(C const&)  -> view<__::builder<C::archetype(view_)>>;
 
   //================================================================================================
   //! @}
@@ -107,7 +107,7 @@ namespace kwk
   /// Type helper
   template<auto... Settings> struct make_view
   {
-    using type = view<detail::builder<rbr::settings(view_,Settings...)>>;
+    using type = view<__::builder<rbr::settings(view_,Settings...)>>;
   };
 
   template<auto... Settings>

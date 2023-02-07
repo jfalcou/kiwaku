@@ -17,7 +17,7 @@
 
 namespace kwk { struct joker; }
 
-namespace kwk::detail
+namespace kwk::__
 {
   // Axis descriptor with a name
   template<rbr::literals::str_ Name, typename Content = joker>
@@ -150,37 +150,37 @@ namespace kwk::detail
 // Pre-made axis objects
 namespace kwk
 {
-  inline constexpr detail::axis_<"height">  height  = {};
-  inline constexpr detail::axis_<"width">   width   = {};
-  inline constexpr detail::axis_<"depth">   depth   = {};
-  inline constexpr detail::axis_<"channel"> channel = {};
+  inline constexpr __::axis_<"height">  height  = {};
+  inline constexpr __::axis_<"width">   width   = {};
+  inline constexpr __::axis_<"depth">   depth   = {};
+  inline constexpr __::axis_<"channel"> channel = {};
 
   template<rbr::literals::str_ Name>
-  inline constexpr detail::axis_<Name>      axis    = {};
+  inline constexpr __::axis_<Name>      axis    = {};
 
   template<std::int32_t N>
-  inline constexpr detail::indexed_axis_<N> along   = {};
+  inline constexpr __::indexed_axis_<N> along   = {};
 }
 
 // Tuple interface adaptation
 template<std::int32_t N, typename Content>
-struct  std::tuple_size<kwk::detail::indexed_axis_<N,Content>>
+struct  std::tuple_size<kwk::__::indexed_axis_<N,Content>>
       : std::integral_constant<std::int32_t,1>
 {};
 
 template<std::size_t N, std::int32_t I, typename Content>
-struct std::tuple_element<N, kwk::detail::indexed_axis_<I,Content>>
+struct std::tuple_element<N, kwk::__::indexed_axis_<I,Content>>
 {
-  using type = kwk::detail::indexed_axis_<I,Content>;
+  using type = kwk::__::indexed_axis_<I,Content>;
 };
 
 template<rbr::literals::str_ Name, typename Content>
-struct  std::tuple_size<kwk::detail::axis_<Name,Content>>
+struct  std::tuple_size<kwk::__::axis_<Name,Content>>
       : std::integral_constant<std::int32_t,1>
 {};
 
 template<std::size_t N, rbr::literals::str_ Name, typename Content>
-struct std::tuple_element<N, kwk::detail::axis_<Name,Content>>
+struct std::tuple_element<N, kwk::__::axis_<Name,Content>>
 {
-  using type = kwk::detail::axis_<Name,Content>;
+  using type = kwk::__::axis_<Name,Content>;
 };

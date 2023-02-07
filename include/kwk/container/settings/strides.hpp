@@ -18,7 +18,7 @@ namespace kwk
 {
   // The strides are fetched or computed from the size
   template<typename Category, rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(Category c, detail::strides_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick(Category c, __::strides_, Settings const& opts)
   {
     using shape_type = rbr::result::fetch_t<size,Settings>;
 

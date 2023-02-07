@@ -11,7 +11,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <concepts>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct strides_ : rbr::as_keyword<strides_>
   {
@@ -34,5 +34,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Stride setting for kwk::table and kwk::view
   //================================================================================================
-  inline constexpr detail::strides_ strides = {};
+  inline constexpr __::strides_ strides = {};
 }

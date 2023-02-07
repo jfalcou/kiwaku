@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <array>
 
-namespace kwk::detail
+namespace kwk::__
 {
   //================================================================================================
   // Find the static_size of static array like types

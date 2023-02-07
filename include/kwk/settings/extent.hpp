@@ -76,10 +76,10 @@ namespace kwk
   //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
   //================================================================================================
-  inline constexpr detail::combo<std::int32_t> extent  = {};
+  inline constexpr __::combo<std::int32_t> extent  = {};
 
   template<typename T>
-  inline constexpr detail::combo<T> extent_of  = {};
+  inline constexpr __::combo<T> extent_of  = {};
 
   inline constexpr auto _1D = extent();
   inline constexpr auto _2D = _1D();

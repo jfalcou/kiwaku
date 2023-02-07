@@ -13,7 +13,7 @@
 #include <kwk/detail/memory/block.hpp>
 #include <kwk/detail/raberu.hpp>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<rbr::concepts::settings auto Options>
   struct  builder
@@ -38,8 +38,8 @@ namespace kwk::detail
     }();
 
     // Builds all elements of a container: accessor, metadata, memory block
-    using accessor    = detail::accessor<shape, stride>;
-    using metadata    = detail::metadata<result::pick_t<label, options_t>>;
+    using accessor    = __::accessor<shape, stride>;
+    using metadata    = __::metadata<result::pick_t<label, options_t>>;
     using value_type  = typename result::pick_t<kwk::type,options_t>::type;
     using memory      = block_t<kind, shape, value_type, options_t>;
   };

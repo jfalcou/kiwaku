@@ -15,7 +15,7 @@
 namespace kwk
 {
   template<typename Category, rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(Category, detail::label_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick(Category, __::label_, Settings const& opts)
   {
     return opts[label];
   }

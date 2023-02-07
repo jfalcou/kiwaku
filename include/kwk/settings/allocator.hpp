@@ -10,7 +10,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <kwk/concepts/allocator.hpp>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct allocator_ : rbr::as_keyword<allocator_>
   {
@@ -32,5 +32,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Allocator setting for kwk::table
   //================================================================================================
-  inline constexpr detail::allocator_ allocator = {};
+  inline constexpr __::allocator_ allocator = {};
 }
