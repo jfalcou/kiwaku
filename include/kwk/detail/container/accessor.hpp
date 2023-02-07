@@ -16,7 +16,7 @@ namespace kwk::__
   //================================================================================================
   // Order N general cases
   //================================================================================================
-  template<auto Shape, auto Stride> struct accessor
+  template<auto Shape, auto Stride, bool useSpecificStrides> struct accessor
   {
     using shape_type                   = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                  = std::remove_cvref_t<decltype(Stride)>;
@@ -35,18 +35,6 @@ namespace kwk::__
 
     constexpr auto index(auto... is)  const noexcept { return stride_.linearize(is...); }
 
-    constexpr void reshape( shape_type const& s ) noexcept
-    {
-      shape_  = s;
-      stride_ = as_stride(s);
-    }
-
-    constexpr void reshape( shape_type const& s, stride_type const& st ) noexcept
-    {
-      shape_  = s;
-      stride_ = st;
-    }
-
     constexpr void swap( accessor& other ) noexcept
     {
       std::swap(shape_ , other.shape_  );
@@ -60,9 +48,9 @@ namespace kwk::__
   //================================================================================================
   // Order N shape is fully static: no contents, only computation
   //================================================================================================
-  template<auto Shape, auto Stride>
-  requires( Shape.is_fully_static )
-  struct accessor<Shape,Stride>
+  template<auto Shape, auto Stride, bool useSpecificStrides>
+  requires( Shape.is_fully_static && Stride.is_fully_static )
+  struct accessor<Shape,Stride,useSpecificStrides>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
@@ -80,12 +68,11 @@ namespace kwk::__
   };
 
   //================================================================================================
-  // Optimization : runtime 1D shape + unit stride
-  // Expected sizeof : sizeof(void*) + sizeof(shape[0])
+  // Optimization : runtime 1D shape + default unit stride
   //================================================================================================
   template<auto Shape, auto Stride>
-  requires( !Shape.is_fully_static && Shape.order() == 1 && Stride.is_unit )
-  struct  accessor<Shape, Stride>
+  requires( !Shape.is_fully_static && Shape.order() == 1 )
+  struct  accessor<Shape, Stride, false>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
@@ -101,19 +88,49 @@ namespace kwk::__
     constexpr stride_type stride()        const noexcept  { return {};              }
     constexpr auto        index(auto is)  const noexcept  { return is;              }
 
-    constexpr void reshape( shape_type const& s ) noexcept { shape_ = s; }
-    constexpr void swap( accessor& other )        noexcept { std::swap(shape_ , other.shape_  ); }
+    constexpr void swap( accessor& other )        noexcept { shape_.swap( other.shape_ ); }
 
     shape_type shape_;
   };
 
   //================================================================================================
-  // Optimization : runtime 2D shape + unit stride
-  // Expected sizeof : sizeof(void*) + sizeof(shape)
+  // Optimization : runtime 1D shape + non-default stride
   //================================================================================================
   template<auto Shape, auto Stride>
-  requires( !Shape.is_fully_static && Shape.order() == 2 && Stride.is_unit )
-  struct  accessor<Shape, Stride>
+  requires( !Shape.is_fully_static && Shape.order() == 1 )
+  struct  accessor<Shape, Stride, true>
+  {
+    using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
+    using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
+    static constexpr auto static_order  = shape_type::static_size;
+
+    constexpr   accessor() : shape_{} {}
+    constexpr   accessor(rbr::concepts::settings auto const& opts)
+              : shape_ ( pick(kwk::size,opts) )
+              , stride_( pick(kwk::strides,opts) )
+    {}
+
+    constexpr auto        size()          const noexcept  { return get<0>(shape_);      }
+    constexpr auto        shape()         const noexcept  { return shape_;              }
+    constexpr stride_type stride()        const noexcept  { return stride_;             }
+    constexpr auto        index(auto i0)  const noexcept  { return i0*get<0>(stride_);  }
+
+    constexpr void swap( accessor& other ) noexcept
+    {
+      shape_.swap( other.shape_ );
+      stride_.swap( other.stride_ );
+    }
+
+    shape_type  shape_;
+    stride_type stride_;
+  };
+
+  //================================================================================================
+  // Optimization : runtime 2D shape + default unit stride
+  //================================================================================================
+  template<auto Shape, auto Stride>
+  requires( !Shape.is_fully_static && Shape.order() == 2 )
+  struct  accessor<Shape, Stride, false>
   {
     using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
@@ -124,18 +141,49 @@ namespace kwk::__
                         : shape_ ( pick(kwk::size,opts) )
     {}
 
-    constexpr auto  size()  const noexcept { return shape_.numel();  }
-    constexpr auto  shape() const noexcept { return shape_;          }
+    constexpr auto  size()    const noexcept { return shape_.numel();  }
+    constexpr auto  shape()   const noexcept { return shape_;          }
+    constexpr auto  stride() const noexcept { return stride_type{get<1>(shape_),fixed<1>}; }
 
-    constexpr auto stride() const noexcept { return stride_type{get<1>(shape_),fixed<1>}; }
+    constexpr auto  index(auto i0)           const noexcept { return i0; }
+    constexpr auto  index(auto i1, auto i0)  const noexcept { return i0 + i1*get<1>(shape_); }
 
-    constexpr void reshape( shape_type const& s ) { shape_ = s; }
-
-    constexpr auto index(auto i0)           const noexcept { return i0; }
-    constexpr auto index(auto i1, auto i0)  const noexcept { return i0 + i1*get<1>(shape_); }
-
-    constexpr void swap( accessor& other ) noexcept { std::swap(shape_ , other.shape_  ); }
+    constexpr void  swap( accessor& other ) noexcept { std::swap(shape_ , other.shape_  ); }
 
     shape_type  shape_;
+  };
+
+  //================================================================================================
+  // Optimization : runtime 2D shape + specific stride
+  //================================================================================================
+  template<auto Shape, auto Stride>
+  requires( !Shape.is_fully_static && Shape.order() == 2 )
+  struct  accessor<Shape, Stride, true>
+  {
+    using shape_type                    = std::remove_cvref_t<decltype(Shape)>;
+    using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
+    static constexpr auto static_order  = shape_type::static_size;
+
+    constexpr accessor() : shape_{} {}
+    constexpr accessor(rbr::concepts::settings auto const& opts)
+              : shape_ ( pick(kwk::size,opts) )
+              , stride_( pick(kwk::strides,opts) )
+    {}
+
+    constexpr auto  size()    const noexcept { return shape_.numel(); }
+    constexpr auto  shape()   const noexcept { return shape_;         }
+    constexpr auto  stride()  const noexcept { return stride_;        }
+
+    constexpr auto index(auto i0)           const noexcept  { return i0; }
+    constexpr auto index(auto i1, auto i0)  const noexcept  { return stride_.linearize(i1,i0); }
+
+    constexpr void swap( accessor& other ) noexcept
+    {
+      shape_.swap( other.shape_ );
+      stride_.swap( other.stride_ );
+    }
+
+    shape_type  shape_;
+    stride_type stride_;
   };
 }

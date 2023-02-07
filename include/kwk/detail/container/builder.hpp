@@ -28,7 +28,7 @@ namespace kwk::__
     static constexpr auto stride  = pick(strides, options);
 
     // Builds all elements of a container: accessor, metadata, memory block
-    using accessor    = __::accessor<shape, stride>;
+    using accessor    = __::accessor<shape, stride, options_t::contains(strides)>;
     using metadata    = __::metadata<result::pick_t<label, options_t>>;
     using value_type  = typename result::pick_t<kwk::value_type,options_t>::type;
     using memory      = block_t<kind, shape, value_type, options_t>;
