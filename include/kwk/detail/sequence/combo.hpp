@@ -140,13 +140,13 @@ namespace kwk::__
     KWK_FORCEINLINE constexpr auto operator()() const noexcept
     {
       auto renum = kumi::map([]<typename M>( M m) { return make_axis(m); } , storage);
-      return make_combo<T>(push_back(renum,__::indexed_axis_<0>{}));
+      return make_combo<T>(push_back(renum,__::axis_<0>{}));
     }
 
     KWK_FORCEINLINE constexpr auto operator[](std::integral auto i) const noexcept
     {
       auto renum = kumi::map([]<typename M>( M m) { return make_axis(m); } , storage);
-      return make_combo<T>(push_back(renum,__::indexed_axis_<0,decltype(i)>{i}));
+      return make_combo<T>(push_back(renum,__::axis_<0,decltype(i)>{i}));
     }
 
     KWK_FORCEINLINE
@@ -178,7 +178,7 @@ namespace kwk::__
     static KWK_FORCEINLINE constexpr auto make_axis(M m) noexcept
     {
       if constexpr( requires(M) { M::static_index; })
-        return __::indexed_axis_<M::static_index+1, decltype(m.value)>{m.value};
+        return __::axis_<M::static_index+1, decltype(m.value)>{m.value};
       else
         return m;
     }
