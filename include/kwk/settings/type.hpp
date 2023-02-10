@@ -24,7 +24,7 @@ namespace kwk::__
       constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
       friend std::ostream& operator<<(std::ostream& os, info const&)
       {
-        return os << rbr::detail::type_name<T>();
+        return os << rbr::detail::type<T>.name();
       }
     };
 

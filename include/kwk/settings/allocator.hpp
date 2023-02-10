@@ -21,7 +21,7 @@ namespace kwk::__
 
     template<typename A> std::ostream& show(std::ostream& os, A) const
     {
-      return os << "Allocation via: " << rbr::detail::type_name<A>();
+      return os << "Allocation via: " << rbr::detail::type<A>.name();
     }
   };
 }

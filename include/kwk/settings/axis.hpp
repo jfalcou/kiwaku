@@ -108,7 +108,7 @@ namespace kwk
   template<std::int32_t N>
   inline constexpr __::axis_<N> along = {};
 
-  template<rbr::literals::str_ ID>
+  template<rbr::literals::str ID>
   inline constexpr __::axis_<ID> axis = {};
 
   inline constexpr auto height  = axis<"height">;

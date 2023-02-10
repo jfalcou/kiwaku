@@ -47,7 +47,7 @@ namespace kwk::__
     template<typename Src> std::ostream& display(std::ostream& os, Src src) const
     {
       auto ptr = storage(src);
-      return os << "Source: " << ptr << " (" << rbr::detail::type_name<decltype(ptr)>() << ") ";
+      return os << "Source: " << ptr << " (" << rbr::detail::type<decltype(ptr)>.name() << ") ";
     }
   };
 }
