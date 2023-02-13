@@ -10,7 +10,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <kwk/concepts/allocator.hpp>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct allocator_ : rbr::as_keyword<allocator_>
   {
@@ -21,7 +21,7 @@ namespace kwk::detail
 
     template<typename A> std::ostream& show(std::ostream& os, A) const
     {
-      return os << "Allocation via: " << rbr::detail::type_name<A>();
+      return os << "Allocation via: " << rbr::detail::type<A>.name();
     }
   };
 }
@@ -32,5 +32,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Allocator setting for kwk::table
   //================================================================================================
-  inline constexpr detail::allocator_ allocator = {};
+  inline constexpr __::allocator_ allocator = {};
 }

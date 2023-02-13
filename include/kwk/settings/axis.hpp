@@ -17,37 +17,48 @@
 
 namespace kwk { struct joker; }
 
-namespace kwk::detail
+namespace kwk::__
 {
   // Axis descriptor with a name
-  template<rbr::literals::str_ Name, typename Content = joker>
-  struct axis_ : rbr::as_keyword<axis_<Name,Content>>
+  template<auto ID, typename Content = joker>
+  struct axis_ : rbr::as_keyword<axis_<ID,Content>>
   {
     using is_product_type = void;
-    using axis_kind       = axis_<Name,joker>;
+    using axis_kind       = axis_<ID,joker>;
     using content_type    = Content;
     using base_type       = std::int32_t;
+    using id_type         = decltype(ID);
+    static constexpr bool is_indexed = std::is_integral_v<id_type>;
 
     // Size info
     static constexpr std::int32_t static_size = 1;
     static constexpr std::int32_t size() noexcept { return static_size; }
 
-    static constexpr std::int32_t static_index  = -1;
-    static constexpr std::int32_t index() noexcept { return static_index; }
+    // Indexing info
+    static constexpr std::int32_t index() noexcept
+    {
+      if constexpr(is_indexed) return ID; else return -1;
+    }
+    static constexpr std::int32_t static_index = index();
 
     static constexpr axis_kind const base() { return {}; }
 
-    using rbr::as_keyword<axis_<Name,Content>>::operator=;
+    using rbr::as_keyword<axis_<ID,Content>>::operator=;
 
     constexpr axis_() {}
-    explicit constexpr axis_(Content c) : value(c) {}
+    constexpr axis_(auto v) :value(v) {}
 
     template<typename T>
-    std::ostream& display(std::ostream& os, T v) const { return os << Name.value() << ": " << v; }
+    std::ostream& display(std::ostream& os, T v) const
+    {
+      if constexpr(is_indexed)  return os << "along<" << ID << ">: " << v;
+      else                      return os << ID.value() << ": " << v;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, axis_ a)
     {
-      os << Name.value();
+      if constexpr(is_indexed)  return os << "along<" << ID << ">";
+      else                      return os << ID.value();
       if constexpr(concepts::static_axis<axis_>) os << "[" <<  +a.value << "]";
       return os;
     }
@@ -60,87 +71,31 @@ namespace kwk::detail
     friend constexpr decltype(auto) get(axis_ const& s) noexcept requires(I==0) { return s; }
 
     // Axis combination
-    template<rbr::literals::str_ M, typename C>
+    template<auto M, typename C>
     friend KWK_FORCEINLINE constexpr auto compress(axis_ a, axis_<M,C> b) noexcept
     {
-      auto v = a.value * b.value;
-      return axis_<M,decltype(v)>{v};
-    }
+      auto v                          = a.value * b.value;
+      using v_t                       = decltype(v);
+      constexpr bool is_other_indexed = axis_<M,C>::is_indexed;
 
-    // Axis as static value
-    constexpr auto operator[](std::integral auto N) const noexcept
-    {
-      return axis_<Name,decltype(N)>{N};
-    }
-
-    Content value;
-  };
-
-  // Axis descriptor with a numerical index
-  template<std::int32_t N, typename Content = joker>
-  struct indexed_axis_ : rbr::as_keyword<indexed_axis_<N,Content>>
-  {
-    using is_product_type = void;
-    using axis_kind       = indexed_axis_<N,joker>;
-    using content_type    = Content;
-    using base_type       = std::int32_t;
-
-    static constexpr std::int32_t static_index  = N;
-    static constexpr std::int32_t index() noexcept { return static_index; }
-
-    // Size info
-    static constexpr std::int32_t static_size = 1;
-    static constexpr std::int32_t size() noexcept { return static_size; }
-    static constexpr axis_kind const base() { return {}; }
-
-    constexpr indexed_axis_() {}
-    constexpr indexed_axis_(auto v) :value(v) {}
-
-    using rbr::as_keyword<indexed_axis_<N,Content>>::operator=;
-
-    template<typename T>
-    std::ostream& display(std::ostream& os, T v) const { return os << "along<" << N << ">: " << v; }
-
-    friend std::ostream& operator<<(std::ostream& os, indexed_axis_ a)
-    {
-      os << "along<" << N << ">";
-      if constexpr(concepts::static_axis<indexed_axis_>) os << "[" <<  +a.value << "]";
-      return os;
-    }
-
-    // Tuple interface
-    template<std::size_t I>
-    friend constexpr decltype(auto) get(indexed_axis_& s) noexcept requires(I==0) { return s; }
-
-    template<std::size_t I>
-    friend constexpr decltype(auto) get(indexed_axis_ const& s) noexcept requires(I==0) { return s; }
-
-    // Axis combination
-    template<std::int32_t M, typename C>
-    friend KWK_FORCEINLINE constexpr auto compress(indexed_axis_ a, indexed_axis_<M,C> b) noexcept
-    {
-      auto v = a.value * b.value;
-      return indexed_axis_<std::min(M,N),decltype(v)>{v};
-    }
-
-    template<rbr::literals::str_ M, typename C>
-    friend KWK_FORCEINLINE constexpr auto compress(indexed_axis_ a, axis_<M,C> b) noexcept
-    {
-      auto v = a.value * b.value;
-      return axis_<M,decltype(v)>{v};
-    }
-
-    template<rbr::literals::str_ M, typename C>
-    friend KWK_FORCEINLINE constexpr auto compress(axis_<M,C> a, indexed_axis_ b) noexcept
-    {
-      auto v = a.value * b.value;
-      return indexed_axis_<N,decltype(v)>{v};
+      if      constexpr(is_indexed && is_other_indexed)
+      {
+        return axis_<std::min(M,ID),v_t>{v};
+      }
+      else if constexpr(!is_indexed && is_other_indexed)
+      {
+        return axis_<ID,v_t>{v};
+      }
+      else if constexpr(!is_other_indexed)
+      {
+        return axis_<M,v_t>{v};
+      }
     }
 
     // Axis as static value
     constexpr auto operator[](std::integral auto v) const noexcept
     {
-      return indexed_axis_<N,decltype(v)>{v};
+      return axis_<ID,decltype(v)>{v};
     }
 
     Content value;
@@ -150,37 +105,26 @@ namespace kwk::detail
 // Pre-made axis objects
 namespace kwk
 {
-  inline constexpr detail::axis_<"height">  height  = {};
-  inline constexpr detail::axis_<"width">   width   = {};
-  inline constexpr detail::axis_<"depth">   depth   = {};
-  inline constexpr detail::axis_<"channel"> channel = {};
-
-  template<rbr::literals::str_ Name>
-  inline constexpr detail::axis_<Name>      axis    = {};
-
   template<std::int32_t N>
-  inline constexpr detail::indexed_axis_<N> along   = {};
+  inline constexpr __::axis_<N> along = {};
+
+  template<rbr::literals::str ID>
+  inline constexpr __::axis_<ID> axis = {};
+
+  inline constexpr auto height  = axis<"height">;
+  inline constexpr auto width   = axis<"width">;
+  inline constexpr auto depth   = axis<"depth">;
+  inline constexpr auto channel = axis<"channel">;
 }
 
 // Tuple interface adaptation
-template<std::int32_t N, typename Content>
-struct  std::tuple_size<kwk::detail::indexed_axis_<N,Content>>
+template<auto ID, typename Content>
+struct  std::tuple_size<kwk::__::axis_<ID,Content>>
       : std::integral_constant<std::int32_t,1>
 {};
 
-template<std::size_t N, std::int32_t I, typename Content>
-struct std::tuple_element<N, kwk::detail::indexed_axis_<I,Content>>
+template<std::size_t N, auto ID, typename Content>
+struct std::tuple_element<N, kwk::__::axis_<ID,Content>>
 {
-  using type = kwk::detail::indexed_axis_<I,Content>;
-};
-
-template<rbr::literals::str_ Name, typename Content>
-struct  std::tuple_size<kwk::detail::axis_<Name,Content>>
-      : std::integral_constant<std::int32_t,1>
-{};
-
-template<std::size_t N, rbr::literals::str_ Name, typename Content>
-struct std::tuple_element<N, kwk::detail::axis_<Name,Content>>
-{
-  using type = kwk::detail::axis_<Name,Content>;
+  using type = kwk::__::axis_<ID,Content>;
 };

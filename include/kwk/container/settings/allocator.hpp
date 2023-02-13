@@ -17,12 +17,12 @@ namespace kwk
 {
   //  Table use heap_allocator by default
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(detail::table_, detail::allocator_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick(__::table_, __::allocator_, Settings const& opts)
   {
     return opts[allocator | heap_allocator{}];
   }
 
   //  View can't have allocator - hard error
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(detail::view_, detail::allocator_, Settings const&) =delete;
+  KWK_FORCEINLINE constexpr auto pick(__::view_, __::allocator_, Settings const&) =delete;
 }

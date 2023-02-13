@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace kwk::detail
+namespace kwk::__
 {
   //================================================================================================
   // Check if a given list of types is a set

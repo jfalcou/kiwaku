@@ -23,7 +23,7 @@ namespace kwk
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      return detail::for_each(KWK_FWD(f), KWK_FWD(c), c.shape() );
+      return __::for_each(KWK_FWD(f), KWK_FWD(c), c.shape() );
     }( std::make_index_sequence<std::remove_cvref_t<Container>::static_order>{} );
   }
 
@@ -35,7 +35,7 @@ namespace kwk
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      return detail::for_each_index(KWK_FWD(f), KWK_FWD(c), c.shape() );
+      return __::for_each_index(KWK_FWD(f), KWK_FWD(c), c.shape() );
     }( std::make_index_sequence<std::remove_cvref_t<Container>::static_order>{} );
   }
 }

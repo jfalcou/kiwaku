@@ -19,10 +19,10 @@
 namespace kwk
 {
   struct joker;
-  namespace detail { struct size_; }
+  namespace __ { struct size_; }
 }
 
-namespace kwk::detail
+namespace kwk::__
 {
   //================================================================================================
   // combo sequence allow for constructing sequence of static value and placeholders
@@ -38,7 +38,7 @@ namespace kwk::detail
 
     // combo is its self option keyword
     using stored_value_type = combo<T,Axis...>;
-    using keyword_type      = detail::size_;
+    using keyword_type      = __::size_;
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     // Size info
@@ -140,13 +140,13 @@ namespace kwk::detail
     KWK_FORCEINLINE constexpr auto operator()() const noexcept
     {
       auto renum = kumi::map([]<typename M>( M m) { return make_axis(m); } , storage);
-      return make_combo<T>(push_back(renum,detail::indexed_axis_<0>{}));
+      return make_combo<T>(push_back(renum,__::axis_<0>{}));
     }
 
     KWK_FORCEINLINE constexpr auto operator[](std::integral auto i) const noexcept
     {
       auto renum = kumi::map([]<typename M>( M m) { return make_axis(m); } , storage);
-      return make_combo<T>(push_back(renum,detail::indexed_axis_<0,decltype(i)>{i}));
+      return make_combo<T>(push_back(renum,__::axis_<0,decltype(i)>{i}));
     }
 
     KWK_FORCEINLINE
@@ -178,7 +178,7 @@ namespace kwk::detail
     static KWK_FORCEINLINE constexpr auto make_axis(M m) noexcept
     {
       if constexpr( requires(M) { M::static_index; })
-        return detail::indexed_axis_<M::static_index+1, decltype(m.value)>{m.value};
+        return __::axis_<M::static_index+1, decltype(m.value)>{m.value};
       else
         return m;
     }
@@ -227,11 +227,11 @@ namespace kwk::detail
 
 // Tuple interface adaptation
 template<typename T, typename... D>
-struct  std::tuple_size<kwk::detail::combo<T, D...>>
-      : std::integral_constant<std::int32_t,kwk::detail::combo<T, D...>::static_size>
+struct  std::tuple_size<kwk::__::combo<T, D...>>
+      : std::integral_constant<std::int32_t,kwk::__::combo<T, D...>::static_size>
 {};
 
 template<std::size_t N, typename T, typename... D>
-struct  std::tuple_element<N, kwk::detail::combo<T,D...>> :
+struct  std::tuple_element<N, kwk::__::combo<T,D...>> :
         std::tuple_element<N, kumi::tuple<D...>>
 {};

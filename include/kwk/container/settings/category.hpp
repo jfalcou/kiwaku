@@ -13,7 +13,7 @@
 #include <ostream>
 
 // Pre-made categories
-namespace kwk::detail
+namespace kwk::__
 {
   struct view_
   {
@@ -49,8 +49,8 @@ namespace kwk::detail
 namespace kwk
 {
   /// kwk::view category setting
-  inline constexpr detail::view_ view_    = {};
+  inline constexpr __::view_ view_    = {};
 
   /// kwk::table category setting
-  inline constexpr detail::table_ table_  = {};
+  inline constexpr __::table_ table_  = {};
 }

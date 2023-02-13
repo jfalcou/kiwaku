@@ -10,7 +10,7 @@
 #include <kwk/container/pick.hpp>
 #include <kwk/detail/raberu.hpp>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<typename... Data> struct metadata;
 

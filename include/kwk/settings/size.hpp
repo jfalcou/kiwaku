@@ -11,7 +11,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <concepts>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct size_ : rbr::as_keyword<size_>
   {
@@ -24,9 +24,9 @@ namespace kwk::detail
 
     // Extent -> shape<Extent>{}
     template<typename SizeType, typename... Ops>
-    constexpr auto operator=(detail::combo<SizeType,Ops...> const&) const noexcept
+    constexpr auto operator=(__::combo<SizeType,Ops...> const&) const noexcept
     {
-      return shape<detail::combo<SizeType,Ops...>{}>{};
+      return shape<__::combo<SizeType,Ops...>{}>{};
     }
 
     // Extent from of_size(...)
@@ -50,5 +50,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Size setting for kwk::table and kwk::view
   //================================================================================================
-  inline constexpr detail::size_ size = {};
+  inline constexpr __::size_ size = {};
 }

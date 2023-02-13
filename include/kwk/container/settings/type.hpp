@@ -19,7 +19,7 @@ namespace kwk
   // source >> type however has we can't just cast the data on the fly
   // Views can't have BOTH source and type
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(detail::view_ c, detail::type_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick(__::view_ c, __::type_, Settings const& opts)
   {
     static_assert ( Settings::contains(source) != Settings::contains(type)
                   , "[KWK] - Error: view can't specify both source and type"
@@ -38,7 +38,7 @@ namespace kwk
   // Tables find their type int he type option OR the source if no type is used
   // Both options can coexist as table will just copy the source data in a block of type
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(detail::table_ c, detail::type_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick(__::table_ c, __::type_, Settings const& opts)
   {
     if constexpr( Settings::contains(type) )
     {

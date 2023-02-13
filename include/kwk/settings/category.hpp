@@ -11,7 +11,7 @@
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct category_ : rbr::as_keyword<category_>
   {
@@ -31,5 +31,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Category setting discriminating **KIWAKU** containers
   //================================================================================================
-  inline constexpr detail::category_ category = {};
+  inline constexpr __::category_ category = {};
 }

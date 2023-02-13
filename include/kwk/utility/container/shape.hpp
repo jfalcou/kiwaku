@@ -24,7 +24,7 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
-namespace kwk::detail { struct size_; }
+namespace kwk::__ { struct size_; }
 
 namespace kwk
 {
@@ -42,15 +42,15 @@ namespace kwk
   template<std::integral SizeType, int..., concepts::extent<SizeType>... Ds>
   KWK_CONST constexpr auto of_size(Ds... ds) noexcept
   {
-    return detail::make_extent<kwk::shape,SizeType>(ds...);
+    return __::make_extent<kwk::shape,SizeType>(ds...);
   }
 
   /// @overload
   template<int..., typename... Ds>
   KWK_CONST constexpr   auto of_size( Ds... ds) noexcept
-          ->  decltype(of_size<typename detail::largest_integral<Ds...>::type>(ds...)  )
+          ->  decltype(of_size<typename __::largest_integral<Ds...>::type>(ds...)  )
   {
-    return of_size<typename detail::largest_integral<Ds...>::type>(ds...);
+    return of_size<typename __::largest_integral<Ds...>::type>(ds...);
   }
 
   /// @overload
@@ -109,9 +109,9 @@ namespace kwk
   //! @tparam Shape An instance of a [shape descriptor](@ref eve::extent)
   //================================================================================================
   template<auto Shape>
-  struct shape : kwk::detail::prefilled<Shape>
+  struct shape : kwk::__::prefilled<Shape>
   {
-    using parent = kwk::detail::prefilled<Shape>;
+    using parent = kwk::__::prefilled<Shape>;
 
     /// Compile-time shape descriptor
     static constexpr auto descriptor = Shape;
@@ -133,7 +133,7 @@ namespace kwk
 
     // shape is its self option keyword
     using stored_value_type = shape<Shape>;
-    using keyword_type      = detail::size_;
+    using keyword_type      = __::size_;
 
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
@@ -183,12 +183,12 @@ namespace kwk
     template<concepts::extent<size_type>... A>
     constexpr shape(A const&... dims) noexcept
     requires( !(std::convertible_to<A,size_type> && ...)
-            && make_combo<size_type>(Shape).is_equivalent(detail::as_descriptor<size_type>(A{}...))
+            && make_combo<size_type>(Shape).is_equivalent(__::as_descriptor<size_type>(A{}...))
             )
     {
       [&]<std::size_t... N>(std::index_sequence<N...>)
       {
-        this->fill(detail::as_axis(dims,get<N>(Shape),kumi::index<static_order-N-1>)...);
+        this->fill(__::as_axis(dims,get<N>(Shape),kumi::index<static_order-N-1>)...);
       }(std::make_index_sequence<sizeof...(A)>{});
     }
 
@@ -430,7 +430,7 @@ namespace kwk
     }
 
     template<typename T, typename... E>
-    constexpr bool is_similar( detail::combo<T,E...> const& o) const noexcept
+    constexpr bool is_similar( __::combo<T,E...> const& o) const noexcept
     {
       return descriptor.is_similar(o);
     }
@@ -480,7 +480,7 @@ namespace kwk
 
   /// Deduction guide for @ref kwk::shape
   template<typename... T>
-  shape(T...) -> shape< detail::descriptor_from<T...>() >;
+  shape(T...) -> shape< __::descriptor_from<T...>() >;
 
   //================================================================================================
   //! @brief Compress a kwk::shape to a given order

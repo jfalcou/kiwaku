@@ -15,7 +15,7 @@
 #include <kwk/concepts/range.hpp>
 #include <type_traits>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct source_ : rbr::as_keyword<source_>
   {
@@ -26,9 +26,9 @@ namespace kwk::detail
     constexpr auto operator=( Array&& a) const noexcept
     {
       using a_t = std::remove_reference_t<Array>;
-      return array_source < typename detail::array_traits<a_t>::value_type
-                          , detail::array_traits<a_t>::sizes
-                          >{detail::array_traits<a_t>::data(KWK_FWD(a))};
+      return array_source < typename __::array_traits<a_t>::value_type
+                          , __::array_traits<a_t>::sizes
+                          >{__::array_traits<a_t>::data(KWK_FWD(a))};
     }
 
     // ContiguousRange with .data()
@@ -47,7 +47,7 @@ namespace kwk::detail
     template<typename Src> std::ostream& display(std::ostream& os, Src src) const
     {
       auto ptr = storage(src);
-      return os << "Source: " << ptr << " (" << rbr::detail::type_name<decltype(ptr)>() << ") ";
+      return os << "Source: " << ptr << " (" << rbr::detail::type<decltype(ptr)>.name() << ") ";
     }
   };
 }
@@ -58,5 +58,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Data source setting for kwk::table and kwk::view
   //================================================================================================
-  inline constexpr detail::source_ source = {};
+  inline constexpr __::source_ source = {};
 }

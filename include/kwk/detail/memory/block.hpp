@@ -12,7 +12,7 @@
 #include <kwk/detail/memory/shallow_block.hpp>
 #include <kwk/detail/memory/stack_block.hpp>
 
-namespace kwk::detail
+namespace kwk::__
 {
   template<auto Kind, auto Shape, typename T, rbr::concepts::settings Settings>
   struct block_type;

@@ -17,7 +17,7 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct strides_;
 
@@ -68,9 +68,9 @@ namespace kwk
   //! @tparam Strides An instance of a stride descriptor
   //================================================================================================
   template<auto Strides>
-  struct stride  : detail::stride_base<Strides>::type
+  struct stride  : __::stride_base<Strides>::type
   {
-    using parent = typename detail::stride_base<Strides>::type;
+    using parent = typename __::stride_base<Strides>::type;
 
     /// Compile-time value for @ref glossary-order
     static constexpr std::int32_t static_order = parent::static_size;
@@ -89,7 +89,7 @@ namespace kwk
     // stride is its self option keyword
     //==============================================================================================
     using stored_value_type = stride<Strides>;
-    using keyword_type      = detail::strides_;
+    using keyword_type      = __::strides_;
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
@@ -141,12 +141,12 @@ namespace kwk
     template<concepts::extent<size_type>... A>
     constexpr stride(A const&... args) noexcept
     requires( !(std::convertible_to<A,size_type> && ...)
-            && make_combo<size_type>(Strides).is_equivalent(detail::as_descriptor<size_type>(A{}...))
+            && make_combo<size_type>(Strides).is_equivalent(__::as_descriptor<size_type>(A{}...))
             )
     {
       [&]<std::size_t... N>(std::index_sequence<N...>)
       {
-        this->fill(detail::as_axis(args,get<N>(Strides),kumi::index<static_order-N-1>)...);
+        this->fill(__::as_axis(args,get<N>(Strides),kumi::index<static_order-N-1>)...);
       }(std::make_index_sequence<sizeof...(A)>{});
     }
 
@@ -208,7 +208,7 @@ namespace kwk
   template<typename... Ds>
   constexpr auto with_strides(Ds... ds) noexcept
   {
-    return detail::make_extent<kwk::stride,std::int32_t>(ds...);
+    return __::make_extent<kwk::stride,std::int32_t>(ds...);
   }
 
   template<kumi::product_type Ds>

@@ -16,7 +16,7 @@
 #include <utility>
 #include <algorithm>
 
-namespace kwk::detail
+namespace kwk::__
 {
   //================================================================================================
   // Converts a sequence of value/joker/axis into a shape/stride descriptor type
@@ -106,7 +106,7 @@ namespace kwk::detail
 
   template<typename T, template<class...> class Holder, typename... Axis>
   inline constexpr bool duplicate_axis<Holder<T,Axis...>>
-                      = !kwk::detail::all_unique<typename Axis::axis_kind...>;
+                      = !kwk::__::all_unique<typename Axis::axis_kind...>;
 
   // Check we dont make a nD axis sequence with too much indexed axis
   template<typename T,std::int32_t Size> inline constexpr bool has_valid_index = false;

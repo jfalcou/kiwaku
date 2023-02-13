@@ -24,7 +24,7 @@ namespace kwk
 {
   struct joker;
 
-  namespace detail
+  namespace __
   {
     template<typename T>  struct  to_int        { using type = T;     };
     template<>            struct  to_int<joker> { using type = char;  };
@@ -115,7 +115,7 @@ namespace kwk
     //==============================================================================================
     template<char... c> constexpr auto operator"" _c() noexcept
     {
-      return fixed<detail::clamp<b10<c...>()>()>;
+      return fixed<__::clamp<b10<c...>()>()>;
     }
   }
 }

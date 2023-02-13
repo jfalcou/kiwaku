@@ -27,7 +27,7 @@ namespace kwk
   //================================================================================================
   // Keyword for range(...) specifications
   //================================================================================================
-  namespace detail
+  namespace __
   {
     struct to_      {};
     struct from_    {};
@@ -35,10 +35,10 @@ namespace kwk
     struct length_  {};
   }
 
-  inline constexpr auto to      = rbr::keyword(detail::to_{}    );
-  inline constexpr auto by      = rbr::keyword(detail::by_{}    );
-  inline constexpr auto from    = rbr::keyword(detail::from_{}  );
-  inline constexpr auto length  = rbr::keyword(detail::length_{});
+  inline constexpr auto to      = rbr::keyword(__::to_{}    );
+  inline constexpr auto by      = rbr::keyword(__::by_{}    );
+  inline constexpr auto from    = rbr::keyword(__::from_{}  );
+  inline constexpr auto length  = rbr::keyword(__::length_{});
 
   template<auto D> struct shape;
 

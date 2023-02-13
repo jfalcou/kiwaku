@@ -10,7 +10,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <cstdint>
 
-namespace kwk::detail
+namespace kwk::__
 {
   struct type_ : rbr::as_keyword<type_>
   {
@@ -24,7 +24,7 @@ namespace kwk::detail
       constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
       friend std::ostream& operator<<(std::ostream& os, info const&)
       {
-        return os << rbr::detail::type_name<T>();
+        return os << rbr::detail::type<T>.name();
       }
     };
 
@@ -43,13 +43,13 @@ namespace kwk::detail
 
 namespace kwk
 {
-  constexpr inline detail::type_ type{};
+  constexpr inline __::type_ type{};
 
   //================================================================================================
   //! @ingroup  settings
   //! @brief    Type setting for kwk::table
   //================================================================================================
-  template<typename T> constexpr inline detail::type_::info<T> as{};
+  template<typename T> constexpr inline __::type_::info<T> as{};
 
   /// Pre-defined type settings for float
   constexpr inline auto single_ = as<float>;
