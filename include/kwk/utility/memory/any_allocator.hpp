@@ -100,6 +100,7 @@ namespace kwk
   //================================================================================================
   //! @ingroup memory
   //! @brief  Allocates data from an opaque allocator instance
+  //! @param  a Allocator to use for the allocation
   //! @param  n Number of bytes to allocate
   //! @return A pointer to the newly allocated memory.
   //================================================================================================
@@ -111,6 +112,7 @@ namespace kwk
   //================================================================================================
   //! @ingroup memory
   //! @brief  Deallocates data from an opaque allocator instance
+  //! @param  a Allocator to use for the allocation
   //! @param  ptr Pointer to the data to deallocates
   //================================================================================================
   inline void deallocate(any_allocator& a, void* ptr)

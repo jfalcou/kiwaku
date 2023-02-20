@@ -114,12 +114,12 @@ namespace kwk
     //! equal to the stride's order or if any value is neither convertible to int
     //! nor kwk::_.
     //!
-    //! @param  s Variadic list of dimensions' values
+    //! @param values Variadic list of dimensions' values
     //==============================================================================================
-    constexpr stride(std::convertible_to<size_type> auto... vals) noexcept
-    requires( sizeof...(vals) == static_order ) : stride()
+    constexpr stride(std::convertible_to<size_type> auto... values) noexcept
+    requires( sizeof...(values) == static_order ) : stride()
     {
-      parent::fill(vals...);
+      parent::fill(values...);
     }
 
     //==============================================================================================
@@ -134,7 +134,7 @@ namespace kwk
     //! This constructor will not take part in overload resolution if the shape is fully static.
     //!
     //! @groupheader{Example}
-    //! @godbolt{docs/shape/mixed.cpp}
+    //! @include docs/shape/mixed.cpp
     //!
     //! @param args  Variadic list of dimension/size association
     //==============================================================================================
