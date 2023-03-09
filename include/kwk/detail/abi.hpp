@@ -32,7 +32,15 @@
 
 // PURE attribute
 #if defined(_MSC_VER)
-#  define KWK_PURE
+#  define KWK_PURE __declspec(noalias)
 #else
 #  define KWK_PURE [[gnu::pure]]
+#endif
+
+#if defined(__GNUC__)
+#   define KWK_UNREACHABLE() __builtin_unreachable()
+#elif defined(_MSC_VER)
+#   define KWK_UNREACHABLE() __assume( false )
+#else
+#   define KWK_UNREACHABLE() std::unreachable()
 #endif
