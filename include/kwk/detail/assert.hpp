@@ -19,10 +19,8 @@
 #else
 
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/kumi.hpp>
 
 #include <cstdlib>
-#include <string_view>
 #include <type_traits>
 #include <utility>
 #if defined(BOOST_ENABLE_ASSERT_HANDLER)
@@ -36,25 +34,6 @@ namespace kwk
 {
     namespace __
     {
-        template <typename Tuple>
-        struct entupler
-        {
-            template <typename Arg>
-            constexpr auto operator<<(Arg const & arg) const noexcept
-            {
-                using StoredArg = std::conditional_t< std::is_trivial_v< Arg > && !std::is_array_v< Arg >, Arg, Arg const & >;
-                auto const expanded_tuple{ kumi::cat(tuple, kumi::tuple<StoredArg>{arg}) };
-                return entupler< decltype( expanded_tuple ) >{ expanded_tuple };
-            }
-
-            template <unsigned N>
-            constexpr auto operator<<(char const (&arg)[N]) const noexcept { return operator<<(std::string_view{arg,N-1}); }
-
-            Tuple tuple;
-        }; // struct entupler
-
-        inline constexpr entupler<kumi::tuple<>> const args;
-
 #if defined(BOOST_ENABLE_ASSERT_HANDLER)
 #   ifdef __GNUC__
         [[gnu::cold, gnu::noinline]]
@@ -69,15 +48,14 @@ namespace kwk
         [[gnu::cold, gnu::noinline]]
 #   endif
         [[noreturn]] inline
-        void assert_termination(std::ostringstream stream, char const * const condition, char const * const function, char const * const file, unsigned const line) noexcept
+        void assert_termination(std::ostringstream & stream, char const * const condition, char const * const function, char const * const file, unsigned const line) noexcept
         {
             boost::assertion_failed_msg(condition, std::move(stream).str().c_str(), function, file, line);
             KWK_UNREACHABLE();
         }
 
-#   define KWK_ASSERT_TERMINATION() \
-        __::assert_termination(std::move(stream), condition, BOOST_CURRENT_FUNCTION, __FILE__, __LINE__)
-        
+#   define KWK_ASSERT_TERMINATION(condition) \
+        kwk::__::assert_termination(stream, condition, BOOST_CURRENT_FUNCTION, __FILE__, __LINE__)
 
 #else // Kiwaku assert implementation
 #   ifdef __GNUC__
@@ -89,37 +67,22 @@ namespace kwk
             return std::cerr << "[KIWAKU] Assertion '" << condition << "' failed in " << file << ':' << line << " - ";
         }
 
-#   define KWK_ASSERT_TERMINATION() std::abort()
+#   define KWK_ASSERT_TERMINATION(condition) std::abort()
+
 #endif // assert implementation
     } // namespace __
 
 #ifdef __GNUC__
-    [[ gnu::cold ]]
-#endif
-    [[ noreturn ]]
-    // this simpler approach requires omitting/skipping << (stream operators) in KIWAKU_ASSERT invocations
-    // assertion_handler(#cond, __FILE__, __LINE__, __VA_ARGS__);
-    void assertion_handler(char const * const condition, char const * const file, unsigned const line, auto const && ... args) noexcept
-    {
-        decltype( auto ) stream{ __::print_assertion_header(condition, file, line) };
-        (stream << ... << args);
-        KWK_ASSERT_TERMINATION();
-    }
-
-    template < typename ArgTuple >
-#ifdef __GNUC__
-    [[gnu::cold]]
+    [[gnu::cold, gnu::flatten]]
 #endif
     [[noreturn]]
-    void assertion_handler(char const * const condition, char const * const file, unsigned const line, __::entupler<ArgTuple> const args) noexcept
+    // this simpler approach requires omitting/skipping << (stream operators) in KIWAKU_ASSERT invocations
+    // assertion_handler(#cond, __FILE__, __LINE__, __VA_ARGS__);
+    void assertion_handler(char const * const condition, [[maybe_unused]]char const * const function, char const * const file, unsigned const line, auto const ... args) noexcept
     {
         decltype(auto) stream{ __::print_assertion_header(condition, file, line) };
-        kumi::apply
-        (
-            [&](auto const &... args){ (stream << ... << args); },
-            args.tuple
-        );
-        KWK_ASSERT_TERMINATION();
+        (stream << ... << args);
+        KWK_ASSERT_TERMINATION(condition);
     }
 } // namespace kwk
 
@@ -130,14 +93,16 @@ namespace kwk
 #    define KIWAKU_ASSERT_DBG_BREAK() __builtin_trap()
 #endif
 
-#define KIWAKU_ASSERT(cond, ...)                                                   \
-  do                                                                               \
-  {                                                                                \
-    if(!(cond)) [[unlikely]]                                                       \
-    {                                                                              \
-      KIWAKU_ASSERT_DBG_BREAK();                                                   \
-      kwk::assertion_handler(#cond, __FILE__, __LINE__, __::args << __VA_ARGS__);  \
-    }                                                                              \
+#define KIWAKU_ASSERT(cond, ...)                                                        \
+  do                                                                                    \
+  {                                                                                     \
+    if(!(cond)) [[unlikely]]                                                            \
+    {                                                                                   \
+      KIWAKU_ASSERT_DBG_BREAK();                                                        \
+      auto && stream{ kwk::__::print_assertion_header(#cond, __FILE__, __LINE__) };     \
+      stream << __VA_ARGS__;                                                            \
+      KWK_ASSERT_TERMINATION(#cond);                                                    \
+    }                                                                                   \
   } while(0) /**/
 
 #define KIWAKU_VERIFY(cond, ...) KIWAKU_ASSERT(cond, __VA_ARGS__)
