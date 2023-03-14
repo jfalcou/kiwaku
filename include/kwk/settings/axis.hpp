@@ -115,6 +115,14 @@ namespace kwk
   inline constexpr auto width   = axis<"width">;
   inline constexpr auto depth   = axis<"depth">;
   inline constexpr auto channel = axis<"channel">;
+
+  // Tuple interface
+  template<std::size_t I, auto ID>
+  constexpr decltype(auto) get(__::axis_<ID>& s) noexcept requires(I==0) { return s; }
+
+  template<std::size_t I, auto ID>
+  constexpr decltype(auto) get(__::axis_<ID> const& s) noexcept requires(I==0) { return s; }
+
 }
 
 // Tuple interface adaptation

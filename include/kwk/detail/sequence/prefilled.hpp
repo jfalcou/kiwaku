@@ -168,21 +168,34 @@ namespace kwk::__
       return storage()[location[idx]];
     }
 
+    // Static tuple access impl
+    template<std::size_t N>
+    KWK_FORCEINLINE constexpr auto __get() const noexcept
+    {
+      if constexpr(is_dynamic_extent_v<N,Desc>) return storage()[location[N]];
+      else return fixed<get<N>(Desc).value>;
+    }
+
+    template<std::size_t N>
+    KWK_FORCEINLINE constexpr auto& __get() noexcept
+    {
+      if constexpr(is_dynamic_extent_v<N,Desc>) return storage()[location[N]];
+      else return fixed<get<N>(Desc).value>;
+    }
+
     // Static tuple access
     template<std::size_t N>
     friend KWK_FORCEINLINE constexpr auto get(prefilled const& s) noexcept
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_dynamic_extent_v<N,Desc>) return s.storage()[location[N]];
-      else return fixed<get<N>(Desc).value>;
+      return s.__get<N>();
     }
 
     template<std::size_t N>
     friend KWK_FORCEINLINE constexpr auto& get(prefilled& s) noexcept
     requires(N>=0 && N<static_size)
     {
-      if constexpr(is_dynamic_extent_v<N,Desc>) return s.storage()[location[N]];
-      else return fixed<get<N>(Desc).value>;
+      return s.__get<N>();
     }
 
     template<concepts::axis A>
@@ -260,6 +273,23 @@ namespace kwk::__
       t[0] = kumi::fold_left( [](auto acc, auto m) { return acc * m; }, head, t[0]);
 
     return t;
+  }
+}
+
+namespace kwk
+{
+  template<std::size_t N,auto Desc>
+  KWK_FORCEINLINE constexpr auto get(__::prefilled<Desc> const& s) noexcept
+  requires(N>=0 && N<__::prefilled<Desc>::static_size)
+  {
+    return s.template __get<N>();
+  }
+
+  template<std::size_t N,auto Desc>
+  KWK_FORCEINLINE constexpr auto& get(__::prefilled<Desc>& s) noexcept
+  requires(N>=0 && N<__::prefilled<Desc>::static_size)
+  {
+    return s.template __get<N>();
   }
 }
 
