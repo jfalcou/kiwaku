@@ -1,32 +1,19 @@
-name: Kiwaku CI
+##==================================================================================================
+##  KIWAKU - Containers Well Made
+##  Copyright : KIWAKU Contributors & Maintainers
+##  SPDX-License-Identifier: BSL-1.0
+##==================================================================================================
+name: Kiwaku - Unit Tests
 on:
   pull_request:
     branches:
       - main
 
 concurrency:
-  group: environment-${{ github.ref }}
+  group: unit-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  integration:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        cfg:
-        - {test: Installation       , mode: 0 }
-        - {test: FetchContents      , mode: 1 }
-        - {test: CPM                , mode: 2 }
-    steps:
-      - name: Fetch current branch
-        uses: actions/checkout@v3
-      - name: Check KIWAKU works with ${{ matrix.cfg.test }}
-        uses: ./.github/actions/integration
-        with:
-          branch: '${{ github.head_ref }}'
-          mode: '${{ matrix.cfg.mode }}'
-
   gcc-linux:
     runs-on: [ubuntu-latest]
     strategy:
