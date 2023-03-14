@@ -13,7 +13,7 @@ TTS_CASE( "1D behavior of coordinates" )
 {
   for(int i = 0; i < 120; ++i)
   {
-    TTS_EQUAL( kwk::coordinates(i, kwk::of_size(120)), kumi::tuple{i} );
+    TTS_EQUAL( kwk::coordinates(i, kwk::of_size(120)), std::array{i} );
   }
 };
 
@@ -23,7 +23,7 @@ TTS_CASE( "2D behavior of coordinates" )
   for(int i1 = 0; i1 < 60; ++i1)
     for(int i0 = 0; i0 < 2; ++i0)
     {
-      TTS_EQUAL( kwk::coordinates(pos, kwk::of_size(60,2)), (kumi::tuple{i1,i0}) );
+      TTS_EQUAL( kwk::coordinates(pos, kwk::of_size(60,2)), (std::array{i1,i0}) );
       pos++;
     }
 };
@@ -35,7 +35,7 @@ TTS_CASE( "3D behavior of coordinates" )
     for(int i1 = 0; i1 < 3; ++i1)
       for(int i0 = 0; i0 < 2; ++i0)
       {
-        TTS_EQUAL( kwk::coordinates(pos, kwk::of_size(20,3,2)), (kumi::tuple{i2,i1,i0}) );
+        TTS_EQUAL( kwk::coordinates(pos, kwk::of_size(20,3,2)), (std::array{i2,i1,i0}) );
         pos++;
       }
 };
@@ -48,7 +48,7 @@ TTS_CASE( "4D behavior of coordinates" )
       for(int i1 = 0; i1 < 3; ++i1)
         for(int i0 = 0; i0 < 2; ++i0)
         {
-          TTS_EQUAL( kwk::coordinates(pos, kwk::of_size(5,4,3,2)), (kumi::tuple{i3,i2,i1,i0}) );
+          TTS_EQUAL( kwk::coordinates(pos, kwk::of_size(5,4,3,2)), (std::array{i3,i2,i1,i0}) );
           pos++;
         }
 };
