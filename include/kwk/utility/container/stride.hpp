@@ -178,7 +178,7 @@ namespace kwk
     size_type linearize(Is... is) const noexcept
     requires( sizeof...(Is) <= static_order )
     {
-      return [=]<int...i>(std::integer_sequence< int, i... >)
+      return [=]<int...i>(std::integer_sequence<int, i...>)
       {
           return (0 + ... + (get<i>(*this) * is));
       }(std::make_integer_sequence<int, static_order>{});
