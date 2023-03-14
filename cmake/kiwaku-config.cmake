@@ -5,8 +5,7 @@
 ##==================================================================================================
 
 ##==================================================================================================
-## Reuse install.cmake to prepare package properly
+## Reuse install.cmake to preapre package properly
 ##==================================================================================================
-get_filename_component(SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(${SELF_DIR}/kiwaku_lib.cmake)
-set(KIWAKU_LIBRARIES kiwaku_lib)
+include("${CMAKE_CURRENT_LIST_DIR}/kiwaku-targets.cmake")
+set(KIWAKU_LIBRARIES kiwaku::kiwaku)

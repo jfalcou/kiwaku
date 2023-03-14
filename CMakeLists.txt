@@ -4,12 +4,20 @@
 ##  SPDX-License-Identifier: BSL-1.0
 ##==================================================================================================
 cmake_minimum_required(VERSION 3.18)
+enable_testing()
 
-##==================================================================================================
+## =================================================================================================
 ## Setup project
-##==================================================================================================
-project(KIWAKU VERSION 0.1 LANGUAGES CXX)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+## =================================================================================================
+project(kiwaku LANGUAGES CXX)
+
+set(KIWAKU_MAJOR_VERSION 0)
+set(KIWAKU_MINOR_VERSION 1)
+set(KIWAKU_PATCH_VERSION 0)
+set(KIWAKU_VERSION ${KIWAKU_MAJOR_VERSION}.${KIWAKU_MINOR_VERSION}.${KIWAKU_PATCH_VERSION})
+
+set(PROJECT_VERSION   ${KIWAKU_VERSION})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake )
 
 ##==================================================================================================
 ## Prevent in-source build
@@ -26,8 +34,9 @@ include(kiwaku-install)
 ##==================================================================================================
 ## Options
 ##==================================================================================================
-option( KIWAKU_BUILD_TEST  "Build tests for raberu" ON  )
-option( KIWAKU_BUILD_DOCS  "Build docs for raberu"  OFF )
+option( KIWAKU_BUILD_TEST         "Build tests for Kiwaku" ON               )
+option( KIWAKU_BUILD_INTEGRATION  "Build integration tests for Kiwaku" OFF  )
+option( KIWAKU_BUILD_DOCS         "Build docs for Kiwaku"  OFF              )
 
 ##==================================================================================================
 ## Setup Testing
@@ -37,6 +46,10 @@ if( KIWAKU_BUILD_TEST )
   include(CTest)
   add_custom_target(unit)
   add_subdirectory(test)
+endif()
+
+if( KIWAKU_BUILD_INTEGRATION )
+  add_subdirectory("${PROJECT_SOURCE_DIR}/test/integration")
 endif()
 
 ##==================================================================================================
