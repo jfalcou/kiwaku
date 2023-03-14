@@ -17,17 +17,17 @@
 #  define KWK_LAMBDA_FORCEINLINE
 #else
 #  if defined(__GNUC__) && (__GNUC__ > 3) || defined(__clang__) // Clang-CL does not define __GNUC__ https://github.com/llvm/llvm-project/issues/53259
-#    define KWK_FORCEINLINE inline __attribute__((__always_inline__))
 #    define KWK_LAMBDA_FORCEINLINE __attribute__((__always_inline__))
-#    define KUMI_TRIVIAL [[using gnu: always_inline, flatten, artificial]] inline
+#    define KWK_FORCEINLINE inline __attribute__((__always_inline__))
+#    define KWK_TRIVIAL [[using gnu: always_inline, flatten, artificial]] inline
 #  elif defined(_MSC_VER)
+#    define KWK_LAMBDA_FORCEINLINE [[msvc::forceinline]]
 #    define KWK_FORCEINLINE         __forceinline
 #    define KWK_TRIVIAL             __forceinline
-#    define KWK_LAMBDA_FORCEINLINE [[msvc::forceinline]]
 #  else
+#    define KWK_LAMBDA_FORCEINLINE
 #    define KWK_TRIVIAL            inline
 #    define KWK_FORCEINLINE        inline
-#    define KWK_LAMBDA_FORCEINLINE
 #  endif
 #endif
 
