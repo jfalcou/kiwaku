@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/detail/abi.hpp>
 #include <cstddef>
 #include <utility>
 

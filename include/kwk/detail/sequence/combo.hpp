@@ -56,12 +56,19 @@ namespace kwk::__
       return os;
     }
 
-    // Tuple interface
+    // Internal Tuple interface
     template<std::size_t N>
-    friend constexpr decltype(auto) get(combo& s) noexcept { return get<N>(s.storage); }
+    constexpr decltype(auto) __get() noexcept { return get<N>(storage); }
 
     template<std::size_t N>
-    friend constexpr decltype(auto) get(combo const& s) noexcept { return get<N>(s.storage); }
+    constexpr decltype(auto) __get() const noexcept { return get<N>(storage); }
+
+    // Tuple interface
+    template<std::size_t N>
+    friend constexpr decltype(auto) get(combo& s) noexcept { return s.__get<N>(); }
+
+    template<std::size_t N>
+    friend constexpr decltype(auto) get(combo const& s) noexcept { return s.__get<N>(); }
 
     // combo sequences are compatible if they have the same size
     // and don't contain conflicting static values
@@ -223,6 +230,15 @@ namespace kwk::__
       return make_combo<std::ptrdiff_t>( kumi::push_front( tail, value ) );
     }
   }
+}
+
+namespace kwk
+{
+  template<std::size_t N, typename T, concepts::axis... Axis>
+  constexpr auto& get(__::combo<T,Axis...>& s) noexcept { return s.template __get<N>(); }
+
+  template<std::size_t N, typename T, concepts::axis... Axis>
+  constexpr auto get(__::combo<T,Axis...> const& s) noexcept { return s.template __get<N>(); }
 }
 
 // Tuple interface adaptation
