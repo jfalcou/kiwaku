@@ -25,7 +25,8 @@ namespace kwk
   //!
   //! @param idx  Linear index to convert into a nD coordinate set
   //! @param shp  Shape used as a reference
-  //! @return A tuple containing the multi-dimensional position corresponding to idx
+  //! @return A std::array<shape<Desc>::value_type, shape<Desc>::static_order> containing the
+  //! multi-dimensional position corresponding to idx
   //================================================================================================
   template<auto Desc>
   KWK_CONST constexpr
