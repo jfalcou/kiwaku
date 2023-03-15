@@ -9,10 +9,11 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/assert.hpp>
-#include <kwk/detail/kumi.hpp>
 #include <kwk/utility/container/shape.hpp>
 #include <kwk/utility/container/stride.hpp>
+#include <array>
 #include <concepts>
+#include <type_traits>
 
 namespace kwk
 {
@@ -24,32 +25,33 @@ namespace kwk
   //!
   //! @param idx  Linear index to convert into a nD coordinate set
   //! @param shp  Shape used as a reference
-  //! @return A tuple containing the multi-dimensional position corresponding to idx
+  //! @return A std::array<shape<Desc>::value_type, shape<Desc>::static_order> containing the
+  //! multi-dimensional position corresponding to idx
   //================================================================================================
-  template<std::integral T, auto Desc>
-  KWK_FORCEINLINE constexpr auto coordinates(T idx, shape<Desc> const& shp) noexcept
+  template<auto Desc>
+  KWK_CONST constexpr
+  auto coordinates(std::integral auto const idx, shape<Desc> const shp) noexcept
   {
     KIWAKU_ASSERT ( idx < shp.numel()
                   ,   "Converting index " << idx
                   <<  " to an out of bounds coordinates for shape " << shp
                   );
 
-    constexpr auto nbdims = shape<Desc>::size();
-
-    // This save some 1-200ms of compile-time for those very common cases
-    if      constexpr(nbdims == 1)  return kumi::tuple{idx};
-    else if constexpr(nbdims == 2)  return kumi::tuple{idx/shp[1],idx%shp[1]};
-    else
+    /* leftmost/outer dimension does not require the modulo operation, example for 4 dimensions:
+         idx / (shp[1] * shp[2] * shp[3])          ,
+        (idx / (         shp[2] * shp[3])) % shp[1],
+        (idx /                    shp[3] ) % shp[2],
+         idx                               % shp[3],
+    */
+    return [=]<int...i>(std::integer_sequence<int, i...>)
     {
-      return  kumi::fold_right( [&](auto acc, auto m)
-                                {
-                                  auto that = kumi::push_back(acc,idx/m);
-                                  idx %= static_cast<T>(m);
-                                  return that;
-                                }
-                              , as_stride(shp)
-                              , kumi::tuple<>{}
-                              );
-    }
+      using value_type = typename shape<Desc>::value_type;
+      auto const strides{as_stride(shp)};
+      return std::array<value_type, shape<Desc>::static_order>
+      {
+        static_cast<value_type>( idx / get<0  >(strides)                 ),
+        static_cast<value_type>((idx / get<i+1>(strides)) % get<i+1>(shp))...
+      };
+    }(std::make_integer_sequence<int, shape<Desc>::static_order - 1 >{});
   }
 }

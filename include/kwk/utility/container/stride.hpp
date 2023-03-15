@@ -167,24 +167,29 @@ namespace kwk
 
     /// Equality comparison operator
     template<auto Strides2>
-    constexpr bool operator==( stride<Strides2> const& other) const noexcept
+    constexpr bool operator==(stride<Strides2> const& other) const noexcept
     {
       return kumi::to_tuple(*this) == kumi::to_tuple(other);
     }
 
     /// Indexing interface
     template<std::convertible_to<size_type>... Is>
-    constexpr size_type linearize(Is... is) const noexcept
+    KWK_PURE KWK_FORCEINLINE constexpr
+    size_type linearize(Is... is) const noexcept
     requires( sizeof...(Is) <= static_order )
     {
-      return kumi::inner_product(*this, kumi::make_tuple(static_cast<size_type>(is)...), size_type{0});
+      return [=, *this]<int...i>(std::integer_sequence<int, i...>)
+      {
+          return (0 + ... + (get<i>(*this) * is));
+      }(std::make_integer_sequence<int, static_order>{});
     }
   };
 
   /// Converts a @ref kwk::shape into its corresponding @ref kwk::stride, conserving as much static
   /// informations as possible.
   template<auto Shape>
-  constexpr auto as_stride(shape<Shape> const& s) noexcept
+  KWK_CONST constexpr
+  auto as_stride(shape<Shape> const s) noexcept
   {
     if constexpr(Shape.size() == 1) return stride<kumi::back(Shape)[1]>{};
     else
@@ -212,7 +217,7 @@ namespace kwk
   }
 
   template<kumi::product_type Ds>
-  constexpr auto with_strides( Ds ds) noexcept
+  constexpr auto with_strides(Ds ds) noexcept
   {
     return kumi::apply([](auto... s) { return with_strides(s...); }, ds);
   }
