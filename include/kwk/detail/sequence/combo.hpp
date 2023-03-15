@@ -234,10 +234,10 @@ namespace kwk::__
 
 namespace kwk
 {
-  template<std::size_t N, typename T, concepts::axis... Axis>
+  template<std::size_t N, typename T, concepts::axis... Axis> KWK_PURE KWK_TRIVIAL
   constexpr auto& get(__::combo<T,Axis...>& s) noexcept { return s.template __get<N>(); }
 
-  template<std::size_t N, typename T, concepts::axis... Axis>
+  template<std::size_t N, typename T, concepts::axis... Axis> KWK_PURE KWK_TRIVIAL
   constexpr auto get(__::combo<T,Axis...> const& s) noexcept { return s.template __get<N>(); }
 }
 

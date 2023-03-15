@@ -138,9 +138,9 @@ namespace kwk
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
     //==============================================================================================
-    //! @brief Constructs a default @ref kwk::shape equals to [1 1 ... 0]
+    //! @brief Constructs a default @ref kwk::shape equals to [0 0 ... 0]
     //==============================================================================================
-    KWK_FORCEINLINE constexpr shape() : parent([](int i, int c) -> size_type { return i != c-1;}) {}
+    constexpr shape() noexcept = default;
 
     //==============================================================================================
     //! @brief Constructor from set of dimensions
@@ -341,6 +341,11 @@ namespace kwk
     using parent::swap;
 
     /// Equality comparison operator
+    friend constexpr bool operator==( shape const & a, shape const & b ) noexcept
+    {
+        return a.storage() == b.storage();
+    }
+
     template<auto S2>
     friend constexpr bool operator==(shape const& a, shape<S2> const& b) noexcept
     requires(  compress<std::min(Shape.size(), S2.size())>(Shape)
