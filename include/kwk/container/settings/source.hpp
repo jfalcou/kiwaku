@@ -7,23 +7,22 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/container/settings/category.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/settings/source.hpp>
 #include <kwk/settings/type.hpp>
 
-namespace kwk
+namespace kwk::__
 {
   // The data source is fetched or a ptr_source is returned using the type information if any
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(__::view_, __::source_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), view_, source_, Settings const& opts)
   {
     return opts[source | ptr_source<typename decltype(opts[type])::type>{}];
   }
 
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(__::table_, __::source_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), table_, source_, Settings const& opts)
   {
     auto value = opts[type];
     return opts[source | ptr_source<typename decltype(value)::type>{}];

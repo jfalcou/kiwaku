@@ -7,22 +7,17 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/container/settings/category.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/settings/allocator.hpp>
 #include <kwk/utility/memory/heap_allocator.hpp>
 
-namespace kwk
+namespace kwk::__
 {
   //  Table use heap_allocator by default
   template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(__::table_, __::allocator_, Settings const& opts)
+  KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), table_, allocator_, Settings const& o)
   {
-    return opts[allocator | heap_allocator{}];
+    return o[allocator | heap_allocator{}];
   }
-
-  //  View can't have allocator - hard error
-  template<rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(__::view_, __::allocator_, Settings const&) =delete;
 }
