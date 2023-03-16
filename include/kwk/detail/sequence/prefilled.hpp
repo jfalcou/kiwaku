@@ -43,7 +43,7 @@ namespace kwk::__
     using value_type                            = typename descriptor_t::base_type;
     static constexpr  std::int32_t storage_size = 0;
 
-    struct storage_type {};
+    struct storage_type { constexpr auto operator==(storage_type const&) const noexcept { return true; } };
   };
 
   //================================================================================================
@@ -56,11 +56,11 @@ namespace kwk::__
     using storage_t       = typename array_storage<Desc>::storage_type;
     using is_product_type = void;
 
-    static constexpr  auto  descriptor      = Desc;
-    static constexpr  std::int32_t   static_size     = Desc.static_size;
-    static constexpr  auto  dynamic_size    = kumi::count_if(Desc,kumi::predicate<check_dynamic>());
-    static constexpr  bool  is_fully_static = (dynamic_size == 0);
-    static constexpr  bool  is_dynamic      = !is_fully_static;
+    static constexpr  auto         descriptor      = Desc;
+    static constexpr  std::int32_t static_size     = Desc.static_size;
+    static constexpr  auto         dynamic_size    = kumi::count_if(Desc,kumi::predicate<check_dynamic>());
+    static constexpr  bool         is_fully_static = (dynamic_size == 0);
+    static constexpr  bool         is_dynamic      = !is_fully_static;
 
     // Static localisation of dynamic index
     static constexpr
@@ -116,30 +116,36 @@ namespace kwk::__
 
     // Fill with a sequence of value/joker
     constexpr void fill(concepts::extent<value_type> auto... vals) noexcept
-    requires( sizeof...(vals) <= static_size )
+    requires(sizeof...(vals) == static_size)
     {
       auto& v = storage();
-
-      // Fill storage data with provided size
-      kumi::for_each_index( [&]<typename N, typename S>(N, S vs)
+      if constexpr(dynamic_size == static_size)
       {
-        constexpr auto i = N::value;
-        if constexpr( std::is_convertible_v<S,value_type> )
-        {
-          if constexpr(contains(i)) v[location[i]] = static_cast<value_type>(vs);
-          else  KIWAKU_ASSERT (   vs == get<i>(descriptor).value
-                              ,   "[KWK] - Runtime/Compile-time mismatch in constructor at index "
-                              <<  i << " - Expected " << get<i>(descriptor).value
-                              << " but " << vs << " was provided"
-                              );
-        }
-        else
-        {
-          if constexpr(contains(i)) v[location[i]] = (i != static_size-1);
-        }
+        v = {static_cast<value_type>(vals)...};
       }
-      , kumi::tie(vals...)
-      );
+      else
+      {
+        [=, this]<std::size_t... I>(std::index_sequence<I...>)
+        {
+          (
+            this->set
+            (
+              std::integral_constant<unsigned, I>{},
+              vals
+            ),
+            ...
+          );
+        }(std::make_index_sequence<static_size>{});
+      }
+    }
+
+    constexpr void fill(concepts::extent<value_type> auto... vals) noexcept
+    requires(sizeof...(vals) < static_size)
+    {
+      [=, this]<int... I>(std::integer_sequence<int, I...>)
+      {
+        fill(((void)I,1)..., vals...);
+      }(std::make_integer_sequence<int, static_size - sizeof...(vals)>{});
     }
 
     // Dynamic access
@@ -226,15 +232,8 @@ namespace kwk::__
     constexpr auto operator[](A) const noexcept = delete;
 
     // Internal storage access for algorithms
-    constexpr storage_t&        storage() noexcept
-    {
-      return static_cast<storage_t&>(*this);
-    }
-
-    constexpr storage_t const&  storage() const noexcept
-    {
-      return static_cast<storage_t const&>(*this);
-    }
+    constexpr storage_t      & storage()       noexcept { return static_cast<storage_t      &>(*this); }
+    constexpr storage_t const& storage() const noexcept { return static_cast<storage_t const&>(*this); }
 
     // Total size of the array
     static constexpr std::int32_t size() noexcept { return static_size; }
@@ -248,6 +247,17 @@ namespace kwk::__
                           }
                         , *this
                         );
+    }
+
+    // Set a particular value
+    constexpr void set(auto const i, auto const val) noexcept
+    {
+      if constexpr(contains(i)) storage()[location[i]] = static_cast<value_type>(val);
+      else  KIWAKU_ASSERT (   val == get<i>(descriptor).value
+                          ,   "[KWK] - Runtime/Compile-time mismatch at index "
+                          <<  i << " - Expected " << get<i>(descriptor).value
+                          << " but " << val << " was provided"
+                          );
     }
 
     // Swap prefilled_array's contents
@@ -279,14 +289,14 @@ namespace kwk::__
 namespace kwk
 {
   template<std::size_t N,auto Desc>
-  KWK_FORCEINLINE constexpr auto get(__::prefilled<Desc> const& s) noexcept
+  KWK_PURE KWK_TRIVIAL constexpr auto get(__::prefilled<Desc> const& s) noexcept
   requires(N>=0 && N<__::prefilled<Desc>::static_size)
   {
     return s.template __get<N>();
   }
 
   template<std::size_t N,auto Desc>
-  KWK_FORCEINLINE constexpr auto& get(__::prefilled<Desc>& s) noexcept
+  KWK_PURE KWK_TRIVIAL constexpr auto& get(__::prefilled<Desc>& s) noexcept
   requires(N>=0 && N<__::prefilled<Desc>::static_size)
   {
     return s.template __get<N>();
