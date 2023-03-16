@@ -9,22 +9,32 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
-#include <kwk/container/settings/allocator.hpp>
-#include <kwk/container/settings/label.hpp>
-#include <kwk/container/settings/source.hpp>
-#include <kwk/container/settings/size.hpp>
-#include <kwk/container/settings/strides.hpp>
-#include <kwk/container/settings/type.hpp>
+#include <kwk/utility/invoke.hpp>
+#include <kwk/container/settings/category.hpp>
+
+namespace kwk::tags
+{
+  struct callable_pick
+  {
+    KWK_DEFERS_CALLABLE(pick_);
+
+    template<rbr::concepts::keyword Keyword, rbr::concepts::settings Settings>
+    constexpr KWK_FORCEINLINE auto operator()(Keyword const& k, Settings const& opts) const noexcept
+                ->  decltype(kwk::tag_invoke(*this, opts[category], k, opts))
+    {
+      return kwk::tag_invoke(*this, opts[category], k, opts);
+    }
+
+    template<rbr::concepts::keyword Keyword, rbr::concepts::settings Settings>
+    unsupported_call<callable_pick(Keyword,Settings)>
+    operator()(Keyword const& k, Settings const& opts) const
+    requires(!requires { kwk::tag_invoke(*this, opts[category], k, opts); }) = delete;
+  };
+}
 
 namespace kwk
 {
-  /// Retrieve a value from a settings pack using semantic category specialization
-  template<rbr::concepts::keyword Keyword, rbr::concepts::settings Settings>
-  KWK_FORCEINLINE constexpr auto pick(Keyword const& k, Settings const& opts)
-  requires( Settings::contains(category).value )
-  {
-    return pick(opts[category], k, opts);
-  }
+  inline constexpr tags::callable_pick pick = {};
 
   namespace result
   {
@@ -38,3 +48,10 @@ namespace kwk
     using pick_t = typename pick<Keyword, Settings>::type;
   }
 }
+
+#include <kwk/container/settings/allocator.hpp>
+#include <kwk/container/settings/label.hpp>
+#include <kwk/container/settings/source.hpp>
+#include <kwk/container/settings/size.hpp>
+#include <kwk/container/settings/strides.hpp>
+#include <kwk/container/settings/type.hpp>

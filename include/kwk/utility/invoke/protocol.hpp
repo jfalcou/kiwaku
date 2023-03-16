@@ -18,14 +18,11 @@ namespace kwk
 //==================================================================================================
 
 //==================================================================================================
-//! @struct unsupported_call
 //! @brief Overloading error reporting helper
 //!
 //! kwk::unsupported_call is used as a return type when an **KWK** @callable is called with some
 //! incorrect parameter types or quantity. Its template parameters embed the tag of the @callable
 //! along with the parameter types that caused the error.
-//!
-//! @tparam Signature Function type describing the erroneous call
 //==================================================================================================
 template<typename Signature>
 struct unsupported_call
@@ -39,8 +36,6 @@ struct unsupported_call
 //!
 //! A type `T` satisfies kwk::callable if and only if it is tagged as such either
 //! manually or by inheriting from a T properties.
-//!
-//! @tparam T  T type for the @callable to check
 //==================================================================================================
 template<typename T>
 concept callable = requires(T) { typename T::callable_tag_type; };
@@ -51,8 +46,6 @@ concept callable = requires(T) { typename T::callable_tag_type; };
 //!
 //! A type `T` satisfies kwk::deferred_callable_tag if and only if it is a kwk::callable and
 //! provides the required static function `deferred_call`.
-//!
-//! @tparam T  T type for the @callable to check
 //==================================================================================================
 template<typename T>
 concept deferred_callable = requires(T) { typename T::deferred_callable_tag; };
@@ -78,11 +71,11 @@ std::ostream& operator<<(std::ostream& os, Tag const&)
 namespace kwk::tags
 {
   template<deferred_callable Tag>
-  KWK_FORCEINLINE constexpr auto tag_invoke(Tag, auto arch, auto&&... x)
-  noexcept(noexcept(Tag::deferred_call(arch, KWK_FWD(x)...)))
-  -> decltype(Tag::deferred_call(arch, KWK_FWD(x)...))
+  KWK_FORCEINLINE constexpr auto tag_invoke(Tag, auto&&... x)
+  noexcept(noexcept(Tag::deferred_call( KWK_FWD(x)...)))
+  -> decltype(Tag::deferred_call( KWK_FWD(x)...))
   {
-    return Tag::deferred_call(arch, KWK_FWD(x)...);
+    return Tag::deferred_call( KWK_FWD(x)...);
   }
 }
 
@@ -97,12 +90,14 @@ namespace kwk::tags
 //        short enough to be written manually if the need arise.
 //==================================================================================================
 
-// Register kwk::detail as the deferred namespace
-namespace kwk::detail
+// Register kwk::__ as the deferred namespace
+namespace kwk::__
 {
   struct adl_delay_t {};
-  inline constexpr auto adl_delay = adl_delay_t {}
+  inline constexpr auto adl_delay = adl_delay_t {};
 }
+
+#define KWK_DELAY()  adl_delay_t const&
 
 //==================================================================================================
 //  Defines the static deferred call interface. This static function in tag_invoke callable let
@@ -113,10 +108,10 @@ namespace kwk::detail
 //  General macro taking the deferred namespace NS and the function NAME
 //==================================================================================================
 #define KWK_DEFERS_CALLABLE(NAME)                                                                 \
-static KWK_FORCEINLINE auto deferred_call(auto arch, auto&&...args) noexcept                      \
-    -> decltype(NAME(kwk::detail::adl_delay, arch, KWK_FWD(args)...))                             \
+static constexpr KWK_FORCEINLINE auto deferred_call(auto&&...args) noexcept                       \
+    -> decltype(NAME(kwk::__::adl_delay, KWK_FWD(args)...))                                       \
 {                                                                                                 \
-  return NAME(kwk::detail::adl_delay, arch, KWK_FWD(args)...);                                    \
+  return NAME(kwk::__::adl_delay, KWK_FWD(args)...);                                              \
 }                                                                                                 \
 using deferred_callable_tag = void                                                                \
 /**/

@@ -23,12 +23,12 @@ namespace kwk::func_ns
 struct invoker
 {
   template<typename Tag, typename... Args>
-  requires requires(Tag tag, Args&&...args) { tag_invoke(tag, current_api, EVE_FWD(args)...); }
-  EVE_FORCEINLINE constexpr auto operator()(Tag tag, Args&&...args) const
-  noexcept(noexcept(tag_invoke(tag, current_api, EVE_FWD(args)...)))
-      -> decltype(tag_invoke(tag, current_api, EVE_FWD(args)...))
+  requires requires(Tag tag, Args&&...args) { tag_invoke(tag, KWK_FWD(args)...); }
+  KWK_FORCEINLINE constexpr auto operator()(Tag tag, Args&&...args) const
+  noexcept(noexcept(tag_invoke(tag, KWK_FWD(args)...)))
+      -> decltype(tag_invoke(tag, KWK_FWD(args)...))
   {
-    return tag_invoke(tag, current_api, EVE_FWD(args)...);
+    return tag_invoke(tag, KWK_FWD(args)...);
   }
 };
 }
@@ -59,13 +59,10 @@ inline namespace callable_ns
 //!
 //! A type `Tag` satisfies kwk::tag_invocable<Args...> if and only if it can be used in a call to
 //! kwk::tag_invoke.
-//!
-//! @tparam Tag  Tag type for the @callable to check
-//! @tparam Args Arguments used in the call.
 //==================================================================================================
 template<typename Tag, typename... Args>
 concept tag_invocable =
-    requires(Tag&& tag, Args&&...args) { kwk::tag_invoke(EVE_FWD(tag), EVE_FWD(args)...); };
+    requires(Tag&& tag, Args&&...args) { kwk::tag_invoke(KWK_FWD(tag), KWK_FWD(args)...); };
 
 //! @brief Compute the return type of a kwk::tag_invoke call.
 template<typename Tag, typename... Args>
