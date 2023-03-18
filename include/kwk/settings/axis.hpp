@@ -11,6 +11,7 @@
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/detail/traits.hpp>
+#include <kwk/detail/stdfix.hpp>
 #include <kwk/utility/joker.hpp>
 #include <type_traits>
 #include <ostream>
@@ -28,7 +29,9 @@ namespace kwk::__
     using content_type    = Content;
     using base_type       = std::int32_t;
     using id_type         = decltype(ID);
-    static constexpr bool is_indexed = std::is_integral_v<id_type>;
+
+    static constexpr bool is_dynamic  = !std::integral<content_type>;
+    static constexpr bool is_indexed   = std::integral<id_type>;
 
     // Size info
     static constexpr std::int32_t static_size = 1;
