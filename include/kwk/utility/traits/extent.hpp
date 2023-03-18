@@ -13,7 +13,7 @@
 namespace kwk
 {
   template<std::int32_t N, auto Desc>
-  inline constexpr bool is_dynamic_extent_v = concepts::dynamic_axis<kumi::element_t<N,decltype(Desc)>>;
+  inline constexpr bool is_dynamic_extent_v = kumi::element_t<N,decltype(Desc)>::is_dynamic;
 
   template<std::int32_t N, auto Desc>
   inline constexpr bool is_static_extent_v = !is_dynamic_extent_v<N,Desc>;

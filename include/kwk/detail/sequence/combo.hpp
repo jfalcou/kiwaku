@@ -193,8 +193,8 @@ namespace kwk::__
     template<typename E, typename F>
     static KWK_FORCEINLINE constexpr bool checker(E e, F f, auto def, auto acc) noexcept
     {
-      if constexpr(concepts::dynamic_axis<E>)                                     return acc;
-      else if constexpr(!concepts::dynamic_axis<E> && concepts::dynamic_axis<F>)  return def;
+      if constexpr(E::is_dynamic)                         return acc;
+      else if constexpr(!E::is_dynamic && F::is_dynamic)  return def;
       else                                                return acc && (e.value == f.value);
     }
   };

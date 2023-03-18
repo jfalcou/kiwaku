@@ -20,7 +20,7 @@
 namespace kwk::__
 {
   template<typename M>
-  struct check_dynamic : std::bool_constant<concepts::dynamic_axis<M>>
+  struct check_dynamic : std::bool_constant<M::is_dynamic>
   {};
 
   //================================================================================================
@@ -66,7 +66,7 @@ namespace kwk::__
     static constexpr
     auto index  = kumi::map ( [k=0ULL]<typename V>(V) mutable
                               {
-                                if constexpr(concepts::dynamic_axis<V>) return k++;
+                                if constexpr(V::is_dynamic) return k++;
                                 else return static_size+1;
                               }
                             , Desc
@@ -92,7 +92,7 @@ namespace kwk::__
       auto const s = rbr::settings(o...);
       kumi::for_each( [&]<typename M>(auto v, M m)
                       {
-                        if constexpr(concepts::dynamic_axis<M>)
+                        if constexpr(M::is_dynamic)
                         {
                           storage()[m.index()] = v;
                         }
@@ -107,7 +107,7 @@ namespace kwk::__
     {
       kumi::for_each_index( [&]<typename V>(std::int32_t i, V const&, auto m)
                             {
-                              if constexpr(concepts::dynamic_axis<V>)
+                              if constexpr(V::is_dynamic)
                                 storage()[m] = f(i,static_size);
                             }
                           , Desc, index
