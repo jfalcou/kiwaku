@@ -90,8 +90,9 @@ namespace kwk
       if( v.empty() ) return os << spaces << "[ ]";
 
       auto shp = v.shape();
-      for_each_index( [&](auto e, auto idx)
+      for_each_index( [&](auto e, auto... is)
                       {
+                        auto idx = kumi::tuple{is...};
                         if constexpr( container::static_order >= 3)
                         {
                           auto panel = kumi::extract(idx,kumi::index<container::static_order-2>);
