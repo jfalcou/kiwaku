@@ -33,14 +33,17 @@ namespace kwk
   //!             @endcode
   //!
   //! @param shp  A @ref kwk::shape used as boundaries for the coordinates
-  //! @return     The function object `f` which could have been internally modified.
+  //! @return     The function object `f` which could have been modified.
+  //!
+  //! @groupheader{Example}
+  //! @include docs/algorithms/for_each_shape.cpp
   //================================================================================================
   template<typename Func, auto Desc>
-  constexpr auto for_each(Func&& f, shape<Desc> const& shp)
+  constexpr auto for_each(Func f, shape<Desc> const& shp)
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
-      return __::for_each(KWK_FWD(f), shp );
+      return __::for_each(f, shp );
     }( std::make_index_sequence<shape<Desc>::static_order>{} );
   }
 
@@ -57,12 +60,16 @@ namespace kwk
   //!             @endcode
   //!             with `T` convertible to the container's `value_type`.
   //! @param c    A @ref kwk::container on which elements `f` will be applied.
-  //! @return     The function object `f` which could have been internally modified.
+  //! @return     The function object `f` which could have been modified.
+  //!
+  //! @groupheader{Example}
+  //! @include docs/algorithms/for_each.cpp
   //================================================================================================
   template<typename Func, concepts::container Container>
-  constexpr auto for_each(Func&& f, Container&& c)
+  constexpr auto for_each(Func f, Container&& c)
   {
-    return for_each([&](auto... is) { return KWK_FWD(f)(KWK_FWD(c)(is...)); }, c.shape() );
+    kwk::for_each([&](auto... is) { return f(KWK_FWD(c)(is...)); }, c.shape() );
+    return f;
   }
 
   //================================================================================================
@@ -78,12 +85,18 @@ namespace kwk
   //!             @endcode
   //!             with `T` convertible to the container's `value_type`.
   //! @param c    A @ref kwk::container on which elements `f` will be applied.
-  //! @return     The function object `f` which could have been internally modified.
+  //! @return     The function object `f` which could have been modified.
+  //!
+  //! @groupheader{Example}
+  //! @include docs/algorithms/for_each_index.cpp
   //================================================================================================
   template<typename Func, concepts::container Container>
-  constexpr auto for_each_index(Func&& f, Container&& c)
+  constexpr auto for_each_index(Func f, Container&& c)
   {
-    return for_each([&](auto... is) { return KWK_FWD(f)(KWK_FWD(c)(is...), is...); }, c.shape() );
+    kwk::for_each ( [&](auto... is) { return f(KWK_FWD(c)(is...), is...); }
+                  , c.shape()
+                  );
+    return f;
   }
 
   //================================================================================================

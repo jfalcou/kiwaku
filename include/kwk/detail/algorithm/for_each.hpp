@@ -21,7 +21,7 @@ namespace kwk
     // Piles up single for() lambda across each dimension then run them
     //==============================================================================================
     template<typename Func, typename Dims>
-    constexpr auto for_each(Func&& f, Dims const& ds)
+    constexpr auto for_each(Func f, Dims const& ds)
     {
       auto loops = kumi::fold_left ( [](auto acc, auto m)
                                       {
@@ -32,7 +32,7 @@ namespace kwk
                                         };
                                       }
                                     , ds
-                                    , [&](auto... is) { return KWK_FWD(f)(is...); }
+                                    , [&](auto... is) { return f(is...); }
                                     );
       loops();
       return f;
