@@ -28,7 +28,7 @@ void parseArguments(int argc, char *argv[])
       }
     }
     else if (!std::string("--numtimes").compare(argv[i]) ||
-        !std::string("-n").compare(argv[i]))
+             !std::string("-n").compare(argv[i]))
     {
       if (++i >= argc || !parseUInt(argv[i], &num_times))
       {
@@ -42,10 +42,11 @@ void parseArguments(int argc, char *argv[])
       }
     }
     else if (!std::string("--help").compare(argv[i]) ||
-        !std::string("-h").compare(argv[i]))
+             !std::string("-h").compare(argv[i]))
     {
       std::cout << std::endl;
-      std::cout << "Usage: " << argv[0] << " [OPTIONS]" << std::endl << std::endl;
+      std::cout << "Usage: " << argv[0] << " [OPTIONS]" << std::endl
+                << std::endl;
       std::cout << "Options:" << std::endl;
       std::cout << "  -h  --help               Print the message" << std::endl;
       std::cout << "  -s  --arraysize  SIZE    Use SIZE elements in the array" << std::endl;
@@ -56,7 +57,7 @@ void parseArguments(int argc, char *argv[])
     else
     {
       std::cerr << "Unrecognized argument '" << argv[i] << "' (try '--help')"
-        << std::endl;
+                << std::endl;
       exit(EXIT_FAILURE);
     }
   }
