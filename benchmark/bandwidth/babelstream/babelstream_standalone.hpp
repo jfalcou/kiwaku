@@ -232,7 +232,8 @@ void run()
 
   std::vector<ankerl::nanobench::Result> vres;
   vres = bcopy.results();
-  std::cout << "Resultat nanobench mult: " << vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles) << std::endl;
+  double cyc_op = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+  std::cout << "Resultat nanobench mult: " << std::fixed << ARRAY_SIZE*sizeof(T)/cyc_op*4.1 << "GBytes/s" << std::endl;
 
   // nanobench Mult
   ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Mul", [&]{
