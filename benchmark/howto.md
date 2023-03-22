@@ -1,6 +1,6 @@
 # HOW TO BENCH
 
-## CHORONO
+## CHRONO
 ```
 t1 = std::chrono::high_resolution_clock::now();
 // some code
