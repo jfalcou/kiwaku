@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <iomanip>
 #include <cstring>
+#include <fstream>
+#include <string>
+#include <stdint.h>
+#include <pcre.h>
 
 // Nanobench
 #define ANKERL_NANOBENCH_IMPLEMENT
@@ -269,3 +273,4 @@ void run()
 int parseUInt(const char *str, unsigned int *output);
 int parseInt(const char *str, int *output);
 void parseArguments(int argc, char *argv[]);
+uint32_t cpufreq();
