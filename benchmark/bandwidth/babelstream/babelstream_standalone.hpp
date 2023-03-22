@@ -9,10 +9,6 @@
 #include <algorithm>
 #include <iomanip>
 #include <cstring>
-#include <fstream>
-#include <string>
-#include <stdint.h>
-#include <pcre.h>
 
 // Nanobench
 #define ANKERL_NANOBENCH_IMPLEMENT
@@ -23,6 +19,8 @@
 
 // Default size of 2^25
 int ARRAY_SIZE = 33554432;
+// MHz
+int Freq_CPU = 3800;
 unsigned int num_times = 100;
 
 template <class T>
@@ -237,7 +235,8 @@ void run()
   std::vector<ankerl::nanobench::Result> vres;
   vres = bcopy.results();
   double cyc_op = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-  std::cout << "Resultat nanobench mult: " << std::fixed << ARRAY_SIZE*sizeof(T)/cyc_op*4.1 << "GBytes/s" << std::endl;
+  double bandwidth_nano =  (ARRAY_SIZE*sizeof(T)*Freq_CPU)/cyc_op;
+  std::cout << "Resultat nanobench Copy: " << bandwidth_nano << " MBytes/s" << std::endl;
 
   // nanobench Mult
   ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Mul", [&]{
@@ -273,4 +272,3 @@ void run()
 int parseUInt(const char *str, unsigned int *output);
 int parseInt(const char *str, int *output);
 void parseArguments(int argc, char *argv[]);
-uint32_t cpufreq();
