@@ -81,31 +81,18 @@ int main(int argc, char *argv[])
   myresults.open("Benchmark_float.csv");
   myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
 
-  run<float>();
-
-  // for(long long s = 128; s<2048; s+=128){
-  //   ARRAY_SIZE = s;
-  //   run<float>();
-  // }
-  // for(long long s = 2048; s<pow(2, 24); s+=1024){
-  //   run<float>();
-  // }
-  // for(long long s = pow(2, 24); s<=pow(2, 24); s+=pow(2, 13)){
-  //   run<float>();
-  // }
+  for(long long s = 128;  s<=pow(2, 24); s=s<<1){
+    ARRAY_SIZE = s;
+    run<float>();
+  }
   myresults.close();
 
   myresults.open("Benchmark_double.csv");
   myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
 
-  // for(long long s = 128; s<2048; s+=128){
-  //   run<double>();
-  // }
-  // for(long long s = 2048; s<pow(2, 24); s+=1024){
-  //   run<double>();
-  // }
-  // for(long long s = pow(2, 24); s<=pow(2, 24); s+=pow(2, 13)){
-  //   run<double>();
-  // }
+  for(long long s = 128;  s<=pow(2, 24); s=s<<1){
+    ARRAY_SIZE = s;
+    run<double>();
+  }
   myresults.close();
 }
