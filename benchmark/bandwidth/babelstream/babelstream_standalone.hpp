@@ -1,4 +1,5 @@
 #pragma once
+#include <ios>
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -9,6 +10,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <cstring>
+#include <fstream>
 
 // Nanobench
 #define ANKERL_NANOBENCH_IMPLEMENT
@@ -22,6 +24,8 @@ int ARRAY_SIZE = 33554432;
 // MHz
 int Freq_CPU = 3800;
 unsigned int num_times = 100;
+
+std::ofstream myresults;
 
 template <class T>
 void init_arrays(
@@ -185,27 +189,27 @@ void run()
 
   benchs = {
     // nanobench Copy
-    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Copy", [&]{
+    ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Copy", [&]{
     copy(a, c);
     }),
     // nanobench Mul
-    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Mul", [&]{
+    ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Mul", [&]{
     mul(b, c);
     }),
     // nanobench Add
-    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Add", [&]{
+    ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Add", [&]{
     add(a, b, c);
     }),
     // nanobench Triad
-    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Triad", [&]{
+    ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Triad", [&]{
     triad(a, b, c);
     }),
     // nanobench Dot
-    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Dot", [&]{
+    ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Dot", [&]{
       resultat = dot(a, b);
     }),
     // nanobench NStream
-    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("NStream", [&]{
+    ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("NStream", [&]{
       nstream(a, b, c);
     })
   };
@@ -231,7 +235,8 @@ void run()
       << std::left << std::setw(12) << "Nanobench GBytes/sec"
       << std::endl
       << std::fixed;
-  
+
+    
   for (size_t i = 0; i < timings.size(); ++i)
   {
     // Get min/max; ignore the first result
@@ -246,8 +251,15 @@ void run()
 
     std::vector<ankerl::nanobench::Result> vres;
     vres = benchs[i].results();
-    double cyc_op = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano =  (sizes[i]*Freq_CPU/1000)/cyc_op;
+    double cyc_op_mean = vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_mean =  (sizes[i]*Freq_CPU/1000)/cyc_op_mean;
+    double cyc_op_med = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_med =  (sizes[i]*Freq_CPU/1000)/cyc_op_med;
+    double cyc_op_min = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_min =  (sizes[i]*Freq_CPU/1000)/cyc_op_min;
+    double cyc_op_max = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_max =  (sizes[i]*Freq_CPU/1000)/cyc_op_max;
+    double cyc_op_err = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles);
 
     std::cout
         << std::left << std::setw(12) << labels[i]
@@ -255,12 +267,21 @@ void run()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.first->count()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.second->count()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << average
-        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth_nano
+        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth_nano_mean
         << std::endl;
+    
+    myresults << labels[i] << ";"
+    << sizeof(T) * ARRAY_SIZE << ";"
+    << bandwidth << ";"
+    << bandwidth_nano_mean << ";" 
+    << bandwidth_nano_mean << ";" 
+    << bandwidth_nano_min << ";"
+    << bandwidth_nano_max << ";"
+    << cyc_op_err << ";\n";
   }
   // Add a blank line
   std::cout << std::endl;
- 
+
   free(a);
   free(b);
   free(c);
