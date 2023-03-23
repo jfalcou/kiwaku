@@ -14,3 +14,5 @@ sudo cpufreq-set --cpu 10 --governor performance
 sudo cpufreq-set --cpu 11 --governor performance
 
 cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+echo "1" | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
