@@ -179,19 +179,38 @@ void run()
     timings[5].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
   }
 
-  std::cout << resultat << std::endl;
-  // Display timing results
-  std::cout
-      << std::left << std::setw(12) << "Function"
-      << std::left << std::setw(12) << "GBytes/sec"
-      << std::left << std::setw(12) << "Min (usec)"
-      << std::left << std::setw(12) << "Max"
-      << std::left << std::setw(12) << "Average"
-      << std::endl
-      << std::fixed;
-
   std::vector<std::string> labels;
   std::vector<size_t> sizes;
+  std::vector<ankerl::nanobench::Bench> benchs;
+
+  benchs = {
+    // nanobench Copy
+    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Copy", [&]{
+    copy(a, c);
+    }),
+    // nanobench Mul
+    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Mul", [&]{
+    mul(b, c);
+    }),
+    // nanobench Add
+    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Add", [&]{
+    add(a, b, c);
+    }),
+    // nanobench Triad
+    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Triad", [&]{
+    triad(a, b, c);
+    }),
+    // nanobench Dot
+    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Dot", [&]{
+      resultat = dot(a, b);
+    }),
+    // nanobench NStream
+    ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("NStream", [&]{
+      nstream(a, b, c);
+    })
+  };
+
+  std::cout << "Resultat bidon : " << resultat << std::endl;
 
   labels = {"Copy", "Mul", "Add", "Triad", "Dot", "Nstream"};
   sizes = {
@@ -202,6 +221,17 @@ void run()
       2 * sizeof(T) * ARRAY_SIZE,
       4 * sizeof(T) * ARRAY_SIZE};
 
+  // Display timing results
+  std::cout
+      << std::left << std::setw(12) << "Function"
+      << std::left << std::setw(12) << "GBytes/sec"
+      << std::left << std::setw(12) << "Min (usec)"
+      << std::left << std::setw(12) << "Max"
+      << std::left << std::setw(12) << "Average"
+      << std::left << std::setw(12) << "Nanobench GBytes/sec"
+      << std::endl
+      << std::fixed;
+  
   for (size_t i = 0; i < timings.size(); ++i)
   {
     // Get min/max; ignore the first result
@@ -214,55 +244,22 @@ void run()
 
     double bandwidth = (sizes[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
 
+    std::vector<ankerl::nanobench::Result> vres;
+    vres = benchs[i].results();
+    double cyc_op = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano =  (sizes[i]*Freq_CPU/1000)/cyc_op;
+
     std::cout
         << std::left << std::setw(12) << labels[i]
         << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.first->count()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.second->count()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << average
+        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth_nano
         << std::endl;
   }
   // Add a blank line
   std::cout << std::endl;
-
-  // nanobench Copy
-  ankerl::nanobench::Bench bcopy;
-
-  bcopy.epochIterations(num_times).epochs(1).run("Copy", [&]{
-    copy(a, c);
-  });
-
-  std::vector<ankerl::nanobench::Result> vres;
-  vres = bcopy.results();
-  double cyc_op = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-  double bandwidth_nano =  (ARRAY_SIZE*sizeof(T)*Freq_CPU)/cyc_op;
-  std::cout << "Resultat nanobench Copy: " << bandwidth_nano << " MBytes/s" << std::endl;
-
-  // nanobench Mult
-  ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Mul", [&]{
-    mul(b, c);
-  });
-
-  // nanobench Add
-  ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Add", [&]{
-    add(a, b, c);
-  });
-
-  // nanobench Triad
-  ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Triad", [&]{
-    triad(a, b, c);
-  });
-
-  // nanobench Dot
-  ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("Dot", [&]{
-    resultat = dot(a, b);
-  });
-
-  // nanobench NStream
-  ankerl::nanobench::Bench().epochIterations(num_times).epochs(1).run("NStream", [&]{
-    nstream(a, b, c);
-  });
-
  
   free(a);
   free(b);
