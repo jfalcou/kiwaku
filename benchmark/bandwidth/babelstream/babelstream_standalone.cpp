@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
   myresults.open("Benchmark_float.csv");
   myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
 
-  for(long long s = 128;  s<=pow(2, 24); s=s<<1){
+  for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
     ARRAY_SIZE = s;
     run<float>();
   }
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   myresults.open("Benchmark_double.csv");
   myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
 
-  for(long long s = 128;  s<=pow(2, 24); s=s<<1){
+  for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
     ARRAY_SIZE = s;
     run<double>();
   }
