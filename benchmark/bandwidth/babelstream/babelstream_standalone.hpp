@@ -23,6 +23,8 @@
 int ARRAY_SIZE = 33554432;
 // MHz
 int Freq_CPU = 3800;
+// Benchmarking
+bool BENCHMARK = false;
 unsigned int num_times = 100;
 
 std::ofstream myresults;
@@ -270,14 +272,16 @@ void run()
         << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth_nano_mean
         << std::endl;
     
-    myresults << labels[i] << ";"
-    << sizeof(T) * ARRAY_SIZE << ";"
-    << bandwidth << ";"
-    << bandwidth_nano_mean << ";" 
-    << bandwidth_nano_med << ";" 
-    << bandwidth_nano_min << ";"
-    << bandwidth_nano_max << ";"
-    << cyc_op_err << ";\n";
+    if(BENCHMARK){
+      myresults << labels[i] << ";"
+      << sizeof(T) * ARRAY_SIZE << ";"
+      << bandwidth << ";"
+      << bandwidth_nano_mean << ";" 
+      << bandwidth_nano_med << ";" 
+      << bandwidth_nano_min << ";"
+      << bandwidth_nano_max << ";"
+      << cyc_op_err << ";\n";
+    }
   }
   // Add a blank line
   std::cout << std::endl;
