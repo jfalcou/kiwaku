@@ -1,5 +1,6 @@
 #include "babelstream_standalone.hpp"
 #include <math.h>
+#include <unistd.h>
 
 int parseUInt(const char *str, unsigned int *output)
 {
@@ -24,14 +25,20 @@ void parseArguments(int argc, char *argv[])
     {
       if (++i >= argc || !parseInt(argv[i], &ARRAY_SIZE) || ARRAY_SIZE <= 0)
       {
-        std::cerr << "Invalid array size." << std::endl;
-        exit(EXIT_FAILURE);
+        if(ARRAY_SIZE == 0){
+          BENCHMARK = true;
+          std::cout << "BENCHMARK MODE" << std::endl;
+          sleep(1);
+        } else {
+          std::cerr << "Invalid array size." << std::endl;
+          exit(EXIT_FAILURE);
+        }
       }
     }
     else if (!std::string("--freq").compare(argv[i]) ||
              !std::string("-f").compare(argv[i]))
     {
-      if (++i >= argc || !parseInt(argv[i], &Freq_CPU) || ARRAY_SIZE <= 0)
+      if (++i >= argc || !parseInt(argv[i], &Freq_CPU) || Freq_CPU <= 0)
       {
         std::cerr << "Invalid frequency." << std::endl;
         exit(EXIT_FAILURE);
@@ -78,21 +85,26 @@ int main(int argc, char *argv[])
 {
   parseArguments(argc, argv);
 
-  myresults.open("Benchmark_float.csv");
-  myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
+  if(BENCHMARK){
+    myresults.open("Benchmark_float.csv");
+    myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
 
-  for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
-    ARRAY_SIZE = s;
+    for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
+      ARRAY_SIZE = s;
+      run<float>();
+    }
+    myresults.close();
+
+    myresults.open("Benchmark_double.csv");
+    myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
+
+    for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
+      ARRAY_SIZE = s;
+      run<double>();
+    }
+    myresults.close();
+  } else {
     run<float>();
-  }
-  myresults.close();
-
-  myresults.open("Benchmark_double.csv");
-  myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
-
-  for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
-    ARRAY_SIZE = s;
     run<double>();
   }
-  myresults.close();
 }
