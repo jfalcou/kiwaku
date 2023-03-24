@@ -255,10 +255,10 @@ void run()
     double bandwidth_nano_mean =  (sizes[i]*Freq_CPU/1000)/cyc_op_mean;
     double cyc_op_med = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
     double bandwidth_nano_med =  (sizes[i]*Freq_CPU/1000)/cyc_op_med;
-    double cyc_op_min = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_min =  (sizes[i]*Freq_CPU/1000)/cyc_op_min;
-    double cyc_op_max = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_max =  (sizes[i]*Freq_CPU/1000)/cyc_op_max;
+    double cyc_op_max = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_min =  (sizes[i]*Freq_CPU/1000)/cyc_op_max;
+    double cyc_op_min = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_max =  (sizes[i]*Freq_CPU/1000)/cyc_op_min;
     double cyc_op_err = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles);
 
     std::cout
@@ -274,7 +274,7 @@ void run()
     << sizeof(T) * ARRAY_SIZE << ";"
     << bandwidth << ";"
     << bandwidth_nano_mean << ";" 
-    << bandwidth_nano_mean << ";" 
+    << bandwidth_nano_med << ";" 
     << bandwidth_nano_min << ";"
     << bandwidth_nano_max << ";"
     << cyc_op_err << ";\n";

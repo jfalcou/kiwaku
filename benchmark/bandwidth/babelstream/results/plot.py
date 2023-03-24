@@ -28,12 +28,12 @@ def main():
       fname = Arg
 
       df = pd.read_csv(fname, sep=";")
-      Parse(fname, df, 'Copy', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)'])
-      Parse(fname, df, 'Mul', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)'])
-      Parse(fname, df, 'Add', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)'])
-      Parse(fname, df, 'Triad', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)'])
-      Parse(fname, df, 'Dot', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)'])
-      Parse(fname, df, 'Nstream', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)'])
+      Parse(fname, df, 'Copy', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)'])
+      Parse(fname, df, 'Mul', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)'])
+      Parse(fname, df, 'Add', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)'])
+      Parse(fname, df, 'Triad', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)'])
+      Parse(fname, df, 'Dot', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)'])
+      Parse(fname, df, 'Nstream', ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)'])
    
 if __name__ == "__main__":
   sys.exit(main())
