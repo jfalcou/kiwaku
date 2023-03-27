@@ -1,4 +1,5 @@
 #include "babelstream_standalone.hpp"
+#include <cstdint>
 #include <math.h>
 #include <unistd.h>
 
@@ -86,23 +87,36 @@ int main(int argc, char *argv[])
   parseArguments(argc, argv);
 
   if(BENCHMARK){
-    myresults.open("Benchmark_float.csv");
-    myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
+    res_nano.open("Benchmark_nano_float.csv");
+    res_chrono.open("Benchmark_chrono_float.csv");
+    res_nano << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
+    res_chrono << "Function;Size(Bytes);";
+    for(uint n=0; n<num_times; n++)res_chrono << n << ";";
+    res_chrono << "\n";
+    // Debug
+    // ARRAY_SIZE = 1024;
+    // run<float>();
 
-    for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
+    for(long long s = 128;  s<pow(2, 25); s=round(s*1.41)){
       ARRAY_SIZE = s;
       run<float>();
     }
-    myresults.close();
+    res_nano.close();
+    res_chrono.close();
 
-    myresults.open("Benchmark_double.csv");
-    myresults << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
+    res_nano.open("Benchmark_nano_double.csv");
+    res_chrono.open("Benchmark_chrono_double.csv");
+    res_nano << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
+    res_chrono << "Function;Size(Bytes);";
+    for(uint n=0; n<num_times; n++)res_chrono << n << ";";
+    res_chrono << "\n";
 
-    for(long long s = 128;  s<pow(2, 25); s=round(s*1.5)){
+    for(long long s = 128;  s<pow(2, 25); s=round(s*1.41)){
       ARRAY_SIZE = s;
       run<double>();
     }
-    myresults.close();
+    res_chrono.close();
+    res_nano.close();
   } else {
     run<float>();
     run<double>();

@@ -27,7 +27,8 @@ int Freq_CPU = 3800;
 bool BENCHMARK = false;
 unsigned int num_times = 100;
 
-std::ofstream myresults;
+std::ofstream res_nano;
+std::ofstream res_chrono;
 
 template <class T>
 void init_arrays(
@@ -251,17 +252,18 @@ void run()
 
     double bandwidth = (sizes[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
 
+    // Retrieving nanobench results
     std::vector<ankerl::nanobench::Result> vres;
     vres = benchs[i].results();
-    double cyc_op_mean = vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_mean =  (sizes[i]*Freq_CPU/1000)/cyc_op_mean;
-    double cyc_op_med = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_med =  (sizes[i]*Freq_CPU/1000)/cyc_op_med;
-    double cyc_op_max = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_min =  (sizes[i]*Freq_CPU/1000)/cyc_op_max;
-    double cyc_op_min = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_max =  (sizes[i]*Freq_CPU/1000)/cyc_op_min;
-    double cyc_op_err = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles);
+    double cyc_op_mean          = vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_mean  =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_mean;
+    double cyc_op_med           = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_med   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_med;
+    double cyc_op_max           = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_min   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_max;
+    double cyc_op_min           = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+    double bandwidth_nano_max   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_min;
+    double cyc_op_err           = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
 
     std::cout
         << std::left << std::setw(12) << labels[i]
@@ -272,15 +274,28 @@ void run()
         << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth_nano_mean
         << std::endl;
     
+    // writing measures in csv
     if(BENCHMARK){
-      myresults << labels[i] << ";"
+      res_nano << labels[i] << ";"
       << sizeof(T) * ARRAY_SIZE << ";"
       << bandwidth << ";"
       << bandwidth_nano_mean << ";" 
       << bandwidth_nano_med << ";" 
       << bandwidth_nano_min << ";"
       << bandwidth_nano_max << ";"
-      << cyc_op_err << ";\n";
+      << cyc_op_err << "\n";
+
+      
+      res_chrono << labels[i] << ';' << sizeof(T) * ARRAY_SIZE ;
+      std::vector<time_t> chronos = timings[i];
+
+      for (std::vector<time_t>::iterator it = chronos.begin() ; it != chronos.end(); ++it)
+      {
+        double band = (sizes[i]/(it->count()*1e-6))/(1024*1024*1024);
+        res_chrono << ';' << band;
+      }
+      res_chrono << "\n";
+
     }
   }
   // Add a blank line
