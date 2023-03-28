@@ -50,65 +50,65 @@ void init_arrays(
   }
 }
 
-template <class T>
-void copy(const T *__restrict a, T *__restrict c)
+template <kwk::concepts::container Container>
+void copy(Container&& a, Container&& c)
 {
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
-    c[i] = a[i];
+    c(i) = a(i);
 }
 
-template <class T>
-void mul(T *__restrict b, const T *__restrict c)
-{
-  const int array_size = ARRAY_SIZE;
-  for (int i = 0; i < array_size; i++)
-  {
-    const T scalar = SCALAR;
-    b[i] = scalar * c[i];
-  }
-}
-
-template <class T>
-void add(const T *__restrict a, const T *__restrict b, T *__restrict c)
-{
-  const int array_size = ARRAY_SIZE;
-  for (int i = 0; i < array_size; i++)
-  {
-    c[i] = a[i] + b[i];
-  }
-}
-
-template <class T>
-void triad(T *__restrict a, const T *__restrict b, const T *__restrict c)
+template <typename T, kwk::concepts::container Container>
+void mul(Container&& b, Container&& c)
 {
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
   {
     const T scalar = SCALAR;
-    a[i] = b[i] + scalar * c[i];
+    b(i) = scalar * c(i);
   }
 }
 
-template <class T>
-void nstream(T *__restrict a, const T *__restrict b, const T *__restrict c)
+template <kwk::concepts::container Container>
+void add(Container&& a, Container&& b, Container&& c)
+{
+  const int array_size = ARRAY_SIZE;
+  for (int i = 0; i < array_size; i++)
+  {
+    c(i) = a(i) + b(i);
+  }
+}
+
+template <typename T, kwk::concepts::container Container>
+void triad(Container&& a, Container&& b, Container&& c)
 {
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
   {
     const T scalar = SCALAR;
-    a[i] += b[i] + scalar * c[i];
+    a(i) = b(i) + scalar * c(i);
   }
 }
 
-template <class T>
-T dot(const T *__restrict a, const T *__restrict b)
+template <typename T, kwk::concepts::container Container>
+void nstream(Container&& a, Container&& b, Container&& c)
+{
+  const int array_size = ARRAY_SIZE;
+  for (int i = 0; i < array_size; i++)
+  {
+    const T scalar = SCALAR;
+    a(i) += b(i) + scalar * c(i);
+  }
+}
+
+template <typename T, kwk::concepts::container Container>
+T dot(Container&& a, Container&& b)
 {
   const int array_size = ARRAY_SIZE;
   T sum = 0.0;
   for (int i = 0; i < array_size; i++)
   {
-    sum += a[i] * b[i];
+    sum += a(i) * b(i);
   }
   return sum;
 }
@@ -142,6 +142,11 @@ void run()
   // Initialize device arrays
   init_arrays(a, b, c, (T)0.1, (T)0.2, T(0.0));
 
+  // Init kiwaku tables
+  auto kwkA = kwk::table{kwk::source = a, kwk::of_size(ARRAY_SIZE)};
+  auto kwkB = kwk::table{kwk::source = b, kwk::of_size(ARRAY_SIZE)};
+  auto kwkC = kwk::table{kwk::source = c, kwk::of_size(ARRAY_SIZE)};
+
   // List of times
   using time_t = std::chrono::duration<double, std::micro>;
   std::vector<std::vector<time_t>> timings(6);
@@ -154,38 +159,38 @@ void run()
   {
     // Execute Copy
     t1 = std::chrono::high_resolution_clock::now();
-    copy(a, c);
+    copy(kwkA, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[0].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Mul
     t1 = std::chrono::high_resolution_clock::now();
-    mul(b, c);
+    mul<T>(kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[1].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Add
     t1 = std::chrono::high_resolution_clock::now();
-    add(a, b, c);
+    add(kwkA, kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[2].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Triad
     t1 = std::chrono::high_resolution_clock::now();
-    triad(a, b, c);
+    triad<T>(kwkA, kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[3].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Dot
     t1 = std::chrono::high_resolution_clock::now();
-    resultat = dot(a, b);
+    resultat = dot<T>(kwkA, kwkB);
     t2 = std::chrono::high_resolution_clock::now();
 
     timings[4].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute NStream
     t1 = std::chrono::high_resolution_clock::now();
-    nstream(a, b, c);
+    nstream<T>(kwkA, kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[5].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
   }
@@ -197,27 +202,27 @@ void run()
   benchs = {
     // nanobench Copy
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Copy", [&]{
-    copy(a, c);
+    copy(kwkA, kwkC);
     }),
     // nanobench Mul
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Mul", [&]{
-    mul(b, c);
+    mul<T>(kwkB, kwkC);
     }),
     // nanobench Add
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Add", [&]{
-    add(a, b, c);
+    add(kwkA, kwkB, kwkC);
     }),
     // nanobench Triad
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Triad", [&]{
-    triad(a, b, c);
+    triad<T>(kwkA, kwkB, kwkC);
     }),
     // nanobench Dot
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Dot", [&]{
-      resultat = dot(a, b);
+      resultat = dot<T>(kwkA, kwkB);
     }),
     // nanobench NStream
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("NStream", [&]{
-      nstream(a, b, c);
+      nstream<T>(kwkA, kwkB, kwkC);
     })
   };
 
