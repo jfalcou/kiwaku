@@ -146,9 +146,9 @@ void run()
   init_arrays(a, b, c, (T)0.1, (T)0.2, T(0.0));
 
   // Init kiwaku tables
-  auto kwkA = kwk::table{kwk::source = a, kwk::of_size(ARRAY_SIZE)};
-  auto kwkB = kwk::table{kwk::source = b, kwk::of_size(ARRAY_SIZE)};
-  auto kwkC = kwk::table{kwk::source = c, kwk::of_size(ARRAY_SIZE)};
+  auto kwkA = kwk::view{kwk::source = a, kwk::of_size(ARRAY_SIZE)};
+  auto kwkB = kwk::view{kwk::source = b, kwk::of_size(ARRAY_SIZE)};
+  auto kwkC = kwk::view{kwk::source = c, kwk::of_size(ARRAY_SIZE)};
 
   // List of times
   using time_t = std::chrono::duration<double, std::micro>;

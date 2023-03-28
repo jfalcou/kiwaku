@@ -49,3 +49,9 @@ Make launch
 ``` 
 `ninja -v kwk.out`
 ```
+
+### Launch
+-s (size) : 0 for benchmode, >= 2 normal mode
+-n (iterations/epochs) : 100 is a good number 
+-f (cpu frequency) : MHz
+`./*.o -s 0 -n 100 -f 1600`
