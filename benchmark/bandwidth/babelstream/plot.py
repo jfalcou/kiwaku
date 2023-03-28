@@ -70,7 +70,7 @@ def main():
 
   functions = ['Copy', 'Mul', 'Add','Triad','Dot','Nstream']
   metric = ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)']
-  plot_type = ['plot','bar']
+  plot_type = ['plot'] # 'bar'
 
   if(n_arg < 2):
     print("Please input the file\n")
@@ -79,7 +79,7 @@ def main():
     for Arg in sys.argv[1:]:
       fname = Arg
       df = pd.read_csv(fname, sep=";")
-      Parse(fname, df, functions, metric, plot_type, save=False)
+      Parse(fname, df, functions, metric, plot_type, save=True)
    
 if __name__ == "__main__":
   sys.exit(main())
