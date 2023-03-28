@@ -11,10 +11,13 @@
 #include <iomanip>
 #include <cstring>
 #include <fstream>
+#include <cstdint>
+#include <math.h>
+#include <unistd.h>
 
 // Nanobench
 #define ANKERL_NANOBENCH_IMPLEMENT
-#include "../../nanobench.h"
+#include "../../../nanobench.h"
 
 // scalar constanst for the mul, triad and nstream kernels
 #define SCALAR (0.4)

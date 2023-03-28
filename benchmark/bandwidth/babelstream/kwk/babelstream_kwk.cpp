@@ -1,7 +1,4 @@
-#include "babelstream_standalone.hpp"
-#include <cstdint>
-#include <math.h>
-#include <unistd.h>
+#include "babelstream_kwk.hpp"
 
 int parseUInt(const char *str, unsigned int *output)
 {
@@ -87,8 +84,8 @@ int main(int argc, char *argv[])
   parseArguments(argc, argv);
 
   if(BENCHMARK){
-    res_nano.open("Benchmark_nano_float.csv");
-    res_chrono.open("Benchmark_chrono_float.csv");
+    res_nano.open("Benchmark_kwk_nano_float.csv");
+    res_chrono.open("Benchmark_kwk_chrono_float.csv");
     res_nano << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
     res_chrono << "Function;Size(Bytes);";
     for(uint n=0; n<num_times; n++)res_chrono << n << ";";
@@ -104,8 +101,8 @@ int main(int argc, char *argv[])
     res_nano.close();
     res_chrono.close();
 
-    res_nano.open("Benchmark_nano_double.csv");
-    res_chrono.open("Benchmark_chrono_double.csv");
+    res_nano.open("Benchmark_kwk_nano_double.csv");
+    res_chrono.open("Benchmark_kwk_chrono_double.csv");
     res_nano << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
     res_chrono << "Function;Size(Bytes);";
     for(uint n=0; n<num_times; n++)res_chrono << n << ";";

@@ -29,6 +29,23 @@ L1 : 102 GB/s
 L2 : 68 GB/s
 L3 : 45 GB/s
 
-### babelstream 
+## Compilation
 
-### nanobench
+### standalone 
+
+``` 
+g++-11 -O3 babelstream_standalone.cpp -o standalone.o
+```
+
+### kiwaku
+
+Compile with kiwaku :
+
+```
+cmake ../cmake -DCPM_kiwaku_SOURCE=/home/higepi/stage/kiwaku -G Ninja -DCMAKE_CXX_COMPILER=clang++-15
+```
+
+Make launch
+``` 
+`ninja -v kwk.out`
+```
