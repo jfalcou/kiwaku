@@ -170,12 +170,7 @@ namespace kwk
     //! convertible type or kwk::_.
     //!
     //! If you pass kwk::_ as a dimension's value, it means that the shape will be using the
-    //! default value for this dimension, i.e 0 for the first dimension, 1 for others or the fixed
-    //! size if it is provided.
-    //!
-    //! If you pass kwk::_ as a dimension's value, it means that the shape will be using the
-    //! default value for this dimension, i.e 0 for the innermost dimension, 1 for others or the
-    //! fixed size if it is provided.
+    //! default value for this dimension (i.e. 0).
     //!
     //! Passing a dimension to overwrite a compile-time dimensions is undefined behavior.
     //!
@@ -188,12 +183,12 @@ namespace kwk
     //! @param dims  Variadic list of dimension/size association
     //==============================================================================================
     template<concepts::extent<size_type>... A>
-    constexpr shape(A const&... dims) noexcept
+    constexpr shape(A const... dims) noexcept
     requires( !(std::convertible_to<A,size_type> && ...)
             && make_combo<size_type>(Shape).is_equivalent(__::as_descriptor<size_type>(A{}...))
             )
     {
-      [&]<std::size_t... N>(std::index_sequence<N...>)
+      [=, this]<std::size_t... N>(std::index_sequence<N...>)
       {
         this->fill(__::as_axis(dims,get<N>(Shape),kumi::index<static_order-N-1>)...);
       }(std::make_index_sequence<sizeof...(A)>{});
@@ -212,7 +207,7 @@ namespace kwk
     //!     shape, i.e it's runtime specified or, if it's compile-time specified, has the same
     //!     value than its source.
     //!
-    //! This constructor doesn not participate in overload resolution if both shapes have
+    //! This constructor does not participate in overload resolution if the shapes have a
     //! non-compatible layout.
     //!
     //! @groupheader{Example}
@@ -226,22 +221,7 @@ namespace kwk
             &&  make_combo<size_type>(Shape).is_compatible(OtherShape)
             )
     {
-      auto& v = parent::storage();
-      kumi::for_each_index( [&]<typename I>(I, auto const& m)
-                            {
-                              constexpr auto i = I::value;
-                              if constexpr(parent::contains(i)) v[parent::location[i]] = m;
-                              else
-                              {
-                                KIWAKU_ASSERT ( m == get<i>(*this)
-                                              , "[KWK] - Static/Dynamic mismatch in constructor."
-                                                << " Expected: " << get<i>(*this)
-                                                << " but found " << m << " instead."
-                                              );
-                              }
-                            }
-                          , other
-                          );
+      kumi::apply([this](auto const... vals){ this->fill(vals...); }, other);
     }
 
     //==============================================================================================
@@ -259,36 +239,7 @@ namespace kwk
     constexpr explicit shape( shape<Other> const& other ) noexcept
               requires(shape<Other>::static_order < static_order)
     {
-      constexpr auto dz = static_order - shape<Other>::static_order;
-
-      // Fill first new dimensions with 1
-      [&]<std::size_t... I>(std::index_sequence<I...>)
-      {
-        auto perf = [&]<typename Idx>(Idx)
-        {
-          if constexpr(parent::contains(Idx::value)) (*this)[Idx::value] = 1;
-        };
-        (perf(kumi::index<I>),...);
-      }(std::make_index_sequence<dz>{});
-
-      // Check and copy smaller shape into remaining axis
-      [&]<std::size_t... I>(std::index_sequence<I...>)
-      {
-        auto perf = [&]<typename Idx>(Idx)
-        {
-          constexpr auto i = Idx::value + dz;
-          if constexpr(parent::contains(i)) (*this)[i] = other[Idx::value];
-          else
-          {
-            KIWAKU_ASSERT ( other[Idx::value] == get<i>(*this)
-                          , "[KWK] - Static/Dynamic mismatch in constructor."
-                            << " Expected: " << get<i>(*this)
-                            << " but found " << other[Idx::value] << " instead."
-                          );
-          }
-        };
-        (perf(kumi::index<I>),...);
-      }(std::make_index_sequence<shape<Other>::static_order>{});
+      kumi::apply([this](auto const... vals){ this->fill(vals...); }, other);
     }
 
     //==============================================================================================
@@ -341,13 +292,13 @@ namespace kwk
     using parent::swap;
 
     /// Equality comparison operator
-    friend constexpr bool operator==( shape const & a, shape const & b ) noexcept
+    KWK_PURE friend constexpr bool operator==( shape const & a, shape const & b ) noexcept
     {
         return a.storage() == b.storage();
     }
 
     template<auto S2>
-    friend constexpr bool operator==(shape const& a, shape<S2> const& b) noexcept
+    KWK_PURE friend constexpr bool operator==(shape const & a, shape< S2 > const & b ) noexcept
     requires(  compress<std::min(Shape.size(), S2.size())>(Shape)
               .is_equivalent(compress<std::min(Shape.size(), S2.size())>(S2))
             )
@@ -377,7 +328,7 @@ namespace kwk
     //!
     //==============================================================================================
     template<std::integral... Coords>
-    constexpr bool contains(Coords... p) const noexcept
+    KWK_PURE constexpr bool contains(Coords... p) const noexcept
     requires(static_order == sizeof...(Coords))
     {
       return kumi::apply( [&](auto... m) { return ((p < m) && ... && true); }, *this);
