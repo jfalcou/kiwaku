@@ -1,4 +1,5 @@
 #pragma once
+#include "kwk/kwk.hpp"
 #include <ios>
 #include <iostream>
 #include <vector>
@@ -24,14 +25,11 @@
 
 // Default size of 2^25
 int ARRAY_SIZE = 33554432;
-int SIZE_X = 3;
-int SIZE_Y = 4;
 size_t s_align = 1024;
 // MHz
 int Freq_CPU = 3800;
 // Benchmarking
 bool BENCHMARK = false;
-bool UNITTEST = false;
 unsigned int num_times = 100;
 
 std::ofstream res_nano;
@@ -47,9 +45,9 @@ void init_arrays(
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
   {
-    a[i] = (T)(rand()%10)/10;
-    b[i] = (T)(rand()%10)/10;
-    c[i] = (T)(rand()%10)/10;
+    a[i] = initA;
+    b[i] = initB;
+    c[i] = initC;
   }
 }
 
@@ -65,117 +63,42 @@ void init_matrix(
   {
     for (int i = 0; i < array_size; i++)
     {
-      a[j*array_size+i] = (T)(rand()%10)/10;
-      b[j*array_size+i] = (T)(rand()%10)/10;
-      c[j*array_size+i] = (T)(rand()%10)/10;
+      a[j*array_size+i] = initA;
+      b[j*array_size+i] = initB;
+      c[j*array_size+i] = initC;
     }
   }
 }
 
-template <class T>
-void GEMV(T *__restrict a, T *__restrict b, T *__restrict c)
+template <typename T, kwk::concepts::container ContainerV, kwk::concepts::container ContainerM>
+void GEMV(ContainerV&& a, ContainerM&& b, ContainerV&& c)
 {
-  const int size_x = SIZE_X;
-  const int size_y = SIZE_Y;
-  for (int j = 0; j < size_y; j++)
+  const int array_size = ARRAY_SIZE;
+  for (int j = 0; j < array_size; j++)
   {
-    for (int i = 0; i < size_x; i++)
+    for (int i = 0; i < array_size; i++)
     {
-      a[j] += b[j*size_x+i]*c[i];
+      a(j) += b(j,i)*c(i);
     }
   }
 }
 
-template <class T>
-void GEMM(T *__restrict a, T *__restrict b, T *__restrict c)
+template <typename T, kwk::concepts::container ContainerM>
+void GEMM(ContainerM&& a, ContainerM&& b, ContainerM&& c)
 {
-  const int size_x = SIZE_X;
-  const int size_y = SIZE_Y;
-  for (int j = 0; j < size_y; j++)
+  const int array_size = ARRAY_SIZE;
+  for (int j = 0; j < array_size; j++)
   {
-    for (int i = 0; i < size_y; i++)
+    for (int i = 0; i < array_size; i++)
     {
-      for (int k = 0; k < size_x; k++)
+      for (int k = 0; k < array_size; k++)
       {
-        a[j*size_y+i] += b[j*size_x+k]*c[k*size_y+i];
+        a(j,i) += b(i,k)*c(k,i);
       }
     }
   }
 }
-template <typename T>
-void UnitTest(){
-  const int size_x = SIZE_X;
-  const int size_y = SIZE_Y;
 
-  T *Va = (T *)aligned_alloc(s_align, sizeof(T) * size_x);
-  T *Vc = (T *)aligned_alloc(s_align, sizeof(T) * size_x);
-
-  T *Ma = (T *)aligned_alloc(s_align, sizeof(T) * size_y*size_y);
-  T *Mb = (T *)aligned_alloc(s_align, sizeof(T) * size_x*size_y);
-  T *Mc = (T *)aligned_alloc(s_align, sizeof(T) * size_x*size_y);
-
-  for(int y =0; y<size_y; y++)
-  {
-    Va[y] = (T) 0;
-    for(int x = 0; x<size_y; x++)
-    {
-      Ma[y*size_y+x] = (T) 0.0;
-    }
-  }
-
-  Vc[0] = (T) 1;
-  Vc[1] = (T) -10;
-  Vc[2] = (T) 100;
-
-  Mb[0] = (T) 1;
-  Mb[1] = (T) 2;
-  Mb[2] = (T) 3;
-  Mb[3] = (T) 1;
-  Mb[4] = (T) 2;
-  Mb[5] = (T) 3;
-  Mb[6] = (T) 1;
-  Mb[7] = (T) 2;
-  Mb[8] = (T) 3;
-  Mb[9] = (T) 1;
-  Mb[10] = (T) 2;
-  Mb[11] = (T) 3;
-
-  Mc[0] = (T) 1;
-  Mc[1] = (T) 2;
-  Mc[2] = (T) 3;
-  Mc[3] = (T) 4;
-  Mc[4] = (T) 1;
-  Mc[5] = (T) 2;
-  Mc[6] = (T) 3;
-  Mc[7] = (T) 4;
-  Mc[8] = (T) 1;
-  Mc[9] = (T) 2;
-  Mc[10] = (T) 3;
-  Mc[11] = (T) 4;
-
-  if (sizeof(T) == sizeof(float))
-    std::cout << "Precision: float" << std::endl;
-  else
-    std::cout << "Precision: double" << std::endl;
-
-  GEMM(Ma, Mb, Mc);
-  GEMV(Va, Mb, Vc);
-
-  std::cout << "GEMV res : \n";
-  for(int y =0; y<size_y; y++)
-  {
-    std::cout << Va[y] << std::endl;
-  }
-  std::cout << "\n GEMM res : \n";
-
-  for(int y =0; y<size_y; y++)
-  {
-    for(int x=0; x<size_y; x++){
-      std::cout << Ma[y*size_y+x] << " ";
-    }
-    std::cout << "\n";
-  }
-}
 
 // Runs the kernel(s) and prints output.
 template <typename T>
@@ -211,10 +134,18 @@ void run()
   std::cout.precision(ss);
 
   // Initialize device arrays
-  init_arrays(Va, Vb, Vc, (T)0.0, (T)1.1, (T)1.2);
+  init_arrays(Va, Vb, Vc, (T)0.0, (T)0.2, T(0.1));
   std::cout << "init V" << std::endl;
-  init_matrix(Ma, Mb, Mc, (T)0.0, (T)1.1, (T)1.2);
+  init_matrix(Ma, Mb, Mc, (T)0.0, (T)0.2, T(0.1));
   std::cout << "init M" << std::endl;
+
+  auto kwkVA = kwk::view{kwk::source = Va, kwk::of_size(ARRAY_SIZE)};
+  auto kwkVB = kwk::view{kwk::source = Vb, kwk::of_size(ARRAY_SIZE)};
+  auto kwkVC = kwk::view{kwk::source = Vc, kwk::of_size(ARRAY_SIZE)};
+
+  auto kwkMA = kwk::view{kwk::source = Ma, kwk::of_size(ARRAY_SIZE,ARRAY_SIZE)};
+  auto kwkMB = kwk::view{kwk::source = Mb, kwk::of_size(ARRAY_SIZE,ARRAY_SIZE)};
+  auto kwkMC = kwk::view{kwk::source = Mc, kwk::of_size(ARRAY_SIZE,ARRAY_SIZE)};
 
   // List of times
   using time_t = std::chrono::duration<double, std::micro>;
@@ -228,19 +159,15 @@ void run()
   {
     // Execute Copy
     t1 = std::chrono::high_resolution_clock::now();
-    GEMV(Va, Mb, Vc);
+    GEMV<T>(kwkVA, kwkMB, kwkVC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[0].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Mul
     t1 = std::chrono::high_resolution_clock::now();
-    GEMM(Ma, Mb, Mc);
+    GEMM<T>(kwkMA, kwkMB, kwkMC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[1].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
-  }
-  
-  for(int bidon=0; bidon < array_size; bidon++){
-    Vb[bidon] = Va[bidon];
   }
 
   std::vector<std::string> labels;
@@ -248,19 +175,17 @@ void run()
   std::vector<ankerl::nanobench::Bench> benchs;
 
   benchs = {
-    // nanobench GEMV
+    // nanobench Copy
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMV", [&]{
-    ankerl::nanobench::doNotOptimizeAway(Va);
-    GEMV(Va, Mb, Vc);
+    GEMV<T>(kwkVA, kwkMB, kwkVC);
     }),
-    // nanobench GEMM
+    // nanobench Mul
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMM", [&]{
-    ankerl::nanobench::doNotOptimizeAway(Ma);
-    GEMM(Ma, Mb, Mc);
+    GEMM<T>(kwkMA, kwkMB, kwkMC);
     })
   };
 
-  std::cout << "Resultat bidon : " << Va[ARRAY_SIZE-1] << Ma[ARRAY_SIZE*ARRAY_SIZE-1] << std::endl;
+  std::cout << "Resultat bidon : " << resultat << std::endl;
 
   labels = {"GEMV", "GEMM"};
   sizes = {
