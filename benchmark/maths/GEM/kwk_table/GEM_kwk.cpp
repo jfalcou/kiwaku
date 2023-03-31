@@ -1,4 +1,4 @@
-#include "GEM_std.hpp"
+#include "GEM_kwk.hpp"
 
 
 int parseUInt(const char *str, unsigned int *output)
@@ -22,15 +22,11 @@ void parseArguments(int argc, char *argv[])
     if (!std::string("--arraysize").compare(argv[i]) ||
         !std::string("-s").compare(argv[i]))
     {
-      if (++i >= argc || !parseInt(argv[i], &ARRAY_SIZE) || ARRAY_SIZE <= 1)
+      if (++i >= argc || !parseInt(argv[i], &ARRAY_SIZE) || ARRAY_SIZE <= 0)
       {
         if(ARRAY_SIZE == 0){
           BENCHMARK = true;
           std::cout << "BENCHMARK MODE" << std::endl;
-          sleep(1);
-        } else if(ARRAY_SIZE == 1){
-          UNITTEST = true;
-          std::cout << "UNIT TEST MODE" << std::endl;
           sleep(1);
         } else {
           std::cerr << "Invalid array size." << std::endl;
@@ -88,10 +84,7 @@ int main(int argc, char *argv[])
 {
   parseArguments(argc, argv);
 
-  if(UNITTEST){
-    UnitTest<float>();
-    UnitTest<double>();
-  }else if(BENCHMARK){
+  if(BENCHMARK){
     res_nano.open("Benchmark_std_nano_float.csv");
     res_chrono.open("Benchmark_std_chrono_float.csv");
     res_nano << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";

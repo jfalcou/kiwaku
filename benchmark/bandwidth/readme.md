@@ -41,6 +41,7 @@ g++-11 -O3 babelstream_standalone.cpp -o standalone.o
 
 Compile with kiwaku :
 
+In the project build/
 ```
 cmake ../cmake -DCPM_kiwaku_SOURCE=/home/higepi/stage/kiwaku -G Ninja -DCMAKE_CXX_COMPILER=clang++-15
 ```
