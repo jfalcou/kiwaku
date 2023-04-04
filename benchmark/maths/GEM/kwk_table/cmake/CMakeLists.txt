@@ -29,6 +29,6 @@ target_link_libraries(kwk_compiler_options INTERFACE kiwaku::kiwaku)
 
 message(STATUS "Testing = ${kiwaku_SOURCE_DIR}")
 
-add_executable(kwk.out ../GEM_kwk.cpp)
+add_executable(kwk.out ../GEM_kwk_table.cpp ../../GEM.cpp)
 
 target_link_libraries(kwk.out PUBLIC kwk_compiler_options) #ma_target_avec_kiwaku

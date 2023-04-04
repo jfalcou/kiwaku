@@ -1,4 +1,5 @@
-#include "GEM_std.hpp"
+#include "GEM_kwk_table.hpp"
+
 int main(int argc, char *argv[])
 {
   parseArguments(argc, argv);
