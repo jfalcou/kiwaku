@@ -1,5 +1,4 @@
-#include "GEM_kwk.hpp"
-
+#include "GEM.hpp"
 
 int parseUInt(const char *str, unsigned int *output)
 {
@@ -22,11 +21,15 @@ void parseArguments(int argc, char *argv[])
     if (!std::string("--arraysize").compare(argv[i]) ||
         !std::string("-s").compare(argv[i]))
     {
-      if (++i >= argc || !parseInt(argv[i], &ARRAY_SIZE) || ARRAY_SIZE <= 0)
+      if (++i >= argc || !parseInt(argv[i], &ARRAY_SIZE) || ARRAY_SIZE <= 1)
       {
         if(ARRAY_SIZE == 0){
           BENCHMARK = true;
           std::cout << "BENCHMARK MODE" << std::endl;
+          sleep(1);
+        } else if(ARRAY_SIZE == 1){
+          UNITTEST = true;
+          std::cout << "UNIT TEST MODE" << std::endl;
           sleep(1);
         } else {
           std::cerr << "Invalid array size." << std::endl;
@@ -80,43 +83,3 @@ void parseArguments(int argc, char *argv[])
   }
 }
 
-int main(int argc, char *argv[])
-{
-  parseArguments(argc, argv);
-
-  if(BENCHMARK){
-    res_nano.open("Benchmark_std_nano_float.csv");
-    res_chrono.open("Benchmark_std_chrono_float.csv");
-    res_nano << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
-    res_chrono << "Function;Size(Bytes);";
-    for(uint n=0; n<num_times; n++)res_chrono << n << ";";
-    res_chrono << "\n";
-    // Debug
-    // ARRAY_SIZE = 1024;
-    // run<float>();
-
-    for(long long s = 32;  s<pow(2, 10); s=round(s*1.41)){
-      ARRAY_SIZE = s;
-      run<float>();
-    }
-    res_nano.close();
-    res_chrono.close();
-
-    res_nano.open("Benchmark_std_nano_double.csv");
-    res_chrono.open("Benchmark_std_chrono_double.csv");
-    res_nano << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
-    res_chrono << "Function;Size(Bytes);";
-    for(uint n=0; n<num_times; n++)res_chrono << n << ";";
-    res_chrono << "\n";
-
-    for(long long s = 32;  s<pow(2, 10); s=round(s*1.41)){
-      ARRAY_SIZE = s;
-      run<double>();
-    }
-    res_chrono.close();
-    res_nano.close();
-  } else {
-    run<float>();
-    run<double>();
-  }
-}
