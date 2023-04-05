@@ -34,7 +34,8 @@ L3 : 45 GB/s
 ### standalone 
 
 ``` 
-g++-11 -O3 babelstream_standalone.cpp -o standalone.o
+cmake ..
+make
 ```
 
 ### kiwaku
