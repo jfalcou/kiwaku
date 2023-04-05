@@ -274,11 +274,11 @@ void run()
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMV BLAS", [&]{
     // ankerl::nanobench::doNotOptimizeAway(Ma);
     ankerl::nanobench::doNotOptimizeAway(Va);
-    cblas_dgemv(CblasRowMajor, CblasNoTrans, array_size, array_size, 1.0, Mb, array_size, Vc, 1, 0.0, nullptr, 1);
+    cblas_dgemv(CblasRowMajor, CblasNoTrans, array_size, array_size, 1.0, Mb, array_size, Vc, 1, 0.0, Vc, 1);
     }),
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMM BLAS", [&]{
     // ankerl::nanobench::doNotOptimizeAway(Ma);
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, array_size, array_size, array_size, 1.0, Mb, array_size, Mc, array_size, 0.0, nullptr, 1);
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, array_size, array_size, array_size, 1.0, Mb, array_size, Mc, array_size, 0.0, Mc, 1);
     })
     };
   }
@@ -302,8 +302,8 @@ void run()
 
     // Calculate average; ignore the first result
     double average = std::accumulate(timings[i].begin() + 1, timings[i].end(), 0.0, [](auto acc, auto r)
-                                     { return acc + r.count(); }) /
-                     (double)(num_times - 1);
+                    { return acc + r.count(); }) /
+                    (double)(num_times - 1);
 
     double bandwidth = (sizes[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
 
