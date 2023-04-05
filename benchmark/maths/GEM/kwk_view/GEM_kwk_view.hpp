@@ -209,6 +209,7 @@ void run()
     // nanobench GEMV
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMV", [&]{
     // ankerl::nanobench::doNotOptimizeAway(Mb);
+    ankerl::nanobench::doNotOptimizeAway(Va);
     GEMV(kwkVA, kwkMB, kwkVC);
     }),
     // nanobench GEMM
