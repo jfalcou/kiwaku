@@ -156,7 +156,7 @@ void run()
 
   labels = {"GEMV", "GEMM", "GEMMSmart"};
   sizes = {
-      sizeof(T) * ARRAY_SIZE * + 2 * sizeof(T) * ARRAY_SIZE * ARRAY_SIZE,
+      sizeof(T) * ARRAY_SIZE + 2 * sizeof(T) * ARRAY_SIZE * ARRAY_SIZE,
       sizeof(T) * ARRAY_SIZE * ARRAY_SIZE + 2 * sizeof(T) * ARRAY_SIZE * ARRAY_SIZE * ARRAY_SIZE,
       sizeof(T) * ARRAY_SIZE * ARRAY_SIZE + 2 * sizeof(T) * ARRAY_SIZE * ARRAY_SIZE * ARRAY_SIZE};
 
@@ -259,6 +259,7 @@ void run()
     double cyc_op_min           = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
     double bandwidth_nano_max   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_min;
     double cyc_op_err           = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
+    double bandwidth_nano_err   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_err;
 
     std::cout
         << std::left << std::setw(12) << labels[i]
@@ -278,7 +279,7 @@ void run()
       << bandwidth_nano_med << ";" 
       << bandwidth_nano_min << ";"
       << bandwidth_nano_max << ";"
-      << cyc_op_err << "\n";
+      << bandwidth_nano_err << "\n";
 
       
       res_chrono << labels[i] << ';' << sizeof(T) * ARRAY_SIZE ;

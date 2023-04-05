@@ -286,11 +286,11 @@ void run()
   // Display timing results
   std::cout
       << std::left << std::setw(12) << "Function"
-      << std::left << std::setw(12) << "GBytes/sec"
+      << std::left << std::setw(12) << "Exec (usec)"
       << std::left << std::setw(12) << "Min (usec)"
       << std::left << std::setw(12) << "Max"
       << std::left << std::setw(12) << "Average"
-      << std::left << std::setw(12) << "Nanobench GBytes/sec"
+      << std::left << std::setw(12) << "Exec (usec)"
       << std::endl
       << std::fixed;
 
@@ -301,53 +301,65 @@ void run()
     auto minmax = std::minmax_element(timings[i].begin() + 1, timings[i].end());
 
     // Calculate average; ignore the first result
-    double average = std::accumulate(timings[i].begin() + 1, timings[i].end(), 0.0, [](auto acc, auto r)
-                    { return acc + r.count(); }) /
-                    (double)(num_times - 1);
+    double chrono_average = std::accumulate(timings[i].begin() + 1, timings[i].end(), 0.0, [](auto acc, auto r)
+                          { return acc + r.count(); }) /
+                          (double)(num_times - 1);
 
-    double bandwidth = (sizes[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
+    // double bandwidth = (sizes[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
 
     // Retrieving nanobench results
     std::vector<ankerl::nanobench::Result> vres;
     vres = benchs[i].results();
-    double cyc_op_mean          =   vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_mean  =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_mean;
-    double cyc_op_med           =   vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_med   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_med;
-    double cyc_op_max           =   vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_min   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_max;
-    double cyc_op_min           =   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_max   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_min;
-    double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
-    double bandwidth_nano_err   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_err;
+    double cyc_op_mean          = vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
+    // double bandwidth_nano_mean  =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_mean;
+    double time_nano_mean       = double(cyc_op_mean/(Freq_CPU));
+    double cyc_op_med           = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+    // double bandwidth_nano_med   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_med;
+    double time_nano_med        = double(cyc_op_med/(Freq_CPU));
+    double cyc_op_max           = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+    // double bandwidth_nano_min   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_max;
+    double time_nano_max        = double(cyc_op_max/(Freq_CPU));
+    double cyc_op_min           = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+    // double bandwidth_nano_max   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_min;
+    double time_nano_min        = double(cyc_op_min/(Freq_CPU));
+    double cyc_op_err           = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
+    double time_nano_err        = double(cyc_op_err/(Freq_CPU));
 
     std::cout
         << std::left << std::setw(12) << labels[i]
-        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth
+        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << chrono_average
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.first->count()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.second->count()
-        << std::left << std::setw(12) << std::setprecision(5) << std::scientific << average
-        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth_nano_mean
+        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << time_nano_mean
         << std::endl;
     
     // Writing measures in csv
+    // if(BENCHMARK){
+    //   res_nano << labels[i] << ";"
+    //   << sizes[i] << ";"
+    //   << bandwidth << ";"
+    //   << bandwidth_nano_mean << ";" 
+    //   << bandwidth_nano_med << ";" 
+    //   << bandwidth_nano_min << ";"
+    //   << bandwidth_nano_max << ";"
+    //   << cyc_op_err << "\n";
     if(BENCHMARK){
       res_nano << labels[i] << ";"
       << sizes[i] << ";"
-      << bandwidth << ";"
-      << bandwidth_nano_mean << ";" 
-      << bandwidth_nano_med << ";" 
-      << bandwidth_nano_min << ";"
-      << bandwidth_nano_max << ";"
-      << bandwidth_nano_err << "\n";
+      << chrono_average << ";"
+      << time_nano_mean << ";" 
+      << time_nano_med << ";" 
+      << time_nano_min << ";"
+      << time_nano_max << ";"
+      << cyc_op_err << "\n";
 
       res_chrono << labels[i] << ';' << sizeof(T) * sizes[i] ;
       std::vector<time_t> chronos = timings[i];
 
       for (std::vector<time_t>::iterator it = chronos.begin() ; it != chronos.end(); ++it)
       {
-        double band = (sizes[i]/(it->count()*1e-6))/(1024*1024*1024);
-        res_chrono << ';' << band;
+        // double band = (sizes[i]/(it->count()*1e-6))/(1024*1024*1024);
+        res_chrono << ';' << it->count();
       }
       res_chrono << "\n";
     }
@@ -378,7 +390,7 @@ void Benchmarking()
   }
 
   // CSV header
-  res_nano << "Function;Size(Bytes);Mean Chrono(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
+  res_nano << "Function;Size(Bytes);Mean Chrono(usec);Mean Nano(usec);Median Nano(usec);Min Nano(usec);Max Nano(usec);Err Nano(usec);\n";
   res_chrono << "Function;Size(Bytes);";
   for(uint n=0; n<num_times; n++)res_chrono << n << ";";
   res_chrono << "\n";
