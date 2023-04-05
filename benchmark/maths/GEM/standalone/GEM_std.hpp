@@ -77,7 +77,6 @@ template <typename T>
 void UnitTest(){
   const int size_x = SIZE_X;
   const int size_y = SIZE_Y;
-  const int array_size = ARRAY_SIZE;
 
   T *Va = (T *)aligned_alloc(s_align, sizeof(T) * size_y);
   T *Vc = (T *)aligned_alloc(s_align, sizeof(T) * size_x);
@@ -341,7 +340,7 @@ void run()
       << bandwidth_nano_max << ";"
       << bandwidth_nano_err << "\n";
 
-      res_chrono << labels[i] << ';' << sizeof(T) * sizes[i] ;
+      res_chrono << labels[i] << ';' << sizes[i] ;
       std::vector<time_t> chronos = timings[i];
 
       for (std::vector<time_t>::iterator it = chronos.begin() ; it != chronos.end(); ++it)
@@ -378,13 +377,13 @@ void Benchmarking()
   }
 
   // CSV header
-  res_nano << "Function;Size(Bytes);Mean Chrono(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec);\n";
-  res_chrono << "Function;Size(Bytes);";
-  for(uint n=0; n<num_times; n++)res_chrono << n << ";";
+  res_nano << "Function;Size(Bytes);Mean Chrono(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec)\n";
+  res_chrono << "Function;Size(Bytes)";
+  for(uint n=0; n<num_times; n++)res_chrono << ";" << n ;
   res_chrono << "\n";
 
   // CSV data
-  for(long long s = 2;  s<pow(2, 10); s=round(s*1.41)){
+  for(long long s = 2;  s<pow(2, MAX_SIZE); s=round(s*1.41)){
     ARRAY_SIZE = s;
     SIZE_X = ARRAY_SIZE;
     SIZE_Y = ARRAY_SIZE;

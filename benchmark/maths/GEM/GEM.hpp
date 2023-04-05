@@ -15,6 +15,9 @@
 #include <math.h>
 #include <unistd.h>
 
+// array of 2^MAX_SIZE
+#define MAX_SIZE 9
+
 // Default size of 32
 extern int ARRAY_SIZE;
 extern int SIZE_X;

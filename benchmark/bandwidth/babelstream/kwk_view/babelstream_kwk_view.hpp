@@ -1,19 +1,9 @@
-#pragma once
-#include <ios>
-#include <iostream>
-#include <vector>
-#include <numeric>
-#include <cmath>
-#include <cstdlib>
-#include <limits>
-#include <chrono>
-#include <algorithm>
-#include <iomanip>
-#include <cstring>
-#include <fstream>
-#include <cstdint>
-#include <math.h>
-#include <unistd.h>
+#include "../babelstream.hpp"
+#include "kwk/container/table.hpp"
+#include "kwk/kwk.hpp"
+#include "kwk/utility/container/shape.hpp"
+#include <kwk/concepts/container.hpp>
+
 
 // Nanobench
 #define ANKERL_NANOBENCH_IMPLEMENT
@@ -33,81 +23,65 @@ unsigned int num_times = 100;
 std::ofstream res_nano;
 std::ofstream res_chrono;
 
-template <class T>
-void init_arrays(
-    T *__restrict a,
-    T *__restrict b,
-    T *__restrict c,
-    T initA, T initB, T initC)
+template <kwk::concepts::container<kwk::_1D> Container>
+void copy(Container const& a, Container& c)
 {
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
-  {
-    a[i] = initA;
-    b[i] = initB;
-    c[i] = initC;
-  }
+    c(i) = a(i);
 }
 
-template <class T>
-void copy(const T *__restrict a, T *__restrict c)
-{
-  const int array_size = ARRAY_SIZE;
-  for (int i = 0; i < array_size; i++)
-    c[i] = a[i];
-}
-
-template <class T>
-void mul(T *__restrict b, const T *__restrict c)
+template <typename T, kwk::concepts::container<kwk::_1D> Container>
+void mul(Container& b, Container const& c)
 {
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
   {
     const T scalar = SCALAR;
-    b[i] = scalar * c[i];
+    b(i) = scalar * c(i);
   }
 }
 
-template <class T>
-void add(const T *__restrict a, const T *__restrict b, T *__restrict c)
+template <kwk::concepts::container<kwk::_1D> Container>
+void add(Container const& a, Container const& b, Container& c)
 {
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
   {
-    c[i] = a[i] + b[i];
+    c(i) = a(i) + b(i);
   }
 }
 
-template <class T>
-void triad(T *__restrict a, const T *__restrict b, const T *__restrict c)
-{
-  const int array_size = ARRAY_SIZE;
-  for (int i = 0; i < array_size; i++)
-  {
-    const T scalar = SCALAR;
-    a[i] = b[i] + scalar * c[i];
-  }
-}
-
-template <class T>
-void nstream(T *__restrict a, const T *__restrict b, const T *__restrict c)
+template <typename T, kwk::concepts::container<kwk::_1D> Container>
+void triad(Container& a, Container& b, Container& c)
 {
   const int array_size = ARRAY_SIZE;
   for (int i = 0; i < array_size; i++)
   {
     const T scalar = SCALAR;
-    a[i] += b[i] + scalar * c[i];
+    a(i) = b(i) + scalar * c(i);
   }
 }
 
-template <class T>
-T dot(const T *__restrict a, const T *__restrict b)
+template <typename T, kwk::concepts::container<kwk::_1D> Container>
+void nstream(Container& a, Container const& b, Container const& c)
+{
+  const int array_size = ARRAY_SIZE;
+  for (int i = 0; i < array_size; i++)
+  {
+    const T scalar = SCALAR;
+    a(i) += b(i) + scalar * c(i);
+  }
+}
+
+template <typename T, kwk::concepts::container<kwk::_1D> Container>
+T dot(Container const& a, Container const& b)
 {
   const int array_size = ARRAY_SIZE;
   T sum = 0.0;
   for (int i = 0; i < array_size; i++)
   {
-    sum += a[i] * b[i];
+    sum += a(i) * b(i);
   }
   return sum;
 }
@@ -141,6 +115,11 @@ void run()
   // Initialize device arrays
   init_arrays(a, b, c, (T)0.1, (T)0.2, T(0.0));
 
+  // Init kiwaku tables
+  auto kwkA = kwk::view{kwk::source = a, kwk::of_size(ARRAY_SIZE)};
+  auto kwkB = kwk::view{kwk::source = b, kwk::of_size(ARRAY_SIZE)};
+  auto kwkC = kwk::view{kwk::source = c, kwk::of_size(ARRAY_SIZE)};
+
   // List of times
   using time_t = std::chrono::duration<double, std::micro>;
   std::vector<std::vector<time_t>> timings(6);
@@ -153,38 +132,38 @@ void run()
   {
     // Execute Copy
     t1 = std::chrono::high_resolution_clock::now();
-    copy(a, c);
+    copy(kwkA, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[0].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Mul
     t1 = std::chrono::high_resolution_clock::now();
-    mul(b, c);
+    mul<T>(kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[1].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Add
     t1 = std::chrono::high_resolution_clock::now();
-    add(a, b, c);
+    add(kwkA, kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[2].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Triad
     t1 = std::chrono::high_resolution_clock::now();
-    triad(a, b, c);
+    triad<T>(kwkA, kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[3].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute Dot
     t1 = std::chrono::high_resolution_clock::now();
-    resultat = dot(a, b);
+    resultat = dot<T>(kwkA, kwkB);
     t2 = std::chrono::high_resolution_clock::now();
 
     timings[4].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
 
     // Execute NStream
     t1 = std::chrono::high_resolution_clock::now();
-    nstream(a, b, c);
+    nstream<T>(kwkA, kwkB, kwkC);
     t2 = std::chrono::high_resolution_clock::now();
     timings[5].push_back(std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(t2 - t1));
   }
@@ -196,27 +175,27 @@ void run()
   benchs = {
     // nanobench Copy
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Copy", [&]{
-    copy(a, c);
+    copy(kwkA, kwkC);
     }),
     // nanobench Mul
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Mul", [&]{
-    mul(b, c);
+    mul<T>(kwkB, kwkC);
     }),
     // nanobench Add
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Add", [&]{
-    add(a, b, c);
+    add(kwkA, kwkB, kwkC);
     }),
     // nanobench Triad
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Triad", [&]{
-    triad(a, b, c);
+    triad<T>(kwkA, kwkB, kwkC);
     }),
     // nanobench Dot
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("Dot", [&]{
-      resultat = dot(a, b);
+      resultat = dot<T>(kwkA, kwkB);
     }),
     // nanobench NStream
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("NStream", [&]{
-      nstream(a, b, c);
+      nstream<T>(kwkA, kwkB, kwkC);
     })
   };
 
@@ -267,6 +246,7 @@ void run()
     double cyc_op_min           = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
     double bandwidth_nano_max   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_min;
     double cyc_op_err           = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
+    double bandwidth_nano_err   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_err;
 
     std::cout
         << std::left << std::setw(12) << labels[i]
@@ -280,16 +260,16 @@ void run()
     // writing measures in csv
     if(BENCHMARK){
       res_nano << labels[i] << ";"
-      << sizeof(T) * ARRAY_SIZE << ";"
+      << sizes[i] << ";"
       << bandwidth << ";"
       << bandwidth_nano_mean << ";" 
       << bandwidth_nano_med << ";" 
       << bandwidth_nano_min << ";"
       << bandwidth_nano_max << ";"
-      << cyc_op_err << "\n";
+      << bandwidth_nano_err << "\n";
 
       
-      res_chrono << labels[i] << ';' << sizeof(T) * ARRAY_SIZE ;
+      res_chrono << labels[i] << ';' << sizes[i] ;
       std::vector<time_t> chronos = timings[i];
 
       for (std::vector<time_t>::iterator it = chronos.begin() ; it != chronos.end(); ++it)
@@ -309,6 +289,35 @@ void run()
   free(c);
 }
 
-int parseUInt(const char *str, unsigned int *output);
-int parseInt(const char *str, int *output);
-void parseArguments(int argc, char *argv[]);
+
+template<class T>
+void Benchmarking()
+{
+  // CSV open
+  if(sizeof(T) == sizeof(float))
+  {
+    res_nano.open("./Benchmark_kwk_view_nano_float.csv");
+    res_chrono.open("./Benchmark_kwk_view_chrono_float.csv");
+  }
+  else 
+  {
+    res_nano.open("./Benchmark_kwk_view_nano_double.csv");
+    res_chrono.open("./Benchmark_kwk_view_chrono_double.csv");
+  }
+
+  // CSV header
+  res_nano    << "Function;Size(Bytes);Mean Babel(GBytes/sec);Mean Nano(GBytes/sec);Median Nano(GBytes/sec);Min Nano(GBytes/sec);Max Nano(GBytes/sec);Err Nano(GBytes/sec)\n";
+  res_chrono  << "Function;Size(Bytes)";
+  for(uint n=0; n<num_times; n++)res_chrono << ";" << n;
+  res_chrono << "\n";
+
+  // CSV data
+  for(long long s = 2;  s<pow(2, MAX_SIZE); s=round(s*1.41)){
+    ARRAY_SIZE = s;
+    run<T>();
+  }
+
+  // CSV close
+  res_nano.close();
+  res_chrono.close();
+}

@@ -325,7 +325,7 @@ void Benchmarking()
   res_chrono << "\n";
 
   // CSV data
-  for(long long s = 2;  s<pow(2, 10); s=round(s*1.41)){
+  for(long long s = 2;  s<pow(2, MAX_SIZE); s=round(s*1.41)){
     ARRAY_SIZE = s;
     SIZE_X = ARRAY_SIZE;
     SIZE_Y = ARRAY_SIZE;
