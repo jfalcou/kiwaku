@@ -10,8 +10,8 @@
 namespace kwk
 {
   //================================================================================================
-  //! @ingroup utility
-  //! @defgroup settings  Container settings
+  //! @ingroup containers
+  //! @defgroup settings  Container Settings
   //! @brief Classes and functions related to table and views constructions
   //================================================================================================
 }

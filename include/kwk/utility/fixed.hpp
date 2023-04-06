@@ -97,7 +97,7 @@ namespace kwk
   template<auto N>
   inline constexpr auto fixed = constant<N>{};
 
-  namespace literals
+  inline namespace literals
   {
     template<char... c> constexpr auto b10()
     {

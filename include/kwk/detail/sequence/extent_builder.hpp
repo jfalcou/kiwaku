@@ -74,9 +74,15 @@ namespace kwk::__
   template<typename Arg, typename Desc, typename Index>
   KWK_FORCEINLINE constexpr auto as_axis(Arg arg, Desc d, Index) noexcept
   {
+    auto const default_value = [&]()
+    {
+      if constexpr(is_joker_v<typename Desc::content_type>) return Index::value ? 1 : 0;
+      else return d.value;
+    }();
+
     // integral : runtime indexed axis
     if constexpr(std::integral<Arg>)                  return arg;
-    else if constexpr(is_joker_v<Arg>)                return 0;
+    else if constexpr(is_joker_v<Arg>)                return default_value;
     // static integral : compile-time indexed axis
     else if constexpr(concepts::static_constant<Arg>) return fixed<Arg::value>;
     // named axis
@@ -86,7 +92,7 @@ namespace kwk::__
 
       // name : runtime named axis
       if constexpr(std::integral<value_t>)                        return arg.contents;
-      else if constexpr(is_joker_v<value_t>)                      return 0;
+      else if constexpr(is_joker_v<value_t>)                      return default_value;
       // static integral : compile-time indexed axis
       else if constexpr(kwk::concepts::static_constant<value_t>)  return fixed<value_t::value>;
     }

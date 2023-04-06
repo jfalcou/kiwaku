@@ -30,6 +30,7 @@ namespace kwk::__
     using base_type       = std::int32_t;
     using id_type         = decltype(ID);
 
+    static constexpr auto identifier  = ID;
     static constexpr bool is_dynamic  = !std::integral<content_type>;
     static constexpr bool is_indexed   = std::integral<id_type>;
 
@@ -49,7 +50,7 @@ namespace kwk::__
     using rbr::as_keyword<axis_<ID,Content>>::operator=;
 
     constexpr axis_() {}
-    constexpr axis_(auto v) :value(v) {}
+    constexpr axis_(auto v) : value(v) {}
 
     template<typename T>
     std::ostream& display(std::ostream& os, T v) const
@@ -95,6 +96,7 @@ namespace kwk::__
       }
     }
 
+
     // Axis as static value
     constexpr auto operator[](std::integral auto v) const noexcept
     {
@@ -103,6 +105,9 @@ namespace kwk::__
 
     Content value;
   };
+
+  template<auto ID, typename C1, typename C2>
+  KWK_TRIVIAL constexpr bool operator==(axis_<ID,C1> a, axis_<ID,C2> b) { return a.value == b.value; }
 }
 
 // Pre-made axis objects
