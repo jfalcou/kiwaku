@@ -39,7 +39,7 @@ namespace kwk
   //!                   type is used.
   //! @param  ds        Variadic pack of sizes
   //================================================================================================
-  template<std::integral SizeType, int..., concepts::extent<SizeType>... Ds>
+  template<std::integral SizeType, int..., concepts::extent... Ds>
   KWK_CONST constexpr auto of_size(Ds... ds) noexcept
   {
     return __::make_extent<kwk::shape,SizeType>(ds...);
@@ -182,7 +182,7 @@ namespace kwk
     //!
     //! @param dims  Variadic list of dimension/size association
     //==============================================================================================
-    template<concepts::extent<size_type>... A>
+    template<concepts::extent... A>
     constexpr shape(A const... dims) noexcept
     requires( !(std::convertible_to<A,size_type> && ...)
             && make_combo<size_type>(Shape).is_equivalent(__::as_descriptor<size_type>(A{}...))

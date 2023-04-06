@@ -115,7 +115,7 @@ namespace kwk::__
     }
 
     // Fill with a sequence of value/joker
-    constexpr void fill(concepts::extent<value_type> auto... vals) noexcept
+    constexpr void fill(concepts::extent auto... vals) noexcept
     requires(sizeof...(vals) == static_size)
     {
       auto& v = storage();
@@ -139,7 +139,7 @@ namespace kwk::__
       }
     }
 
-    constexpr void fill(concepts::extent<value_type> auto... vals) noexcept
+    constexpr void fill(concepts::extent auto... vals) noexcept
     requires(sizeof...(vals) < static_size)
     {
       [=, this]<int... I>(std::integer_sequence<int, I...>)

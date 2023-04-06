@@ -17,8 +17,8 @@ TTS_CASE( "Checks concepts::joker behavior" )
 
 TTS_CASE( "Checks concepts::extent behavior" )
 {
-  TTS_CONSTEXPR_EXPECT    ((kwk::concepts::extent<int, std::ptrdiff_t>)   );
-  TTS_CONSTEXPR_EXPECT    ((kwk::concepts::extent<decltype(kwk::_), int>) );
-  TTS_CONSTEXPR_EXPECT_NOT((kwk::concepts::extent<const char*, int>)      );
-  TTS_CONSTEXPR_EXPECT_NOT((kwk::concepts::extent<void       , int>)      );
+  TTS_CONSTEXPR_EXPECT    ((kwk::concepts::extent<int>)        );
+  TTS_CONSTEXPR_EXPECT    ((kwk::concepts::extent<kwk::joker>) );
+  TTS_CONSTEXPR_EXPECT_NOT((kwk::concepts::extent<const char*>));
+  TTS_CONSTEXPR_EXPECT_NOT((kwk::concepts::extent<void       >));
 };

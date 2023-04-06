@@ -138,7 +138,7 @@ namespace kwk
     //!
     //! @param args  Variadic list of dimension/size association
     //==============================================================================================
-    template<concepts::extent<size_type>... A>
+    template<concepts::extent... A>
     constexpr stride(A const&... args) noexcept
     requires( !(std::convertible_to<A,size_type> && ...)
             && make_combo<size_type>(Strides).is_equivalent(__::as_descriptor<size_type>(A{}...))
