@@ -14,7 +14,7 @@ def Parse(fname, df, Function, metric, plot_type, save):
           box(fname, copy, f, metric, save)
 
       if(fname.__contains__('chrono')):
-        box_chrono(fname, df, save)
+        box_chrono(fname, copy, f, save)
       
 def plot(fname, df, Function, metric, save):
   plt.figure()
@@ -28,6 +28,7 @@ def plot(fname, df, Function, metric, save):
     plt.savefig(fname.split(sep='.')[0]+ "_" + Function)
   else:
     plt.show()
+  plt.close()
 
 def box(fname, df, Function, metric, save):
     means = df['Mean Nano(GBytes/sec)']
@@ -48,22 +49,25 @@ def box(fname, df, Function, metric, save):
       plt.savefig(fname.split(sep='.')[0]+ "_" + Function + "_bars")
     else:
       plt.show()
+    plt.close()
 
-def box_chrono(fname, df, save):
+def box_chrono(fname, df, Function, save):
   x = df['Size(Bytes)'].to_numpy()
-  values = df.iloc[:,3:].to_numpy()
+  values = df.iloc[:,2:-1].to_numpy()
 
-  toto = str(x[0])
-  print(toto)
-
-  print(values[0])
+  values = np.transpose(values)
   plt.figure()
   plt.boxplot(values)
-  # plt.xlabel(toto)
-  plt.xscale('log')
-
+  plt.xlabel('Size (Bytes)')
+  plt.ylabel('GBytes/s')
+  plt.title(fname.split(sep='.')[0]+ "_" + Function)
   
-  plt.show()
+  if save:
+    plt.savefig(fname.split(sep='.')[0]+ "_" + Function + "_bars")
+  else:
+    plt.show()
+  plt.close()
+
   
 def main():
   n_arg = len(sys.argv)

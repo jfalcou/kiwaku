@@ -33,7 +33,7 @@ def plot(df1, df2, df3, Function, metric, save):
 def main():
   n_arg = len(sys.argv)
 
-  functions = ['Copy', 'Mul', 'Add','Triad','Dot','Nstream']
+  functions = ['GEMV', 'GEMM', 'GEMMSmart']
   # metric = ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)']
   metric = ['Median Nano(GBytes/sec)']
   plot_type = ['plot'] # 'bar'
