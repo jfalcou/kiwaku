@@ -1,7 +1,7 @@
 //==================================================================================================
 /*
   KIWAKU - Containers Well Made
-  Copyright : EVE Project Contributors
+  Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
@@ -39,7 +39,7 @@ namespace kwk
 //! @addtogroup traits
 //! @{
 //! @defgroup invoke Generalized Tag Invoke Protocol
-//! @brief This module defines all the **EVE** generalized tag_invoke protocol infrastructure.
+//! @brief This module defines all the **KIWAKU** generalized tag_invoke protocol infrastructure.
 //! @}
 //==================================================================================================
 
@@ -68,7 +68,7 @@ concept tag_invocable =
 template<typename Tag, typename... Args>
 using tag_invoke_result = std::invoke_result_t<decltype(kwk::tag_invoke), Tag, Args...>;
 
-//! @brief Compute the type of an instance of an **EVE** @callable.
+//! @brief Compute the type of an instance of an **KIWAKU** @callable.
 template<auto& Func> using tag_of = std::decay_t<decltype(Func)>;
 
 //==================================================================================================
