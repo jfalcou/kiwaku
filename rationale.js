@@ -1,6 +1,6 @@
 var rationale =
 [
     [ "Glossary", "glossary.html", [
-      [ "Rank", "glossary.html#glossary-rank", null ]
+      [ "Order", "glossary.html#glossary-order", null ]
     ] ]
 ];

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['nbdims_0',['nbdims',['../structkwk_1_1shape_a2d7a641d61ee69521b87c32a31a47588.html#a2d7a641d61ee69521b87c32a31a47588',1,'kwk::shape']]],
-  ['numel_1',['numel',['../structkwk_1_1shape_abd1a6ae4b6c3de7e5d71e9367c4954a4.html#abd1a6ae4b6c3de7e5d71e9367c4954a4',1,'kwk::shape']]]
+  ['make_5ftable_0',['make_table',['../structkwk_1_1make__table.html',1,'kwk']]],
+  ['make_5fview_1',['make_view',['../structkwk_1_1make__view.html',1,'kwk']]],
+  ['miscellaneous_20helper_2',['Miscellaneous helper',['../group__utility.html',1,'']]],
+  ['multi_2ddimensional_20views_3',['Multi-dimensional views',['../tutorial-01.html',1,'tutorials']]]
 ];

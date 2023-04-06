@@ -25,11 +25,7 @@
 var NAVTREE =
 [
   [ "Kiwaku", "index.html", [
-    [ "Kiwaku - Containers Well Made", "index.html", [
-      [ "TL:DR Examples", "index.html#autotoc_md0", null ],
-      [ "Getting Started", "index.html#autotoc_md1", null ],
-      [ "License", "index.html#autotoc_md2", null ]
-    ] ],
+    [ "Kiwaku - Containers Well Made", "index.html", "index" ],
     [ "Installation and Quick Start", "about.html", [
       [ "Installation & Quick Start", "about.html#install", null ],
       [ "Pre-requisites", "about.html#autotoc_md3", null ],
@@ -44,10 +40,9 @@ var NAVTREE =
       [ "Using the library", "about.html#autotoc_md10", [
         [ "Compilation", "about.html#autotoc_md11", null ],
         [ "Execution", "about.html#autotoc_md12", null ]
-      ] ],
-      [ "Advanced options", "about.html#autotoc_md13", null ]
+      ] ]
     ] ],
-    [ "Tutorials", "tutorials.html", null ],
+    [ "Tutorials", "tutorials.html", "tutorials" ],
     [ "Why and How", "rationale.html", "rationale" ],
     [ "Change Log", "changelog.html", [
       [ "Version 0.1 (beta)", "changelog.html#v01", null ]
@@ -59,7 +54,8 @@ var NAVTREE =
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
-        [ "Variables", "namespacemembers_vars.html", null ]
+        [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", null ]
       ] ]
     ] ],
     [ "Concepts", "concepts.html", "concepts" ],

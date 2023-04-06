@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['const_5fiterator_0',['const_iterator',['../structkwk_1_1view.html#a70d0de5c41714e94ca564a916bcb9723',1,'kwk::view']]],
-  ['const_5fpointer_1',['const_pointer',['../structkwk_1_1view.html#a796764931db581dc8a8ab23812b59b09',1,'kwk::view']]],
-  ['const_5freference_2',['const_reference',['../structkwk_1_1view.html#a02bb8048398de957652367be26064583',1,'kwk::view']]]
+  ['const_5fpointer_0',['const_pointer',['../structkwk_1_1table.html#ab721a99e0e25695b48949e348836e288',1,'kwk::table::const_pointer()'],['../structkwk_1_1view.html#a7b61399e18244610e305e946fb39fcfa',1,'kwk::view::const_pointer()']]],
+  ['const_5freference_1',['const_reference',['../structkwk_1_1table.html#a32bb28521398da754d4ae29962c8f80a',1,'kwk::table::const_reference()'],['../structkwk_1_1view.html#a810df304d57adbd28e15472b37150b55',1,'kwk::view::const_reference()']]]
 ];

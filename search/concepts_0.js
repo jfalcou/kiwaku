@@ -1,10 +1,23 @@
 var searchData=
 [
-  ['aligned_5fallocator_0',['aligned_allocator',['../conceptkwk_1_1concepts_1_1aligned__allocator.html',1,'kwk::concepts']]],
-  ['allocator_1',['allocator',['../conceptkwk_1_1concepts_1_1allocator.html',1,'kwk::concepts']]],
-  ['contiguous_5frange_2',['contiguous_range',['../conceptkwk_1_1concepts_1_1contiguous__range.html',1,'kwk::concepts']]],
-  ['contiguous_5fstatic_5frange_3',['contiguous_static_range',['../conceptkwk_1_1concepts_1_1contiguous__static__range.html',1,'kwk::concepts']]],
-  ['has_5fstatic_5fsize_4',['has_static_size',['../conceptkwk_1_1concepts_1_1has__static__size.html',1,'kwk::concepts']]],
-  ['pointer_5',['pointer',['../conceptkwk_1_1concepts_1_1pointer.html',1,'kwk::concepts']]],
-  ['range_6',['range',['../conceptkwk_1_1concepts_1_1range.html',1,'kwk::concepts']]]
+  ['allocator_0',['allocator',['../conceptkwk_1_1concepts_1_1allocator.html',1,'kwk::concepts']]],
+  ['axis_1',['axis',['../conceptkwk_1_1concepts_1_1axis.html',1,'kwk::concepts']]],
+  ['basic_5fcontainer_2',['basic_container',['../conceptkwk_1_1concepts_1_1basic__container.html',1,'kwk::concepts']]],
+  ['callable_3',['callable',['../conceptkwk_1_1callable.html',1,'kwk']]],
+  ['category_4',['category',['../conceptkwk_1_1concepts_1_1category.html',1,'kwk::concepts']]],
+  ['container_5',['container',['../conceptkwk_1_1concepts_1_1container.html',1,'kwk::concepts']]],
+  ['contiguous_5frange_6',['contiguous_range',['../conceptkwk_1_1concepts_1_1contiguous__range.html',1,'kwk::concepts']]],
+  ['contiguous_5fstatic_5frange_7',['contiguous_static_range',['../conceptkwk_1_1concepts_1_1contiguous__static__range.html',1,'kwk::concepts']]],
+  ['deferred_5fcallable_8',['deferred_callable',['../conceptkwk_1_1deferred__callable.html',1,'kwk']]],
+  ['descriptor_9',['descriptor',['../conceptkwk_1_1concepts_1_1descriptor.html',1,'kwk::concepts']]],
+  ['dynamic_5faxis_10',['dynamic_axis',['../conceptkwk_1_1concepts_1_1dynamic__axis.html',1,'kwk::concepts']]],
+  ['extent_11',['extent',['../conceptkwk_1_1concepts_1_1extent.html',1,'kwk::concepts']]],
+  ['has_5fstatic_5fsize_12',['has_static_size',['../conceptkwk_1_1concepts_1_1has__static__size.html',1,'kwk::concepts']]],
+  ['joker_13',['joker',['../conceptkwk_1_1concepts_1_1joker.html',1,'kwk::concepts']]],
+  ['pointer_14',['pointer',['../conceptkwk_1_1concepts_1_1pointer.html',1,'kwk::concepts']]],
+  ['range_15',['range',['../conceptkwk_1_1concepts_1_1range.html',1,'kwk::concepts']]],
+  ['static_5faxis_16',['static_axis',['../conceptkwk_1_1concepts_1_1static__axis.html',1,'kwk::concepts']]],
+  ['table_17',['table',['../conceptkwk_1_1concepts_1_1table.html',1,'kwk::concepts']]],
+  ['tag_5finvocable_18',['tag_invocable',['../conceptkwk_1_1tag__invocable.html',1,'kwk']]],
+  ['view_19',['view',['../conceptkwk_1_1concepts_1_1view.html',1,'kwk::concepts']]]
 ];

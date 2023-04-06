@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['view_0',['view',['../structkwk_1_1view.html',1,'kwk']]]
+  ['joker_0',['joker',['../structkwk_1_1joker.html',1,'kwk']]]
 ];

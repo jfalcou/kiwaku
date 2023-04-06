@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['label_0',['label',['../group__options.html#gace72223278336b5a89f3344a3345d117',1,'kwk']]]
+  ['descriptor_0',['descriptor',['../structkwk_1_1shape.html#a386418f1885490553c5b637d187c0164',1,'kwk::shape']]]
 ];

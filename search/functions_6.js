@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['nbdims_0',['nbdims',['../structkwk_1_1shape_a2d7a641d61ee69521b87c32a31a47588.html#a2d7a641d61ee69521b87c32a31a47588',1,'kwk::shape']]],
-  ['numel_1',['numel',['../structkwk_1_1shape_abd1a6ae4b6c3de7e5d71e9367c4954a4.html#abd1a6ae4b6c3de7e5d71e9367c4954a4',1,'kwk::shape']]]
+  ['linear_5findex_0',['linear_index',['../group__utility_ga032b4c6695f7745bded81660a8975262.html#ga032b4c6695f7745bded81660a8975262',1,'kwk::linear_index(shape&lt; Shaper &gt; const &amp;sh, Index... idx) noexcept'],['../group__utility_ga453c1bba620b07a7e6e4185d7e89a31d.html#ga453c1bba620b07a7e6e4185d7e89a31d',1,'kwk::linear_index(shape&lt; Shaper &gt; const &amp;sh, Indexes idx) noexcept'],['../group__utility_gace68b8bfb1798dda6aea3e30ad00ec99.html#gace68b8bfb1798dda6aea3e30ad00ec99',1,'kwk::linear_index(shape&lt; Shaper &gt; const &amp;sh, Indexes const &amp;indexes) noexcept']]],
+  ['linearize_1',['linearize',['../structkwk_1_1stride.html#a3614f2ea5c77e4d664e66963c0f18b07',1,'kwk::stride']]]
 ];

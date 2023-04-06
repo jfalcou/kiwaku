@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['memory_20management_0',['Memory Management',['../group__memory.html',1,'']]],
-  ['miscellaneous_20helper_1',['Miscellaneous helper',['../group__utility.html',1,'']]]
+  ['container_20settings_0',['Container settings',['../group__settings.html',1,'']]],
+  ['containers_1',['Containers',['../group__containers.html',1,'']]]
 ];

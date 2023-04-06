@@ -1,6 +1,27 @@
 var searchData=
 [
-  ['label_0',['label',['../group__options.html#gace72223278336b5a89f3344a3345d117',1,'kwk']]],
-  ['licence_1',['Licence',['../licence.html',1,'']]],
-  ['linear_5findex_2',['linear_index',['../group__containers_gaac779770b2c8b6812ee648d92f457b62.html#gaac779770b2c8b6812ee648d92f457b62',1,'kwk::linear_index(shape&lt; Shaper &gt; const &amp;sh, Index... idx)'],['../group__containers_gaf8e86b8ed067d7cad8cc46cb15b8b76c.html#gaf8e86b8ed067d7cad8cc46cb15b8b76c',1,'kwk::linear_index(shape&lt; Shaper &gt; const &amp;sh, Indexes idx)'],['../group__containers_ga7fa2aff9708b87ce092d4fa755a1d6cd.html#ga7fa2aff9708b87ce092d4fa755a1d6cd',1,'kwk::linear_index(shape&lt; Shaper &gt; const &amp;sh, Indexes const &amp;indexes)']]]
+  ['_5f_5f_0',['__',['../namespacekwk_1_1____.html',1,'kwk']]],
+  ['allocator_1',['allocator',['../conceptkwk_1_1concepts_1_1allocator.html',1,'kwk::concepts']]],
+  ['axis_2',['axis',['../conceptkwk_1_1concepts_1_1axis.html',1,'kwk::concepts']]],
+  ['basic_5fcontainer_3',['basic_container',['../conceptkwk_1_1concepts_1_1basic__container.html',1,'kwk::concepts']]],
+  ['callable_4',['callable',['../conceptkwk_1_1callable.html',1,'kwk']]],
+  ['category_5',['category',['../conceptkwk_1_1concepts_1_1category.html',1,'kwk::concepts']]],
+  ['container_6',['container',['../conceptkwk_1_1concepts_1_1container.html',1,'kwk::concepts']]],
+  ['contiguous_5frange_7',['contiguous_range',['../conceptkwk_1_1concepts_1_1contiguous__range.html',1,'kwk::concepts']]],
+  ['contiguous_5fstatic_5frange_8',['contiguous_static_range',['../conceptkwk_1_1concepts_1_1contiguous__static__range.html',1,'kwk::concepts']]],
+  ['deferred_5fcallable_9',['deferred_callable',['../conceptkwk_1_1deferred__callable.html',1,'kwk']]],
+  ['descriptor_10',['descriptor',['../conceptkwk_1_1concepts_1_1descriptor.html',1,'kwk::concepts']]],
+  ['dynamic_5faxis_11',['dynamic_axis',['../conceptkwk_1_1concepts_1_1dynamic__axis.html',1,'kwk::concepts']]],
+  ['extent_12',['extent',['../conceptkwk_1_1concepts_1_1extent.html',1,'kwk::concepts']]],
+  ['has_5fstatic_5fsize_13',['has_static_size',['../conceptkwk_1_1concepts_1_1has__static__size.html',1,'kwk::concepts']]],
+  ['joker_14',['joker',['../conceptkwk_1_1concepts_1_1joker.html',1,'kwk::concepts']]],
+  ['kiwaku_20_2d_20containers_20well_20made_15',['Kiwaku - Containers Well Made',['../index.html',1,'']]],
+  ['kwk_16',['kwk',['../namespacekwk.html',1,'']]],
+  ['pointer_17',['pointer',['../conceptkwk_1_1concepts_1_1pointer.html',1,'kwk::concepts']]],
+  ['range_18',['range',['../conceptkwk_1_1concepts_1_1range.html',1,'kwk::concepts']]],
+  ['static_5faxis_19',['static_axis',['../conceptkwk_1_1concepts_1_1static__axis.html',1,'kwk::concepts']]],
+  ['table_20',['table',['../conceptkwk_1_1concepts_1_1table.html',1,'kwk::concepts']]],
+  ['tag_5finvocable_21',['tag_invocable',['../conceptkwk_1_1tag__invocable.html',1,'kwk']]],
+  ['tags_22',['tags',['../namespacekwk_1_1tags.html',1,'kwk']]],
+  ['view_23',['view',['../conceptkwk_1_1concepts_1_1view.html',1,'kwk::concepts']]]
 ];
