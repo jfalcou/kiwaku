@@ -34,9 +34,9 @@ include(kiwaku-install)
 ##==================================================================================================
 ## Options
 ##==================================================================================================
-option( KIWAKU_BUILD_TEST         "Build tests for Kiwaku" ON               )
-option( KIWAKU_BUILD_INTEGRATION  "Build integration tests for Kiwaku" OFF  )
-option( KIWAKU_BUILD_DOCS         "Build docs for Kiwaku"  OFF              )
+option( KIWAKU_BUILD_TEST          "Build tests for Kiwaku" ON               )
+option( KIWAKU_BUILD_INTEGRATION   "Build integration tests for Kiwaku" OFF  )
+option( KIWAKU_BUILD_DOCUMENTATION "Build docs for Kiwaku"  OFF              )
 
 ##==================================================================================================
 ## Setup Testing
