@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   }
   else if(BENCHMARK)
   {
-    // Benchmarking<float>();
+    Benchmarking<float>();
     Benchmarking<double>();
   } 
   else 

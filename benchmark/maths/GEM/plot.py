@@ -28,6 +28,7 @@ def plot(fname, df, Function, metric, save):
     plt.savefig(fname.split(sep='.')[0]+ "_" + Function)
   else:
     plt.show()
+  plt.close()
 
 def box(fname, df, Function, metric, save):
     means = df['Mean Nano(GBytes/sec)']
@@ -48,6 +49,7 @@ def box(fname, df, Function, metric, save):
       plt.savefig(fname.split(sep='.')[0]+ "_" + Function + "_bars")
     else:
       plt.show()
+    plt.close()
 
 def box_chrono(fname, df, Function, save):
   x = df['Size(Bytes)'].to_numpy()
@@ -65,12 +67,13 @@ def box_chrono(fname, df, Function, save):
     plt.savefig(fname.split(sep='.')[0]+ "_" + Function + "_bars")
   else:
     plt.show()
+  plt.close()
   
 def main():
   n_arg = len(sys.argv)
 
-  functions = ['GEMM'] # , 'GEMM', 'GEMMSmart'
-  metric = ['Mean Babel(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)']
+  functions = ['GEMV', 'GEMM', 'GEMMSmart', 'BLAS GEMV', 'BLAS GEMM'] #
+  metric = ['Mean Chrono(GBytes/sec)','Mean Nano(GBytes/sec)','Median Nano(GBytes/sec)']
   plot_type = ['plot'] # 'bar'
 
   if(n_arg < 2):

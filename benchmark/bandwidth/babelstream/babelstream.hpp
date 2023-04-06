@@ -19,7 +19,7 @@
 #define SCALAR (0.4)
 
 // Bench array size 
-#define MAX_SIZE 9
+#define MAX_SIZE 26
 
 extern int ARRAY_SIZE;
 extern int Freq_CPU;
