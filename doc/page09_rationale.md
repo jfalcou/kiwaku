@@ -5,4 +5,3 @@ This section clarifies various design choice, common vocabulary and semantic use
 **KIWAKU** and its documentation.
 
 - \subpage glossary
-- \subpage indexing
