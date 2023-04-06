@@ -55,7 +55,7 @@ endif()
 ##==================================================================================================
 ## Add Doxygen building target
 ##==================================================================================================
-if(KIWAKU_BUILD_DOCS)
+if(KIWAKU_BUILD_DOCUMENTATION)
   find_package(Doxygen QUIET)
 
   if (DOXYGEN_FOUND)
