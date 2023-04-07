@@ -36,14 +36,16 @@ namespace kwk
   //====================================================================================================================
   //! @ingroup extension
   //! @var to_descriptor
-  //! @brief Extent value to descriptor converter
+  //! @brief @ref glossary-extent value to descriptor converter
   //!
-  //! Convert a valid extent value into the associated consteval descriptor suitable to define a shape or stride type.
+  //! Convert a valid @ref glossary-extent value into the associated consteval descriptor suitable to define a shape
+  //! or stride type.
+  //!
   //! The default behavior is to:
   //!   - convert any kwk::joker or integral value to kwk::joker
   //!   - convert any static constant to its value
-  //!   - convert any axis to kwk::joker.
-  //!   - convert any axis with an associated value to its underlying value.
+  //!   - convert any @ref glossary-axis to kwk::joker.
+  //!   - convert any @ref glossary-axis with an associated value to its underlying value.
   //!
   //! @note This @callable can be customized using the [generalized tag_invoke protocol](@ref invoke).
   //!
@@ -57,7 +59,7 @@ namespace kwk
   //! @endcode
   //!
   //! **Parameters:**
-  //!   - `e` : Extent value to convert
+  //!   - `e` : @ref glossary-extent value to convert
   //!
   //! **Returns:** A consteval descriptor usable in the type description of a shape or stride.
   //!

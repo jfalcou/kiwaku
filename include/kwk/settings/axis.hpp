@@ -1,10 +1,10 @@
-//==================================================================================================
+//======================================================================================================================
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
-//==================================================================================================
+//=====================================================================================================================
 #pragma once
 
 #include <kwk/concepts/axis.hpp>
@@ -113,15 +113,24 @@ namespace kwk::__
 // Pre-made axis objects
 namespace kwk
 {
+  /// Axis specifier for indexed axis
   template<std::int32_t N>
   inline constexpr __::axis_<N> along = {};
 
+  /// Axis specifier for named axis
   template<rbr::literals::str ID>
   inline constexpr __::axis_<ID> axis = {};
 
+  /// Predefined axis for height
   inline constexpr auto height  = axis<"height">;
+
+  /// Predefined axis for width
   inline constexpr auto width   = axis<"width">;
+
+  /// Predefined axis for depth
   inline constexpr auto depth   = axis<"depth">;
+
+  /// Predefined axis for channel
   inline constexpr auto channel = axis<"channel">;
 
   // Tuple interface
@@ -130,7 +139,6 @@ namespace kwk
 
   template<std::size_t I, auto ID>
   constexpr decltype(auto) get(__::axis_<ID> const& s) noexcept requires(I==0) { return s; }
-
 }
 
 // Tuple interface adaptation
