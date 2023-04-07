@@ -18,12 +18,10 @@ namespace kwk
   //====================================================================================================================
 }
 
-#include <kwk/utility/container/interpolator.hpp>
-#include <kwk/utility/container/shape.hpp>
-#include <kwk/utility/container/stride.hpp>
-#include <kwk/utility/memory/any_allocator.hpp>
-#include <kwk/utility/memory/heap_allocator.hpp>
+#include <kwk/utility/container.hpp>
 #include <kwk/utility/traits.hpp>
+#include <kwk/utility/memory.hpp>
+
 #include <kwk/utility/coordinates.hpp>
 #include <kwk/utility/end.hpp>
 #include <kwk/utility/fixed.hpp>
