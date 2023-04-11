@@ -7,6 +7,8 @@ As such, we propose to use the boxplot method to evaluate the variability betwee
 
 To evaluate the performances in accordance to the Roofline model, we use CPU-X/Z to determine the bandwidth limits in each cache levels.
 
+https://lemire.me/blog/2023/04/06/are-your-memory-bound-benchmarking-timings-normally-distributed/
+
 ### Average & Median
 https://en.wikipedia.org/wiki/Arithmetic_mean & https://en.wikipedia.org/wiki/Median
 
