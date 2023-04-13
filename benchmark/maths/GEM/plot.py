@@ -56,7 +56,7 @@ def box_chrono(fname, df, Function, save):
   values = df.iloc[:,2:-1].to_numpy()
 
   values = np.transpose(values)
-  print(values[0])
+  # print(values[0])
   plt.figure()
   plt.boxplot(values)
   plt.xlabel('Size (Bytes)')
