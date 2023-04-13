@@ -234,20 +234,20 @@ void run()
     }),
     // nanobench GEMM
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMM", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     GEMM<T>(Ma, Mb, Mc);
     }),
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMMSmart", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     GEMMSmart<T>(Ma, Mb, Mc);
     }),
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMV BLAS", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     ankerl::nanobench::doNotOptimizeAway(Va);
     cblas_sgemv(CblasRowMajor, CblasNoTrans, array_size, array_size, 1.0, Mb, array_size, Vc, 1, 0.0, Vc, 1);
     }),
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMM BLAS", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, array_size, array_size, array_size, 1.0, Mb, array_size, Mc, array_size, 0.0, Mc, array_size);
     })
     };
@@ -257,26 +257,26 @@ void run()
     benchs = {
     // nanobench GEMV
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMV", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Mb);
+    ankerl::nanobench::doNotOptimizeAway(Mb);
     ankerl::nanobench::doNotOptimizeAway(Va);
     GEMV<T>(Va, Mb, Vc);
     }),
     // nanobench GEMM
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMM", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     GEMM<T>(Ma, Mb, Mc);
     }),
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMMSmart", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     GEMMSmart<T>(Ma, Mb, Mc);
     }),
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMV BLAS", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     ankerl::nanobench::doNotOptimizeAway(Va);
     cblas_dgemv(CblasRowMajor, CblasNoTrans, array_size, array_size, 1.0, Mb, array_size, Vc, 1, 0.0, Vc, 1);
     }),
     ankerl::nanobench::Bench().minEpochIterations(10).epochs(num_times).run("GEMM BLAS", [&]{
-    // ankerl::nanobench::doNotOptimizeAway(Ma);
+    ankerl::nanobench::doNotOptimizeAway(Ma);
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, array_size, array_size, array_size, 1.0, Mb, array_size, Mc, array_size, 0.0, Mc, array_size);
     })
     };
