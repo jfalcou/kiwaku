@@ -19,8 +19,8 @@ def Parse(fname, df, Function, metric, plot_type, save):
 def plot(fname, df, Function, metric, save):
   plt.figure()
   plt.semilogx(df['Size(Bytes)'], df[metric])
-  plt.xlabel('Size (Bytes)')
-  plt.ylabel('GBytes/s')
+  plt.xlabel('FLOP')
+  plt.ylabel('GFLOPs')
   plt.title(fname.split(sep='.')[0]+ "_" + Function)
   plt.legend(metric)
 
@@ -41,8 +41,8 @@ def box(fname, df, Function, metric, save):
     plt.xscale('log')
     plt.errorbar(x, means, errors, fmt='.k', lw=2)
     plt.errorbar(x, means, [abs(means-mins), abs(maxs-means)], fmt='.k', lw=1)
-    plt.xlabel('Size (Bytes)')
-    plt.ylabel('GBytes/s')
+    plt.xlabel('FLOP')
+    plt.ylabel('GFLOPs')
     plt.title(fname.split(sep='.')[0]+ "_" + Function)
 
     if save:
@@ -59,8 +59,8 @@ def box_chrono(fname, df, Function, save):
   # print(values[0])
   plt.figure()
   plt.boxplot(values)
-  plt.xlabel('Size (Bytes)')
-  plt.ylabel('GBytes/s')
+  plt.xlabel('FLOP')
+  plt.ylabel('GFLOPs')
   plt.title(fname.split(sep='.')[0]+ "_" + Function)
   
   if save:

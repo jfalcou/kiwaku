@@ -156,11 +156,11 @@ void run()
   // Functions and space use
   labels = {"GEMV", "GEMM", "GEMMSmart", "BLAS GEMV", "BLAS GEMM"};
   flop = {
-      ARRAY_SIZE*(2*ARRAY_SIZE-1) ,
-      ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1),
-      ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1),
-      ARRAY_SIZE*(2*ARRAY_SIZE-1) ,
-      ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1)};
+      (unsigned long)ARRAY_SIZE*(2*ARRAY_SIZE-1) ,
+      (unsigned long)ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1),
+      (unsigned long)ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1),
+      (unsigned long)ARRAY_SIZE*(2*ARRAY_SIZE-1) ,
+      (unsigned long)ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1)};
 
   // List of times
   using time_t = std::chrono::duration<double, std::micro>;
@@ -304,48 +304,48 @@ void run()
                     { return acc + r.count(); }) /
                     (double)(num_times - 1);
 
-    double bandwidth = (flop[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
+    double flops = (flop[i] / (minmax.first->count() * 1e-6))/(1e9);
 
     // Retrieving nanobench results
     std::vector<ankerl::nanobench::Result> vres;
     vres = benchs[i].results();
     double cyc_op_mean          =   vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_mean  =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_mean;
+    double flops_nano_mean  =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_mean;
     double cyc_op_med           =   vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_med   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_med;
+    double flops_nano_med   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_med;
     double cyc_op_max           =   vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_min   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_max;
+    double flops_nano_min   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_max;
     double cyc_op_min           =   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_max   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_min;
+    double flops_nano_max   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_min;
     double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
-    double bandwidth_nano_err   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_err;
+    double flops_nano_err   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_err;
 
     std::cout
         << std::left << std::setw(12) << labels[i]
-        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth
+        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << flops
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.first->count()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << minmax.second->count()
         << std::left << std::setw(12) << std::setprecision(5) << std::scientific << average
-        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << bandwidth_nano_mean
+        << std::left << std::setw(12) << std::setprecision(3) << std::fixed << flops_nano_mean
         << std::endl;
     
     // Writing measures in csv
     if(BENCHMARK){
       res_nano << labels[i] << ";"
       << flop[i] << ";"
-      << bandwidth << ";"
-      << bandwidth_nano_mean << ";" 
-      << bandwidth_nano_med << ";" 
-      << bandwidth_nano_min << ";"
-      << bandwidth_nano_max << ";"
-      << bandwidth_nano_err << "\n";
+      << flops << ";"
+      << flops_nano_mean << ";" 
+      << flops_nano_med << ";" 
+      << flops_nano_min << ";"
+      << flops_nano_max << ";"
+      << flops_nano_err << "\n";
 
       res_chrono << labels[i] << ';' << flop[i] ;
       std::vector<time_t> chronos = timings[i];
 
       for (std::vector<time_t>::iterator it = chronos.begin() ; it != chronos.end(); ++it)
       {
-        double band = (flop[i]/(it->count()*1e-6))/(1024*1024*1024);
+        double band = (flop[i]/(it->count()*1e-6))/(1e9);
         res_chrono << ';' << band;
       }
       res_chrono << "\n";
