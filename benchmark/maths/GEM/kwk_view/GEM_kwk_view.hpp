@@ -151,14 +151,16 @@ void run()
   T *Mc = (T *)aligned_alloc(s_align, sizeof(T) * array_size*array_size);
 
   std::vector<std::string> labels;
-  std::vector<size_t> sizes;
+  std::vector<size_t> flop;
   std::vector<ankerl::nanobench::Bench> benchs;
 
   labels = {"GEMV", "GEMM", "GEMMSmart"};
-  sizes = {
-      sizeof(T) * ARRAY_SIZE + 2 * sizeof(T) * ARRAY_SIZE * ARRAY_SIZE,
-      sizeof(T) * ARRAY_SIZE * ARRAY_SIZE + 2 * sizeof(T) * ARRAY_SIZE * ARRAY_SIZE * ARRAY_SIZE,
-      sizeof(T) * ARRAY_SIZE * ARRAY_SIZE + 2 * sizeof(T) * ARRAY_SIZE * ARRAY_SIZE * ARRAY_SIZE};
+  flop = {
+      ARRAY_SIZE*(2*ARRAY_SIZE-1) ,
+      ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1),
+      ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1),
+      ARRAY_SIZE*(2*ARRAY_SIZE-1) ,
+      ARRAY_SIZE*ARRAY_SIZE*(2*ARRAY_SIZE-1)};
 
   // List of times
   using time_t = std::chrono::duration<double, std::micro>;
@@ -167,7 +169,7 @@ void run()
   // Declare timers
   std::chrono::high_resolution_clock::time_point t1, t2;
 
-  print_init<T>(sizes, 3);
+  print_init<T>(flop, 3);
 
   // Initialize device arrays
   init_arrays(Va, Vc);
@@ -245,21 +247,21 @@ void run()
                                      { return acc + r.count(); }) /
                      (double)(num_times - 1);
 
-    double bandwidth = (sizes[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
+    double bandwidth = (flop[i] / (minmax.first->count() * 1e-6))/(1024*1024*1024);
 
     // Retrieving nanobench results
     std::vector<ankerl::nanobench::Result> vres;
     vres = benchs[i].results();
     double cyc_op_mean          = vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_mean  =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_mean;
+    double bandwidth_nano_mean  =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_mean;
     double cyc_op_med           = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_med   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_med;
+    double bandwidth_nano_med   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_med;
     double cyc_op_max           = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_min   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_max;
+    double bandwidth_nano_min   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_max;
     double cyc_op_min           = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
-    double bandwidth_nano_max   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_min;
+    double bandwidth_nano_max   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_min;
     double cyc_op_err           = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
-    double bandwidth_nano_err   =  ((double) sizes[i]*Freq_CPU/1000)/cyc_op_err;
+    double bandwidth_nano_err   =  ((double) flop[i]*Freq_CPU/1000)/cyc_op_err;
 
     std::cout
         << std::left << std::setw(12) << labels[i]
@@ -273,7 +275,7 @@ void run()
     // writing measures in csv
     if(BENCHMARK){
       res_nano << labels[i] << ";"
-      << sizes[i] << ";"
+      << flop[i] << ";"
       << bandwidth << ";"
       << bandwidth_nano_mean << ";" 
       << bandwidth_nano_med << ";" 
@@ -287,7 +289,7 @@ void run()
 
       for (std::vector<time_t>::iterator it = chronos.begin() ; it != chronos.end(); ++it)
       {
-        double band = (sizes[i]/(it->count()*1e-6))/(1024*1024*1024);
+        double band = (flop[i]/(it->count()*1e-6))/(1024*1024*1024);
         res_chrono << ';' << band;
       }
       res_chrono << "\n";
