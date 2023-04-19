@@ -16,7 +16,7 @@
 #include <unistd.h>
 
 // array of 2^MAX_SIZE
-#define MAX_SIZE 9
+#define MAX_SIZE 12
 
 // Default size of 32
 extern int ARRAY_SIZE;

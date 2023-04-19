@@ -11,9 +11,6 @@
 
 #include <boost/pending/disjoint_sets.hpp>
 
-namespace Acts {
-namespace Ccl {
-namespace internal {
 
 // Machinery for validating generic Cell/Cluster types at compile-time
 
@@ -202,8 +199,6 @@ ClusterCollection mergeClustersImpl(CellCollection& cells) {
   return outv;
 }
 
-}  // namespace internal
-
 template <typename Cell>
 ConnectResult Connect2D<Cell>::operator()(const Cell& ref, const Cell& iter) {
   int deltaRow = std::abs(getCellRow(ref) - getCellRow(iter));
@@ -235,17 +230,17 @@ ConnectResult Connect1D<Cell>::operator()(const Cell& ref, const Cell& iter) {
 template <typename CellCollection, size_t GridDim, typename Connect>
 void labelClusters(CellCollection& cells, Connect connect) {
   using Cell = typename CellCollection::value_type;
-  internal::staticCheckCellType<Cell, GridDim>();
+  staticCheckCellType<Cell, GridDim>();
 
-  internal::DisjointSets ds{};
+  DisjointSets ds{};
 
   // Sort cells by position to enable in-order scan
-  std::sort(cells.begin(), cells.end(), internal::Compare<Cell, GridDim>());
+  std::sort(cells.begin(), cells.end(), Compare<Cell, GridDim>());
 
   // First pass: Allocate labels and record equivalences
   for (auto it = cells.begin(); it != cells.end(); ++it) {
-    const internal::Connections<GridDim> seen =
-        internal::getConnections<Cell, Connect, GridDim>(it, cells, connect);
+    const Connections<GridDim> seen =
+        getConnections<Cell, Connect, GridDim>(it, cells, connect);
     if (seen.nconn == 0) {
       // Allocate new label
       getCellLabel(*it) = ds.makeSet();
@@ -287,15 +282,15 @@ typename std::enable_if<GridDim == 2, ClusterCollection>::type mergeClusters(
     CellCollection& cells) {
   using Cell = typename CellCollection::value_type;
   using Cluster = typename ClusterCollection::value_type;
-  internal::staticCheckCellType<Cell, GridDim>();
-  internal::staticCheckClusterType<Cluster&, const Cell&>();
+  staticCheckCellType<Cell, GridDim>();
+  staticCheckClusterType<Cluster&, const Cell&>();
 
-ACTS/acts_build  // Sort the cells by their cluster label
+//ACTS/acts_build  // Sort the cells by their cluster label
   std::sort(cells.begin(), cells.end(), [](Cell& lhs, Cell& rhs) {
     return getCellLabel(lhs) < getCellLabel(rhs);
   });
 
-  return internal::mergeClustersImpl<CellCollection, ClusterCollection>(cells);
+  return mergeClustersImpl<CellCollection, ClusterCollection>(cells);
 }
 
 // Specialization for 1-D grid -- no need to re-sort the cells
@@ -304,9 +299,9 @@ typename std::enable_if<GridDim == 1, ClusterCollection>::type mergeClusters(
     CellCollection& cells) {
   using Cell = typename CellCollection::value_type;
   using Cluster = typename ClusterCollection::value_type;
-  internal::staticCheckCellType<Cell, GridDim>();
-  internal::staticCheckClusterType<Cluster&, const Cell&>();
-  return internal::mergeClustersImpl<CellCollection, ClusterCollection>(cells);
+  staticCheckCellType<Cell, GridDim>();
+  staticCheckClusterType<Cluster&, const Cell&>();
+  return mergeClustersImpl<CellCollection, ClusterCollection>(cells);
 }
 
 template <typename CellCollection, typename ClusterCollection, size_t GridDim,
@@ -314,11 +309,8 @@ template <typename CellCollection, typename ClusterCollection, size_t GridDim,
 ClusterCollection createClusters(CellCollection& cells, Connect connect) {
   using Cell = typename CellCollection::value_type;
   using Cluster = typename ClusterCollection::value_type;
-  internal::staticCheckCellType<Cell, GridDim>();
-  internal::staticCheckClusterType<Cluster&, const Cell&>();
+  staticCheckCellType<Cell, GridDim>();
+  staticCheckClusterType<Cluster&, const Cell&>();
   labelClusters<CellCollection, GridDim, Connect>(cells, connect);
   return mergeClusters<CellCollection, ClusterCollection, GridDim>(cells);
 }
-
-}  // namespace Ccl
-}  // namespace Acts

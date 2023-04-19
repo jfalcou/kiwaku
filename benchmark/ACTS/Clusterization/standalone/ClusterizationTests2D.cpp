@@ -6,10 +6,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <cstddef>
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE Main
+
 #include <boost/test/data/test_case.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include "Acts/Clusterization/Clusterization.hpp"
+#include "Clusterization.hpp"
 
 #include <array>
 #include <random>
@@ -17,8 +21,10 @@
 
 #include <boost/functional/hash.hpp>
 
-namespace Acts {
-namespace Test {
+// Bench
+#define ANKERL_NANOBENCH_IMPLEMENT
+#include "../../../nanobench.h"
+
 
 using Rectangle = std::array<int, 4>;
 
@@ -75,7 +81,7 @@ std::vector<Rectangle> segment(int x0, int y0, int x1, int y1, RNG& rng) {
 struct Cell2D {
   Cell2D(int rowv, int colv) : row(rowv), col(colv) {}
   int row, col;
-  Ccl::Label label{Ccl::NO_LABEL};
+  Label label{NO_LABEL};
 };
 
 int getCellRow(const Cell2D& cell) {
@@ -86,7 +92,7 @@ int getCellColumn(const Cell2D& cell) {
   return cell.col;
 }
 
-Ccl::Label& getCellLabel(Cell2D& cell) {
+Label& getCellLabel(Cell2D& cell) {
   return cell.label;
 }
 
@@ -199,19 +205,20 @@ BOOST_AUTO_TEST_CASE(Grid_2D_rand) {
   using Cluster = Cluster2D;
   using ClusterC = std::vector<Cluster>;
 
-  size_t sizeX = 1000;
-  size_t sizeY = 1000;
+  std::vector<ankerl::nanobench::Bench> benchs;
+  ClusterC newCls;
+
   size_t startSeed = 71902647;
-  size_t ntries = 100;
 
   std::cout << "Grid_2D_rand test with parameters: " << std::endl;
-  std::cout << " sizeX = " << sizeX << std::endl;
-  std::cout << " sizeY = " << sizeY << std::endl;
   std::cout << " startSeed = " << startSeed << std::endl;
-  std::cout << " ntries = " << ntries << std::endl;
 
-  while (ntries-- > 0) {
+  for(size_t size = 2; size <= (1<<13); size*=2) {
+    size_t sizeX = size;
+    size_t sizeY = size;
     std::mt19937_64 rnd(startSeed++);
+
+    std::cout << " size = " << size << std::endl;
 
     std::vector<Cluster> cls;
     std::vector<Cell> cells;
@@ -225,7 +232,13 @@ BOOST_AUTO_TEST_CASE(Grid_2D_rand) {
 
     std::shuffle(cells.begin(), cells.end(), rnd);
 
-    ClusterC newCls = Ccl::createClusters<CellC, ClusterC>(cells);
+    benchs = {
+    // nanobench GEMV
+    ankerl::nanobench::Bench().minEpochIterations(10).epochs(100).run("GEMV", [&]{
+    ankerl::nanobench::doNotOptimizeAway(newCls);
+    newCls = createClusters<CellC, ClusterC>(cells);
+    })
+    };
 
     for (Cluster& cl : newCls) {
       hash(cl);
@@ -241,5 +254,3 @@ BOOST_AUTO_TEST_CASE(Grid_2D_rand) {
   }
 }
 
-}  // namespace Test
-}  // namespace Acts

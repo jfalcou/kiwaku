@@ -29,19 +29,20 @@ path=`pwd`
 # make
 
 cd $path/maths/GEM/standalone/results
-# ../build/std.out -s 0 -n 100 -f 1600
+../build/std.out -s 0 -n 100 -f 1600
 python3 ../../plot.py B*.csv
 
-# cd $path/maths/GEM/kwk_view/build
-# ninja -v kwk.out
+cd $path/maths/GEM/kwk_view/build
+ninja -v kwk.out
 
 cd $path/maths/GEM/kwk_view/results
-# ../build/kwk.out -s 0 -n 100 -f 1600
+../build/kwk.out -s 0 -n 100 -f 1600
 python3 ../../plot.py B*.csv
 
-# cd $path/maths/GEM/kwk_table/build
-# ninja -v kwk.out
+cd $path/maths/GEM/kwk_table/build
+ninja -v kwk.out
 
 cd $path/maths/GEM/kwk_table/results
-# ../build/kwk.out -s 0 -n 100 -f 1600
+../build/kwk.out -s 0 -n 100 -f 1600
 python3 ../../plot.py B*.csv
+
