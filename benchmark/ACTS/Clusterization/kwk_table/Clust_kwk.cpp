@@ -91,21 +91,47 @@ int main()
   const int sizeY = (2<<(N-1));
 
   for(int size = (2<<(N+N/2)); size < (2<<(N+N/2+1)); size*=2){
-    auto cells        = table{ of_size(size), as<cell> };
-    auto equivalences = table{ of_size(size), as<int> };
+    // auto cells        = table{ of_size(size), as<cell> };
+    // auto equivalences = table{ of_size(size), as<int> };
 
-    int i = 0;
-    while(i<size){
-      int x = std::rand()%sizeX;
-      int y = std::rand()%sizeY;
-      auto b = cells.get_data();
-      auto e = cells.get_data() + cells.numel();
-      auto it = std::find(b, e, cell{x,y,0});
-      if(it == e){
-        cells(i) = {x,y,0};
-        i++;
-      }
-    }
+    // int i = 0;
+    // while(i<size){
+    //   int x = std::rand()%sizeX;
+    //   int y = std::rand()%sizeY;
+    //   auto b = cells.get_data();
+    //   auto e = cells.get_data() + cells.numel();
+    //   auto it = std::find(b, e, cell{x,y,0});
+    //   if(it == e){
+    //     cells(i) = {x,y,0};
+    //     i++;
+    //   }
+    // }
+
+    auto cells        = table{ of_size(22), as<cell> };
+    auto equivalences = table{ of_size(22), as<int> };
+
+    cells(9) = {0,0,0};
+    cells(0) = {0,2,0};
+    cells(10) = {0,4,0};
+    cells(11) = {0,6,0};
+    cells(1) = {1,0,0};
+    cells(2) = {1,2,0};
+    cells(3) = {1,4,0};
+    cells(12) = {1,6,0};
+    cells(4) = {2,0,0};
+    cells(5) = {2,1,0};
+    cells(6) = {2,2,0};
+    cells(7) = {2,3,0};
+    cells(8) = {2,4,0};
+    cells(13) = {2,5,0};
+    cells(14) = {2,6,0};
+    cells(17) = {3,6,0};
+    cells(15) = {4,5,0};
+    cells(16) = {4,6,0};
+    cells(18) = {5,5,0};
+    cells(19) = {5,4,0};
+    cells(20) = {6,4,0};
+    cells(21) = {6,3,0};
 
     std::sort(cells.get_data(), cells.get_data() + cells.numel());
     
@@ -116,7 +142,7 @@ int main()
       for(auto& p : row)
           p = 0;
     
-    kwk::for_each( [&](auto e) { screen[e.y][e.x] = 'X'; }, cells);
+    kwk::for_each( [&](auto e) { screen[e.x][e.y] = 'X'; }, cells);
 
     for(auto row : screen)
     {
@@ -125,23 +151,25 @@ int main()
       std::cout << "\n";
     }
     
-    int eqv = 0;
     kwk::transform
     ( [&, label = 1](auto curr) mutable
       {
         auto prevx = curr.connections[0];
         auto prevy = curr.connections[1];
 
-        if(prevx == -1 && prevy == -1 ) { curr.label = label++; } 
+        if(prevx == -1 && prevy == -1 ) 
+        { 
+          curr.label = label++;
+          equivalences(curr.label) = curr.label;
+        } 
         else {
-          if(prevx != -1) curr.label = cells(prevx).label;
-    
-          if(prevy != -1)                 
+          if(prevx != -1) 
           {
             if(curr.label != 0)
             {
-              equivalences(curr.label) = std::min(curr.label, cells(prevy).label);
-              equivalences(equivalences(cells(prevy).label)) = std::min(curr.label, cells(prevy).label);
+              equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
+              // equivalences(equivalences(cells(prevx).label)) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
+              equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
 
               // int eqvp = cells(prevy).label;
               // while(equivalences(eqvp) != cells(prevy).label){
@@ -150,10 +178,24 @@ int main()
               // equivalences(eqv++) = {std::max(curr.label,cells(prevy).label),std::min(curr.label,cells(prevy).label)};
               // curr.label = std::min(cells(prevy).label, cells(prevx).label);
             } 
-            else 
+            else curr.label = cells(prevx).label;
+          }
+          if(prevy != -1)                 
+          {
+            if(curr.label != 0)
             {
-              curr.label = cells(prevy).label;
-            }
+              equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+              // equivalences(equivalences(cells(prevy).label)) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+              equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+
+              // int eqvp = cells(prevy).label;
+              // while(equivalences(eqvp) != cells(prevy).label){
+              //   eqvp = cells(prevy).label;
+              // }
+              // equivalences(eqv++) = {std::max(curr.label,cells(prevy).label),std::min(curr.label,cells(prevy).label)};
+              // curr.label = std::min(cells(prevy).label, cells(prevx).label);
+            } 
+            else curr.label = cells(prevy).label;
           }
         }
 
@@ -167,32 +209,38 @@ int main()
 
     std::cout << cells << "\n";
 
-    std::sort(equivalences.get_data(), equivalences.get_data() + eqv);
+    // std::sort(equivalences.get_data(), equivalences.get_data() + eqv);
+
+    kwk::for_each( [&](auto e) { screen[e.x][e.y] = e.label; } , cells);
+
+    for(auto row : screen)
+    {
+      for(auto p : row)
+          std::cout << std::right << std::setw(2) << int(p)  << " ";
+      std::cout << "\n";
+    }
+    std::cout << "\n";
 
     std::cout << equivalences << "\n";
 
-    for(int i=0;i<eqv;++i)
-    {
-      auto e = equivalences(i);
-      kwk::transform
-      ( [&](auto c)
-        {
-          if(c.label == i) { c.label = e; return c; }
-          else return c;
-        }
-      , cells, cells
-      );
-
-      kwk::for_each( [&](auto e) { screen[e.y][e.x] = e.label; } , cells);
-
-      for(auto row : screen)
+    kwk::transform
+    ( [&](auto c)
       {
-        for(auto p : row)
-            std::cout << std::right << std::setw(2) << int(p)  << " ";
-        std::cout << "\n";
+        c.label = equivalences(c.label);
+        return c;
       }
+    , cells, cells
+    );
+    
+
+    kwk::for_each( [&](auto e) { screen[e.x][e.y] = e.label; } , cells);
+
+    for(auto row : screen)
+    {
+      for(auto p : row)
+          std::cout << std::right << std::setw(2) << int(p)  << " ";
       std::cout << "\n";
     }
-
+    std::cout << "\n";
   }
 }
