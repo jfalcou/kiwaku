@@ -92,7 +92,7 @@ int main()
 
   for(int size = (2<<(N+N/2)); size < (2<<(N+N/2+1)); size*=2){
     auto cells        = table{ of_size(size), as<cell> };
-    auto equivalences = table{ of_size(size), as<equivalence> };
+    auto equivalences = table{ of_size(size), as<int> };
 
     int i = 0;
     while(i<size){
@@ -134,23 +134,21 @@ int main()
 
         if(prevx == -1 && prevy == -1 ) { curr.label = label++; } 
         else {
-          if(prevx != -1)
-          {
-            if(curr.label != 0) {
-              equivalences(eqv++) = {std::max(curr.label,cells(prevx).label),std::min(curr.label,cells(prevx).label)};
-              // while(equivalences(cells(prevx).label) != cells(prevx).label){
-
-              // }
-            }
-            curr.label = cells(prevx).label;
-          }          
+          if(prevx != -1) curr.label = cells(prevx).label;
     
           if(prevy != -1)                 
           {
             if(curr.label != 0)
             {
-              equivalences(eqv++) = {std::max(curr.label,cells(prevy).label),std::min(curr.label,cells(prevy).label)};
-              curr.label = std::min(cells(prevy).label, cells(prevx).label);
+              equivalences(curr.label) = std::min(curr.label, cells(prevy).label);
+              equivalences(equivalences(cells(prevy).label)) = std::min(curr.label, cells(prevy).label);
+
+              // int eqvp = cells(prevy).label;
+              // while(equivalences(eqvp) != cells(prevy).label){
+              //   eqvp = cells(prevy).label;
+              // }
+              // equivalences(eqv++) = {std::max(curr.label,cells(prevy).label),std::min(curr.label,cells(prevy).label)};
+              // curr.label = std::min(cells(prevy).label, cells(prevx).label);
             } 
             else 
             {
@@ -179,7 +177,7 @@ int main()
       kwk::transform
       ( [&](auto c)
         {
-          if(c.label == e.current) { c.label = e.ancestor; return c; }
+          if(c.label == i) { c.label = e; return c; }
           else return c;
         }
       , cells, cells
