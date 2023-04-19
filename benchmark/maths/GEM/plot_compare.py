@@ -21,8 +21,8 @@ def plot(df1, df2, df3, Function, metric, save):
   plt.semilogx(df1['Size(Bytes)'], df1[metric])
   plt.semilogx(df2['Size(Bytes)'], df2[metric])
   plt.semilogx(df3['Size(Bytes)'], df3[metric])
-  plt.xlabel('Size (Bytes)')
-  plt.ylabel('GBytes/s')
+  plt.xlabel('FLOP')
+  plt.ylabel('FLOPs')
   plt.title('Benchmark compare std/kwk' + " : " + Function)
   metric1 = ['std ' + m for m in metric]
   metric2 = ['kwk table ' + m for m in metric]
