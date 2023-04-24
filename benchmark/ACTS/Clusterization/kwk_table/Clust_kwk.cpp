@@ -1,14 +1,17 @@
 #include <kwk/kwk.hpp>
 #include <iostream>
 #include <algorithm>
-
+#include <iomanip>
+#include <random>
+#include <vector>
+#include <cmath>
 #include <boost/functional/hash.hpp>
 
 // Bench
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "../../../nanobench.h"
 
-#define N 3
+#define N 1
 
 namespace kwk
 {
@@ -20,7 +23,7 @@ namespace kwk
 
 struct cell
 {
-    int x,y,label;
+    int x = -1 ,y = -1, label = -1;
     int connections[2] = {-1,-1};
 
     friend std::ostream& operator<<(std::ostream& os, cell c)
@@ -55,6 +58,19 @@ struct equivalence
     }
 };
 
+void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t startSeed) {
+    std::mt19937 gen(startSeed);
+    std::uniform_int_distribution<> dist(0, 1000);
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            int random_value = dist(gen);
+            arr[i][j] = (random_value <= density) ? 1 : 0;
+        }
+    }
+}
+
+
 // Find connection cells with previous cells if exist
 void find_connections(auto& cells)
 {
@@ -87,160 +103,180 @@ int main()
 {
   using namespace kwk;
 
-  const int sizeX = (2<<(N-1));
-  const int sizeY = (2<<(N-1));
-
   for(int size = (2<<(N+N/2)); size < (2<<(N+N/2+1)); size*=2){
-    // auto cells        = table{ of_size(size), as<cell> };
-    // auto equivalences = table{ of_size(size), as<int> };
+    auto cells        = table{of_size(size*size), as<cell> };
+    auto equivalences = table{ of_size(size*size/2), as<int> };
+    size_t startSeed = 71902647;
 
-    // int i = 0;
-    // while(i<size){
-    //   int x = std::rand()%sizeX;
-    //   int y = std::rand()%sizeY;
-    //   auto b = cells.get_data();
-    //   auto e = cells.get_data() + cells.numel();
-    //   auto it = std::find(b, e, cell{x,y,0});
-    //   if(it == e){
-    //     cells(i) = {x,y,0};
-    //     i++;
-    //   }
-    // }
+    std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
 
-    auto cells        = table{ of_size(22), as<cell> };
-    auto equivalences = table{ of_size(22), as<int> };
+    for (int density = 100; density <= 1000; density += 100) {
+      fill_array(arr, size, density, startSeed);
 
-    cells(9) = {0,0,0};
-    cells(0) = {0,2,0};
-    cells(10) = {0,4,0};
-    cells(11) = {0,6,0};
-    cells(1) = {1,0,0};
-    cells(2) = {1,2,0};
-    cells(3) = {1,4,0};
-    cells(12) = {1,6,0};
-    cells(4) = {2,0,0};
-    cells(5) = {2,1,0};
-    cells(6) = {2,2,0};
-    cells(7) = {2,3,0};
-    cells(8) = {2,4,0};
-    cells(13) = {2,5,0};
-    cells(14) = {2,6,0};
-    cells(17) = {3,6,0};
-    cells(15) = {4,5,0};
-    cells(16) = {4,6,0};
-    cells(18) = {5,5,0};
-    cells(19) = {5,4,0};
-    cells(20) = {6,4,0};
-    cells(21) = {6,3,0};
+      kwk::transform( [&](auto c) 
+      { 
+        c.x = -1; 
+        c.y = -1; 
+        c.label = -1; 
+        c.connections[0] = -1; 
+        c.connections[1] = -1; 
+        return c;
+      }, cells, cells
+      );
 
-    std::sort(cells.get_data(), cells.get_data() + cells.numel());
-    
-    find_connections(cells);
-
-    std::array<std::array<char,sizeX>,sizeY> screen = {};
-    for(auto& row : screen)
-      for(auto& p : row)
-          p = 0;
-    
-    kwk::for_each( [&](auto e) { screen[e.x][e.y] = 'X'; }, cells);
-
-    for(auto row : screen)
-    {
-      for(auto p : row)
-          std::cout << std::right << std::setw(2) << int(p) << " ";
-      std::cout << "\n";
-    }
-    
-    kwk::transform
-    ( [&, label = 1](auto curr) mutable
-      {
-        auto prevx = curr.connections[0];
-        auto prevy = curr.connections[1];
-
-        if(prevx == -1 && prevy == -1 ) 
-        { 
-          curr.label = label++;
-          equivalences(curr.label) = curr.label;
-        } 
-        else {
-          if(prevx != -1) 
-          {
-            if(curr.label != 0)
-            {
-              equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
-              // equivalences(equivalences(cells(prevx).label)) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
-              equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
-
-              // int eqvp = cells(prevy).label;
-              // while(equivalences(eqvp) != cells(prevy).label){
-              //   eqvp = cells(prevy).label;
-              // }
-              // equivalences(eqv++) = {std::max(curr.label,cells(prevy).label),std::min(curr.label,cells(prevy).label)};
-              // curr.label = std::min(cells(prevy).label, cells(prevx).label);
-            } 
-            else curr.label = cells(prevx).label;
+      // std::cout << "Kiwaku : \n";
+      // std::cout << cells << "\n";
+      for (int i = 0; i < size; ++i) {
+          for (int j = 0; j < size; ++j) {
+              if(arr[i][j] == 1)cells(i*size+j) = {i,j,0};
           }
-          if(prevy != -1)                 
-          {
-            if(curr.label != 0)
-            {
-              equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
-              // equivalences(equivalences(cells(prevy).label)) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
-              equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+      }
 
-              // int eqvp = cells(prevy).label;
-              // while(equivalences(eqvp) != cells(prevy).label){
-              //   eqvp = cells(prevy).label;
-              // }
-              // equivalences(eqv++) = {std::max(curr.label,cells(prevy).label),std::min(curr.label,cells(prevy).label)};
-              // curr.label = std::min(cells(prevy).label, cells(prevx).label);
-            } 
-            else curr.label = cells(prevy).label;
+      // std::cout << "Origin : \n";
+      // std::cout << cells << "\n";
+      // Sort
+      std::sort(cells.get_data(), cells.get_data() + cells.numel());
+      // std::cout << "Sorted :  \n";
+      // std::cout << cells << "\n";
+      
+      // Find connections
+      find_connections(cells);
+      // std::cout << "Connected :  \n";
+      // std::cout << cells << "\n";
+
+      // Add graphical view
+      std::cout << "Density of percolation : " << density << "/1000" << std::endl; 
+      std::vector<std::vector<char>> screen(size,std::vector<char>(size));
+      for(auto& row : screen)
+        for(auto& p : row)
+            p = 0;
+      
+      kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = 'X'; }, cells);
+
+      for(auto row : screen)
+      {
+        for(auto p : row)
+          if (int(p) > 0)std::cout << " " << p << " ";
+          else std::cout << "   ";
+        std::cout << "\n";
+      }
+
+      int label = 1;
+
+      kwk::transform
+      ( [&](auto curr) mutable
+        {
+          auto prevx = curr.connections[0];
+          auto prevy = curr.connections[1];
+
+          // No neighbor cell
+          if(prevx == -1 && prevy == -1 && curr.x > -1 && curr.y > -1) 
+          { 
+            curr.label = label++;
+            equivalences(curr.label) = curr.label;
+          }
+          else {
+            if(prevx != -1) 
+            {
+              if(curr.label > 0)
+              {
+                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
+                equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
+                // Intersection with 2 clusters + simultaneous resolution matching
+                // auto eqrec = cells(prevx).label;
+                // cells(prevx).label = std::min(equivalences(curr.label), equivalences(eqrec));
+                // equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
+                // while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
+                // equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
+                //   eqrec = equivalences(eqrec);
+                // } 
+                // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+              }
+              else curr.label = cells(prevx).label;
+            }
+
+            if(prevy != -1)                 
+            {
+              if(curr.label > 0)
+              {
+                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+                equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+                // Intersection with 2 clusters + simultaneous resolution matching
+                // auto eqrec = cells(prevy).label;
+                // cells(prevy).label = std::min(equivalences(curr.label), equivalences(eqrec));
+                // // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+                // equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
+                // while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
+                // equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
+                //   eqrec = equivalences(eqrec);
+                // }
+                // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+              } 
+              else curr.label = cells(prevy).label;
+            }
+          }
+          return curr;
+        }
+      , cells, cells
+      );  
+      
+      std::cout << "\n";
+
+      // std::cout << cells << "\n";
+
+      kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
+
+      for(auto row : screen)
+      {
+        for(auto p : row)
+          if (int(p) > 0)std::cout << std::right << std::setw(2) << int(p) << " ";
+          else std::cout << "   ";
+        std::cout << "\n";
+      }
+      std::cout << "\n";
+
+      std::cout << std::setw(2) << equivalences << "\n";
+
+      //Compress label + last resolve
+      int max_label = 0;
+      for (int i = 0; i <= label; i++){
+        if(equivalences(i) == i){
+          equivalences(i) = max_label;
+          max_label++;
+        } else {
+          auto eqv = equivalences(i);
+          while(eqv != equivalences(eqv)){
+            equivalences(eqv) = equivalences(equivalences(i));
+            eqv = equivalences(eqv);
           }
         }
-
-        
-        return curr;
       }
-    , cells, cells
-    );  
-    
-    std::cout << "\n";
 
-    std::cout << cells << "\n";
+      std::cout << std::setw(2) << equivalences << "\n";
 
-    // std::sort(equivalences.get_data(), equivalences.get_data() + eqv);
+      // Resolution
+      kwk::transform
+      ( [&](auto c)
+        {
+          c.label = equivalences(c.label);
+          return c;
+        }
+      , cells, cells
+      );
+      
+      // Last graphical check
+      kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
 
-    kwk::for_each( [&](auto e) { screen[e.x][e.y] = e.label; } , cells);
 
-    for(auto row : screen)
-    {
-      for(auto p : row)
-          std::cout << std::right << std::setw(2) << int(p)  << " ";
-      std::cout << "\n";
-    }
-    std::cout << "\n";
-
-    std::cout << equivalences << "\n";
-
-    kwk::transform
-    ( [&](auto c)
+      std::cout << "Result: " << "\n\n";
+      for(auto row : screen)
       {
-        c.label = equivalences(c.label);
-        return c;
+        for(auto p : row)
+          if (int(p) > 0)std::cout << std::right << std::setw(2) << int(p) << " ";
+          else std::cout << "   ";
+        std::cout << "\n";
       }
-    , cells, cells
-    );
-    
-
-    kwk::for_each( [&](auto e) { screen[e.x][e.y] = e.label; } , cells);
-
-    for(auto row : screen)
-    {
-      for(auto p : row)
-          std::cout << std::right << std::setw(2) << int(p)  << " ";
       std::cout << "\n";
     }
-    std::cout << "\n";
   }
 }
