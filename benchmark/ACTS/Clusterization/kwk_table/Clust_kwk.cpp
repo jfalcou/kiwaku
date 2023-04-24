@@ -11,7 +11,7 @@
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "../../../nanobench.h"
 
-#define N 1
+#define N 2
 
 namespace kwk
 {
@@ -180,39 +180,51 @@ int main()
             {
               if(curr.label > 0)
               {
-                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
-                equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
+                // equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
                 // Intersection with 2 clusters + simultaneous resolution matching
-                // auto eqrec = cells(prevx).label;
+                auto eqrec = cells(prevx).label;
                 // cells(prevx).label = std::min(equivalences(curr.label), equivalences(eqrec));
-                // equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
-                // while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
-                // equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
-                //   eqrec = equivalences(eqrec);
-                // } 
-                // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(curr.label) = std::min(curr.label, equivalences(eqrec));
+
+                equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
+                while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
+                equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
+                  eqrec = equivalences(eqrec);
+                } 
+                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
               }
-              else curr.label = cells(prevx).label;
+              else {
+                curr.label = equivalences(cells(prevx).label);
+              }
             }
 
             if(prevy != -1)                 
             {
               if(curr.label > 0)
               {
-                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
-                equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+                // equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
                 // Intersection with 2 clusters + simultaneous resolution matching
-                // auto eqrec = cells(prevy).label;
+                auto eqrec = cells(prevy).label;
+                
+                // curr = 4, eqrec = 5
                 // cells(prevy).label = std::min(equivalences(curr.label), equivalences(eqrec));
-                // // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
-                // equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
-                // while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
-                // equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
-                //   eqrec = equivalences(eqrec);
-                // }
                 // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(curr.label) = std::min(curr.label, equivalences(eqrec));
+
+                equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
+                while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
+                equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
+                  eqrec = equivalences(eqrec);
+                }
+                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
               } 
-              else curr.label = cells(prevy).label;
+              else {
+                curr.label = equivalences(cells(prevy).label);
+              }
             }
           }
           return curr;
@@ -226,31 +238,34 @@ int main()
 
       kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
 
-      for(auto row : screen)
-      {
-        for(auto p : row)
-          if (int(p) > 0)std::cout << std::right << std::setw(2) << int(p) << " ";
-          else std::cout << "   ";
-        std::cout << "\n";
-      }
-      std::cout << "\n";
+      // for(auto row : screen)
+      // {
+      //   for(auto p : row)
+      //     if (int(p) > 0)std::cout << std::right << std::setw(2) << int(p) << " ";
+      //     else std::cout << "   ";
+      //   std::cout << "\n";
+      // }
+      // std::cout << "\n";
 
-      std::cout << std::setw(2) << equivalences << "\n";
+      // std::cout << "avant compression \n";
+      // std::cout << std::setw(2) << equivalences << "\n";
 
       //Compress label + last resolve
-      int max_label = 0;
-      for (int i = 0; i <= label; i++){
-        if(equivalences(i) == i){
-          equivalences(i) = max_label;
-          max_label++;
-        } else {
-          auto eqv = equivalences(i);
-          while(eqv != equivalences(eqv)){
-            equivalences(eqv) = equivalences(equivalences(i));
-            eqv = equivalences(eqv);
+      int max_label = 2;
+      for (int i = 2; i <= label; i++) {
+          if (equivalences(i) == i) {
+              equivalences(i) = max_label++;
+          } else {
+              auto eqv = equivalences(i);
+              // while (eqv != equivalences(eqv)) {
+              //     eqv = equivalences(eqv);
+              // }
+              equivalences(i) =equivalences(eqv);
           }
-        }
       }
+      std::cout << "post compression \n";
+      // std::cout << cells << "\n";
+
 
       std::cout << std::setw(2) << equivalences << "\n";
 
