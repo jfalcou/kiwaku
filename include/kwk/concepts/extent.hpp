@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/axis.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/utility/joker.hpp>
@@ -25,7 +26,7 @@ namespace kwk::concepts
   //!
   //====================================================================================================================
   template<typename T>
-  concept extent = std::convertible_to<T,std::size_t> || joker<T> || rbr::concepts::option<T>;
+  concept extent = std::convertible_to<T,std::size_t> || axis<T> || joker<T> || rbr::concepts::option<T>;
 
   /// Concept for shape and stride extent descriptor
   template<typename T>

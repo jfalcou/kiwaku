@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/values.hpp>
+#include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <bit>
@@ -75,20 +76,20 @@ namespace kwk
       return os << +N << "_c";
     }
 
-    constexpr auto operator-() noexcept { return constant<-N>{}; }
+    KWK_TRIVIAL constexpr auto operator-() noexcept { return constant<-N>{}; }
   };
 
   template<auto N, auto M>
-  constexpr auto operator+(constant<N>, constant<M>) noexcept { return constant<N+M>{}; }
+  KWK_TRIVIAL constexpr auto operator+(constant<N>, constant<M>) noexcept { return constant<N+M>{}; }
 
   template<auto N, auto M>
-  constexpr auto operator-(constant<N>, constant<M>) noexcept { return constant<N-M>{}; }
+  KWK_TRIVIAL constexpr auto operator-(constant<N>, constant<M>) noexcept { return constant<N-M>{}; }
 
   template<auto N, auto M>
-  constexpr auto operator*(constant<N>, constant<M>) noexcept { return constant<N*M>{}; }
+  KWK_TRIVIAL constexpr auto operator*(constant<N>, constant<M>) noexcept { return constant<N*M>{}; }
 
   template<auto N, auto M>
-  constexpr auto operator/(constant<N>, constant<M>) noexcept { return constant<N/M>{}; }
+  KWK_TRIVIAL constexpr auto operator/(constant<N>, constant<M>) noexcept { return constant<N/M>{}; }
 
   //================================================================================================
   //! @ingroup utility
@@ -113,7 +114,7 @@ namespace kwk
     //! The underlying type is computed from the actual value to be the smallest fitting type.
     //! This means, for example, that `123_c` is an instance of `kwk::constant<unsigned char,123>`.
     //==============================================================================================
-    template<char... c> constexpr auto operator"" _c() noexcept
+    template<char... c> KWK_TRIVIAL constexpr auto operator"" _c() noexcept
     {
       return fixed<__::clamp<b10<c...>()>()>;
     }

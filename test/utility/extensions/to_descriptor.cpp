@@ -12,12 +12,13 @@ TTS_CASE( "Check to_descriptor basic behavior" )
 {
   using namespace kwk;
 
-  TTS_EQUAL( kwk::to_descriptor(kwk::_)               , kwk::_            );
-  TTS_EQUAL( kwk::to_descriptor(42)                   , kwk::_            );
-  TTS_EQUAL( kwk::to_descriptor(kwk::fixed<37>)       , 37                );
-  TTS_EQUAL( kwk::to_descriptor(kwk::width = 63)      , kwk::width        );
-  TTS_EQUAL( kwk::to_descriptor(kwk::along<6> = 13)   , kwk::along<6>     );
-  TTS_EQUAL( kwk::to_descriptor(kwk::along<3> = 13_c) , kwk::along<3>[13] );
+  TTS_EQUAL( kwk::to_descriptor(kwk::_)               , kwk::_                      );
+  TTS_EQUAL( kwk::to_descriptor(42)                   , kwk::as<int>                );
+  TTS_EQUAL( kwk::to_descriptor(kwk::fixed<37>)       , 37                          );
+  TTS_EQUAL( kwk::to_descriptor(kwk::width = 63)      , kwk::width[kwk::as<int>]    );
+  TTS_EQUAL( kwk::to_descriptor(kwk::width = 45_c)    , kwk::width[45]              );
+  TTS_EQUAL( kwk::to_descriptor(kwk::along<6> = 13)   , kwk::along<6>[kwk::as<int>] );
+  TTS_EQUAL( kwk::to_descriptor(kwk::along<3> = 13_c) , kwk::along<3>[13]           );
 };
 
 struct special

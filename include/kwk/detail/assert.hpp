@@ -87,7 +87,9 @@ namespace kwk
 } // namespace kwk
 
 
-#if defined( _MSC_VER )
+#if defined( KIWAKU_NO_ASSERT_DBG_BREAK )
+#    define KIWAKU_ASSERT_DBG_BREAK()
+#elif defined( _MSC_VER )
 #    define KIWAKU_ASSERT_DBG_BREAK() __debugbreak()
 #elif defined( __GNUC__ )
 #    define KIWAKU_ASSERT_DBG_BREAK() __builtin_trap()

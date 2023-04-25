@@ -18,7 +18,8 @@ namespace kwk::__
   // To do so, we build a type that linearly inherits from box<N,T>... and we check that
   // there is no ambiguity when trying to convert a bunch of Ts... into a block of inheritance
   //================================================================================================
-  template<typename T> struct box {};
+  template<typename T> struct box { using type = T; };
+
   template <std::size_t, typename T> struct unique { operator T(); };
 
   template <typename Ints, typename... Ts>

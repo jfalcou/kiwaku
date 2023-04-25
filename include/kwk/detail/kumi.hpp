@@ -7,6 +7,13 @@
 //==================================================================================================
 #ifndef KUMI_TUPLE_HPP_INCLUDED
 #define KUMI_TUPLE_HPP_INCLUDED
+#if defined(__GNUC__)
+#   define KUMI_TRIVIAL [[gnu::always_inline, gnu::flatten, gnu::artificial]] inline
+#   define KUMI_TRIVIAL_NODISCARD [[nodiscard, gnu::always_inline, gnu::flatten, gnu::artificial]] inline
+#elif defined(_MSC_VER)
+#   define KUMI_TRIVIAL __forceinline
+#   define KUMI_TRIVIAL_NODISCARD [[nodiscard]]
+#endif
 #if defined( __ANDROID__ ) || defined(__APPLE__)
 #include <type_traits>
 namespace kumi
@@ -24,27 +31,25 @@ namespace kumi
 #endif
 #include <cstddef>
 #include <utility>
-
-#if defined(__GNUC__)
-#   define KUMI_TRIVIAL [[gnu::always_inline, gnu::flatten, gnu::artificial]] inline
-#elif defined(_MSC_VER)
-#   define KUMI_TRIVIAL __forceinline
-#endif
-
 namespace kumi::_
 {
   template<int I, typename T> struct leaf
   {
     T value;
   };
-  template<int I, typename T> KUMI_TRIVIAL constexpr T       &  get_leaf(leaf<I, T>       & arg) noexcept { return arg.value; }
-  template<int I, typename T> KUMI_TRIVIAL constexpr T       && get_leaf(leaf<I, T>       &&arg) noexcept { return static_cast<T &&>(arg.value); }
-  template<int I, typename T> KUMI_TRIVIAL constexpr T const && get_leaf(leaf<I, T> const &&arg) noexcept { return static_cast<T const &&>(arg.value); }
-  template<int I, typename T> KUMI_TRIVIAL constexpr T const &  get_leaf(leaf<I, T> const & arg) noexcept { return arg.value; }
+  template<int I, typename T>
+  KUMI_TRIVIAL constexpr T       &  get_leaf(leaf<I, T>       & a) noexcept { return a.value; }
+  template<int I, typename T>
+  KUMI_TRIVIAL constexpr T       && get_leaf(leaf<I, T>       &&a) noexcept { return static_cast<T&&>(a.value); }
+  template<int I, typename T>
+  KUMI_TRIVIAL constexpr T const && get_leaf(leaf<I, T> const &&a) noexcept { return static_cast<T const &&>(a.value); }
+  template<int I, typename T>
+  KUMI_TRIVIAL constexpr T const &  get_leaf(leaf<I, T> const & a) noexcept { return a.value; }
   template<typename ISeq, typename... Ts> struct binder;
   template<int... Is, typename... Ts>
   struct binder<std::integer_sequence<int,Is...>, Ts...> : leaf<Is, Ts>...
   {
+    static constexpr bool is_homogeneous = false;
   };
   template<typename ISeq, typename... Ts>
   struct make_binder
@@ -62,24 +67,24 @@ namespace kumi::_
   inline constexpr bool no_references = (true && ... && !std::is_reference_v<Ts>);
   template<typename T0, typename... Ts>
   inline constexpr bool all_the_same = (true && ... && std::is_same_v<T0,Ts>);
-  template<typename T0, int N> struct binder_n { T0 members[N] = {}; };
+  template<typename T0, int N> struct binder_n { static constexpr bool is_homogeneous = true; T0 members[N] = {}; };
   template<int... Is, typename T0, typename T1, typename... Ts>
   requires(all_the_same<T0,T1,Ts...> && no_references<T0,T1,Ts...>)
   struct make_binder<std::integer_sequence<int,Is...>, T0, T1, Ts...>
   {
     using type = binder_n<T0,2+sizeof...(Ts)>;
   };
-  template<std::size_t I, typename T0, int N> KUMI_TRIVIAL
-  constexpr auto& get_leaf(binder_n<T0,N> &arg)             noexcept { return arg.members[I]; }
-  template<std::size_t I, typename T0, int N> KUMI_TRIVIAL
-  constexpr auto const& get_leaf(binder_n<T0,N> const &arg) noexcept { return arg.members[I]; }
-  template<std::size_t I, typename T0, int N> KUMI_TRIVIAL
-  constexpr auto&& get_leaf(binder_n<T0,N> &&arg) noexcept
+  template<std::size_t I, typename T0, int N>
+  KUMI_TRIVIAL constexpr auto& get_leaf(binder_n<T0,N> &arg)             noexcept { return arg.members[I]; }
+  template<std::size_t I, typename T0, int N>
+  KUMI_TRIVIAL constexpr auto const& get_leaf(binder_n<T0,N> const &arg) noexcept { return arg.members[I]; }
+  template<std::size_t I, typename T0, int N>
+  KUMI_TRIVIAL constexpr auto&& get_leaf(binder_n<T0,N> &&arg) noexcept
   {
     return static_cast<T0&&>(arg.members[I]);
   }
-  template<std::size_t I, typename T0, int N> KUMI_TRIVIAL
-  constexpr auto const&& get_leaf(binder_n<T0,N> const &&arg) noexcept
+  template<std::size_t I, typename T0, int N>
+  KUMI_TRIVIAL constexpr auto const&& get_leaf(binder_n<T0,N> const &&arg) noexcept
   {
     return static_cast<T0 const &&>(arg.members[I]);
   }
@@ -87,6 +92,7 @@ namespace kumi::_
   requires(no_references<T>)
   struct binder<std::integer_sequence<int,0>,T>
   {
+    static constexpr bool is_homogeneous = true;
     using kumi_specific_layout = void;
     using member0_type = T;
     member0_type member0;
@@ -95,6 +101,7 @@ namespace kumi::_
   requires(no_references<T0,T1>)
   struct binder<std::integer_sequence<int,0,1>,T0,T1>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -105,6 +112,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2>)
   struct binder<std::integer_sequence<int,0,1,2>,T0,T1,T2>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -117,6 +125,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2,T3>)
   struct binder<std::integer_sequence<int,0,1,2,3>,T0,T1,T2,T3>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -131,6 +140,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2,T3,T4>)
   struct binder<std::integer_sequence<int,0,1,2,3,4>,T0,T1,T2,T3,T4>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -147,6 +157,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2,T3,T4,T5>)
   struct binder<std::integer_sequence<int,0,1,2,3,4,5>,T0,T1,T2,T3,T4,T5>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -167,6 +178,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2,T3,T4,T5,T6>)
   struct binder<std::integer_sequence<int,0,1,2,3,4,5,6>,T0,T1,T2,T3,T4,T5,T6>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -189,6 +201,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2,T3,T4,T5,T6,T7>)
   struct binder<std::integer_sequence<int,0,1,2,3,4,5,6,7>,T0,T1,T2,T3,T4,T5,T6,T7>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -213,6 +226,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2,T3,T4,T5,T6,T7,T8>)
   struct binder<std::integer_sequence<int,0,1,2,3,4,5,6,7,8>,T0,T1,T2,T3,T4,T5,T6,T7,T8>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -239,6 +253,7 @@ namespace kumi::_
   requires(no_references<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>)
   struct binder<std::integer_sequence<int,0,1,2,3,4,5,6,7,8,9>,T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>
   {
+    static constexpr bool is_homogeneous = false;
     using kumi_specific_layout = void;
     using member0_type = T0;
     using member1_type = T1;
@@ -263,8 +278,7 @@ namespace kumi::_
   };
   template<std::size_t I,typename Binder>
   requires requires(Binder) { typename Binder::kumi_specific_layout; }
-  KUMI_TRIVIAL
-  constexpr auto &get_leaf(Binder &arg) noexcept
+  KUMI_TRIVIAL constexpr auto &get_leaf(Binder &arg) noexcept
   {
     if constexpr(I == 0) return arg.member0;
     if constexpr(I == 1) return arg.member1;
@@ -279,8 +293,7 @@ namespace kumi::_
   }
   template<std::size_t I,typename Binder>
   requires requires(Binder) { typename Binder::kumi_specific_layout; }
-  KUMI_TRIVIAL
-  constexpr auto &&get_leaf(Binder &&arg) noexcept
+  KUMI_TRIVIAL constexpr auto &&get_leaf(Binder &&arg) noexcept
   {
     if constexpr(I == 0) return static_cast<typename Binder::member0_type &&>(arg.member0);
     if constexpr(I == 1) return static_cast<typename Binder::member1_type &&>(arg.member1);
@@ -295,8 +308,7 @@ namespace kumi::_
   }
   template<std::size_t I,typename Binder>
   requires requires(Binder) { typename Binder::kumi_specific_layout; }
-  KUMI_TRIVIAL
-  constexpr auto const &&get_leaf(Binder const &&arg) noexcept
+  KUMI_TRIVIAL constexpr auto const &&get_leaf(Binder const &&arg) noexcept
   {
     if constexpr(I == 0) return static_cast<typename Binder::member0_type const&&>(arg.member0);
     if constexpr(I == 1) return static_cast<typename Binder::member1_type const&&>(arg.member1);
@@ -311,8 +323,7 @@ namespace kumi::_
   }
   template<std::size_t I,typename Binder>
   requires requires(Binder) { typename Binder::kumi_specific_layout; }
-  KUMI_TRIVIAL
-  constexpr auto const &get_leaf(Binder const &arg) noexcept
+  KUMI_TRIVIAL constexpr auto const &get_leaf(Binder const &arg) noexcept
   {
     if constexpr(I == 0) return arg.member0;
     if constexpr(I == 1) return arg.member1;
@@ -546,7 +557,6 @@ namespace kumi
             get<i.value>(KUMI_FWD(ts))...
           );
       }};
-
       [=]<std::size_t... I>(std::index_sequence<I...>)
       {
         (invoker( std::integral_constant<unsigned, I>{} ), ...);
@@ -562,6 +572,9 @@ namespace kumi
   {
     using is_product_type = void;
     using binder_t  = _::make_binder_t<std::make_integer_sequence<int,sizeof...(Ts)>, Ts...>;
+
+    static constexpr bool is_homogeneous = binder_t::is_homogeneous;
+
     binder_t impl;
     template<std::size_t I>
     requires(I < sizeof...(Ts))
@@ -735,17 +748,20 @@ namespace kumi
     return t[index<I>];
   }
   template<std::size_t I, typename... Ts>
-  requires(I < sizeof...(Ts)) [[nodiscard]] KUMI_TRIVIAL constexpr decltype(auto) get(tuple<Ts...> &&arg) noexcept
+  requires(I < sizeof...(Ts)) [[nodiscard]] KUMI_TRIVIAL constexpr decltype(auto)
+  get(tuple<Ts...> &&arg) noexcept
   {
     return static_cast<tuple<Ts...> &&>(arg)[index<I>];
   }
   template<std::size_t I, typename... Ts>
-  requires(I < sizeof...(Ts)) [[nodiscard]] KUMI_TRIVIAL constexpr decltype(auto) get(tuple<Ts...> const &arg) noexcept
+  requires(I < sizeof...(Ts)) [[nodiscard]] KUMI_TRIVIAL constexpr decltype(auto)
+  get(tuple<Ts...> const &arg) noexcept
   {
     return arg[index<I>];
   }
   template<std::size_t I, typename... Ts>
-  requires(I < sizeof...(Ts)) [[nodiscard]] KUMI_TRIVIAL constexpr decltype(auto) get(tuple<Ts...> const &&arg) noexcept
+  requires(I < sizeof...(Ts)) [[nodiscard]] KUMI_TRIVIAL constexpr decltype(auto)
+  get(tuple<Ts...> const &&arg) noexcept
   {
     return static_cast<tuple<Ts...> const &&>(arg)[index<I>];
   }
@@ -818,7 +834,8 @@ namespace kumi
 }
 namespace kumi
 {
-  template<product_type... Tuples> [[nodiscard, gnu::always_inline, gnu::flatten]] constexpr auto cat(Tuples&&... ts)
+  template<product_type... Tuples>
+  KUMI_TRIVIAL_NODISCARD constexpr auto cat(Tuples&&... ts)
   {
     if constexpr(sizeof...(Tuples) == 0) return tuple{};
     else
@@ -919,8 +936,8 @@ namespace kumi
   requires( (I0 <= size_v<Tuple>) && (I1 <= size_v<Tuple>) )
   [[nodiscard]] constexpr
   auto extract( Tuple const& t
-              , [[maybe_unused]] index_t<I0> const& i0
-              , [[maybe_unused]] index_t<I1> const& i1
+              , [[maybe_unused]] index_t<I0> i0
+              , [[maybe_unused]] index_t<I1> i1
               ) noexcept
   {
     return [&]<std::size_t... N>(std::index_sequence<N...>)
@@ -932,14 +949,14 @@ namespace kumi
   template<std::size_t I0, product_type Tuple>
   requires(I0<= size_v<Tuple>)
   [[nodiscard]] constexpr
-  auto extract(Tuple const& t, index_t<I0> const& i0) noexcept
+  auto extract(Tuple const& t, index_t<I0> i0) noexcept
   {
     return extract(t,i0, index<size_v<Tuple>>);
   }
   template<std::size_t I0, product_type Tuple>
   requires(I0 <= size_v<Tuple>)
   [[nodiscard]] constexpr auto split( Tuple const& t
-                                    , [[maybe_unused]] index_t<I0> const& i0
+                                    , [[maybe_unused]] index_t<I0> i0
                                     ) noexcept
   {
     return kumi::make_tuple(extract(t,index<0>, index<I0>), extract(t,index<I0>));
@@ -1376,6 +1393,22 @@ namespace kumi
 }
 namespace kumi
 {
+  template<typename T>
+  [[nodiscard]] constexpr auto max(T const& t) noexcept
+  {
+    if constexpr ( !kumi::product_type<T> ) return t;
+    else if constexpr( T::size() == 1 )     return get<0>(t);
+    else
+    {
+      auto base = get<0>(t);
+      return kumi::fold_left( []<typename U>(auto cur, U u)
+                              {
+                                return cur > u ? cur : u;
+                              }
+                            , t, base
+                            );
+    }
+  }
   template<typename T, typename F>
   [[nodiscard]] constexpr auto max(T const& t, F f) noexcept
   {
@@ -1404,16 +1437,36 @@ namespace kumi
   }
   namespace result
   {
-    template<typename T, typename F> struct max
+    template<typename T, typename F = void> struct max
     {
       using type = decltype( kumi::max( std::declval<T>(), std::declval<F>() ) );
+    };
+    template<typename T> struct max<T,void>
+    {
+      using type = decltype( kumi::max( std::declval<T>() ) );
     };
     template<typename T, typename F> struct max_flat
     {
       using type = decltype( kumi::max_flat( std::declval<T>(), std::declval<F>() ) );
     };
-    template<typename T, typename F> using max_t      = typename max<T,F>::type;
-    template<typename T, typename F> using max_flat_t = typename max_flat<T,F>::type;
+    template<typename T, typename F = void> using max_t      = typename max<T,F>::type;
+    template<typename T, typename F>        using max_flat_t = typename max_flat<T,F>::type;
+  }
+  template<typename T>
+  [[nodiscard]] constexpr auto min(T const& t) noexcept
+  {
+    if constexpr ( !kumi::product_type<T> ) return t;
+    else if constexpr( T::size() == 1 )     return get<0>(t);
+    else
+    {
+      auto base = get<0>(t);
+      return kumi::fold_left( []<typename U>(auto cur, U u)
+                              {
+                                return cur < u ? cur : u;
+                              }
+                            , t, base
+                            );
+    }
   }
   template<typename T, typename F>
   [[nodiscard]] constexpr auto min(T const& t, F f) noexcept
@@ -1443,16 +1496,20 @@ namespace kumi
   }
   namespace result
   {
-    template<typename T, typename F> struct min
+    template<typename T, typename F = void> struct min
     {
       using type = decltype( kumi::min( std::declval<T>(), std::declval<F>() ) );
+    };
+    template<typename T> struct min<T,void>
+    {
+      using type = decltype( kumi::min( std::declval<T>() ) );
     };
     template<typename T, typename F> struct min_flat
     {
       using type = decltype( kumi::min_flat( std::declval<T>(), std::declval<F>() ) );
     };
-    template<typename T, typename F> using min_t      = typename min<T,F>::type;
-    template<typename T, typename F> using min_flat_t = typename min_flat<T,F>::type;
+    template<typename T, typename F = void> using min_t      = typename min<T,F>::type;
+    template<typename T, typename F>        using min_flat_t = typename min_flat<T,F>::type;
   }
 }
 namespace kumi
@@ -1516,6 +1573,64 @@ namespace kumi
     };
     template<product_type Tuple, std::size_t... Idx>
     using reorder_t = typename reorder<Tuple,Idx...>::type;
+  }
+}
+namespace kumi
+{
+  template<product_type Tuple, typename Value>
+  [[nodiscard]] constexpr auto sum(Tuple&& t, Value init)
+  {
+    if constexpr(_::empty_tuple<Tuple>) return init;
+    else return kumi::apply( [init](auto const&... m) { return (m + ... + init); }, KUMI_FWD(t) );
+  }
+  template<product_type Tuple, typename Value>
+  [[nodiscard]] constexpr auto prod(Tuple&& t, Value init)
+  {
+    if constexpr(_::empty_tuple<Tuple>) return init;
+    else return kumi::apply( [init](auto const&... m) { return (m * ... * init); }, KUMI_FWD(t) );
+  }
+  template<product_type Tuple, typename Value>
+  [[nodiscard]] constexpr auto bit_and(Tuple&& t, Value init)
+  {
+    if constexpr(_::empty_tuple<Tuple>) return init;
+    else return kumi::apply( [init](auto const&... m) { return (m & ... & init); }, KUMI_FWD(t) );
+  }
+  template<product_type Tuple, typename Value>
+  [[nodiscard]] constexpr auto bit_or(Tuple&& t, Value init)
+  {
+    if constexpr(_::empty_tuple<Tuple>) return init;
+    else return kumi::apply( [init](auto const&... m) { return (m | ... | init); }, KUMI_FWD(t) );
+  }
+  namespace result
+  {
+    template<product_type Tuple, typename Value>
+    struct sum
+    {
+      using type = decltype(kumi::sum(std::declval<Tuple>(), std::declval<Value>()));
+    };
+    template<product_type Tuple, typename Value>
+    struct prod
+    {
+      using type = decltype(kumi::prod(std::declval<Tuple>(), std::declval<Value>()));
+    };
+    template<product_type Tuple, typename Value>
+    struct bit_and
+    {
+      using type = decltype(kumi::bit_and(std::declval<Tuple>(), std::declval<Value>()));
+    };
+    template<product_type Tuple, typename Value>
+    struct bit_or
+    {
+      using type = decltype(kumi::bit_or(std::declval<Tuple>(), std::declval<Value>()));
+    };
+    template<product_type Tuple, typename Value>
+    using sum_t = typename sum<Tuple,Value>::type;
+    template<product_type Tuple, typename Value>
+    using prod_t = typename prod<Tuple,Value>::type;
+    template<product_type Tuple, typename Value>
+    using bit_and_t = typename bit_and<Tuple,Value>::type;
+    template<product_type Tuple, typename Value>
+    using bit_or_t = typename bit_or<Tuple,Value>::type;
   }
 }
 namespace kumi

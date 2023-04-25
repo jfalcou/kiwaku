@@ -9,6 +9,7 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/utility/invoke.hpp>
+#include <kwk/settings/type.hpp>
 
 namespace kwk::tags
 {
@@ -42,10 +43,11 @@ namespace kwk
   //! or stride type.
   //!
   //! The default behavior is to:
-  //!   - convert any kwk::joker or integral value to kwk::joker
+  //!   - convert any kwk::joker to kwk::joker
+  //!   - convert any integral value to its associated kwk::as type descriptor
   //!   - convert any static constant to its value
-  //!   - convert any @ref glossary-axis to kwk::joker.
-  //!   - convert any @ref glossary-axis with an associated value to its underlying value.
+  //!   - convert any @ref glossary-axis to an axis with the proper associated value while preserving pre-existing
+  //!     type constraints
   //!
   //! @note This @callable can be customized using the [generalized tag_invoke protocol](@ref invoke).
   //!
@@ -70,8 +72,18 @@ namespace kwk
 namespace kwk::__
 {
   KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), joker )              { return _; }
-  KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), std::integral  auto) { return _; }
-  KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), concepts::axis auto) { return _; }
+
+  template<std::integral T>
+  KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), T)                   { return as<T>; }
+
+  template<typename T>
+  KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), type_::info<T> x)    { return x; }
+
+  template<concepts::axis Axis>
+  KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), Axis a)
+  {
+    return axis_<Axis::identifier>{}[to_descriptor(a.value)];
+  }
 
   template<concepts::static_constant Extent>
   KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), Extent)              { return Extent::value; }
@@ -79,10 +91,17 @@ namespace kwk::__
   template<rbr::concepts::option Extent>
   KWK_TRIVIAL constexpr auto to_descriptor_(KWK_DELAY(), Extent const&)
   {
-    using key_t   = typename Extent::keyword_type;
-    using value_t = typename Extent::stored_value_type;
+    using key_t     = typename Extent::keyword_type;
+    using content_t = typename key_t::content_type;
+    using value_t   = typename Extent::stored_value_type;
 
-    if      constexpr(std::integral<value_t> || is_joker_v<value_t>)  return key_t{};
-    else if constexpr(concepts::static_constant<value_t>)             return key_t{}[value_t::value];
+    if      constexpr(is_joker_v<value_t>)                return key_t{};
+    else if constexpr(std::integral<value_t>)             return key_t{}[to_descriptor(content_t{})];
+    else if constexpr(concepts::static_constant<value_t>)
+    {
+      using tgt_t = decltype(to_descriptor(content_t{}));
+      if constexpr(is_joker_v<tgt_t>) return key_t{}[value_t::value];
+      else                            return key_t{}[static_cast<typename tgt_t::type>(value_t::value)];
+    }
   }
 }

@@ -38,6 +38,13 @@ namespace kwk::__
     static constexpr std::int32_t static_size = 1;
     static constexpr std::int32_t size() noexcept { return static_size; }
 
+    // Equivalence
+    template<auto OID, typename Other>
+    static constexpr bool is_equivalent(axis_<OID,Other> const&)
+    {
+      return std::same_as<axis_<ID>,axis_<OID>>;
+    }
+
     // Indexing info
     static constexpr std::int32_t index() noexcept
     {
@@ -49,8 +56,10 @@ namespace kwk::__
 
     using rbr::as_keyword<axis_<ID,Content>>::operator=;
 
+    axis_& operator=(axis_ const& a) = default;
+
     constexpr axis_() {}
-    constexpr axis_(auto v) : value(v) {}
+    constexpr explicit axis_(auto v) : value(v) {}
 
     template<typename T>
     std::ostream& display(std::ostream& os, T v) const
@@ -61,9 +70,10 @@ namespace kwk::__
 
     friend std::ostream& operator<<(std::ostream& os, axis_ a)
     {
-      if constexpr(is_indexed)  return os << "along<" << ID << ">";
-      else                      return os << ID.value();
-      if constexpr(concepts::static_axis<axis_>) os << "[" <<  +a.value << "]";
+      if constexpr(is_indexed)  os << "along<" << ID << ">";
+      else                      os << ID.value();
+      if constexpr(concepts::static_axis<axis_>)  os << "[" << +a.value << "]";
+      else                                        os << "[" <<  a.value << "]";
       return os;
     }
 
@@ -96,14 +106,13 @@ namespace kwk::__
       }
     }
 
-
     // Axis as static value
-    constexpr auto operator[](std::integral auto v) const noexcept
+    constexpr auto operator[](auto v) const noexcept
     {
       return axis_<ID,decltype(v)>{v};
     }
 
-    Content value;
+    Content value = {};
   };
 
   template<auto ID, typename C1, typename C2>

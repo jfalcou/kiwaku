@@ -9,6 +9,7 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/utility/invoke.hpp>
+#include <kwk/settings/type.hpp>
 
 namespace kwk::tags
 {
@@ -70,6 +71,17 @@ namespace kwk::__
   KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), joker               , std::integral auto d) { return d; }
   KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), concepts::axis auto , std::integral auto d) { return d; }
   KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), std::integral auto v, std::integral auto  ) { return v; }
+
+  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), concepts::static_constant auto a, std::integral auto)
+  {
+    return a;
+  }
+
+  template<typename T>
+  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), type_::info<T>, std::integral auto d)
+  {
+    return static_cast<T>(d);
+  }
 
   template<rbr::concepts::option Extent>
   KWK_TRIVIAL constexpr   auto as_dimension_(KWK_DELAY(), Extent const& e, std::integral auto d)

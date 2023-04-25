@@ -52,7 +52,8 @@ Valid values for an @ref glossary-extent can be:
   - any integral value, e.g `42`. Its associated dimension is given by its value.
   - any static integral value, e.g `kwk::fixed<13>` or `37_c`. Its associated dimension is given by its value.
   - the joker placeholder `kwk::_`. Its associated dimensions is 0.
-  - a specific @ref glossary-axis, e.g `kwk::height`, `kwk::along<2>` or `kwk::axis<"phase">`. Its associated dimensions is 0.
+  - a type descriptor `kwk::as<T>`, which acts as typed version of `kwk::_`. Its associated dimensions is `T{0}`.
+  - a typed or untyped specific @ref glossary-axis, e.g `kwk::height`, `kwk::along<2>[kwk::as<int>]` or `kwk::axis<"phase">`. Its associated dimensions is a properly typed 0.
   - a specific @ref glossary-axis tied to a value, e.g `kwk::height = 3` or `kwk::along<2> = 48_c`. Its associated dimension is given by its value.
 
 @section glossary-container Container-related Terms

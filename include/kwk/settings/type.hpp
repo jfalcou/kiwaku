@@ -19,13 +19,17 @@ namespace kwk::__
     {
       using stored_value_type = info<T>;
       using keyword_type      = type_;
-      using type = T;
+      using type              = T;
 
       constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
       friend std::ostream& operator<<(std::ostream& os, info const&)
       {
         return os << rbr::detail::type<T>.name();
       }
+
+      friend constexpr bool operator==(info, info) noexcept { return true;  }
+      friend constexpr bool operator==(info, auto) noexcept { return false; }
+      friend constexpr bool operator==(auto, info) noexcept { return false; }
     };
 
     template<typename T> constexpr auto operator=(info<T> const& s) const noexcept
