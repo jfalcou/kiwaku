@@ -8,7 +8,6 @@
 
 #include <cstddef>
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE Main
 
 #include <boost/test/data/test_case.hpp>
 #include <boost/test/unit_test.hpp>
@@ -18,6 +17,7 @@
 #include <array>
 #include <random>
 #include <vector>
+#include <fstream>
 
 #include <boost/functional/hash.hpp>
 
@@ -25,6 +25,8 @@
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "../../../nanobench.h"
 
+// CSV file
+std::ofstream res_nano;
 
 using Rectangle = std::array<int, 4>;
 
@@ -121,136 +123,99 @@ void hash(Cluster2D& cl) {
   }
 }
 
+void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t startSeed) {
+    std::mt19937 gen(startSeed);
+    std::uniform_int_distribution<> dist(0, 1000);
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            int random_value = dist(gen);
+            arr[i][j] = (random_value <= density) ? 1 : 0;
+        }
+    }
+}
+
 bool clHashComp(const Cluster2D& left, const Cluster2D& right) {
   return left.hash < right.hash;
 }
 
-template <typename RNG>
-void genclusterw(int x, int y, int x0, int y0, int x1, int y1,
-                 std::vector<Cell2D>& cells, RNG& rng, double startp = 0.5,
-                 double decayp = 0.9) {
-  std::vector<Cell2D> add;
-
-  auto maybe_add = [&](int x_, int y_) {
-    Cell2D c(x_, y_);
-    if (std::uniform_real_distribution<double>()(rng) < startp and
-        std::find(cells.begin(), cells.end(), c) == cells.end()) {
-      cells.push_back(c);
-      add.push_back(c);
-    }
-  };
-
-  // NORTH
-  if (y < y1) {
-    maybe_add(x, y + 1);
-  }
-  // NORTHEAST
-  if (x < x1 and y < y1) {
-    maybe_add(x + 1, y + 1);
-  }
-  // EAST
-  if (x < x1) {
-    maybe_add(x + 1, y);
-  }
-  // SOUTHEAST
-  if (x < x1 and y > y0) {
-    maybe_add(x + 1, y - 1);
-  }
-  // SOUTH
-  if (y > y0) {
-    maybe_add(x, y - 1);
-  }
-  // SOUTHWEST
-  if (x > x0 and y > y0) {
-    maybe_add(x - 1, y - 1);
-  }
-  // WEST
-  if (x > x0) {
-    maybe_add(x - 1, y);
-  }
-  // NORTHWEST
-  if (x > x0 and y < y1) {
-    maybe_add(x - 1, y + 1);
-  }
-
-  for (Cell2D& c : add) {
-    genclusterw(c.row, c.col, x0, y0, x1, y1, cells, rng, startp * decayp,
-                decayp);
-  }
-}
-
-template <typename RNG>
-Cluster2D gencluster(int x0, int y0, int x1, int y1, RNG& rng,
-                     double startp = 0.5, double decayp = 0.9) {
-  int x0_ = x0 + 1;
-  int x1_ = x1 - 1;
-  int y0_ = y0 + 1;
-  int y1_ = y1 - 1;
-
-  int x = std::uniform_int_distribution(x0_, x1_)(rng);
-  int y = std::uniform_int_distribution(y0_, y1_)(rng);
-
-  std::vector<Cell2D> cells = {Cell2D(x, y)};
-  genclusterw(x, y, x0_, y0_, x1_, y1_, cells, rng, startp, decayp);
-
-  Cluster2D cl;
-  cl.cells = std::move(cells);
-
-  return cl;
-}
-
-BOOST_AUTO_TEST_CASE(Grid_2D_rand) {
+int main(int argc, char *argv[]) {
   using Cell = Cell2D;
   using CellC = std::vector<Cell>;
   using Cluster = Cluster2D;
   using ClusterC = std::vector<Cluster>;
 
-  std::vector<ankerl::nanobench::Bench> benchs;
+  ankerl::nanobench::Bench bench;
+  // Retrieving nanobench results
+  std::vector<ankerl::nanobench::Result> vres;
   ClusterC newCls;
 
   size_t startSeed = 71902647;
+  std::mt19937_64 rnd(startSeed);
+
+  int size = std::atoi(argv[1]);
+
+  if(argc > 1) 
+  {
+    std::string fname = "./Benchmark_ccl_std_" + std::to_string(size) + ".csv";
+    res_nano.open(fname);
+    res_nano << "Size(N*N);Density(1/1000);Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
+  }
+  else
+  {
+    std::cout << "Size input needed";
+    exit(EXIT_FAILURE);
+  }
 
   std::cout << "Grid_2D_rand test with parameters: " << std::endl;
   std::cout << " startSeed = " << startSeed << std::endl;
 
-  for(size_t size = 2; size <= (1<<13); size*=2) {
-    size_t sizeX = size;
-    size_t sizeY = size;
-    std::mt19937_64 rnd(startSeed++);
 
-    std::cout << " size = " << size << std::endl;
-
+  for (int density = 10; density <= 1000; density += 10) {
     std::vector<Cluster> cls;
     std::vector<Cell> cells;
-    for (Rectangle& rect : segment(0, 0, sizeX, sizeY, rnd)) {
-      auto& [x0, y0, x1, y1] = rect;
-      Cluster cl = gencluster(x0, y0, x1, y1, rnd);
-      hash(cl);
-      cells.insert(cells.end(), cl.cells.begin(), cl.cells.end());
-      cls.push_back(cl);
+
+    std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
+    fill_array(arr, size, density, startSeed);
+    std::string ss;
+    ss = "CCL " + std::to_string(size) + " : " + std::to_string(density);
+
+    for (int i = 0; i < size; ++i) {
+      for (int j = 0; j < size; ++j) {
+        if(arr[i][j] == 1)
+        {
+          Cell2D c(i, j); 
+          cells.push_back(c);
+        }
+      }
     }
+    // nanobench CCL
+    bench = 
+    ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]{
+    // ankerl::nanobench::doNotOptimizeAway(newCls);
 
     std::shuffle(cells.begin(), cells.end(), rnd);
-
-    benchs = {
-    // nanobench GEMV
-    ankerl::nanobench::Bench().minEpochIterations(10).epochs(100).run("GEMV", [&]{
-    ankerl::nanobench::doNotOptimizeAway(newCls);
     newCls = createClusters<CellC, ClusterC>(cells);
-    })
-    };
+    });
 
-    for (Cluster& cl : newCls) {
-      hash(cl);
-    }
+    vres = bench.results();
+    double cyc_op_mean          =   vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
+    double cyc_op_med           =   vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+    double cyc_op_min           =   vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+    double cyc_op_max           =   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+    double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
 
-    std::sort(cls.begin(), cls.end(), clHashComp);
-    std::sort(newCls.begin(), newCls.end(), clHashComp);
-
-    BOOST_CHECK_EQUAL(cls.size(), newCls.size());
-    for (size_t i = 0; i < cls.size(); i++) {
-      BOOST_CHECK_EQUAL(cls.at(i).hash, newCls.at(i).hash);
-    }
+    res_nano 
+    << size << ";"
+    << density << ";"
+    << cyc_op_mean << ";"
+    << cyc_op_med << ";"
+    << cyc_op_min << ";"
+    << cyc_op_max << ";"
+    << cyc_op_err << "\n";
   }
+
+  // CSV close
+  res_nano.close();
 }
 

@@ -1,17 +1,24 @@
+#include <cstdint>
 #include <kwk/kwk.hpp>
 #include <iostream>
 #include <algorithm>
 #include <iomanip>
 #include <random>
+#include <sstream>
+#include <string>
 #include <vector>
 #include <cmath>
-#include <boost/functional/hash.hpp>
+#include <fstream>
 
 // Bench
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "../../../nanobench.h"
 
-#define N 2
+#define N 4
+// #define GUI
+
+// CSV file
+std::ofstream res_nano;
 
 namespace kwk
 {
@@ -99,20 +106,27 @@ void find_connections(auto& cells)
   );
 }
 
-int main()
-{
+void run(int size){
   using namespace kwk;
+  ankerl::nanobench::Bench bench;
+  // Retrieving nanobench results
+  std::vector<ankerl::nanobench::Result> vres;
 
-  for(int size = (2<<(N+N/2)); size < (2<<(N+N/2+1)); size*=2){
-    auto cells        = table{of_size(size*size), as<cell> };
-    auto equivalences = table{ of_size(size*size/2), as<int> };
+  {
+    auto cells        = table{ of_size(size*size), as<cell> };
+    auto equivalences = table{ of_size(size*size), as<int> };
     size_t startSeed = 71902647;
+    std::mt19937_64 rnd(startSeed);
 
-    std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
-
-    for (int density = 100; density <= 1000; density += 100) {
+    for (int density = 10; density <= 1000; density += 10) {
+      // Percolation 
+      std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
       fill_array(arr, size, density, startSeed);
 
+      std::string ss;
+      ss = "CCL " + std::to_string(size) + " : " + std::to_string(density);
+
+      // Initialise kwk cell table
       kwk::transform( [&](auto c) 
       { 
         c.x = -1; 
@@ -124,13 +138,29 @@ int main()
       }, cells, cells
       );
 
+      uint32_t nb_cells = 0;
       // std::cout << "Kiwaku : \n";
       // std::cout << cells << "\n";
+      // Fill kwk table with percolation array
       for (int i = 0; i < size; ++i) {
           for (int j = 0; j < size; ++j) {
-              if(arr[i][j] == 1)cells(i*size+j) = {i,j,0};
+              if(arr[i][j] == 1){
+                cells(i*size+j) = {i,j,0};
+                nb_cells++;
+              }
           }
       }
+      std::sort(cells.get_data(), cells.get_data() + cells.numel());
+      // std::cout << "Sorted :  \n";
+      // std::cout << cells << "\n";
+      auto v = view{source = (cells.get_data() + cells.numel() - nb_cells), of_size(nb_cells) };
+      // std::cout << "Sorted :  \n";
+      // std::cout << cells << "\n";
+bench = ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
+{
+
+      std::shuffle(cells.get_data(), cells.get_data() + cells.numel(), rnd);
+
 
       // std::cout << "Origin : \n";
       // std::cout << cells << "\n";
@@ -144,6 +174,7 @@ int main()
       // std::cout << "Connected :  \n";
       // std::cout << cells << "\n";
 
+#ifdef GUI
       // Add graphical view
       std::cout << "Density of percolation : " << density << "/1000" << std::endl; 
       std::vector<std::vector<char>> screen(size,std::vector<char>(size));
@@ -160,9 +191,12 @@ int main()
           else std::cout << "   ";
         std::cout << "\n";
       }
-
+      std::cout << "\n";
+#endif
+/*
       int label = 1;
 
+      // Clustering
       kwk::transform
       ( [&](auto curr) mutable
         {
@@ -175,7 +209,8 @@ int main()
             curr.label = label++;
             equivalences(curr.label) = curr.label;
           }
-          else {
+          // Neighbor cell
+          else if(curr.x > -1 && curr.y > -1){
             if(prevx != -1) 
             {
               if(curr.label > 0)
@@ -232,11 +267,6 @@ int main()
       , cells, cells
       );  
       
-      std::cout << "\n";
-
-      // std::cout << cells << "\n";
-
-      kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
 
       // for(auto row : screen)
       // {
@@ -260,15 +290,21 @@ int main()
               // while (eqv != equivalences(eqv)) {
               //     eqv = equivalences(eqv);
               // }
-              equivalences(i) =equivalences(eqv);
+              equivalences(i) = equivalences(eqv);
           }
       }
+
+#ifdef GUI
+
+      // std::cout << cells << "\n";
+
+      kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
+
       std::cout << "post compression \n";
       // std::cout << cells << "\n";
 
-
       std::cout << std::setw(2) << equivalences << "\n";
-
+#endif
       // Resolution
       kwk::transform
       ( [&](auto c)
@@ -278,10 +314,11 @@ int main()
         }
       , cells, cells
       );
-      
+      */
+});
+#ifdef GUI
       // Last graphical check
       kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
-
 
       std::cout << "Result: " << "\n\n";
       for(auto row : screen)
@@ -292,6 +329,47 @@ int main()
         std::cout << "\n";
       }
       std::cout << "\n";
+#endif
+
+      vres = bench.results();
+      double cyc_op_mean          =   vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_med           =   vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_min           =   vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_max           =   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
+
+      res_nano 
+      << size << ";"
+      << density << ";"
+      << cyc_op_mean << ";"
+      << cyc_op_med << ";"
+      << cyc_op_min << ";"
+      << cyc_op_max << ";"
+      << cyc_op_err << "\n";
+
     }
   }
+}
+
+int main(int argc, char *argv[])
+{
+
+  int size = std::atoi(argv[1]);
+
+  if(argc > 1) 
+  {
+    std::string fname = "./Benchmark_ccl_kwk_table_" + std::to_string(size) + ".csv";
+    res_nano.open(fname);
+    res_nano << "Size(N*N);Density(1/1000);Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
+  }
+  else
+  {
+    std::cout << "Size input needed";
+    exit(EXIT_FAILURE);
+  }
+    
+  run(size);
+
+  // CSV close
+  res_nano.close();
 }
