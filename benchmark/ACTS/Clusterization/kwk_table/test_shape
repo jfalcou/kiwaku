@@ -1,0 +1,27 @@
+
+      // Test 
+      // auto cells        = table{ of_size(22), as<cell> };
+      // auto equivalences = table{ of_size(22), as<int> };
+
+      // cells(9) = {0,0,0};
+      // cells(0) = {0,2,0};
+      // cells(10) = {0,4,0};
+      // cells(11) = {0,6,0};
+      // cells(1) = {1,0,0};
+      // cells(2) = {1,2,0};
+      // cells(3) = {1,4,0};
+      // cells(12) = {1,6,0};
+      // cells(4) = {2,0,0};
+      // cells(5) = {2,1,0};
+      // cells(6) = {2,2,0};
+      // cells(7) = {2,3,0};
+      // cells(8) = {2,4,0};
+      // cells(13) = {2,5,0};
+      // cells(14) = {2,6,0};
+      // cells(17) = {3,6,0};
+      // cells(15) = {4,5,0};
+      // cells(16) = {4,6,0};
+      // cells(18) = {5,5,0};
+      // cells(19) = {5,4,0};
+      // cells(20) = {6,4,0};
+      // cells(21) = {6,3,0};
