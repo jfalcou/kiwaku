@@ -179,10 +179,10 @@ int main(int argc, char *argv[])
     std::cout << "Connected :  \n";
     std::cout << cells << "\n";
 #endif
-
-      // Add graphical view
-      std::cout << "Density of percolation : " << density << "/1000" << std::endl; 
+      
 #ifdef GUI
+  // Add graphical view
+      std::cout << "Density of percolation : " << density << "/1000" << std::endl; 
       std::vector<std::vector<char>> screen(size,std::vector<char>(size));
       for(auto& row : screen)
         for(auto& p : row)
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
       , cells, cells
       );  
 
-#ifdef DEBUG
+#ifdef GUI
     kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
 
     for(auto row : screen)
@@ -309,7 +309,9 @@ int main(int argc, char *argv[])
     std::cout << cells << "\n";
 #endif
 
+#ifdef DEBUG
      std::cout << std::setw(2) << equivalences << "\n";
+#endif
 
       // Resolution
       kwk::transform
