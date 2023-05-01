@@ -128,6 +128,8 @@ int main(int argc, char *argv[])
   auto cells        = table{of_size(size*size), as<cell> };
   auto equivalences = table{ of_size(size*size/2), as<int> };
   size_t startSeed = 71902647;
+  std::mt19937_64 rnd(startSeed);
+
 
   std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
 
@@ -150,13 +152,18 @@ int main(int argc, char *argv[])
     std::cout << "Kiwaku : \n";
     std::cout << cells << "\n";
 #endif
-
+    uint32_t nb_cells = 0;
     for (int i = 0; i < size; ++i) {
       for (int j = 0; j < size; ++j) {
-        if(arr[i][j] == 1)cells(i*size+j) = {i,j,0};
+        if(arr[i][j] == 1){
+          cells(i*size+j) = {i,j,0};
+          nb_cells++;
+        }
       }
     }
     for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
+    std::sort(cells.get_data(), cells.get_data() + cells.numel());
+    auto v_cell = view{source = (cells.get_data() + cells.numel() - nb_cells), of_size(nb_cells) };
 
 #ifdef DEBUG
     std::cout << "Origin : \n";
@@ -168,13 +175,14 @@ int main(int argc, char *argv[])
     auto bench = ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
     {
     // Sort
-      std::sort(cells.get_data(), cells.get_data() + cells.numel());
+      std::shuffle(v_cell.get_data(), v_cell.get_data() + v_cell.numel(), rnd);
+      std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
 #ifdef DEBUG
     std::cout << "Sorted :  \n";
     std::cout << cells << "\n";
 #endif
     // Find connections
-      find_connections(cells);
+      find_connections(v_cell);
 #ifdef DEBUG
     std::cout << "Connected :  \n";
     std::cout << cells << "\n";
@@ -221,7 +229,7 @@ int main(int argc, char *argv[])
               {
                 // equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(cells(prevx).label));
                 // Intersection with 2 clusters + simultaneous resolution matching
-                auto eqrec = cells(prevx).label;
+                auto eqrec = v_cell(prevx).label;
                 // cells(prevx).label = std::min(equivalences(curr.label), equivalences(eqrec));
                 equivalences(curr.label) = std::min(curr.label, equivalences(eqrec));
 
@@ -231,11 +239,11 @@ int main(int argc, char *argv[])
                   eqrec = equivalences(eqrec);
                 } 
                 equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(eqrec));
-                equivalences(cells(prevx).label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(v_cell(prevx).label) = std::min(equivalences(curr.label), equivalences(eqrec));
                 curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
               }
               else {
-                curr.label = equivalences(cells(prevx).label);
+                curr.label = equivalences(v_cell(prevx).label);
               }
             }
 
@@ -245,7 +253,7 @@ int main(int argc, char *argv[])
               {
                 // equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
                 // Intersection with 2 clusters + simultaneous resolution matching
-                auto eqrec = cells(prevy).label;
+                auto eqrec = v_cell(prevy).label;
                 
                 // curr = 4, eqrec = 5
                 // cells(prevy).label = std::min(equivalences(curr.label), equivalences(eqrec));
@@ -258,17 +266,17 @@ int main(int argc, char *argv[])
                   eqrec = equivalences(eqrec);
                 }
                 equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(eqrec));
-                equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(v_cell(prevy).label) = std::min(equivalences(curr.label), equivalences(eqrec));
                 curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
               } 
               else {
-                curr.label = equivalences(cells(prevy).label);
+                curr.label = equivalences(v_cell(prevy).label);
               }
             }
           }
           return curr;
         }
-      , cells, cells
+      , v_cell, v_cell
       );  
 
 #ifdef GUI
@@ -320,7 +328,7 @@ int main(int argc, char *argv[])
           c.label = equivalences(c.label);
           return c;
         }
-      , cells, cells
+      , v_cell, v_cell
       );
     
       // Last graphical check
