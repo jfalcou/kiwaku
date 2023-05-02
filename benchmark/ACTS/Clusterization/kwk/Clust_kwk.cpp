@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     std::string fname;
     fname = "./Benchmark_ccl_kwk_table_" + std::to_string(size) + ".csv";
     res_nano.open(fname);
-    res_nano << "Size(N*N);Density(1/1000);Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
+    res_nano << "Size(N*N);Density(1/1000);Cells(Nb);Cycles/cell;Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
   }
   else
   {
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 
   std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
 
-  for (int density = 100; density <= 1000; density += 100) {
+  for (int density = 10; density <= 1000; density += 10) {
 
     fill_array(arr, size, density, startSeed);
 
@@ -359,6 +359,8 @@ int main(int argc, char *argv[])
     res_nano 
     << size << ";"
     << density << ";"
+    << nb_cells << ";"
+    << cyc_op_mean/nb_cells << ";"
     << cyc_op_mean << ";"
     << cyc_op_med << ";"
     << cyc_op_min << ";"

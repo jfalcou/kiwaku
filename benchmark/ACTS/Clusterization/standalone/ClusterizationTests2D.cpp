@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
   {
     std::string fname = "./Benchmark_ccl_std_" + std::to_string(size) + ".csv";
     res_nano.open(fname);
-    res_nano << "Size(N*N);Density(1/1000);Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
+    res_nano << "Size(N*N);Density(1/1000);Cells(Nb);Cycles/cell;Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
   }
   else
   {
@@ -180,19 +180,21 @@ int main(int argc, char *argv[]) {
     std::string ss;
     ss = "CCL " + std::to_string(size) + " : " + std::to_string(density);
 
+    uint32_t nb_cells = 0;
     for (int i = 0; i < size; ++i) {
       for (int j = 0; j < size; ++j) {
         if(arr[i][j] == 1)
         {
           Cell2D c(i, j); 
           cells.push_back(c);
+          nb_cells++;
         }
       }
     }
     // nanobench CCL
     bench = 
     ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]{
-    // ankerl::nanobench::doNotOptimizeAway(newCls);
+    ankerl::nanobench::doNotOptimizeAway(newCls);
 
     std::shuffle(cells.begin(), cells.end(), rnd);
     newCls = createClusters<CellC, ClusterC>(cells);
@@ -208,6 +210,8 @@ int main(int argc, char *argv[]) {
     res_nano 
     << size << ";"
     << density << ";"
+    << nb_cells << ";"
+    << cyc_op_mean/nb_cells << ";"
     << cyc_op_mean << ";"
     << cyc_op_med << ";"
     << cyc_op_min << ";"
