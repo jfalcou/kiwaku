@@ -4,9 +4,9 @@ path=`pwd`
 
 cd $path/build/
 cmake ../cmake -DCPM_kiwaku_SOURCE=/home/higepi/stage/kiwaku -G Ninja -DCMAKE_CXX_COMPILER=clang++-15
-ninja -v Cluster.out
+ninja -v test.out
 
-cd $path/results
+# cd $path/results
 
 # for i in 2 4 10 20 50 100
 # do
@@ -15,4 +15,4 @@ cd $path/results
 
 ##debug
 
-../build/Cluster.out 4
+../build/test.out 4
