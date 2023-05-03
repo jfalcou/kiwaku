@@ -78,7 +78,7 @@ void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t s
 
 
 // Find connection cells with previous cells if exist
-void find_connections(auto& cells)
+void find_connections(auto& cells,int size)
 {
   auto b = cells.get_data();
   auto e = cells.get_data() + cells.numel();
@@ -92,10 +92,10 @@ void find_connections(auto& cells)
       if(xm1 >= 0 || ym1 >= 0)
       {
         // Trouver astuce pour find (b, position actuelle car trié)
-        auto it = std::find(b, e, cell{xm1,curr.y,0});
+        auto it = std::lower_bound(b, e, cell{xm1,curr.y,0});
         if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[0] = std::distance(b,it);
       
-        it = std::find(b, e, cell{curr.x,ym1,0});
+        it = std::lower_bound(b, e, cell{curr.x,ym1,0});
         if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
       }
 
@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
     std::cout << cells << "\n";
 #endif
     // Find connections
-      find_connections(v_cell);
+      find_connections(v_cell, size);
 #ifdef DEBUG
     std::cout << "Connected :  \n";
     std::cout << cells << "\n";
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
       }
       std::cout << "\n";
 #endif
-
+      /*
       int label = 1;
 
       kwk::transform
@@ -346,6 +346,7 @@ int main(int argc, char *argv[])
       }
       std::cout << "\n";
 #endif
+      */
     });
 
     std::vector<ankerl::nanobench::Result> vres;
