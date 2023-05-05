@@ -28,9 +28,9 @@ namespace kwk
   //! @return A std::array<shape<Desc>::value_type, shape<Desc>::static_order> containing the
   //! multi-dimensional position corresponding to idx
   //================================================================================================
-  template<auto Desc>
+  template<std::integral Idx,auto... Desc>
   KWK_CONST constexpr
-  auto coordinates(std::integral auto const idx, shape<Desc> const shp) noexcept
+  auto coordinates( Idx idx, shape<Desc...> const shp) noexcept
   {
     KIWAKU_ASSERT ( idx < shp.numel()
                   ,   "Converting index " << idx
@@ -45,13 +45,12 @@ namespace kwk
     */
     return [=]<int...i>(std::integer_sequence<int, i...>)
     {
-      using value_type = typename shape<Desc>::value_type;
       auto const strides{as_stride(shp)};
-      return std::array<value_type, shape<Desc>::static_order>
+      return std::array<Idx, shape<Desc...>::static_order>
       {
-        static_cast<value_type>( idx / get<0  >(strides)                 ),
-        static_cast<value_type>((idx / get<i+1>(strides)) % get<i+1>(shp))...
+        static_cast<Idx>( idx / get<0  >(strides)                 ),
+        static_cast<Idx>((idx / get<i+1>(strides)) % get<i+1>(shp))...
       };
-    }(std::make_integer_sequence<int, shape<Desc>::static_order - 1 >{});
+    }(std::make_integer_sequence<int, shape<Desc...>::static_order - 1 >{});
   }
 }

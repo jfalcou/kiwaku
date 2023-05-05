@@ -28,8 +28,7 @@ namespace kwk::__
       }
 
       friend constexpr bool operator==(info, info) noexcept { return true;  }
-      friend constexpr bool operator==(info, auto) noexcept { return false; }
-      friend constexpr bool operator==(auto, info) noexcept { return false; }
+      constexpr bool operator==(auto) noexcept { return false; }
     };
 
     template<typename T> constexpr auto operator=(info<T> const& s) const noexcept

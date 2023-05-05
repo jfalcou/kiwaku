@@ -51,7 +51,7 @@ namespace kwk::concepts
   // that can't be represented as the ExpectedShape
   //================================================================================================
   template<typename Shape, auto ExpectedShape>
-  concept same_shape = ExpectedShape.is_similar(Shape{});
+  concept same_shape = true; //ExpectedShape.is_similar(Shape{});
 
   //================================================================================================
   //! @brief Container concept

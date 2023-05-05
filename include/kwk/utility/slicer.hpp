@@ -40,7 +40,7 @@ namespace kwk
   inline constexpr auto from    = rbr::keyword(__::from_{}  );
   inline constexpr auto length  = rbr::keyword(__::length_{});
 
-  template<auto D> struct shape;
+  template<auto... D> struct shape;
 
   //================================================================================================
   // range(...) specifications
@@ -60,8 +60,8 @@ namespace kwk
 
     slicer(Begin b, Step s, End e, Length l) : begin{b},step{s},end{e}, len{l} {}
 
-    template<auto D, std::size_t N>
-    constexpr auto reshape(shape<D> const& sh, kumi::index_t<N> const&) const noexcept
+    template<auto... D, std::size_t N>
+    constexpr auto reshape(shape<D...> const& sh, kumi::index_t<N> const&) const noexcept
     {
       if constexpr(has_length) return len;
       else
@@ -125,8 +125,8 @@ namespace kwk
 
   template<typename B, typename S, typename E, typename L> slicer(B,S,E,L)  -> slicer<B,S,E,L>;
 
-  template<auto D, typename S, std::size_t N>
-  constexpr auto reshape(shape<D> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+  template<auto... D, typename S, std::size_t N>
+  constexpr auto reshape(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
   {
     if constexpr(std::same_as<S,joker>)                 return get<N>(sh);
     else if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);

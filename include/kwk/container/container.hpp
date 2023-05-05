@@ -27,7 +27,6 @@ namespace kwk
     using pointer           = typename data_t::pointer;
     using const_pointer     = typename data_t::const_pointer;
     using shape_type        = typename access_t::shape_type;
-    using size_type         = typename shape_type::size_type;
     using container_kind    = decltype(Tag);
 
     static constexpr std::int32_t static_order  = access_t::static_order;

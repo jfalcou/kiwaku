@@ -13,22 +13,22 @@ TTS_CASE( "1D shape constructor with joker indexes" )
 {
   using namespace kwk::literals;
 
-  kwk::shape<kwk::_1D> d1(kwk::_);
+  kwk::_1D d1(kwk::_);
   TTS_EQUAL( get<0>(d1), 0);
 
-  kwk::shape<kwk::_1D> d2(3);
+  kwk::_1D d2(3);
   TTS_EQUAL( get<0>(d2), 3);
 
-  kwk::shape<kwk::_1D> d3(3_c);
+  kwk::_1D d3(3_c);
   TTS_EQUAL( get<0>(d3), 3);
 
-  kwk::shape<kwk::extent[3]> s1(kwk::_);
+  kwk::shape<3> s1(kwk::_);
   TTS_EQUAL( get<0>(s1), 3);
 
-  kwk::shape<kwk::extent[3]> s2(3);
+  kwk::shape<3> s2(3);
   TTS_EQUAL( get<0>(s2), 3);
 
-  kwk::shape<kwk::extent[3]> s3(3_c);
+  kwk::shape<3> s3(3_c);
   TTS_EQUAL( get<0>(s3), 3);
 };
 

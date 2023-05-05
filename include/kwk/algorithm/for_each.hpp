@@ -38,13 +38,13 @@ namespace kwk
   //! @groupheader{Example}
   //! @include docs/algorithms/for_each_shape.cpp
   //================================================================================================
-  template<typename Func, auto Desc>
-  constexpr auto for_each(Func f, shape<Desc> const& shp)
+  template<typename Func, auto... S>
+  constexpr auto for_each(Func f, shape<S...> const& shp)
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
       return __::for_each(f, shp );
-    }( std::make_index_sequence<shape<Desc>::static_order>{} );
+    }( std::make_index_sequence<shape<S...>::static_order>{} );
   }
 
   //================================================================================================

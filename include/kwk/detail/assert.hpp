@@ -87,7 +87,7 @@ namespace kwk
 } // namespace kwk
 
 
-#if defined( KIWAKU_NO_ASSERT_DBG_BREAK )
+#if !defined( KIWAKU_ASSERT_USE_DBG_BREAK )
 #    define KIWAKU_ASSERT_DBG_BREAK()
 #elif defined( _MSC_VER )
 #    define KIWAKU_ASSERT_DBG_BREAK() __debugbreak()

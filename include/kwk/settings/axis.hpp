@@ -35,21 +35,15 @@ namespace kwk::__
     static constexpr bool is_indexed   = std::integral<id_type>;
 
     // Size info
-    static constexpr std::int32_t static_size = 1;
-    static constexpr std::int32_t size() noexcept { return static_size; }
+    // static constexpr std::int32_t static_size = 1;
+    // static constexpr std::int32_t size() noexcept { return static_size; }
 
     // Equivalence
     template<auto OID, typename Other>
-    static constexpr bool is_equivalent(axis_<OID,Other> const&)
-    {
-      return std::same_as<axis_<ID>,axis_<OID>>;
-    }
+    static constexpr bool is_equivalent(axis_<OID,Other> const&) { return std::same_as<axis_<ID>,axis_<OID>>; }
 
     // Indexing info
-    static constexpr std::int32_t index() noexcept
-    {
-      if constexpr(is_indexed) return ID; else return -1;
-    }
+    static constexpr std::int32_t index() noexcept { if constexpr(is_indexed) return ID; else return -1; }
     static constexpr std::int32_t static_index = index();
 
     static constexpr axis_kind const base() { return {}; }
@@ -77,13 +71,6 @@ namespace kwk::__
       return os;
     }
 
-    // Tuple interface
-    template<std::size_t I>
-    friend constexpr decltype(auto) get(axis_& s) noexcept requires(I==0) { return s; }
-
-    template<std::size_t I>
-    friend constexpr decltype(auto) get(axis_ const& s) noexcept requires(I==0) { return s; }
-
     // Axis combination
     template<auto M, typename C>
     friend KWK_FORCEINLINE constexpr auto compress(axis_ a, axis_<M,C> b) noexcept
@@ -92,18 +79,9 @@ namespace kwk::__
       using v_t                       = decltype(v);
       constexpr bool is_other_indexed = axis_<M,C>::is_indexed;
 
-      if      constexpr(is_indexed && is_other_indexed)
-      {
-        return axis_<std::min(M,ID),v_t>{v};
-      }
-      else if constexpr(!is_indexed && is_other_indexed)
-      {
-        return axis_<ID,v_t>{v};
-      }
-      else if constexpr(!is_other_indexed)
-      {
-        return axis_<M,v_t>{v};
-      }
+      if      constexpr( is_indexed && is_other_indexed)  return axis_<std::min(M,ID),v_t>{v};
+      else if constexpr(!is_indexed && is_other_indexed)  return axis_<ID,v_t>{v};
+      else if constexpr(!is_other_indexed)                return axis_<M,v_t>{v};
     }
 
     // Axis as static value
@@ -141,23 +119,4 @@ namespace kwk
 
   /// Predefined axis for channel
   inline constexpr auto channel = axis<"channel">;
-
-  // Tuple interface
-  template<std::size_t I, auto ID>
-  constexpr decltype(auto) get(__::axis_<ID>& s) noexcept requires(I==0) { return s; }
-
-  template<std::size_t I, auto ID>
-  constexpr decltype(auto) get(__::axis_<ID> const& s) noexcept requires(I==0) { return s; }
 }
-
-// Tuple interface adaptation
-template<auto ID, typename Content>
-struct  std::tuple_size<kwk::__::axis_<ID,Content>>
-      : std::integral_constant<std::int32_t,1>
-{};
-
-template<std::size_t N, auto ID, typename Content>
-struct std::tuple_element<N, kwk::__::axis_<ID,Content>>
-{
-  using type = kwk::__::axis_<ID,Content>;
-};

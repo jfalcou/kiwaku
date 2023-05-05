@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/axis.hpp>
+#include <kwk/concepts/extent.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/settings/axis.hpp>
@@ -122,28 +123,23 @@ namespace kwk::__
   template<typename T, typename E>
   KWK_TRIVIAL constexpr auto force_type(type_::info<E> e)
   {
-    if constexpr( kwk::concepts::joker<T> ) return e;
-    else return as<T>;
+    return as<T>;
   }
 
   template<typename T, typename E>
   KWK_TRIVIAL constexpr auto force_type(E e)
   {
-    if constexpr( kwk::concepts::joker<T> ) return e;
-    else
+    if      constexpr( std::integral<E> )                   return static_cast<T>(e);
+    else if constexpr( kwk::concepts::static_constant<E> )  return kwk::fixed<static_cast<T>(E::value)>;
+    else if constexpr( kwk::concepts::joker<E> )            return T{};
+    else if constexpr( kwk::concepts::axis<E> )             return axis_<E::identifier>{}[force_type<T>(e.value)];
+    else if constexpr( rbr::concepts::option<E> )
     {
-      if      constexpr( std::integral<E> )                   return static_cast<T>(e);
-      else if constexpr( kwk::concepts::static_constant<E> )  return kwk::fixed<static_cast<T>(E::value)>;
-      else if constexpr( kwk::concepts::joker<E> )            return T{};
-      else if constexpr( kwk::concepts::axis<E> )             return axis_<E::identifier>{}[force_type<T>(e.value)];
-      else if constexpr( rbr::concepts::option<E> )
-      {
-        constexpr typename E::keyword_type key = {};
-        auto const new_key = force_type<T>(key);
-        return (new_key = force_type<T>(e(key)));
-      }
-      else return e;
+      constexpr typename E::keyword_type key = {};
+      auto const new_key = force_type<T>(key);
+      return (new_key = force_type<T>(e(key)));
     }
+    else return e;
   }
 
   //====================================================================================================================

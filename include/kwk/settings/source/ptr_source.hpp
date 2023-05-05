@@ -40,7 +40,7 @@ namespace kwk
   }
 
   template<typename T>
-  constexpr auto default_shape(ptr_source<T> const&)  noexcept { return shape<_1D>{0};  }
+  constexpr auto default_shape(ptr_source<T> const&)  noexcept { return of_size(0);  }
 
   template<typename T> struct source_traits;
   template<typename T> struct source_traits<ptr_source<T>>
