@@ -95,8 +95,8 @@ namespace kwk::__
     using content_t = typename key_t::content_type;
     using value_t   = typename Extent::stored_value_type;
 
-    if      constexpr(is_joker_v<value_t>)                return key_t{};
-    else if constexpr(std::integral<value_t>)             return key_t{}[to_descriptor(content_t{})];
+    if      constexpr(is_joker_v<value_t>)    return key_t{};
+    else if constexpr(std::integral<value_t>) return key_t{}[to_descriptor(value_t{})];
     else if constexpr(concepts::static_constant<value_t>)
     {
       using tgt_t = decltype(to_descriptor(content_t{}));
