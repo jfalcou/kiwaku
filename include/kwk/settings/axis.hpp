@@ -50,7 +50,8 @@ namespace kwk::__
 
     using rbr::as_keyword<axis_<ID,Content>>::operator=;
 
-    axis_& operator=(axis_ const& a) = default;
+    constexpr axis_(axis_ const&) = default;
+    constexpr axis_& operator=(axis_ const&) = default;
 
     constexpr axis_() {}
     constexpr explicit axis_(auto v) : value(v) {}

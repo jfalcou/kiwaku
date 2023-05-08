@@ -64,12 +64,12 @@ namespace kwk
     {}
 
     /// Shallow copy constructor
-    constexpr view(concepts::container<as<value_type>, shape_type{}> auto const& other)
+    constexpr view(concepts::container<type<value_type>, shape_type> auto const& other)
             : view(other.settings())
     {}
 
     /// Shallow assignment operator
-    constexpr view& operator=(concepts::container<as<value_type>, shape_type{}> auto const& other)
+    constexpr view& operator=(concepts::container<type<value_type>, shape_type> auto const& other)
     {
       view local(other);
       parent::swap(local);
@@ -105,11 +105,11 @@ namespace kwk
   //================================================================================================
 
   /// Type helper
-  template<auto... Settings> struct make_view
+  template<typename... Settings> struct make_view
   {
-    using type = view<__::builder<rbr::settings(view_,Settings...)>>;
+    using type = view<__::builder<rbr::settings(view_,Settings{}...)>>;
   };
 
-  template<auto... Settings>
+  template<typename... Settings>
   using make_view_t = typename make_view<Settings...>::type;
 }

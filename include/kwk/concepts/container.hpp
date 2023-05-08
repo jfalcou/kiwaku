@@ -51,7 +51,7 @@ namespace kwk::concepts
   // that can't be represented as the ExpectedShape
   //================================================================================================
   template<typename Shape, auto ExpectedShape>
-  concept same_shape = true; //ExpectedShape.is_similar(Shape{});
+  concept same_shape = ExpectedShape.is_similar(Shape{});
 
   //================================================================================================
   //! @brief Container concept
@@ -59,19 +59,16 @@ namespace kwk::concepts
   //! A @ref kwk::concepts::container is a type exhibiting the basic interface of a
   //! nD container and having a given set of settings.
   //================================================================================================
-  template<typename T, auto... Os>
+  template<typename T, typename... Os>
   concept container =   basic_container<T>
                     &&  same_value_type < typename std::remove_cvref_t<T>::value_type
                                         , typename rbr::result::fetch_t
-                                          < type
-                                          | as<typename std::remove_cvref_t<T>::value_type>
-                                          , decltype(Os)...
+                                          < value_type | as<typename std::remove_cvref_t<T>::value_type>
+                                          , Os...
                                           >::type
                                   >
                     &&  same_shape< typename std::remove_cvref_t<T>::shape_type
-                                  , rbr::fetch( size | typename std::remove_cvref_t<T>::shape_type{}
-                                              , Os...
-                                              )
+                                  , rbr::fetch(size | typename std::remove_cvref_t<T>::shape_type{}, Os{}...)
                                   >;
 
   //================================================================================================
@@ -80,7 +77,7 @@ namespace kwk::concepts
   //! A @ref kwk::concepts::table is a @ref kwk::concepts::container type with the semantic of a
   //! @ref kwk::table.
   //================================================================================================
-  template<typename T, auto... Settings>
+  template<typename T, typename... Settings>
   concept table = container<T,Settings...> && (kwk::table_ == std::remove_cvref_t<T>::kind());
 
   //================================================================================================
@@ -89,6 +86,6 @@ namespace kwk::concepts
   //! A @ref kwk::concepts::view is a @ref kwk::concepts::container type with the semantic of a
   //! @ref kwk::view.
   //================================================================================================
-  template<typename T, auto... Settings>
+  template<typename T, typename... Settings>
   concept view = container<T,Settings...> && (kwk::view_ == std::remove_cvref_t<T>::kind());
 }

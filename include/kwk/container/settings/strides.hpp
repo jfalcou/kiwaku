@@ -19,9 +19,6 @@ namespace kwk::__
   template<typename Category, rbr::concepts::settings Settings>
   KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), Category, strides_, Settings const& opts)
   {
-    using shape_type = rbr::result::fetch_t<size,Settings>;
-
-    if constexpr(!concepts::descriptor<shape_type>)
-      return opts[strides | as_stride(pick(size,opts))];
+    return opts[strides | as_stride(pick(size,opts))];
   }
 }

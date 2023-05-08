@@ -121,7 +121,7 @@ namespace kwk::__
   // TODO: Should this be a CPO ?
   //====================================================================================================================
   template<typename T, typename E>
-  KWK_TRIVIAL constexpr auto force_type(type_::info<E> e)
+  KWK_TRIVIAL constexpr auto force_type(type_::info<E>)
   {
     return as<T>;
   }

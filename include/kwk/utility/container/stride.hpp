@@ -69,7 +69,7 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, stride const& s)
     {
       os << "[";
-      kumi::for_each_index( [&](auto i, auto) { os << " " << get<i>(s); }, s);
+      kumi::for_each_index( [&](auto i, auto) { os << " " << +get<i>(s); }, s);
       return os << " ]";
     }
 
@@ -99,52 +99,47 @@ namespace kwk
           return (0 + ... + (get<i>(*this) * is));
       }(std::make_integer_sequence<int, static_order>{});
     }
-
-    // Access to base type for internal implementation
-    KWK_TRIVIAL auto const& __base() const  noexcept { return static_cast<parent const&>(*this);  }
-    KWK_TRIVIAL auto &      __base()        noexcept { return static_cast<parent&>(*this);        }
   };
 
   /// Deduction guide for @ref kwk::stride
-  template<typename... T>
+  template<concepts::extent... T>
   stride(T...) -> stride<to_descriptor(T{})...>;
+
+  //================================================================================================
+  //! @brief Generates a kwk::stride from a list of stride value or joker
+  //! @param  d        Variadic pack of sizes
+  //================================================================================================
+  template<concepts::extent... D>
+  constexpr auto with_strides(D... d) noexcept
+  {
+    return stride{d...};
+  }
+
+  template<kumi::product_type D>
+  constexpr auto with_strides(D d) noexcept
+  {
+    return kumi::apply([](auto... s) { return with_strides(s...); }, d);
+  }
 
   /// Converts a @ref kwk::shape into its corresponding @ref kwk::stride, keeping as much static
   /// informations as possible.
   template<auto... D>
   KWK_CONST constexpr
-  auto as_stride(shape<D...> const s) noexcept
+  auto as_stride(shape<D...> s) noexcept
   {
     if constexpr(sizeof...(D) == 1) return stride{s.template axis<0>() = fixed<1>};
     else
     {
       auto const d = kumi::fold_left( [](auto a, auto m){ return push_front(a, m * front(a)); }
-                                    , s
+                                    , kumi::pop_front(s)
                                     , kumi::tuple{fixed<1>}
                                     );
 
-      return [&]<std::size_t... I>(std::index_sequence<I...>, auto t)
+      return [=]<std::size_t... I>(std::index_sequence<I...>, auto t)
       {
-        //void* pp = with_strides( (s.template axis<I>() =  get<I>(t))...);;
-        return with_strides( (s.template axis<I>() =  get<I>(t))...);
-      }(std::make_index_sequence<sizeof...(D)>{}, pop_front(d));
+        return stride{ (s.template axis<I>() =  get<I>(t))... };
+      }(std::make_index_sequence<sizeof...(D)>{}, d);
     }
-  }
-
-  //================================================================================================
-  //! @brief Generates a kwk::stride from a list of stride value or joker
-  //! @param  ds        Variadic pack of sizes
-  //================================================================================================
-  template<int..., concepts::extent... D>
-  constexpr auto with_strides(D... d) noexcept
-  {
-    return stride<to_descriptor(D{})...>{d...};
-  }
-
-  template<int..., kumi::product_type D>
-  constexpr auto with_strides(D d) noexcept
-  {
-    return kumi::apply([](auto... s) { return with_strides(s...); }, d);
   }
 }
 

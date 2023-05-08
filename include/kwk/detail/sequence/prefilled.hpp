@@ -69,11 +69,12 @@ namespace kwk::__
     // Default constructor
     KWK_TRIVIAL constexpr prefilled() noexcept : storage_type{} {}
     KWK_TRIVIAL constexpr prefilled(prefilled const&) =default;
+    KWK_TRIVIAL constexpr prefilled& operator=(prefilled const&) =default;
 
     // Constructor from constant
     constexpr prefilled(std::integral auto def) noexcept
     {
-      kumi::for_each_index([&](auto i, auto& src) { src = def; }, storage());
+      kumi::for_each_index([&](auto, auto& src) { src = def; }, *this);
     }
 
     // Constructor from extents
@@ -90,7 +91,7 @@ namespace kwk::__
 
                                 src = kwk::as_dimension(get<setup.stored[I::value]>(input), d);
                               }
-                            , storage()
+                            , static_cast<storage_type&>(*this)
                             );
       }
     }
@@ -249,7 +250,7 @@ namespace kwk::__
     template<auto... Os>
     constexpr bool is_equivalent(prefilled<Os...> const&) const noexcept
     {
-      if constexpr(static_size == prefilled<Os...>::static_size) return (D.is_equivalent(Os) && ... );
+      if constexpr(static_size == prefilled<Os...>::static_size)  return (D.is_equivalent(Os) && ... );
       else                                                        return false;
     }
 
@@ -272,6 +273,23 @@ namespace kwk::__
       }
     }
 
+    template<auto... Os>
+    constexpr bool is_similar(prefilled<Os...> const& other) const noexcept
+    {
+      if constexpr(static_size != prefilled<Os...>::static_size)  return false;
+      else
+      {
+        return kumi::fold_left( [](bool acc, auto const& t)
+                                {
+                                  auto[e,f] = t;
+                                  return __checker(e, f, false, acc);
+                                }
+                              , kumi::zip(descriptors,other.descriptors)
+                              , true
+                              );
+      }
+    }
+
     template<typename E, typename F>
     static KWK_FORCEINLINE constexpr bool __checker(E e, F f, auto def, auto acc) noexcept
     {
@@ -283,8 +301,8 @@ namespace kwk::__
     //==================================================================================================================
     // Internal compressed tuple storage
     //==================================================================================================================
-    storage_type&       storage()       { return static_cast<storage_type&>(*this);       }
-    storage_type const& storage() const { return static_cast<storage_type const&>(*this); }
+    constexpr storage_type &        storage()       { return static_cast<storage_type&>(*this);       }
+    constexpr storage_type const&   storage() const { return static_cast<storage_type const&>(*this); }
   };
 
   //====================================================================================================================

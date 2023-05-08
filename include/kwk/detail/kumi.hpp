@@ -629,7 +629,7 @@ namespace kumi
     }
     template<sized_product_type<sizeof...(Ts)> Other>
     friend constexpr auto operator==(tuple const &self, Other const &other) noexcept
-    requires( (sizeof...(Ts) != 0 ) && equality_comparable<tuple,Other> )
+    requires( (sizeof...(Ts) != 0 ) )
     {
       return [&]<std::size_t... I>(std::index_sequence<I...>)
       {
@@ -646,7 +646,7 @@ namespace kumi
 #endif
     template<sized_product_type<sizeof...(Ts)> Other>
     friend constexpr auto operator!=(tuple const &self, Other const &other) noexcept
-    requires( (sizeof...(Ts) != 0 ) && equality_comparable<tuple,Other> )
+    requires( (sizeof...(Ts) != 0 ) )
     {
       return !(self == other);
     }

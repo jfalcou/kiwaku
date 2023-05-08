@@ -70,7 +70,7 @@ namespace kwk
   //!   kwk::shape<2,kwk::_,3>              s4( _, n, _);         // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
-  //! @tparam Shape An instance of a shape descriptor
+  //! @tparam D List of @ref glossary-extent types
   //====================================================================================================================
   template<auto... D>
   struct shape : __::prefilled_t<D...>::type
@@ -117,15 +117,15 @@ namespace kwk
     //! @groupheader{Example}
     //! @include docs/shape/mixed.cpp
     //!
-    //! @param dims  Variadic list of @ref glossary-extent
+    //! @param d  Variadic list of @ref glossary-extent
     //==================================================================================================================
     template<concepts::extent... T>
-    KWK_TRIVIAL constexpr shape(T... d) : parent(0, d...) {}
+    KWK_TRIVIAL constexpr shape(T... d) noexcept : parent(0, d...) {}
 
     //==================================================================================================================
     /// Copy constructor
     //==================================================================================================================
-    KWK_TRIVIAL constexpr shape(shape const& d) : parent(d.__base())
+    KWK_TRIVIAL constexpr shape(shape const& d) noexcept : parent(d)
     {}
 
     //==================================================================================================================
@@ -134,7 +134,7 @@ namespace kwk
     template<auto... D2>
     requires( constraint_t::is_contructible_from<parent{},typename shape<D2...>::parent{}>() )
     KWK_TRIVIAL explicit(static_order != sizeof...(D2))
-    constexpr shape(shape<D2...> const& other)
+    constexpr shape(shape<D2...> const& other) noexcept
     {
       constraint_t::construct(*this, other);
     }
@@ -162,7 +162,7 @@ namespace kwk
 
     /// Equality comparison operator
     template<auto... D2>
-    KWK_PURE friend constexpr bool operator==(shape const& a, shape<D2...> const& b ) noexcept
+    KWK_PURE friend constexpr bool operator==(shape const& a, shape<D2...> const& b) noexcept
     {
       constexpr auto sz = std::min(static_order, shape<D2...>::static_order);
       bool result = true;
@@ -180,7 +180,7 @@ namespace kwk
     //! do not match.
     //!
     //! @param p  List of coordinates to check
-    //! @return `true` if all extent of other fits exactly inside current shape. `false` otherwise.
+    //! @return `true` if all extent of other fits exactly inside current shape, `false` otherwise.
     //==================================================================================================================
     template<std::integral... Coords>
     KWK_PURE constexpr bool contains(Coords... p) const noexcept
@@ -263,7 +263,7 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, shape const& s)
     {
       os << "[";
-      kumi::for_each_index( [&](auto i, auto) { os << " " << get<i>(s); }, s);
+      kumi::for_each_index( [&](auto i, auto) { os << " " << +get<i>(s); }, s);
       return os << " ]";
     }
 
@@ -273,13 +273,12 @@ namespace kwk
   };
 
   /// Deduction guide for @ref kwk::shape
-  template<typename... T>
+  template<concepts::extent... T>
   shape(T...) -> shape<to_descriptor(T{})...>;
 
   //====================================================================================================================
   //! @brief Generates a kwk::shape from a list of @ref glossary-extent
-  //! @tparam SizeType  Integral type used to store sizes.
-  //! @param  ds        Variadic pack of @ref glossary-extent
+  //! @param  d        Variadic pack of @ref glossary-extent
   //====================================================================================================================
   template<int..., concepts::extent... D>
   KWK_TRIVIAL constexpr auto of_size(D... d)
@@ -287,7 +286,11 @@ namespace kwk
     return shape<to_descriptor(D{})...>{d...};
   }
 
-  /// @overload
+  //====================================================================================================================
+  //! @brief Generates a kwk::shape from a list of @ref glossary-extent
+  //! @tparam SizeType  Integral type used to store sizes.
+  //! @param  d         Variadic pack of @ref glossary-extent
+  //====================================================================================================================
   template<std::integral SizeType, int..., concepts::extent... D>
   KWK_TRIVIAL constexpr auto of_size(D... d)
   {
@@ -296,7 +299,6 @@ namespace kwk
 
   //====================================================================================================================
   //! @brief Generates a kwk::shape from a tuple of @ref glossary-extent
-  //! @tparam SizeType  Integral type used to store sizes.
   //! @param  t         Tuple of  @ref glossary-extent
   //====================================================================================================================
   template<int..., kumi::product_type T>
@@ -305,7 +307,11 @@ namespace kwk
     return kumi::apply( [](auto... e) {  return of_size(e...); }, t);
   }
 
-  /// @overload
+  //====================================================================================================================
+  //! @brief Generates a kwk::shape from a tuple of @ref glossary-extent
+  //! @tparam SizeType  Integral type used to store sizes.
+  //! @param  t         Tuple of  @ref glossary-extent
+  //====================================================================================================================
   template<typename SizeType, int...,kumi::product_type T>
   KWK_TRIVIAL constexpr auto of_size(T const& t)
   {

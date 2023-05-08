@@ -43,14 +43,14 @@ namespace kwk
         (idx /                    shp[3] ) % shp[2],
          idx                               % shp[3],
     */
-    return [=]<int...i>(std::integer_sequence<int, i...>)
+
+    return [&]<int... i>(std::integer_sequence<int, i...>)
     {
       auto const strides{as_stride(shp)};
-      return std::array<Idx, shape<Desc...>::static_order>
-      {
-        static_cast<Idx>( idx / get<0  >(strides)                 ),
-        static_cast<Idx>((idx / get<i+1>(strides)) % get<i+1>(shp))...
-      };
+
+      return std::array { static_cast<Idx>( idx / get<0  >(strides)                 )
+                        , static_cast<Idx>((idx / get<i+1>(strides)) % get<i+1>(shp))...
+                        };
     }(std::make_integer_sequence<int, shape<Desc...>::static_order - 1 >{});
   }
 }

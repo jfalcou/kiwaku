@@ -18,7 +18,7 @@ namespace kwk::__
   // source >> type however has we can't just cast the data on the fly
   // Views can't have BOTH source and type
   template<rbr::concepts::settings Settings>
-  requires(Settings::contains(source) != Settings::contains(type))
+  requires(Settings::contains(source) != Settings::contains(value_type))
   KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), view_, type_, Settings const& opts)
   {
     if constexpr( Settings::contains(source) )
@@ -27,7 +27,7 @@ namespace kwk::__
     }
     else
     {
-      return opts[type];
+      return opts[value_type];
     }
   }
 
@@ -36,7 +36,7 @@ namespace kwk::__
   template<rbr::concepts::settings Settings>
   KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), table_, type_, Settings const& opts)
   {
-    if constexpr( Settings::contains(type) )  return opts[type];
+    if constexpr( Settings::contains(value_type) )  return opts[value_type];
     else return as<typename source_traits<decltype(kwk::pick(source,opts))>::value_type>;
   }
 }
