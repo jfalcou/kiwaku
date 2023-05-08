@@ -124,18 +124,17 @@ namespace kwk
   /// Converts a @ref kwk::shape into its corresponding @ref kwk::stride, keeping as much static
   /// informations as possible.
   template<auto... D>
-  KWK_CONST constexpr
-  auto as_stride(shape<D...> s) noexcept
+  constexpr auto as_stride(shape<D...> const& s) noexcept
   {
     if constexpr(sizeof...(D) == 1) return stride{s.template axis<0>() = fixed<1>};
     else
     {
-      auto const d = kumi::fold_left( [](auto a, auto m){ return push_front(a, m * front(a)); }
-                                    , kumi::pop_front(s)
-                                    , kumi::tuple{fixed<1>}
-                                    );
+      auto const d  = kumi::fold_left ( [](auto a, auto m){ return push_front(a, m * front(a)); }
+                                      , kumi::pop_front(s)
+                                      , kumi::tuple{fixed<1>}
+                                      );
 
-      return [=]<std::size_t... I>(std::index_sequence<I...>, auto t)
+      return [&]<std::size_t... I>(std::index_sequence<I...>, auto t)
       {
         return stride{ (s.template axis<I>() =  get<I>(t))... };
       }(std::make_index_sequence<sizeof...(D)>{}, d);

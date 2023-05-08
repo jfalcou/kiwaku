@@ -16,6 +16,8 @@
 
 namespace kwk::__
 {
+  struct empty_tuple { static constexpr bool is_homogeneous = false; };
+
   template<auto... D>
   struct prefilled_base
   {
@@ -27,8 +29,7 @@ namespace kwk::__
     {
       if constexpr(dynamic_size == 0)
       {
-        struct empty_t {};
-        return empty_t{};
+        return empty_tuple {};
       }
       else
       {
@@ -124,32 +125,60 @@ namespace kwk::__
 
     // Static tuple access impl
     template<std::size_t N>
-    KWK_TRIVIAL constexpr auto __get() const noexcept
+    KWK_TRIVIAL constexpr decltype(auto)  __get() const & noexcept
     {
-      if constexpr(contains(N)) return get<setup.index[N]>(storage());
+      if constexpr(contains(N)) return storage_type::operator[](kumi::index<setup.index[N]>);
       else                      return fixed<get<N>(descriptors).value>;
     }
 
     template<std::size_t N>
-    KWK_TRIVIAL constexpr auto& __get() noexcept
+    KWK_TRIVIAL constexpr decltype(auto)  __get() const && noexcept
     {
-      if constexpr(contains(N)) return get<setup.index[N]>(storage());
+      if constexpr(contains(N)) return storage_type::operator[](kumi::index<setup.index[N]>);
+      else                      return fixed<get<N>(descriptors).value>;
+    }
+
+    template<std::size_t N>
+    KWK_TRIVIAL constexpr decltype(auto)  __get() & noexcept
+    {
+      if constexpr(contains(N)) return storage_type::operator[](kumi::index<setup.index[N]>);
+      else                      return fixed<get<N>(descriptors).value>;
+    }
+
+    template<std::size_t N>
+    KWK_TRIVIAL constexpr decltype(auto)  __get() && noexcept
+    {
+      if constexpr(contains(N)) return storage_type::operator[](kumi::index<setup.index[N]>);
       else                      return fixed<get<N>(descriptors).value>;
     }
 
     // Static tuple access
     template<std::size_t N>
-    KWK_TRIVIAL friend constexpr auto get(prefilled const& s) noexcept
+    KWK_TRIVIAL friend constexpr decltype(auto) get(prefilled const& s) noexcept
     requires(N>=0 && N<static_size)
     {
       return s.__get<N>();
     }
 
     template<std::size_t N>
-    KWK_TRIVIAL friend constexpr auto& get(prefilled& s) noexcept
+    KWK_TRIVIAL friend constexpr decltype(auto) get(prefilled& s) noexcept
     requires(N>=0 && N<static_size)
     {
       return s.__get<N>();
+    }
+
+    template<std::size_t N>
+    KWK_TRIVIAL friend constexpr decltype(auto) get(prefilled const&& s) noexcept
+    requires(N>=0 && N<static_size)
+    {
+      return static_cast<prefilled const&&>(s).__get<N>();
+    }
+
+    template<std::size_t N>
+    KWK_TRIVIAL friend constexpr decltype(auto) get(prefilled&& s) noexcept
+    requires(N>=0 && N<static_size)
+    {
+      return static_cast<prefilled &&>(s).__get<N>();
     }
 
     // Dynamic access - We rely on KUMI internals for speed and ease of detection
@@ -301,8 +330,10 @@ namespace kwk::__
     //==================================================================================================================
     // Internal compressed tuple storage
     //==================================================================================================================
-    constexpr storage_type &        storage()       { return static_cast<storage_type&>(*this);       }
-    constexpr storage_type const&   storage() const { return static_cast<storage_type const&>(*this); }
+    KWK_TRIVIAL constexpr storage_type &        storage() &       { return static_cast<storage_type&>(*this);         }
+    KWK_TRIVIAL constexpr storage_type const&   storage() const&  { return static_cast<storage_type const&>(*this);   }
+    KWK_TRIVIAL constexpr storage_type &&       storage() &&      { return static_cast<storage_type&&>(*this);        }
+    KWK_TRIVIAL constexpr storage_type const&&  storage() const&& { return static_cast<storage_type const&&>(*this);  }
   };
 
   //====================================================================================================================
@@ -336,17 +367,31 @@ namespace kwk::__
 namespace kwk
 {
   template<std::size_t N,auto... Desc>
-  KWK_PURE KWK_TRIVIAL constexpr auto get(__::prefilled<Desc...> const& s) noexcept
+  KWK_PURE KWK_TRIVIAL constexpr decltype(auto) get(__::prefilled<Desc...> const& s) noexcept
   requires(N>=0 && N<__::prefilled<Desc...>::static_size)
   {
     return s.template __get<N>();
   }
 
   template<std::size_t N,auto... Desc>
-  KWK_PURE KWK_TRIVIAL constexpr auto& get(__::prefilled<Desc...>& s) noexcept
+  KWK_PURE KWK_TRIVIAL constexpr decltype(auto) get(__::prefilled<Desc...>& s) noexcept
   requires(N>=0 && N<__::prefilled<Desc...>::static_size)
   {
     return s.template __get<N>();
+  }
+
+  template<std::size_t N,auto... Desc>
+  KWK_PURE KWK_TRIVIAL constexpr decltype(auto) get(__::prefilled<Desc...> const&& s) noexcept
+  requires(N>=0 && N<__::prefilled<Desc...>::static_size)
+  {
+    return static_cast<__::prefilled<Desc...> const &&>(s).template __get<N>();
+  }
+
+  template<std::size_t N,auto... Desc>
+  KWK_PURE KWK_TRIVIAL constexpr decltype(auto) get(__::prefilled<Desc...>&& s) noexcept
+  requires(N>=0 && N<__::prefilled<Desc...>::static_size)
+  {
+    return static_cast<__::prefilled<Desc...>&&>(s).template __get<N>();
   }
 }
 
@@ -361,5 +406,5 @@ struct  std::tuple_size<kwk::__::prefilled<Desc...>>
 template<std::size_t N, auto... Desc>
 struct  std::tuple_element<N, kwk::__::prefilled<Desc...>>
 {
-  using type = std::remove_cvref_t<decltype(get<N>(std::declval<kwk::__::prefilled<Desc...>>()))>;
+  using type = std::remove_cvref_t<decltype(std::declval<kwk::__::prefilled<Desc...>>().template __get<N>())>;
 };
