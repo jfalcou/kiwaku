@@ -57,9 +57,9 @@ inline auto d3 = kumi::tuple{kwk::_,9,33_c};
 
 // expected dimensions
 inline auto v0 = kumi::tuple{0,3,42};
-inline auto v1 = kumi::tuple{1,7,61};
-inline auto v2 = kumi::tuple{1,5,93};
-inline auto v3 = kumi::tuple{1,9,33};
+inline auto v1 = kumi::tuple{0,7,61};
+inline auto v2 = kumi::tuple{0,5,93};
+inline auto v3 = kumi::tuple{0,9,33};
 
 TTS_CASE( "2D shape constructor with joker indexes" )
 {
