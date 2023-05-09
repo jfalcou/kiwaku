@@ -20,7 +20,7 @@ namespace kwk { struct joker; }
 
 namespace kwk::__
 {
-  // Axis descriptor with a name
+  // Axis descriptor with an ID
   template<auto ID, typename Content = joker>
   struct axis_ : rbr::as_keyword<axis_<ID,Content>>
   {
@@ -33,10 +33,6 @@ namespace kwk::__
     static constexpr auto identifier  = ID;
     static constexpr bool is_dynamic  = !std::integral<content_type>;
     static constexpr bool is_indexed   = std::integral<id_type>;
-
-    // Size info
-    // static constexpr std::int32_t static_size = 1;
-    // static constexpr std::int32_t size() noexcept { return static_size; }
 
     // Equivalence
     template<auto OID, typename Other>
@@ -59,14 +55,24 @@ namespace kwk::__
     template<typename T>
     std::ostream& display(std::ostream& os, T v) const
     {
-      if constexpr(is_indexed)  return os << "along<" << ID << ">: " << v;
-      else                      return os << ID.value() << ": " << v;
+      if constexpr(is_indexed)
+      {
+        if(ID<0)  os << "implicit<" << (-ID-1) << ">: ";
+        else      os << "along<"    <<  ID << ">: ";
+        return os    << v;
+      }
+      else return os << ID.value() << ": " << v;
     }
 
     friend std::ostream& operator<<(std::ostream& os, axis_ a)
     {
-      if constexpr(is_indexed)  os << "along<" << ID << ">";
+      if constexpr(is_indexed)
+      {
+        if(ID<0)  os << "implicit<" << (-ID-1) << ">";
+        else      os << "along<"    <<  ID << ">";
+      }
       else                      os << ID.value();
+
       if constexpr(concepts::static_axis<axis_>)  os << "[" << +a.value << "]";
       else                                        os << "[" <<  a.value << "]";
       return os;
@@ -96,6 +102,9 @@ namespace kwk::__
 
   template<auto ID, typename C1, typename C2>
   KWK_TRIVIAL constexpr bool operator==(axis_<ID,C1> a, axis_<ID,C2> b) { return a.value == b.value; }
+
+  template<std::int32_t N>
+  inline constexpr axis_<-N-1> implicit = {};
 }
 
 // Pre-made axis objects

@@ -76,7 +76,8 @@ namespace kwk
       return os << +N << "_c";
     }
 
-    KWK_TRIVIAL constexpr auto operator-() noexcept { return constant<-N>{}; }
+    KWK_TRIVIAL constexpr auto operator-() const noexcept { return constant<-N>{}; }
+    KWK_TRIVIAL constexpr auto operator+() const noexcept { return *this; }
   };
 
   template<auto N, auto M>

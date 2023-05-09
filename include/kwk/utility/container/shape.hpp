@@ -120,7 +120,7 @@ namespace kwk
     //! @param d  Variadic list of @ref glossary-extent
     //==================================================================================================================
     template<concepts::extent... T>
-    KWK_TRIVIAL constexpr shape(T... d) noexcept : parent(0, d...) {}
+    KWK_TRIVIAL explicit constexpr shape(T... d) noexcept : parent(0, d...) {}
 
     //==================================================================================================================
     /// Copy constructor

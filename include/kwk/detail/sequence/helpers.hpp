@@ -60,20 +60,17 @@ namespace kwk::__
 
   //====================================================================================================================
   // Normalize extent as axis
-  // TODO: Should this be a CPO ?
   //====================================================================================================================
-  template<typename E> constexpr auto normalize_extent(E e)
+  template<int N, typename E> constexpr auto normalize_extent(E e)
   {
     if constexpr(kwk::concepts::axis<E>)  return e;
-    else                                  return kwk::along<-1>[e];
+    else                                  return implicit<N>[e];
   }
 
-  //====================================================================================================================
-  // Gather all the index of a given list of axis
-  //====================================================================================================================
-  template<typename N> constexpr auto all_index()
+  template<typename A, typename E> constexpr auto normalize_axis(A const& a, E e)
   {
-    return kumi::apply( []<typename... M>(M...) { return kumi::tuple{kwk::fixed<M::index()>...}; }, N{});
+    if constexpr(rbr::concepts::option<E>)  return e;
+    else                                    return (a = e);
   }
 
   //====================================================================================================================
@@ -81,39 +78,10 @@ namespace kwk::__
   //====================================================================================================================
   template<typename... E> constexpr auto normalize_extents(E... e)
   {
-    // Computes which integral index is already used
-    auto is_used        = [](auto m, auto i) { return kumi::any_of(i, [&](auto e) { return e != -1 && e == m; } ); };
-
-    // Turn every extent into their normalized, axis like form
-    auto all_extents    = kumi::tuple{normalize_extent(e)...};
-    using all_extents_t = decltype(all_extents);
-
-    // Retrieve the associated index of each axis
-    constexpr auto is   = all_index<all_extents_t>();
-
-    // Walk over all the axis and compute their integral index if they need one
-    constexpr auto idx  = kumi::map ( [&, k = 0]<typename M>(M) mutable
-                                      {
-                                        if constexpr(!M::is_indexed || M::index() != -1) return M::index();
-                                        else
-                                        {
-                                          while(is_used(k,is)) { k++; }
-                                          return k++;
-                                        }
-                                      }
-                                    , all_extents_t{}
-                                    );
-
-    constexpr int sz = kumi::max(idx);
-
-    // Put the axis index in the proper place
-    return kumi::map_index( [&]<typename M>(auto i, M m )
-                            {
-                              if constexpr(M::is_indexed) return kwk::along<sz - get<i>(idx)>[m.value];
-                              else                        return m;
-                            }
-                          , all_extents
-                          );
+    return [&]<std::size_t... I>(std::index_sequence<I...>)
+    {
+      return kumi::make_tuple( normalize_extent<sizeof...(E) - 1 - I>(e)... );
+    }(std::make_index_sequence<sizeof...(E)>{});
   }
 
   //====================================================================================================================

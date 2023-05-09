@@ -79,21 +79,59 @@ namespace kwk::__
     }
 
     // Constructor from extents
-    constexpr prefilled(std::integral auto def, auto... vs) noexcept
-    //requires(sizeof...(vs) == static_size)
+    constexpr prefilled(std::integral auto def, concepts::numeric_extent auto... vs) noexcept
+    requires(sizeof...(vs) == static_size)
+    {
+      auto const input = kumi::tie(vs...);
+      kumi::for_each_index( [&]<typename I>(I, auto v)
+                            {
+                              if constexpr(contains(I::value))
+                              {
+                                __get<I::value>() = kwk::as_dimension(v, def);
+                              }
+                              else
+                              {
+                                KIWAKU_ASSERT ( (v == _) || v == __get<I::value>()
+                                              ,   "[KWK] - Runtime/Compile-time mismatch for axis "
+                                              << kumi::get<I::value>(descriptors) << " as "
+                                              << v << " was provided instead."
+                                              );
+                              }
+                            }
+                          , input
+                          );
+    }
+
+    template<concepts::extent... V>
+    constexpr prefilled(std::integral auto def, V... vs) noexcept
+    requires( (sizeof...(vs) <= static_size) && (!concepts::numeric_extent<V> || ... ))
     {
       if constexpr(!is_fully_static)
       {
-        auto const input = kumi::tie(vs...);
-        kumi::for_each_index( [&]<typename I>(I, auto& src)
-                              {
-                                constexpr bool is_inner = setup.stored[I::value] == (static_size-1);
-                                auto const d = is_inner ? def : 1;
+        auto const input  = [&]<std::size_t... I>(std::index_sequence<I...>)
+                            {
+                              return rbr::settings(normalize_axis(implicit<static_size - 1 - I>,vs)...);
+                            }(std::make_index_sequence<sizeof...(vs)>{});
 
-                                src = kwk::as_dimension(get<setup.stored[I::value]>(input), d);
-                              }
-                            , static_cast<storage_type&>(*this)
-                            );
+        auto const desc  = rbr::keywords<kumi::tuple>(input);
+
+        kumi::for_each( [&]<typename X>(X x)
+                        {
+                          constexpr auto idx = __find_axis(X{});
+                          if constexpr(contains(idx))
+                          {
+                            (*this)[x] = kwk::as_dimension(input[x.base()], def);
+                          }
+                          else
+                          {
+                            KIWAKU_ASSERT ( (input[x.base()] == _) || input[x.base()] == (*this)[x]
+                                          ,   "[KWK] - Runtime/Compile-time mismatch for axis "
+                                          <<  get<idx>(descriptors) << " as " << input[x.base()] << " was provided instead."
+                                          );
+                          }
+                        }
+                      , desc
+                      );
       }
     }
 
@@ -230,7 +268,14 @@ namespace kwk::__
     }
 
     template<concepts::axis A>
-    KWK_TRIVIAL constexpr auto operator[](A) const noexcept
+    KWK_TRIVIAL constexpr decltype(auto) operator[](A) const noexcept
+    requires(__find_axis(A{}) < static_size)
+    {
+      return __get<__find_axis(A{})>();
+    }
+
+    template<concepts::axis A>
+    KWK_TRIVIAL constexpr decltype(auto) operator[](A) noexcept
     requires(__find_axis(A{}) < static_size)
     {
       return __get<__find_axis(A{})>();

@@ -1037,7 +1037,7 @@ namespace rbr
   //! @include doc/keywords.cpp
   //================================================================================================
   template<template<typename...> class List, typename... Opts>
-  auto keywords([[maybe_unused]]rbr::settings<Opts...> const& s)
+  constexpr auto keywords([[maybe_unused]]rbr::settings<Opts...> const& s)
   {
     return result::keywords_t<rbr::settings<Opts...>,List>{typename Opts::keyword_type{}...};
   }
@@ -1067,7 +1067,7 @@ namespace rbr
   //! @include doc/values.cpp
   //================================================================================================
   template<template<typename...> class List, typename... Opts>
-  auto values(rbr::settings<Opts...> const& s)
+  constexpr auto values(rbr::settings<Opts...> const& s)
   {
     return result::values_t<rbr::settings<Opts...>,List>{ s[typename Opts::keyword_type{}]... };
   }
