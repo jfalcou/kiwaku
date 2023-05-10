@@ -7,6 +7,7 @@
 //======================================================================================================================
 #pragma once
 
+#include <type_traits>
 #if !defined(_MSC_VER)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -120,6 +121,7 @@ namespace kwk
     //! @param d  Variadic list of @ref glossary-extent
     //==================================================================================================================
     template<concepts::extent... T>
+   // requires( std::is_constructible_v<parent, int,T...> )
     KWK_TRIVIAL explicit constexpr shape(T... d) noexcept : parent(0, d...) {}
 
     //==================================================================================================================

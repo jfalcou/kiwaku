@@ -32,7 +32,13 @@ namespace kwk::__
 
     static constexpr auto identifier  = ID;
     static constexpr bool is_dynamic  = !std::integral<content_type>;
-    static constexpr bool is_indexed   = std::integral<id_type>;
+    static constexpr bool is_indexed  = std::integral<id_type>;
+    static constexpr bool is_implicit = []()
+    {
+      if constexpr(std::integral<id_type>) return ID < 0; else return false;
+    }();
+
+    static constexpr bool is_explicit = !is_implicit;
 
     // Equivalence
     template<auto OID, typename Other>
@@ -102,6 +108,13 @@ namespace kwk::__
 
   template<auto ID, typename C1, typename C2>
   KWK_TRIVIAL constexpr bool operator==(axis_<ID,C1> a, axis_<ID,C2> b) { return a.value == b.value; }
+
+  template<auto ID1, auto ID2, typename C1, typename C2>
+  KWK_TRIVIAL constexpr bool operator==(axis_<ID1,C1> a, axis_<ID2,C2> b)
+  {
+    if constexpr(std::same_as<decltype(ID1), decltype(ID2)>)  return (ID1 == ID2) && (a.value == b.value);
+    else return false;
+  }
 
   template<std::int32_t N>
   inline constexpr axis_<-N-1> implicit = {};

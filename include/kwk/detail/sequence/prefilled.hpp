@@ -63,6 +63,8 @@ namespace kwk::__
     static constexpr  bool  is_dynamic        = !is_fully_static;
     static constexpr  bool  is_fully_dynamic  = dynamic_size == static_size;
     static constexpr  bool  is_homogeneous    = storage_type::is_homogeneous;
+    static constexpr  bool  is_fully_implicit = (D.is_implicit && ... && true);
+    static constexpr  bool  is_fully_explicit = (D.is_explicit && ... && true);
 
     // Do we have runtime storage for a given index ?
     static constexpr auto contains(int i) { return setup.index[i] != -1;  }
@@ -102,17 +104,11 @@ namespace kwk::__
                           );
     }
 
-    template<concepts::extent... V>
-    constexpr prefilled(std::integral auto def, V... vs) noexcept
-    requires( (sizeof...(vs) <= static_size) && (!concepts::numeric_extent<V> || ... ))
+    constexpr void construct(auto def, auto... vs) noexcept
     {
       if constexpr(!is_fully_static)
       {
-        auto const input  = [&]<std::size_t... I>(std::index_sequence<I...>)
-                            {
-                              return rbr::settings(normalize_axis(implicit<static_size - 1 - I>,vs)...);
-                            }(std::make_index_sequence<sizeof...(vs)>{});
-
+        auto const input  = rbr::settings(vs...);
         auto const desc  = rbr::keywords<kumi::tuple>(input);
 
         kumi::for_each( [&]<typename X>(X x)
@@ -133,6 +129,44 @@ namespace kwk::__
                       , desc
                       );
       }
+    }
+
+    constexpr prefilled(std::integral auto def, concepts::named_extent auto... vs) noexcept
+    requires(sizeof...(vs) <= static_size)
+    {
+      construct(def, vs...);
+    }
+
+    // Are all axis in the same order if implicit axis exist?
+    template<concepts::extent... V>
+    static constexpr auto __is_ordered()
+    {
+      if constexpr(is_fully_explicit)                 return true;
+      else if constexpr(static_size != sizeof...(V))  return false;
+      else
+      {
+        auto ff = []<auto I, typename X>(constant<I>, X)
+        {
+          if constexpr(rbr::concepts::option<X>) return typename X::keyword_type{};
+          else  return implicit<static_size - 1 - I>;
+        };
+
+        return [&]<std::size_t... I>(std::index_sequence<I...>)
+        {
+          return (is_along_v<decltype(D), decltype(ff(fixed<I>,V{}))> && ... && true);
+
+        }(std::make_index_sequence<sizeof...(V)>{});
+      }
+    }
+
+    template<concepts::extent... V>
+    constexpr prefilled(std::integral auto def, V... vs) noexcept
+    requires( !is_fully_implicit && !is_fully_explicit && (sizeof...(vs) <= static_size) && __is_ordered<V...>())
+    {
+      [&]<std::size_t... I>(std::index_sequence<I...>)
+      {
+        construct(def, normalize_axis(implicit<static_size - 1 - I>,vs)...);
+      }(std::make_index_sequence<sizeof...(vs)>{});
     }
 
     // Constructor from another prefilled with same size
