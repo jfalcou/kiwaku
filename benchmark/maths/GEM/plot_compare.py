@@ -9,25 +9,31 @@ def Parse(fname1, fname2, fname3, df1, df2, df3, Function, metric, plot_type, sa
       copy1 = df1.loc[df1['Function'] == f]
       copy2 = df2.loc[df2['Function'] == f]
       copy3 = df3.loc[df3['Function'] == f]
-      plot(copy1, copy2, copy3, f, metric, save)
+      opblas = 'BLAS' + f[0:4]
+      blas = df1.loc[df1['Function'] == opblas]
+
+      plot(copy1, copy2, copy3, blas, f, metric, save)
 
       if save:
-        plt.savefig('Benchmark_compare' + '_' + f)
+        plt.savefig('compare/Benchmark_compare' + '_' + f)
       else:
         plt.show()
 
       
-def plot(df1, df2, df3, Function, metric, save):
+def plot(df1, df2, df3, blas, Function, metric, save):
   plt.semilogx(df1['Size(Bytes)'], df1[metric])
   plt.semilogx(df2['Size(Bytes)'], df2[metric])
   plt.semilogx(df3['Size(Bytes)'], df3[metric])
+  # plt.semilogx(blas['Size(Bytes)'], blas[metric])
+
   plt.xlabel('FLOP')
-  plt.ylabel('FLOPs')
+  plt.ylabel('GFLOPs')
   plt.title('Benchmark compare std/kwk' + " : " + Function)
-  metric1 = ['std ' + m for m in metric]
-  metric2 = ['kwk table ' + m for m in metric]
-  metric3 = ['kwk view ' + m for m in metric]
-  plt.legend(metric1 + metric2 + metric3)
+  metric1 = ['std']
+  metric2 = ['kwk table']
+  metric3 = ['kwk view']
+  # metric4 = ['BLAS']
+  plt.legend(metric1 + metric2 + metric3 )
 
 
 def main():
