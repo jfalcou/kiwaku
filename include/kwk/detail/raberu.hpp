@@ -11,6 +11,7 @@
 #include <array>
 #include <compare>
 #include <cstring>
+#include <cstdint>
 #include <ostream>
 #include <string_view>
 #include <type_traits>
