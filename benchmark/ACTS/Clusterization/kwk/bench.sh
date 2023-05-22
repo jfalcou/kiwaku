@@ -15,4 +15,4 @@ cd $path/results
 
 ##debug
 
-../build/Cluster.out 10
+../build/Cluster.out 4
