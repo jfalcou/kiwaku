@@ -13,8 +13,8 @@
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "../../../nanobench.h"
 
-// #define DEBUG
-#define GUI
+#define DEBUG
+// #define GUI
 
 // CSV file
 std::ofstream res_nano;
@@ -85,24 +85,22 @@ void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t s
 // Find connection cells with previous cells if exist
 void find_connections(auto& cells, int size)
 {
+  auto b = cells.get_data();
+  auto e = cells.get_data() + cells.numel();
+
   kwk::transform_index
   ( [&](auto curr, auto p)
     {
-      auto b = cells.get_data();
-      auto e = cells.get_data() + cells.numel();
-
       auto xm1 = curr.x-1;
       auto ym1 = curr.y-1;
 
       if(xm1 >= 0 || ym1 >= 0)
       {
         // Trouver astuce pour find (b, position actuelle car trié)
-        // auto it = std::lower_bound(b+p-1, b+p, cell{xm1,curr.y,0});
-        auto it = std::lower_bound(b+p-1, b+p, cell{xm1,curr.y,0});
+        auto it = std::lower_bound(b+std::max((int(p)-size),0), b+int(p), cell{xm1,curr.y,0});
         if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[0] = std::distance(b,it);
       
-        // it = std::lower_bound(std::max(b+p-size, b), b+p, cell{curr.x,ym1,0});
-        it = std::lower_bound(std::max(b+p-size, b), b+p, cell{curr.x,ym1,0});
+        it = std::lower_bound(b+int(p)-1, b+int(p), cell{curr.x,ym1,0});
         if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
       }
 
