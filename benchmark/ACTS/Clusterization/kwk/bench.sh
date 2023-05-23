@@ -15,4 +15,4 @@ done
 
 ##debug
 
-# ../build/Cluster.out 4
+# ../build/Cluster.out 50

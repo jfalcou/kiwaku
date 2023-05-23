@@ -88,12 +88,27 @@ void find_connections(auto& cells, int size)
   auto b = cells.get_data();
   auto e = cells.get_data() + cells.numel();
 
+  
   kwk::transform_index
   ( [&](auto curr, auto p)
     {
       auto xm1 = curr.x-1;
       auto ym1 = curr.y-1;
+      // int i = 1;
+      // int pos = int(p);
 
+      // if(xm1 >= 0 || ym1 >= 0)
+      // {
+      //   while((cells(pos-i).x >= xm1 || cells(pos-i).y >= ym1) && (pos-i) >= 0){
+      //     if(cells(pos-i).y == curr.y && cells(pos-i).x == xm1){
+      //       curr.connections[0] = (pos-i);
+      //       break;
+      //     }
+      //     i++;
+      //   }
+      //   if(cells(pos-1).y == ym1 && cells(pos-1).x == curr.x) curr.connections[1] = (pos-1);
+
+      // }
       if(xm1 >= 0 || ym1 >= 0)
       {
         // Trouver astuce pour find (b, position actuelle car trié)

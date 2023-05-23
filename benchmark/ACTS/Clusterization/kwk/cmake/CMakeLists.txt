@@ -30,4 +30,4 @@ message(STATUS "Testing = ${kiwaku_SOURCE_DIR}")
 
 add_executable(Cluster.out ../Clust_kwk.cpp )
 
-target_link_libraries(Cluster.out PUBLIC kwk_compiler_options) #ma_target_avec_kiwaku
+target_link_libraries(Cluster.out PUBLIC kwk_bench_options) #ma_target_avec_kiwaku
