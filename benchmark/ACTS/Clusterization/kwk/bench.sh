@@ -8,11 +8,11 @@ ninja -v Cluster.out
 
 cd $path/results
 
-# for i in 2 4 10 20 50 100 1000
-# do
-#   ../build/Cluster.out $i
-# done
+for i in 2 4 10 20 50 100 1000
+do
+  ../build/Cluster.out $i
+done
 
 ##debug
 
-../build/Cluster.out 4
+# ../build/Cluster.out 4

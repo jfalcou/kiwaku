@@ -13,7 +13,7 @@
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "../../../nanobench.h"
 
-#define DEBUG
+// #define DEBUG
 // #define GUI
 
 // CSV file
