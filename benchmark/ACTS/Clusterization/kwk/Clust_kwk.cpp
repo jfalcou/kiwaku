@@ -119,13 +119,13 @@ void find_connections(auto& cells, int size)
         auto it = std::lower_bound(b+std::max((int(p)-size-1),0), b+int(p), cell{xm1,ym1,0});
         if(it != e && it->x == xm1 && it->y == ym1) curr.connections[0] = std::distance(b,it);
 
-        it = std::lower_bound(b+int(p)-1, b+int(p), cell{curr.x,ym1,0});
+        it = std::lower_bound(b+std::max((int(p)-size), 0), b+int(p), cell{curr.x,ym1,0});
         if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
 
-        it = std::lower_bound(b+std::max((int(p)-size),0), b+int(p), cell{xp1,ym1,0});
+        it = std::lower_bound(b+std::max((int(p)-size+1),0), b+int(p), cell{xp1,ym1,0});
         if(it != e && it->x == xp1 && it->y == ym1) curr.connections[2] = std::distance(b,it);
 
-        it = std::lower_bound(b+std::max((int(p)-size),0), b+int(p), cell{xm1,curr.y,0});
+        it = std::lower_bound(b+int(p)-1, b+int(p), cell{xm1,curr.y,0});
         if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[3] = std::distance(b,it);
       }
 
@@ -338,7 +338,7 @@ int main(int argc, char *argv[])
               }
             }
 
-            if(prevy != -1 && prevxy == -1)                 
+            if(prevy != -1)                 
             {
               if(curr.label > 0)
               {
