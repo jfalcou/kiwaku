@@ -15,10 +15,14 @@
 
 // #define DEBUG
 // #define GUI
+#define UNIT
 
 // CSV file
 std::ofstream res_nano;
+
+#ifdef UNIT
 std::ofstream res_test;
+#endif
 
 namespace kwk
 {
@@ -87,7 +91,7 @@ void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t s
 void find_connections(auto& cells, int size)
 {
   auto b = cells.get_data();
-  auto e = cells.get_data() + cells.numel();
+  // auto e = cells.get_data() + cells.numel();
 
   
   kwk::transform_index
@@ -96,39 +100,37 @@ void find_connections(auto& cells, int size)
       auto xm1 = curr.x-1;
       auto xp1 = curr.x+1;
       auto ym1 = curr.y-1;
-      // int i = 1;
-      // int pos = int(p);
 
       // if(xm1 >= 0 || ym1 >= 0)
       // {
-      //   while((cells(pos-i).x >= xm1 || cells(pos-i).y >= ym1) && (pos-i) >= 0){
-      //     if(cells(pos-i).y == curr.y && cells(pos-i).x == xm1){
-      //       curr.connections[0] = (pos-i);
-      //       break;
-      //     }
-      //     i++;
-      //   }
-      //   if(cells(pos-1).y == ym1 && cells(pos-1).x == curr.x) curr.connections[1] = (pos-1);
+      //   auto it = std::lower_bound(b+std::max((int(p)-size-1),0), b+int(p), cell{xm1,ym1,0});
+      //   if(it != e && it->x == xm1 && it->y == ym1) curr.connections[0] = std::distance(b,it);
 
+      //   it = std::lower_bound(b+curr.connections[0], b+int(p), cell{curr.x,ym1,0});
+      //   if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
+
+      //   it = std::lower_bound(b+curr.connections[1], b+int(p), cell{xp1,ym1,0});
+      //   if(it != e && it->x == xp1 && it->y == ym1) curr.connections[2] = std::distance(b,it);
+
+      //   it = std::lower_bound(b+int(p)-1, b+int(p), cell{xm1,curr.y,0});
+      //   if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[3] = std::distance(b,it);
       // }
+
+      int pos = int(p);
       if(xm1 >= 0 || ym1 >= 0)
       {
-        // Trouver astuce pour find (b, position actuelle car trié)
-        
-      
-        auto it = std::lower_bound(b+std::max((int(p)-size-1),0), b+int(p), cell{xm1,ym1,0});
-        if(it != e && it->x == xm1 && it->y == ym1) curr.connections[0] = std::distance(b,it);
-
-        it = std::lower_bound(b+std::max((int(p)-size), 0), b+int(p), cell{curr.x,ym1,0});
-        if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
-
-        it = std::lower_bound(b+std::max((int(p)-size+1),0), b+int(p), cell{xp1,ym1,0});
-        if(it != e && it->x == xp1 && it->y == ym1) curr.connections[2] = std::distance(b,it);
-
-        it = std::lower_bound(b+int(p)-1, b+int(p), cell{xm1,curr.y,0});
-        if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[3] = std::distance(b,it);
+        while(pos >= (int(p)-size-1))
+        {
+          if(cells(pos).x == xm1 && cells(pos).y == curr.y) curr.connections[3] = pos;
+          if(cells(pos).x == xp1 && cells(pos).y == ym1) curr.connections[2] = pos;
+          if(cells(pos).x == curr.x && cells(pos).y == ym1) curr.connections[1] = pos;
+          if(cells(pos).x == xm1 && cells(pos).y == ym1){
+            curr.connections[0] = pos;
+            break;
+          } 
+          pos--;
+        }
       }
-
       return curr;
     }
   , cells, cells
@@ -149,8 +151,10 @@ int main(int argc, char *argv[])
     res_nano.open(fname);
     res_nano << "Size(N*N);Density(1/1000);Cells(Nb);Cycles/cell;Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
   
+#ifdef UNIT
     std::string f_test = "./Test_verif_" + std::to_string(size) + ".csv";
     res_test.open(f_test);
+#endif
   }
   else
   {
@@ -472,6 +476,7 @@ int main(int argc, char *argv[])
     double cyc_op_max           =   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
     double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
 
+#ifdef UNIT
     std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
 
     kwk::transform
@@ -483,7 +488,7 @@ int main(int argc, char *argv[])
       , v_cell, v_cell
     );
     res_test << "\n";
-
+#endif
     res_nano 
     << size << ";"
     << density << ";"
@@ -498,5 +503,7 @@ int main(int argc, char *argv[])
   }
   // CSV close
   res_nano.close();
+#ifdef UNIT
   res_test.close();
+#endif
 }

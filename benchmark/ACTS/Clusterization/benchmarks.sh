@@ -6,7 +6,7 @@ cd $path/kwk/
 
 bash bench.sh
 
-cd $path/standalone/
+# cd $path/standalone/
 
-bash bench.sh
+# bash bench.sh
 
