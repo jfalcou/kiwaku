@@ -18,6 +18,7 @@
 
 // CSV file
 std::ofstream res_nano;
+std::ofstream res_test;
 
 namespace kwk
 {
@@ -35,7 +36,7 @@ namespace kwk
 struct cell
 {
     int x = -1 ,y = -1, label = -1;
-    int connections[2] = {-1,-1};
+    int connections[4] = {-1,-1, -1, -1};
 
     friend std::ostream& operator<<(std::ostream& os, cell c)
     {
@@ -51,7 +52,7 @@ struct cell
 
     friend bool operator<(cell a, cell b)
     {
-      return (a.x == b.x) ? a.y < b.y : a.x < b.x;
+      return (a.y == b.y) ? a.x < b.x : a.y < b.y;
     }
 };
 
@@ -93,6 +94,7 @@ void find_connections(auto& cells, int size)
   ( [&](auto curr, auto p)
     {
       auto xm1 = curr.x-1;
+      auto xp1 = curr.x+1;
       auto ym1 = curr.y-1;
       // int i = 1;
       // int pos = int(p);
@@ -112,11 +114,19 @@ void find_connections(auto& cells, int size)
       if(xm1 >= 0 || ym1 >= 0)
       {
         // Trouver astuce pour find (b, position actuelle car trié)
-        auto it = std::lower_bound(b+std::max((int(p)-size),0), b+int(p), cell{xm1,curr.y,0});
-        if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[0] = std::distance(b,it);
+        
       
+        auto it = std::lower_bound(b+std::max((int(p)-size-1),0), b+int(p), cell{xm1,ym1,0});
+        if(it != e && it->x == xm1 && it->y == ym1) curr.connections[0] = std::distance(b,it);
+
         it = std::lower_bound(b+int(p)-1, b+int(p), cell{curr.x,ym1,0});
         if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
+
+        it = std::lower_bound(b+std::max((int(p)-size),0), b+int(p), cell{xp1,ym1,0});
+        if(it != e && it->x == xp1 && it->y == ym1) curr.connections[2] = std::distance(b,it);
+
+        it = std::lower_bound(b+std::max((int(p)-size),0), b+int(p), cell{xm1,curr.y,0});
+        if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[3] = std::distance(b,it);
       }
 
       return curr;
@@ -138,6 +148,9 @@ int main(int argc, char *argv[])
     fname = "./Benchmark_ccl_kwk_table_" + std::to_string(size) + ".csv";
     res_nano.open(fname);
     res_nano << "Size(N*N);Density(1/1000);Cells(Nb);Cycles/cell;Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
+  
+    std::string f_test = "./Test_verif_" + std::to_string(size) + ".csv";
+    res_test.open(f_test);
   }
   else
   {
@@ -164,6 +177,8 @@ int main(int argc, char *argv[])
       c.label = -1; 
       c.connections[0] = -1; 
       c.connections[1] = -1; 
+      c.connections[2] = -1; 
+      c.connections[3] = -1; 
       return c;
     }, cells, cells
     );
@@ -176,13 +191,40 @@ int main(int argc, char *argv[])
     for (int i = 0; i < size; ++i) {
       for (int j = 0; j < size; ++j) {
         if(arr[i][j] == 1){
-          cells(i*size+j) = {i,j,0};
+          cells(i*size+j) = {j,i,0};
           nb_cells++;
         }
       }
     }
     for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
     std::sort(cells.get_data(), cells.get_data() + cells.numel());
+          // Test 
+      // auto cells        = table{ of_size(22), as<cell> };
+      // auto equivalences = table{ of_size(22), as<int> };
+      // auto nb_cells = 22;
+
+      // cells(9) = {0,0,0};
+      // cells(0) = {0,2,0};
+      // cells(10) = {0,4,0};
+      // cells(11) = {0,6,0};
+      // cells(1) = {1,0,0};
+      // cells(2) = {1,2,0};
+      // cells(3) = {1,4,0};
+      // cells(12) = {1,6,0};
+      // cells(4) = {2,0,0};
+      // cells(5) = {2,1,0};
+      // cells(6) = {2,2,0};
+      // cells(7) = {2,3,0};
+      // cells(8) = {2,4,0};
+      // cells(13) = {2,5,0};
+      // cells(14) = {2,6,0};
+      // cells(17) = {3,6,0};
+      // cells(15) = {4,5,0};
+      // cells(16) = {4,4,0};
+      // cells(18) = {5,5,0};
+      // cells(19) = {5,4,0};
+      // cells(20) = {6,4,0};
+      // cells(21) = {6,3,0};
     auto v_cell = view{source = (cells.get_data() + cells.numel() - nb_cells), of_size(nb_cells) };
 
 #ifdef DEBUG
@@ -233,17 +275,19 @@ int main(int argc, char *argv[])
       kwk::transform
       ( [&](auto curr) mutable
         {
-          auto prevx = curr.connections[0];
+          auto prevxy = curr.connections[0];
           auto prevy = curr.connections[1];
+          auto prevyx = curr.connections[2];
+          auto prevx = curr.connections[3];
 
           // No neighbor cell
-          if(prevx == -1 && prevy == -1 && curr.x > -1 && curr.y > -1) 
+          if(prevx == -1 && prevy == -1 && prevxy == -1 && prevyx == -1) 
           { 
             curr.label = label++;
             equivalences(curr.label) = curr.label;
           }
           else {
-            if(prevx != -1) 
+            if(prevx != -1 && prevxy == -1) 
             {
               if(curr.label > 0)
               {
@@ -267,17 +311,40 @@ int main(int argc, char *argv[])
               }
             }
 
-            if(prevy != -1)                 
+            if(prevyx != -1 && prevy == -1)                 
             {
               if(curr.label > 0)
               {
                 // equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
                 // Intersection with 2 clusters + simultaneous resolution matching
-                auto eqrec = v_cell(prevy).label;
+                auto eqrec = v_cell(prevyx).label;
                 
                 // curr = 4, eqrec = 5
                 // cells(prevy).label = std::min(equivalences(curr.label), equivalences(eqrec));
                 // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(curr.label) = std::min(curr.label, equivalences(eqrec));
+
+                equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
+                while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
+                equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
+                  eqrec = equivalences(eqrec);
+                }
+                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(v_cell(prevyx).label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+              } 
+              else {
+                curr.label = equivalences(v_cell(prevyx).label);
+              }
+            }
+
+            if(prevy != -1 && prevxy == -1)                 
+            {
+              if(curr.label > 0)
+              {
+                // Intersection with 2 clusters + simultaneous resolution matching
+                auto eqrec = v_cell(prevy).label;
+
                 equivalences(curr.label) = std::min(curr.label, equivalences(eqrec));
 
                 equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
@@ -293,14 +360,42 @@ int main(int argc, char *argv[])
                 curr.label = equivalences(v_cell(prevy).label);
               }
             }
+
+            if(prevxy != -1)                 
+            {
+              if(curr.label > 0)
+              {
+                // equivalences(cells(prevy).label) = std::min(equivalences(curr.label), equivalences(cells(prevy).label));
+                // Intersection with 2 clusters + simultaneous resolution matching
+                auto eqrec = v_cell(prevxy).label;
+                
+                // curr = 4, eqrec = 5
+                // cells(prevy).label = std::min(equivalences(curr.label), equivalences(eqrec));
+                // curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(curr.label) = std::min(curr.label, equivalences(eqrec));
+
+                equivalences(std::max(curr.label, equivalences(eqrec))) = std::min(equivalences(curr.label), equivalences(eqrec));
+                while(eqrec != std::min(equivalences(curr.label), equivalences(eqrec))){
+                equivalences(eqrec) = std::min(equivalences(curr.label), equivalences(eqrec));
+                  eqrec = equivalences(eqrec);
+                }
+                equivalences(curr.label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                equivalences(v_cell(prevxy).label) = std::min(equivalences(curr.label), equivalences(eqrec));
+                curr.label = std::min(equivalences(curr.label), equivalences(eqrec));
+              } 
+              else {
+                curr.label = equivalences(v_cell(prevxy).label);
+              }
+            }
           }
           return curr;
         }
+
       , v_cell, v_cell
       );  
 
 #ifdef GUI
-    kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
+    kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , v_cell);
 
     for(auto row : screen)
     {
@@ -313,7 +408,7 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef DEBUG
-    std::cout << cells << "\n";
+    std::cout << v_cell << "\n";
     std::cout << "avant compression \n";
     std::cout << std::setw(2) << equivalences << "\n";
 #endif
@@ -334,7 +429,7 @@ int main(int argc, char *argv[])
 
 #ifdef DEBUG
     std::cout << "post compression \n";
-    std::cout << cells << "\n";
+    std::cout << v_cell << "\n";
 #endif
 
 #ifdef DEBUG
@@ -353,7 +448,7 @@ int main(int argc, char *argv[])
     
       // Last graphical check
 #ifdef GUI
-      kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , cells);
+      kwk::for_each( [&](auto e) { if(e.x > -1 && e.y > -1)screen[e.x][e.y] = e.label; } , v_cell);
 
 
       std::cout << "Result: " << "\n\n";
@@ -377,6 +472,18 @@ int main(int argc, char *argv[])
     double cyc_op_max           =   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
     double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
 
+    std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
+
+    kwk::transform
+      ( [&](auto c)
+        {
+          res_test  << c.x << "," << c.y << "," << c.label << "\n";
+          return c;
+        }
+      , v_cell, v_cell
+    );
+    res_test << "\n";
+
     res_nano 
     << size << ";"
     << density << ";"
@@ -391,4 +498,5 @@ int main(int argc, char *argv[])
   }
   // CSV close
   res_nano.close();
+  res_test.close();
 }

@@ -27,6 +27,7 @@
 
 // CSV file
 std::ofstream res_nano;
+std::ofstream res_test;
 
 using Rectangle = std::array<int, 4>;
 
@@ -170,6 +171,8 @@ int main(int argc, char *argv[]) {
   std::cout << "Grid_2D_rand test with parameters: " << std::endl;
   std::cout << " startSeed = " << startSeed << std::endl;
 
+  std::string f_test = "./Test_verif_" + std::to_string(size) + ".csv";
+  res_test.open(f_test);
 
   for (int density = 10; density <= 1000; density += 10) {
     std::vector<Cluster> cls;
@@ -191,6 +194,8 @@ int main(int argc, char *argv[]) {
         }
       }
     }
+
+    
     // nanobench CCL
     bench = 
     ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]{
@@ -199,7 +204,15 @@ int main(int argc, char *argv[]) {
     std::shuffle(cells.begin(), cells.end(), rnd);
     newCls = createClusters<CellC, ClusterC>(cells);
     });
-
+    
+    for (auto it = newCls.begin(); it != newCls.end(); ++it){
+      // std::sort(it->cells.begin(), it->cells.end());
+      for (auto c = it->cells.begin(); c != it->cells.end(); ++c){
+        res_test << c->row << "," << c->col << "," << c->label << "\n";
+      }
+    }
+    res_test << "\n" ;
+    
     vres = bench.results();
     double cyc_op_mean          =   vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
     double cyc_op_med           =   vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
@@ -221,5 +234,6 @@ int main(int argc, char *argv[]) {
 
   // CSV close
   res_nano.close();
+  res_test.close();
 }
 
