@@ -91,7 +91,7 @@ void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t s
 void find_connections(auto& cells, int size)
 {
   auto b = cells.get_data();
-  // auto e = cells.get_data() + cells.numel();
+  auto e = cells.get_data() + cells.numel();
 
   
   kwk::transform_index
@@ -101,36 +101,41 @@ void find_connections(auto& cells, int size)
       auto xp1 = curr.x+1;
       auto ym1 = curr.y-1;
 
-      // if(xm1 >= 0 || ym1 >= 0)
-      // {
-      //   auto it = std::lower_bound(b+std::max((int(p)-size-1),0), b+int(p), cell{xm1,ym1,0});
-      //   if(it != e && it->x == xm1 && it->y == ym1) curr.connections[0] = std::distance(b,it);
-
-      //   it = std::lower_bound(b+curr.connections[0], b+int(p), cell{curr.x,ym1,0});
-      //   if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
-
-      //   it = std::lower_bound(b+curr.connections[1], b+int(p), cell{xp1,ym1,0});
-      //   if(it != e && it->x == xp1 && it->y == ym1) curr.connections[2] = std::distance(b,it);
-
-      //   it = std::lower_bound(b+int(p)-1, b+int(p), cell{xm1,curr.y,0});
-      //   if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[3] = std::distance(b,it);
-      // }
-
-      int pos = int(p);
       if(xm1 >= 0 || ym1 >= 0)
       {
-        while(pos >= (int(p)-size-1))
-        {
-          if(cells(pos).x == xm1 && cells(pos).y == curr.y) curr.connections[3] = pos;
-          if(cells(pos).x == xp1 && cells(pos).y == ym1) curr.connections[2] = pos;
-          if(cells(pos).x == curr.x && cells(pos).y == ym1) curr.connections[1] = pos;
-          if(cells(pos).x == xm1 && cells(pos).y == ym1){
-            curr.connections[0] = pos;
-            break;
-          } 
-          pos--;
-        }
-      }
+        auto it = std::lower_bound(b+std::max((int(p)-size-1),0), b+int(p), cell{xm1,ym1,0});
+        if(it != e && it->x == xm1 && it->y == ym1) curr.connections[0] = std::distance(b,it);
+
+        it = std::lower_bound(b+curr.connections[0], b+curr.connections[0]+10, cell{curr.x,ym1,0});
+        if(it != e && it->x == curr.x && it->y == ym1) curr.connections[1] = std::distance(b,it);
+
+        it = std::lower_bound(b+curr.connections[0], b+curr.connections[0]+15, cell{xp1,ym1,0});
+        if(it != e && it->x == xp1 && it->y == ym1) curr.connections[2] = std::distance(b,it);
+
+        it = std::lower_bound(b+int(p)-1, b+int(p), cell{xm1,curr.y,0});
+        if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[3] = std::distance(b,it);
+      }      
+
+      // if(xm1 >= 0 || ym1 >= 0)
+      // {
+      //   auto it = std::lower_bound(b+std::max((int(p)-size-1),0), b+int(p), cell{xp1,ym1,0});
+      //   if(it != e && it->x == xp1 && it->y == ym1) curr.connections[2] = std::distance(b,it);
+
+      //   it = std::lower_bound(b+int(p)-2, b+int(p)-1, cell{xm1,curr.y,0});
+      //   if(it != e && it->x == xm1 && it->y == curr.y) curr.connections[3] = std::distance(b,it);
+
+      //   int pos = curr.connections[3];
+
+      //   while(pos >= (curr.connections[3]-3))
+      //   {
+      //     if(cells(pos).x == curr.x && cells(pos).y == ym1) curr.connections[1] = pos;
+      //     if(cells(pos).x == xm1 && cells(pos).y == ym1){
+      //       curr.connections[0] = pos;
+      //       break;
+      //     } 
+      //     pos--;
+      //   }
+      // }
       return curr;
     }
   , cells, cells
@@ -170,7 +175,7 @@ int main(int argc, char *argv[])
 
   std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
 
-  for (int density = 10; density <= 1000; density += 10) {
+  for (int density = 1; density <= 10; density += 1) {
 
     fill_array(arr, size, density, startSeed);
 
