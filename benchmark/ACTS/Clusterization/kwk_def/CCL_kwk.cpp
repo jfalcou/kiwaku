@@ -168,12 +168,6 @@ int main(int argc, char *argv[])
   using namespace kwk;
 
   int size = 2;
-  auto cells        = table{of_size(size*size), as<cell> };
-  auto equivalences = table{ of_size(size*size/2), as<int> };
-  std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
-
-  size_t startSeed = 71902647;
-  std::mt19937_64 rnd(startSeed);
 
   // Input args for matrix size
   if(argc > 1) 
@@ -194,6 +188,13 @@ int main(int argc, char *argv[])
   std::string f_test = "./Test_verif_" + std::to_string(size) + ".csv";
   res_test.open(f_test);
 #endif
+
+  auto cells        = table{of_size(size*size), as<cell> };
+  auto equivalences = table{ of_size(size*size/2), as<int> };
+  std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
+
+  size_t startSeed = 71902647;
+  std::mt19937_64 rnd(startSeed);
 
   // Setting matrix sparsity *1/1000
   for (int density = 1; density <= 10; density += 1) {
