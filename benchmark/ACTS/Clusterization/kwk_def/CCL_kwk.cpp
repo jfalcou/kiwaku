@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
             curr.label = label++;
             equivalences(curr.label) = curr.label;
           }
-          else { // To rearange using prev.x.y
+          else { // To rearange
             if(prevx != -1 && prevxy == -1) 
             {
               union_find(v_cell, curr, prevx, equivalences);
