@@ -74,12 +74,6 @@ namespace kwk::__
     KWK_TRIVIAL constexpr prefilled(prefilled const&) =default;
     KWK_TRIVIAL constexpr prefilled& operator=(prefilled const&) =default;
 
-    // Constructor from constant
-    constexpr prefilled(std::integral auto def) noexcept
-    {
-      kumi::for_each_index([&](auto, auto& src) { src = def; }, *this);
-    }
-
     // Constructor from extents
     constexpr prefilled(std::integral auto def, concepts::numeric_extent auto... vs) noexcept
     requires(sizeof...(vs) == static_size)
@@ -122,7 +116,8 @@ namespace kwk::__
                           {
                             KIWAKU_ASSERT ( (input[x.base()] == _) || input[x.base()] == (*this)[x]
                                           ,   "[KWK] - Runtime/Compile-time mismatch for axis "
-                                          <<  get<idx>(descriptors) << " as " << input[x.base()] << " was provided instead."
+                                          <<  get<idx>(descriptors) << " as " << input[x.base()]
+                                          << " was provided instead."
                                           );
                           }
                         }
@@ -349,10 +344,6 @@ namespace kwk::__
                         , *this
                         );
     }
-
-    // Swap prefilled_array's contents
-    KWK_TRIVIAL void swap( prefilled& other )                    noexcept { std::swap( storage(), other.storage() ); }
-    KWK_TRIVIAL friend void swap( prefilled& x, prefilled& y )  noexcept { x.swap(y); }
 
     // Equivalence checks for same order/axis kind
     template<auto... Os>

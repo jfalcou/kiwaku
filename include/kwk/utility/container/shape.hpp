@@ -121,7 +121,7 @@ namespace kwk
     //! @param d  Variadic list of @ref glossary-extent
     //==================================================================================================================
     template<concepts::extent... T>
-   // requires( std::is_constructible_v<parent, int,T...> )
+    requires( std::is_constructible_v<parent, int,T...> )
     KWK_TRIVIAL explicit constexpr shape(T... d) noexcept : parent(0, d...) {}
 
     //==================================================================================================================
@@ -157,10 +157,6 @@ namespace kwk
       constraint_t::construct(*this, other);
       return *this;
     }
-
-    using parent::swap;
-    /// Swap shapes' contents
-    friend void swap( shape& x, shape& y ) noexcept { x.swap(y); }
 
     /// Equality comparison operator
     template<auto... D2>

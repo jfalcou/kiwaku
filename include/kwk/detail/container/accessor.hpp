@@ -49,8 +49,8 @@ namespace kwk::__
 
     constexpr void swap( accessor& other ) noexcept
     {
-      shape_.swap( other.shape_ );
-      stride_.swap( other.stride_ );
+      std::swap(shape_ , other.shape_  );
+      std::swap(stride_, other.stride_ );
     }
 
     shape_type    shape_;
@@ -102,7 +102,7 @@ namespace kwk::__
     constexpr auto        index(auto is)  const noexcept  { return is;              }
 
     constexpr void reshape( shape_type const& s ) noexcept { shape_ = s; }
-    constexpr void swap( accessor& other )        noexcept { shape_.swap( other.shape_ ); }
+    constexpr void swap( accessor& other )        noexcept { std::swap(shape_ , other.shape_  ); }
 
     shape_type shape_;
   };
@@ -134,7 +134,7 @@ namespace kwk::__
     constexpr auto index(auto i0)           const noexcept { return i0; }
     constexpr auto index(auto i1, auto i0)  const noexcept { return i0 + i1*get<1>(shape_); }
 
-    constexpr void swap( accessor& other ) noexcept { shape_.swap( other.shape_ ); }
+    constexpr void swap( accessor& other ) noexcept { std::swap(shape_ , other.shape_  ); }
 
     shape_type  shape_;
   };

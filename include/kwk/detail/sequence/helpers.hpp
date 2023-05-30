@@ -45,7 +45,7 @@ namespace kwk::__
         };
 
         // Check on the proper information
-        auto is_present = [&]<typename T>(T)
+        [[maybe_unused]] auto is_present = [&]<typename T>(T)
         {
           if constexpr(kwk::concepts::axis<T>)  check(typename T::content_type{});
           else                                  check(T{});

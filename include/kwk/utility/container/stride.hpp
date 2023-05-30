@@ -50,7 +50,7 @@ namespace kwk
     //==============================================================================================
     //! @brief Constructs a default @ref kwk::stride equals to [1 1 ... 1]
     //==============================================================================================
-    constexpr stride() : parent(1) {}
+    constexpr stride() : parent() {}
 
     //==============================================================================================
     //! @brief Constructor from set of dimensions
@@ -75,10 +75,6 @@ namespace kwk
 
     /// Number of dimensions
     static constexpr auto order() noexcept { return static_order; }
-
-    using parent::swap;
-    /// Swap @ref kwk::stride contents
-    friend constexpr void swap( stride& x, stride& y ) noexcept { x.swap(y); }
 
     /// Equality comparison operator
     template<auto... S2>
