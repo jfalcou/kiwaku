@@ -6,11 +6,13 @@ int main(int argc, char *argv[])
 
   if(BENCHMARK)
   {
+    Benchmarking<int>();
     Benchmarking<float>();
     Benchmarking<double>();
   } 
   else 
   {
+    run<int>();
     run<float>();
     run<double>();
   }
