@@ -22,19 +22,19 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a C array" )
   std::ptrdiff_t sz = 4;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz,sz-1,sz-2) };
 
-  TTS_EQUAL ( sizeof(v), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( v.size() , 24                                     );
-  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
-  TTS_EXPECT_NOT( v.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(v), 48ULL              );
+  TTS_EQUAL ( v.size() , 24                 );
+  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2));
+  TTS_EXPECT_NOT( v.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(sz-1,sz,sz-2) };
 
-  TTS_EQUAL ( sizeof(w), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( w.size() , 24                                     );
-  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
-  TTS_EXPECT_NOT( w.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(w), 48ULL              );
+  TTS_EQUAL ( w.size() , 24                 );
+  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2));
+  TTS_EXPECT_NOT( w.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
@@ -50,19 +50,19 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from std::array" )
   std::ptrdiff_t sz = 4;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz,sz-1,sz-2) };
 
-  TTS_EQUAL ( sizeof(v), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( v.size() , 24                                     );
-  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
-  TTS_EXPECT_NOT( v.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(v), 48ULL              );
+  TTS_EQUAL ( v.size() , 24                 );
+  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2));
+  TTS_EXPECT_NOT( v.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(sz-1,sz,sz-2) };
 
-  TTS_EQUAL ( sizeof(w), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( w.size() , 24                                     );
-  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
-  TTS_EXPECT_NOT( w.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(w), 48ULL              );
+  TTS_EQUAL ( w.size() , 24                 );
+  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2));
+  TTS_EXPECT_NOT( w.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
@@ -78,10 +78,10 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a ContiguousRange" )
   std::ptrdiff_t sz = 4;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz,sz-1,sz-2) };
 
-  TTS_EQUAL ( sizeof(v), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( v.size() , 24                                     );
-  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
-  TTS_EXPECT_NOT( v.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(v), 48ULL              );
+  TTS_EQUAL ( v.size() , 24                 );
+  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2));
+  TTS_EXPECT_NOT( v.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
@@ -91,10 +91,10 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a ContiguousRange" )
 
   auto w = kwk::view{ kwk::source = cref, kwk::of_size(sz-1,sz,sz-2) };
 
-  TTS_EQUAL ( sizeof(w), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( w.size() , 24                                     );
-  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
-  TTS_EXPECT_NOT( w.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(w), 48ULL              );
+  TTS_EQUAL ( w.size() , 24                 );
+  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2));
+  TTS_EXPECT_NOT( w.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
@@ -110,10 +110,10 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a pointer" )
   std::ptrdiff_t sz = 4;
   auto v = kwk::view{ kwk::source = ref.data(), kwk::of_size(sz,sz-1,sz-2) };
 
-  TTS_EQUAL ( sizeof(v), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( v.size() , 24                                     );
-  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2)                    );
-  TTS_EXPECT_NOT( v.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(v), 48ULL              );
+  TTS_EQUAL ( v.size() , 24                 );
+  TTS_EQUAL ( v.shape(), kwk::of_size(4,3,2));
+  TTS_EXPECT_NOT( v.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, v);
 
@@ -123,10 +123,10 @@ TTS_CASE( "Build a 3D view with dynamic shape settings from a pointer" )
 
   auto w = kwk::view{ kwk::source = cref.data(), kwk::of_size(sz-1,sz,sz-2) };
 
-  TTS_EQUAL ( sizeof(w), sizeof(void*)+4*sizeof(std::ptrdiff_t) );
-  TTS_EQUAL ( w.size() , 24                                     );
-  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2)                    );
-  TTS_EXPECT_NOT( w.shape().is_fully_static                     );
+  TTS_EQUAL ( sizeof(w), 48ULL              );
+  TTS_EQUAL ( w.size() , 24                 );
+  TTS_EQUAL ( w.shape(), kwk::of_size(3,4,2));
+  TTS_EXPECT_NOT( w.shape().is_fully_static );
 
   kwk::for_each([i=0ULL,&ref](auto e) mutable { TTS_EQUAL(e, ref[i++]); }, w);
 };
