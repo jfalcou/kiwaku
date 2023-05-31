@@ -23,7 +23,7 @@ jobs:
       matrix:
         cfg:
         - { opts: -O0                   }
-        - { opts: -Ofast -flto -DNDEBUG }
+        - { opts: -Ofast -flto=auto -DNDEBUG }
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v3
