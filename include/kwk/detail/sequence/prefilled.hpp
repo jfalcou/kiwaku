@@ -16,7 +16,11 @@
 
 namespace kwk::__
 {
-  struct empty_tuple { static constexpr bool is_homogeneous = false; };
+  struct empty_tuple
+  {
+    static constexpr bool is_homogeneous = false;
+    constexpr auto operator==(empty_tuple const&) const noexcept { return true; }
+  };
 
   template<auto... D>
   struct prefilled_base
@@ -29,7 +33,7 @@ namespace kwk::__
     {
       if constexpr(dynamic_size == 0)
       {
-        return empty_tuple {};
+        return empty_tuple{};
       }
       else
       {
@@ -74,10 +78,7 @@ namespace kwk::__
     KWK_TRIVIAL constexpr prefilled(prefilled const&) =default;
     KWK_TRIVIAL constexpr prefilled& operator=(prefilled const&) =default;
 
-    // Constructor from extents
-    constexpr prefilled(std::integral auto def, concepts::numeric_extent auto... vs) noexcept
-    requires(sizeof...(vs) == static_size)
-    : storage_type{}
+    constexpr void __construct(auto def, concepts::numeric_extent auto... vs) noexcept
     {
       auto const input = kumi::tie(vs...);
       kumi::for_each_index( [&]<typename I>(I, auto v)
@@ -99,7 +100,7 @@ namespace kwk::__
                           );
     }
 
-    constexpr void construct(auto def, auto... vs) noexcept
+    constexpr void __construct(auto def, concepts::named_extent auto... vs) noexcept
     {
       if constexpr(!is_fully_static)
       {
@@ -127,11 +128,28 @@ namespace kwk::__
       }
     }
 
+    // Constructor from extents
+    constexpr prefilled(std::integral auto def, concepts::numeric_extent auto... vs) noexcept
+    requires(sizeof...(vs) == static_size)
+    : storage_type{}
+    {
+      __construct(def,vs...);;
+    }
+
+    constexpr prefilled(std::integral auto def, concepts::numeric_extent auto... vs) noexcept
+    requires(sizeof...(vs) < static_size)
+    {
+      [=, this]<int... I>(std::integer_sequence<int, I...>)
+      {
+        __construct(def,((void)I,1)..., vs...);
+      }(std::make_integer_sequence<int, static_size - sizeof...(vs)>{});
+    }
+
     constexpr prefilled(std::integral auto def, concepts::named_extent auto... vs) noexcept
     requires(sizeof...(vs) <= static_size)
     : storage_type{}
     {
-      construct(def, vs...);
+      __construct(def, vs...);
     }
 
     // Are all axis in the same order if implicit axis exist?
@@ -162,7 +180,7 @@ namespace kwk::__
     {
       [&]<std::size_t... I>(std::index_sequence<I...>)
       {
-        construct(def, normalize_axis(implicit<static_size - 1 - I>,vs)...);
+        __construct(def, normalize_axis(implicit<static_size - 1 - I>,vs)...);
       }(std::make_index_sequence<sizeof...(vs)>{});
     }
 
