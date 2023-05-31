@@ -77,6 +77,7 @@ namespace kwk::__
     // Constructor from extents
     constexpr prefilled(std::integral auto def, concepts::numeric_extent auto... vs) noexcept
     requires(sizeof...(vs) == static_size)
+    : storage_type{}
     {
       auto const input = kumi::tie(vs...);
       kumi::for_each_index( [&]<typename I>(I, auto v)
@@ -103,7 +104,7 @@ namespace kwk::__
       if constexpr(!is_fully_static)
       {
         auto const input  = rbr::settings(vs...);
-        auto const desc  = rbr::keywords<kumi::tuple>(input);
+        auto const desc   = rbr::keywords<kumi::tuple>(input);
 
         kumi::for_each( [&]<typename X>(X x)
                         {
@@ -128,6 +129,7 @@ namespace kwk::__
 
     constexpr prefilled(std::integral auto def, concepts::named_extent auto... vs) noexcept
     requires(sizeof...(vs) <= static_size)
+    : storage_type{}
     {
       construct(def, vs...);
     }

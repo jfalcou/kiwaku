@@ -86,11 +86,10 @@ namespace kwk
 
     /// Indexing interface
     template<std::convertible_to<std::ptrdiff_t>... Is>
-    KWK_PURE KWK_FORCEINLINE constexpr
-    auto linearize(Is... is) const noexcept
+    KWK_PURE constexpr auto linearize(Is... is) const noexcept
     requires( sizeof...(Is) == static_order )
     {
-      return [=, *this]<int...i>(std::integer_sequence<int, i...>)
+      return [=, *this]<int...i>(std::integer_sequence<int, i...>) KWK_LAMBDA_FORCEINLINE
       {
           return (0 + ... + (get<i>(*this) * is));
       }(std::make_integer_sequence<int, static_order>{});
@@ -120,7 +119,7 @@ namespace kwk
   /// Converts a @ref kwk::shape into its corresponding @ref kwk::stride, keeping as much static
   /// informations as possible.
   template<auto... D>
-  constexpr auto as_stride(shape<D...> const& s) noexcept
+  KWK_PURE constexpr auto as_stride(shape<D...> s) noexcept
   {
     if constexpr(sizeof...(D) == 1) return stride{s.template axis<0>() = fixed<1>};
     else
