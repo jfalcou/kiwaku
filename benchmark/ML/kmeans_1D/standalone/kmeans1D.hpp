@@ -5,6 +5,7 @@
 #include <limits>
 #include <random>
 #include <algorithm>
+#include "../parseArg.hpp"
 
 template<typename T>
 std::vector<T> initializePoints(size_t size, unsigned int seed) {
@@ -92,12 +93,32 @@ std::vector<int> kMeansClustering(std::vector<T>& points, size_t k, unsigned int
     }
 
     assignments = newAssignments;
-
     // Update centroids
     centroids = calculateCentroids(points, assignments, k);
-
     iterations++;
   }
 
   return assignments;
+}
+
+template<typename T>
+void run(ParamArg p){
+  // Number of clusters
+  size_t k = 3;
+  size_t maxIterations = 100;
+
+  std::vector<T> points = initializePoints<T>(p.array_size, p.seed);
+
+  // Initialize centroids and clusters
+  std::vector<T> centroids(k, 0.0);
+  std::vector<int> clusters(points.size(), -1);
+
+  std::sort(points.begin(), points.end());
+  // Perform k-means clustering
+  std::vector<int> assignments = kMeansClustering(points, k, p.seed, maxIterations);
+
+  // Print results
+  for (size_t i = 0; i < points.size(); ++i) {
+    std::cout << "Point " << points[i] << " belongs to Cluster " << assignments[i] << std::endl;
+  }
 }

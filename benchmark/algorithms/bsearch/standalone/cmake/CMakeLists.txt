@@ -24,4 +24,4 @@ target_link_libraries ( std_bench_options INTERFACE std_compiler_options)
 
 add_executable(bsearch.out ../bsearch_std.cpp ../../bsearch.cpp)
 
-target_link_libraries(bsearch.out PUBLIC std_compiler_options) 
+target_link_libraries(bsearch.out PUBLIC std_bench_options) 
