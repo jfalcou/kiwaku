@@ -22,6 +22,6 @@ target_link_libraries ( std_bench_options INTERFACE std_compiler_options)
 
 ##==================================================================================================
 
-add_executable(kmeans1D.out ../kmeans1D.cpp)
+add_executable(kmeans1D.out ../kmeans1D.cpp ../../parseArg.cpp)
 
 target_link_libraries(kmeans1D.out PUBLIC std_compiler_options) 
