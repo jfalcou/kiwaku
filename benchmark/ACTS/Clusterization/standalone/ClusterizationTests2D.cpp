@@ -176,33 +176,35 @@ int main(int argc, char *argv[]) {
 
   for (int density = 1; density <= 10; density += 1) {
     std::vector<Cluster> cls;
-    std::vector<Cell> cells;
 
     std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
     fill_array(arr, size, density, startSeed);
     std::string ss;
     ss = "CCL " + std::to_string(size) + " : " + std::to_string(density);
 
-    uint32_t nb_cells = 0;
-    for (int i = 0; i < size; ++i) {
-      for (int j = 0; j < size; ++j) {
-        if(arr[i][j] == 1)
-        {
-          Cell2D c(i, j); 
-          cells.push_back(c);
-          nb_cells++;
-        }
-      }
-    }
+    uint32_t nb_cells;
 
     
     // nanobench CCL
     bench = 
-    ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]{
-    ankerl::nanobench::doNotOptimizeAway(newCls);
+    ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
+    {
+      std::vector<Cell> cells;
+      
+      nb_cells = 0;
+      for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+          if(arr[i][j] == 1)
+          {
+            Cell2D c(i, j); 
+            cells.push_back(c);
+            nb_cells++;
+          }
+        }
+      }
 
-    std::shuffle(cells.begin(), cells.end(), rnd);
-    newCls = createClusters<CellC, ClusterC>(cells);
+      std::shuffle(cells.begin(), cells.end(), rnd);
+      newCls = createClusters<CellC, ClusterC>(cells);
     });
     
     for (auto it = newCls.begin(); it != newCls.end(); ++it){

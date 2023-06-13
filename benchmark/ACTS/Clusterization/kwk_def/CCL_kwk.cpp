@@ -1,3 +1,4 @@
+#include "kwk/utility/container/shape.hpp"
 #include <cstdint>
 #include <kwk/kwk.hpp>
 #include <iostream>
@@ -189,7 +190,6 @@ int main(int argc, char *argv[])
   res_test.open(f_test);
 #endif
 
-  auto cells        = table{of_size(size*size), as<cell> };
   auto equivalences = table{ of_size(size*size/2), as<int> };
   std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
 
@@ -200,7 +200,10 @@ int main(int argc, char *argv[])
   for (int density = 1; density <= 10; density += 1) {
     fill_array(arr, size, density, startSeed);
 
-    // To implement in kwk (executing default constructor)
+    uint32_t nb_cells;
+
+    auto cells        = table{of_size(size*size), as<cell> };
+      // To implement in kwk (executing default constructor)
     kwk::transform( [&](auto c) 
     { 
       c.x = -1; 
@@ -212,10 +215,10 @@ int main(int argc, char *argv[])
       c.connections[3] = -1; 
       return c;
     }, cells, cells
-    );
+    ); 
 
     // Fill kwk table from sparse array (Should not be needed in ACTS)
-    uint32_t nb_cells = 0;
+    nb_cells = 0;
     for (int i = 0; i < size; ++i) {
       for (int j = 0; j < size; ++j) {
         if(arr[i][j] == 1){
@@ -225,19 +228,21 @@ int main(int argc, char *argv[])
       }
     }
 
-    // To implement in kwk (Fill table with default value)
-    for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
-
     std::sort(cells.get_data(), cells.get_data() + cells.numel());
-
-    // Making a view on non-empty cells from kwk table (Maybe to implement ?)
-    auto v_cell = view{source = (cells.get_data() + cells.numel() - nb_cells), of_size(nb_cells) };
 
     // Nanobench - To update epochs with independent context
     std::string ss;
     ss = "CCL " + std::to_string(size) + " : " + std::to_string(density);
+
     auto bench = ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
     {
+      // To implement in kwk (Fill table with default value)
+      for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
+
+      auto t_cell = table{source = cells.get_data(), of_size(size*size)};
+      // Making a view on non-empty cells from kwk table (Maybe to implement ?)
+      auto v_cell = view{source = (t_cell.get_data() + t_cell.numel() - nb_cells), of_size(nb_cells) };
+
       // Sort - Should add label and connections table reset
       std::shuffle(v_cell.get_data(), v_cell.get_data() + v_cell.numel(), rnd);
       std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
@@ -320,17 +325,17 @@ int main(int argc, char *argv[])
     double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
 
 #ifdef UNIT
-    std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
+    // std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
 
-    kwk::transform
-      ( [&](auto c)
-        {
-          res_test  << c.x << "," << c.y << "," << c.label << "\n";
-          return c;
-        }
-      , v_cell, v_cell
-    );
-    res_test << "\n";
+    // kwk::transform
+    //   ( [&](auto c)
+    //     {
+    //       res_test  << c.x << "," << c.y << "," << c.label << "\n";
+    //       return c;
+    //     }
+    //   , v_cell, v_cell
+    // );
+    // res_test << "\n";
 #endif
     res_nano 
     << size << ";"
