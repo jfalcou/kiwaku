@@ -18,7 +18,7 @@ template<typename T>
 std::vector<T> initializePoints(size_t size, unsigned int seed) {
   std::vector<T> points(size);
   std::mt19937 engine(seed);
-  std::uniform_real_distribution<T> distribution(0.0, 10.0);
+  std::uniform_real_distribution<T> distribution(0.0, 100.0);
 
   for (size_t i = 0; i < size; ++i) {
     points[i] = distribution(engine);
@@ -173,6 +173,7 @@ void runTest(ParamArg p){
   size_t k = 3;
   
   std::vector<T> points = initializePoints<T>(p.array_size, p.seed);
+  // std::sort(points.begin(), points.end());
 
   // Initialize centroids and clusters
   std::vector<T> centroids(k, 0.0);
