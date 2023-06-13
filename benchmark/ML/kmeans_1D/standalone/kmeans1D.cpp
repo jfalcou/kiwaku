@@ -6,8 +6,12 @@ int main(int argc, char* argv[]) {
 
   parseArguments(argc, argv, &param);
 
-  run<float>(param);
-  run<double>(param);
-
+  if(param.benchmark){
+    runBench<float>(param);
+    runBench<double>(param);
+  } else {
+    run<float>(param);
+    runBench<double>(param);
+  }
   return 0;
 }
