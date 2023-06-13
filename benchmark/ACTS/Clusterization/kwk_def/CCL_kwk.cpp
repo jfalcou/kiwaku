@@ -24,6 +24,8 @@ std::ofstream res_nano;
 std::ofstream res_test;
 #endif
 
+
+
 namespace kwk
 {
   void transform(auto func, auto& out, auto const&... in)
@@ -76,7 +78,7 @@ struct equivalence
 
 void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t startSeed) {
     std::mt19937 gen(startSeed);
-    std::uniform_int_distribution<> dist(0, 1000);
+    std::uniform_int_distribution<> dist(0, 10000);
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -190,19 +192,23 @@ int main(int argc, char *argv[])
   res_test.open(f_test);
 #endif
 
+  auto cells        = table{ of_size(size*size), as<cell> };
   auto equivalences = table{ of_size(size*size/2), as<int> };
   std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
 
   size_t startSeed = 71902647;
   std::mt19937_64 rnd(startSeed);
 
+
+
+  int nb_iter = 100;
+
   // Setting matrix sparsity *1/1000
-  for (int density = 1; density <= 10; density += 1) {
+  for (int density = 1; density <= 100; density += 1) {
     fill_array(arr, size, density, startSeed);
 
     uint32_t nb_cells;
 
-    auto cells        = table{of_size(size*size), as<cell> };
       // To implement in kwk (executing default constructor)
     kwk::transform( [&](auto c) 
     { 
@@ -227,104 +233,122 @@ int main(int argc, char *argv[])
         }
       }
     }
+    // To implement in kwk (Fill table with default value)
+    for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
 
     std::sort(cells.get_data(), cells.get_data() + cells.numel());
+    // Making a view on non-empty cells from kwk table (Maybe to implement ?)
 
     // Nanobench - To update epochs with independent context
     std::string ss;
     ss = "CCL " + std::to_string(size) + " : " + std::to_string(density);
 
-    // To implement in kwk (Fill table with default value)
-    for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
+    double cyc_op_mean = 0;          
+    double cyc_op_med = 0;
+    double cyc_op_min = 0;
+    double cyc_op_max = 0;
+    double cyc_op_err = 0;
 
-    // auto t_cell = table{source = cells.get_data(), of_size(size*size)};
-    // Making a view on non-empty cells from kwk table (Maybe to implement ?)
-    auto v_cell = view{source = (cells.get_data() + cells.numel() - nb_cells), of_size(nb_cells) };
-
-    auto bench = ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
+    for(int boucle=0; boucle<nb_iter; boucle++)
     {
+      // To put in the nanobench
+      auto newequivalence = table(source = equivalences.get_data(), of_size(size*size/2));
+      auto newcells = table{source = cells.get_data(), of_size(size*size)};
 
-      // Sort - Should add label and connections table reset
-      std::shuffle(v_cell.get_data(), v_cell.get_data() + v_cell.numel(), rnd);
-      std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
+      auto v_cell = view{source = (newcells.get_data() + newcells.numel() - nb_cells), of_size(nb_cells) };
 
-      // Find connections
-      find_connections(v_cell, size);
-      
-      int label = 1;
-      kwk::transform
-      ( [&](auto curr) mutable
-        {
-          auto prevxy = curr.connections[0];  // -1 -1
-          auto prevy  = curr.connections[1];  // -1  0   
-          auto prevyx = curr.connections[2];  // -1 +1
-          auto prevx  = curr.connections[3];  //  0 -1
+      auto bench = ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
+      {
+        
+        // kwk::for_each( [] (auto & e)
+        // {
+        //   e.label = -1;
+        // }
+        // ,newcells
+        // );
+        // std::fill(newequivalence.get_data(), newequivalence.get_data() + newequivalence.numel(), 0);
 
-          // No neighbor cell = new label
-          if(prevx == -1 && prevy == -1 && prevxy == -1 && prevyx == -1) 
-          { 
-            curr.label = label++;
-            equivalences(curr.label) = curr.label;
+        // Sort - Should add label and connections table reset
+        std::shuffle(v_cell.get_data(), v_cell.get_data() + v_cell.numel(), rnd);
+        std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
+
+        // Find connections
+        find_connections(v_cell, size);
+        
+        int label = 1;
+        kwk::transform
+        ( [&](auto curr) mutable
+          {
+            auto prevxy = curr.connections[0];  // -1 -1
+            auto prevy  = curr.connections[1];  // -1  0   
+            auto prevyx = curr.connections[2];  // -1 +1
+            auto prevx  = curr.connections[3];  //  0 -1
+
+            // No neighbor cell = new label
+            if(prevx == -1 && prevy == -1 && prevxy == -1 && prevyx == -1) 
+            { 
+              curr.label = label++;
+              newequivalence(curr.label) = curr.label;
+            }
+            else { // To rearange
+              if(prevx != -1 && prevxy == -1) 
+              {
+                union_find(v_cell, curr, prevx, newequivalence);
+              }
+
+              if(prevyx != -1 && prevy == -1)                 
+              {
+                union_find(v_cell, curr, prevyx, newequivalence);
+              }
+
+              if(prevy != -1)                 
+              {
+                union_find(v_cell, curr, prevy, newequivalence);
+              }
+
+              if(prevxy != -1)                 
+              {
+                union_find(v_cell, curr, prevxy, newequivalence);
+              }
+            }
+            return curr;
           }
-          else { // To rearange
-            if(prevx != -1 && prevxy == -1) 
-            {
-              union_find(v_cell, curr, prevx, equivalences);
-            }
 
-            if(prevyx != -1 && prevy == -1)                 
-            {
-              union_find(v_cell, curr, prevyx, equivalences);
-            }
+        , v_cell, v_cell
+        );
 
-            if(prevy != -1)                 
-            {
-              union_find(v_cell, curr, prevy, equivalences);
-            }
-
-            if(prevxy != -1)                 
-            {
-              union_find(v_cell, curr, prevxy, equivalences);
-            }
+        //Compress label + last resolve
+        int max_label = 2;
+        for (int i = 2; i <= label; i++) {
+          if (newequivalence(i) == i) {
+            newequivalence(i) = max_label++;
+          } else {
+            auto eqv = newequivalence(i);
+            newequivalence(i) = newequivalence(eqv);
           }
-          return curr;
         }
 
-      , v_cell, v_cell
-      );
+        // Resolution
+        kwk::transform
+        ( [&](auto c)
+          {
+            c.label = newequivalence(c.label);
+            return c;
+          }
+        , v_cell, v_cell
+        );
 
-      //Compress label + last resolve
-      int max_label = 2;
-      for (int i = 2; i <= label; i++) {
-        if (equivalences(i) == i) {
-          equivalences(i) = max_label++;
-        } else {
-          auto eqv = equivalences(i);
-          equivalences(i) = equivalences(eqv);
-        }
-      }
-
-      // Resolution
-      kwk::transform
-      ( [&](auto c)
-        {
-          c.label = equivalences(c.label);
-          return c;
-        }
-      , v_cell, v_cell
-      );
-
-    // end nanobench
-    });
-
-    std::vector<ankerl::nanobench::Result> vres;
-    vres = bench.results();
-    double cyc_op_mean          =   vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_med           =   vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_min           =   vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_max           =   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_err           =   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
-
+      // end nanobench
+      });
+    
+      std::vector<ankerl::nanobench::Result> vres;
+      vres = bench.results();
+      cyc_op_mean          +=   vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
+      cyc_op_med           +=   vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+      cyc_op_min           +=   vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+      cyc_op_max           +=   vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+      cyc_op_err           +=   vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles) ;
+    }
 #ifdef UNIT
     // std::sort(v_cell.get_data(), v_cell.get_data() + v_cell.numel());
 
@@ -342,12 +366,12 @@ int main(int argc, char *argv[])
     << size << ";"
     << density << ";"
     << nb_cells << ";"
-    << cyc_op_mean/nb_cells << ";"
-    << cyc_op_mean << ";"
-    << cyc_op_med << ";"
-    << cyc_op_min << ";"
-    << cyc_op_max << ";"
-    << cyc_op_err << "\n";
+    << cyc_op_mean/nb_cells/nb_iter << ";"
+    << cyc_op_mean/nb_iter << ";"
+    << cyc_op_med/nb_iter << ";"
+    << cyc_op_min/nb_iter << ";"
+    << cyc_op_max/nb_iter << ";"
+    << cyc_op_err/nb_iter << "\n";
 
   }
   // CSV close

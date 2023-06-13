@@ -2,7 +2,7 @@
 
 path=`pwd`
 
-cd $path/kwk/
+cd $path/kwk_def/
 
 bash bench.sh
 
