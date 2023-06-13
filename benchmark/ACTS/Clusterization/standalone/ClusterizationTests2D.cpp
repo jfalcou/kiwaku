@@ -184,12 +184,7 @@ int main(int argc, char *argv[]) {
 
     uint32_t nb_cells;
 
-    
-    // nanobench CCL
-    bench = 
-    ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
-    {
-      std::vector<Cell> cells;
+    std::vector<Cell> cells;
       
       nb_cells = 0;
       for (int i = 0; i < size; ++i) {
@@ -202,7 +197,11 @@ int main(int argc, char *argv[]) {
           }
         }
       }
-
+    
+    // nanobench CCL
+    bench = 
+    ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
+    {
       std::shuffle(cells.begin(), cells.end(), rnd);
       newCls = createClusters<CellC, ClusterC>(cells);
     });

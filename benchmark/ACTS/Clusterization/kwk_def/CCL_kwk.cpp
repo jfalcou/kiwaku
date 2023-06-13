@@ -15,7 +15,7 @@
 #include "../../../nanobench.h"
 
 // Unit Test output
-#define UNIT
+// #define UNIT
 
 // CSV file
 std::ofstream res_nano;
@@ -234,14 +234,15 @@ int main(int argc, char *argv[])
     std::string ss;
     ss = "CCL " + std::to_string(size) + " : " + std::to_string(density);
 
+    // To implement in kwk (Fill table with default value)
+    for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
+
+    // auto t_cell = table{source = cells.get_data(), of_size(size*size)};
+    // Making a view on non-empty cells from kwk table (Maybe to implement ?)
+    auto v_cell = view{source = (cells.get_data() + cells.numel() - nb_cells), of_size(nb_cells) };
+
     auto bench = ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
     {
-      // To implement in kwk (Fill table with default value)
-      for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
-
-      auto t_cell = table{source = cells.get_data(), of_size(size*size)};
-      // Making a view on non-empty cells from kwk table (Maybe to implement ?)
-      auto v_cell = view{source = (t_cell.get_data() + t_cell.numel() - nb_cells), of_size(nb_cells) };
 
       // Sort - Should add label and connections table reset
       std::shuffle(v_cell.get_data(), v_cell.get_data() + v_cell.numel(), rnd);
