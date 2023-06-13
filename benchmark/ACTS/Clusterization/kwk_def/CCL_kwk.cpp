@@ -199,8 +199,6 @@ int main(int argc, char *argv[])
   size_t startSeed = 71902647;
   std::mt19937_64 rnd(startSeed);
 
-
-
   int nb_iter = 100;
 
   // Setting matrix sparsity *1/1000
@@ -237,7 +235,6 @@ int main(int argc, char *argv[])
     for (int i = 0; i < (size*size/2); ++i)equivalences(i) = 0;
 
     std::sort(cells.get_data(), cells.get_data() + cells.numel());
-    // Making a view on non-empty cells from kwk table (Maybe to implement ?)
 
     // Nanobench - To update epochs with independent context
     std::string ss;
@@ -255,6 +252,7 @@ int main(int argc, char *argv[])
       auto newequivalence = table(source = equivalences.get_data(), of_size(size*size/2));
       auto newcells = table{source = cells.get_data(), of_size(size*size)};
 
+      // Making a view on non-empty cells from kwk table (Maybe to implement ?)
       auto v_cell = view{source = (newcells.get_data() + newcells.numel() - nb_cells), of_size(nb_cells) };
 
       auto bench = ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]

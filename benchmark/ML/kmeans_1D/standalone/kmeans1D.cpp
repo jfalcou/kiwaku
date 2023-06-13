@@ -10,8 +10,8 @@ int main(int argc, char* argv[]) {
     runBench<float>(param);
     runBench<double>(param);
   } else {
-    run<float>(param);
-    runBench<double>(param);
+    runTest<float>(param);
+    runTest<double>(param);
   }
   return 0;
 }
