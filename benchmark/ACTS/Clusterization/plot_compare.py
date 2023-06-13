@@ -8,7 +8,7 @@ def plot(df1, df2, metric, save):
   plt.plot(df1['Density(1/1000)'], df1[metric])
   plt.plot(df1['Density(1/1000)'], df2[metric])
   size = df1['Size(N*N)'][1]
-  plt.xlabel('Percolation (1/1000)')
+  plt.xlabel('Percolation (1/10000)')
   plt.ylabel('Cycles/cell')
   plt.title('Benchmark compare CCL std/kwk | N :' + str(size))
   metric1 = ['std']

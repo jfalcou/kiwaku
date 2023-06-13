@@ -126,7 +126,7 @@ void hash(Cluster2D& cl) {
 
 void fill_array(std::vector<std::vector<int>>& arr, int n, int density, size_t startSeed) {
     std::mt19937 gen(startSeed);
-    std::uniform_int_distribution<> dist(0, 1000);
+    std::uniform_int_distribution<> dist(0, 10000);
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
   std::string f_test = "./Test_verif_" + std::to_string(size) + ".csv";
   res_test.open(f_test);
 
-  for (int density = 1; density <= 10; density += 1) {
+  for (int density = 1; density <= 100; density += 1) {
     std::vector<Cluster> cls;
 
     std::vector<std::vector<int>> arr(size, std::vector<int>(size, 0));
@@ -200,8 +200,9 @@ int main(int argc, char *argv[]) {
     
     // nanobench CCL
     bench = 
-    ankerl::nanobench::Bench().minEpochIterations(1).epochs(1).run(ss, [&]
+    ankerl::nanobench::Bench().minEpochIterations(100).epochs(1).run(ss, [&]
     {
+      // auto newcells = cells;
       std::shuffle(cells.begin(), cells.end(), rnd);
       newCls = createClusters<CellC, ClusterC>(cells);
     });
