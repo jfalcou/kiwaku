@@ -2,7 +2,6 @@
 
 Clustering algorithm
 
-
 ## Compile
 
 ### STD
@@ -25,11 +24,11 @@ ninja -v kwk.out
 
 | Arg | Description | Default |  
 | --- | ----------- | ------- | 
-| -s --arraysize | Number of elements > 0| 100 | 
+| -s --arraysize | Number of elements > 0 (2^n)| 100 | 
 | -f --freq | Frequency (Mhz) > 0| 1600 |
 | -n --nuntimes | Number of nanobench iteration >= 1| 2 |
 | -S --seed | Random generation seed > 0| 1618 | 
-| -B --benchmark | Benchmark mode | false | 
+| -B --benchmark | Benchmark mode (launch with -B) | false | 
 | -h --help | Help |  | 
 
 
@@ -39,3 +38,7 @@ ninja -v kwk.out
 
 1. bench.sh : launch .out for benchmark
 2. test.sh  : launch .out for unit test
+
+## Benchmark
+
+Sums the cycles count for 1 to K clusters, K clusters being N points.

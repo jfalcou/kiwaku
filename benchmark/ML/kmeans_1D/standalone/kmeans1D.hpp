@@ -110,8 +110,9 @@ std::vector<int> kMeansClustering(std::vector<T>& points, size_t k, unsigned int
 
 template<typename T>
 void runBench(ParamArg p){
-  res_nano.open("../results/Benchmark_std_nano_float.csv");
-  res_nano << "Function;Size(Bytes);Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(Cycles)\n";
+  std::string fname = "../results/Benchmark_std_nano_float_" + std::to_string(p.array_size) + ".csv";
+  res_nano.open(fname);
+  res_nano << "Function;Array Size;Clusters;Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(%)\n";
 
   std::vector<std::string> labels;
   std::vector<size_t> sizes;
@@ -125,43 +126,42 @@ void runBench(ParamArg p){
   // Initialize centroids and clusters
   std::vector<int> clusters(points.size(), -1);
 
-  std::sort(points.begin(), points.end());
-
-  for(long long s = 2;  s<pow(2, p.array_size); s=round(s*1.41)){
-  benchs = {
-    // nanobench bsearch
-    ankerl::nanobench::Bench().minEpochIterations(10).epochs(p.num_times).run("Kmeans", [&]{
-      for(unsigned int k = 0; k<p.array_size; k++){
-        std::vector<T> centroids(k, 0.0);
-        std::vector<int> assignments = kMeansClustering(points, k, p.seed, maxIterations);
-      }
-    })
-  };
-
   labels = {"Kmeans"};
   sizes = {p.array_size};
 
-  for (size_t i = 0; i < benchs.size(); ++i)
-  {
+  std::sort(points.begin(), points.end());
 
-    // Retrieving nanobench results
-    std::vector<ankerl::nanobench::Result> vres;
-    vres = benchs[i].results();
-    double cyc_op_mean          = vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_med           = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_max           = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_min           = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
-    double cyc_op_err           = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles);
+  for(unsigned int k = 0; k<=p.array_size; k++){
+    std::string ss = "Kmeans " + std::to_string(k) + " / " + std::to_string(p.array_size);
+    benchs = {
+      // nanobench bsearch
+      ankerl::nanobench::Bench().minEpochIterations(10).epochs(p.num_times).run(ss, [&]{
+        std::vector<T> centroids(k, 0.0);
+        std::vector<int> assignments = kMeansClustering(points, k, p.seed, maxIterations);
+      })
+    };
 
-    // writing measures in csv
-    res_nano << labels[i] << ";"
-    << sizes[i] << ";"
-    << cyc_op_mean << ";" 
-    << cyc_op_med << ";" 
-    << cyc_op_min << ";"
-    << cyc_op_max << ";"
-    << cyc_op_err << "\n";
-  }
+    for (size_t i = 0; i < benchs.size(); ++i)
+    {
+      // Retrieving nanobench results
+      std::vector<ankerl::nanobench::Result> vres;
+      vres = benchs[i].results();
+      double cyc_op_mean          = vres.begin()->average(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_med           = vres.begin()->median(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_min           = vres.begin()->minimum(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_max           = vres.begin()->maximum(ankerl::nanobench::Result::Measure::cpucycles);
+      double cyc_op_err           = vres.begin()->medianAbsolutePercentError(ankerl::nanobench::Result::Measure::cpucycles);
+
+      // writing measures in csv
+      res_nano << labels[i] << ";"
+      << sizes[i] << ";"
+      << k << ";"
+      << cyc_op_mean << ";" 
+      << cyc_op_med << ";" 
+      << cyc_op_min << ";"
+      << cyc_op_max << ";"
+      << cyc_op_err << "\n";
+    }
   }
   res_nano.close();
 }
