@@ -24,7 +24,7 @@ ninja -v kwk.out
 
 | Arg | Description | Default |  
 | --- | ----------- | ------- | 
-| -s --arraysize | Number of elements > 0 (2^n)| 100 | 
+| -s --arraysize | Number of elements > 0 (2^s)| 100 | 
 | -f --freq | Frequency (Mhz) > 0| 1600 |
 | -n --nuntimes | Number of nanobench iteration >= 1| 2 |
 | -S --seed | Random generation seed > 0| 1618 | 
@@ -42,3 +42,4 @@ ninja -v kwk.out
 ## Benchmark
 
 Sums the cycles count for 1 to K clusters, K clusters being N points.
+N points goes from 2 to 2^arraysize.
