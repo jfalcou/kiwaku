@@ -51,21 +51,21 @@ namespace kwk
     //==============================================================================================
 
     /// Default constructor
-    constexpr view() : parent{kwk::view_} {}
+    KWK_TRIVIAL constexpr view() : parent{kwk::view_} {}
 
     /// Construct a view from a list of options
-    constexpr view(rbr::concepts::option auto const&... opts) : view{rbr::settings{opts...}} {}
+    KWK_TRIVIAL constexpr view(rbr::concepts::option auto const&... opts) : view{rbr::settings{opts...}} {}
 
     /// Construct a view from a settings descriptor
-    constexpr view(rbr::concepts::settings auto const& opts)
-            : parent{ []<typename S>(S const& p)
-                      { return rbr::merge(rbr::settings{kwk::view_}, p); }(opts)
-                    }
-    {}
+    KWK_TRIVIAL constexpr view(rbr::concepts::settings auto const& opts)
+                        : parent{ []<typename S>(S const& p)
+                                  { return rbr::merge(rbr::settings{kwk::view_}, p); }(opts)
+                                }
+                {}
 
     /// Shallow copy constructor
-    constexpr view(concepts::container<type<value_type>, shape_type> auto const& other)
-            : view(other.settings())
+    KWK_TRIVIAL constexpr view(concepts::container<type<value_type>, shape_type> auto const& other)
+                        : view(other.settings())
     {}
 
     /// Shallow assignment operator

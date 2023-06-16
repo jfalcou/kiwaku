@@ -45,7 +45,7 @@ a shape defined as `kwk::shape<kwk::width,kwk::height,kwk::channel>`.
 @subsection glossary-extent Extent
 
 An @ref glossary-extent is a value that represent the number of element along a given axis of a container.
-@ref shape and @ref stride can be constructed from a series of @ref glossary-extent. The numerical value
+kwk::shape and kwk::stride can be constructed from a series of @ref glossary-extent. The numerical value
 associated to an @ref glossary-extent is named **dimension**.
 
 Valid values for an @ref glossary-extent can be:

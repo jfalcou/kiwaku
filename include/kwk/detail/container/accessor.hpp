@@ -26,7 +26,7 @@ namespace kwk::__
     constexpr auto  shape()   const noexcept  { return shape_;         }
     constexpr auto  stride()  const noexcept  { return stride_;        }
 
-    constexpr   accessor(): shape_ (), stride_() {}
+    KWK_TRIVIAL constexpr   accessor(): shape_ (), stride_() {}
 
     constexpr   accessor(rbr::concepts::settings auto const& opts)
               : shape_ ( pick(kwk::size   ,opts) )
@@ -72,9 +72,9 @@ namespace kwk::__
     constexpr auto  shape()   const noexcept  { return Shape;         }
     constexpr auto  stride()  const noexcept  { return Stride;        }
 
-    constexpr       accessor()  {}
-    constexpr       accessor(rbr::concepts::settings auto const&) noexcept {}
-    constexpr void  swap( accessor& ) noexcept {}
+    KWK_TRIVIAL constexpr       accessor()  {}
+    KWK_TRIVIAL constexpr       accessor(rbr::concepts::settings auto const&) noexcept {}
+    KWK_TRIVIAL constexpr void  swap( accessor& ) noexcept {}
 
     constexpr auto index(std::integral auto... is) const noexcept { return Stride.linearize(is...); }
   };
@@ -91,9 +91,9 @@ namespace kwk::__
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_order  = shape_type::static_size;
 
-    constexpr   accessor() : shape_{} {}
-    constexpr   accessor(rbr::concepts::settings auto const& opts)
-              : shape_ ( pick(kwk::size,opts) )
+    KWK_TRIVIAL constexpr   accessor() : shape_{} {}
+    KWK_TRIVIAL constexpr   accessor(rbr::concepts::settings auto const& opts)
+                          : shape_ ( pick(kwk::size,opts) )
     {}
 
     constexpr auto        size()          const noexcept  { return get<0>(shape_);  }
@@ -119,9 +119,9 @@ namespace kwk::__
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_order  = shape_type::static_size;
 
-    constexpr accessor() : shape_{} {}
-    constexpr accessor(rbr::concepts::settings auto const& opts)
-              : shape_ ( pick(kwk::size,opts) )
+    KWK_TRIVIAL constexpr accessor() : shape_{} {}
+    KWK_TRIVIAL constexpr accessor(rbr::concepts::settings auto const& opts)
+                        : shape_ ( pick(kwk::size,opts) )
     {}
 
     constexpr auto  size()  const noexcept { return shape_.numel();  }

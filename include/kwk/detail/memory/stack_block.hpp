@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/detail/abi.hpp>
 #include <type_traits>
 #include <algorithm>
 
@@ -24,7 +25,7 @@ namespace kwk::__
 
     value_type data_[Size];
 
-    constexpr stack_block() {}
+    KWK_TRIVIAL constexpr stack_block() {}
 
     template<rbr::concepts::settings Settings>
     constexpr stack_block(Settings const& p)
@@ -33,8 +34,8 @@ namespace kwk::__
         assign( storage(pick(kwk::source, p)), pick(kwk::size,p).numel() );
     }
 
-    constexpr auto get_data()       noexcept { return &data_[0]; }
-    constexpr auto get_data() const noexcept { return &data_[0]; }
+    KWK_TRIVIAL constexpr auto get_data()       noexcept { return &data_[0]; }
+    KWK_TRIVIAL constexpr auto get_data() const noexcept { return &data_[0]; }
 
     constexpr void assign(auto const& src, auto)
     {
@@ -49,8 +50,8 @@ namespace kwk::__
   };
 
   template<typename T, std::ptrdiff_t Size>
-  constexpr auto data(stack_block<T,Size> const& src) noexcept { return src.get_data(); }
+  KWK_TRIVIAL constexpr auto data(stack_block<T,Size> const& src) noexcept { return src.get_data(); }
 
   template<typename T, std::ptrdiff_t Size>
-  constexpr auto data(stack_block<T,Size>& src) noexcept { return src.get_data(); }
+  KWK_TRIVIAL constexpr auto data(stack_block<T,Size>& src) noexcept { return src.get_data(); }
 }

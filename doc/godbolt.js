@@ -71,7 +71,8 @@ class SendToGodbolt extends HTMLElement {
         // Turn into BASE64 and use /clientstate API
         let body  = JSON.stringify(data);
         let state = btoa(body);
-        let url   = "https://godbolt.org/clientstate/" + encodeURIComponent(state);
+        //let url   = "https://godbolt.org/clientstate/" + encodeURIComponent(state);
+        let url   = "http://localhost:10240/clientstate/" + encodeURIComponent(state);
 
         // Open in a new tab
         window.open(url, "_blank");

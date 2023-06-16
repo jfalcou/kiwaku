@@ -96,7 +96,7 @@ namespace kwk
     }
   };
 
-  /// Deduction guide for @ref kwk::stride
+  /// Deduction guide for kwk::stride
   template<concepts::extent... T>
   stride(T...) -> stride<to_descriptor(T{})...>;
 
@@ -116,7 +116,7 @@ namespace kwk
     return kumi::apply([](auto... s) { return with_strides(s...); }, d);
   }
 
-  /// Converts a @ref kwk::shape into its corresponding @ref kwk::stride, keeping as much static
+  /// Converts a kwk::shape into its corresponding kwk::stride, keeping as much static
   /// informations as possible.
   template<auto... D>
   KWK_PURE constexpr auto as_stride(shape<D...> s) noexcept
@@ -137,6 +137,7 @@ namespace kwk
   }
 }
 
+#if !defined(KWK_DOXYGEN_INVOKED)
 // Tuple interface adaptation
 template<auto... D>
 struct  std::tuple_size<kwk::stride<D...>>
@@ -147,6 +148,7 @@ template<std::size_t N, auto... D>
 struct  std::tuple_element<N, kwk::stride<D...>>
 : std::tuple_element<N, typename kwk::stride<D...>::parent>
 {};
+#endif
 
 #if !defined(_MSC_VER)
 #pragma GCC diagnostic pop

@@ -113,12 +113,61 @@ namespace kwk
     //! @brief Construct from a subset of @ref glossary-extent
     //!
     //! This constructor takes a variadic list of @ref glossary-extent for each shape's dimension.
-    //! Note that passing a @ref glossary-extent to overwrite a compile-time @ref glossary-extent is undefined behavior.
+    //! If the amount of value passed is less than the specified @ref glossary-order of the kwk::shape type,
+    //! all outermost missing extent are set to 1.
     //!
-    //! @groupheader{Example}
-    //! @include docs/shape/mixed.cpp
+    //! Unless specified by a type settings, values are stored inside an instance of kwk::shape as std::int32_t.
     //!
-    //! @param d  Variadic list of @ref glossary-extent
+    //! @groupheader{Shape Construction Rules}
+    //! kwk::shape exposes different behavior depending on the way its descriptor is defined and its constructor
+    //! parameter are defined.
+    //!
+    //! ### Numerical extents
+    //! kwk::shape supports numerical @ref glossary-extent in both type definition and parameters.
+    //! A numerical @ref glossary-extent is used to specify that a given @ref glossary-axis
+    //! has no specific semantic.
+    //!
+    //! Numerical @ref glossary-extent can be:
+    //!   * **An instance of kwk::_**: When used in the kwk::shape type, this means the corresponding @ref glossary-axis
+    //!     has to be specified in the constructor. If used as a value, this means the corresponding
+    //!     @ref glossary-axis will be initialized with its default value (0 or any static value if specified).
+    //!
+    //!   * **An integral value**: When used in the kwk::shape type, this means the corresponding @ref glossary-axis
+    //!     value is fixed at compile-time. If used as a value, it will fill the corresponding @ref glossary-axis.
+    //!     If the runtime value passed as an initialiser is not equal to the static size, the behavior is undefined.
+    //!     Static size parameters has no impact on the kwk::shape object size.
+    //!
+    //!   * **A type specifier**: When used in the kwk::shape type, this forces the storage type of the
+    //!     corresponding @ref glossary-axis. The value still needs to be specified at runtime.
+    //!
+    //! ### Example
+    //! @include docs/shape/numerical_axis.cpp
+    //!
+    //! ### Named extents
+    //! kwk::shape supports named @ref glossary-extent in both type definition and parameters.
+    //! A named @ref glossary-extent is used to specify that a given named @ref glossary-axis
+    //! has a specific semantic and that the ordering of the named @ref glossary-axis is important.
+    //!
+    //! Named @ref glossary-extent can be:
+    //!   * **Used Directly**: If all @ref glossary-extent type are named, they behave as named parameter
+    //!     and can be passed in any order. If they are mixed with other kind of @ref glossary-extent or
+    //!     passed a regular integral value, they must be ordered as required.
+    //!
+    //!   * **Used with a static size**: A named @ref glossary-extent can be suffixed by a call to
+    //!     the subscript operator with an integral value. This signify that this @ref glossary-axis
+    //!     as a size known at compile-time. Such @ref glossary-extent can then be initialized by kwk::_
+    //!     or an integral value of the same value. If the runtime value passed as an initialiser is not
+    //!     equal to the static size, the behavior is undefined. Static size parameters has no impact
+    //!     on the kwk::shape object size.
+    //!
+    //!   * **Used with a type specifier** :A  named @ref glossary-extent can be suffixed by a call to
+    //!     the subscript operator with a type settings (either kwk::as or a pre-defined one). The associated
+    //!     value has to be specified at runtime but will be stored as the chosen type.
+    //!
+    //! ### Example
+    //! @include docs/shape/named_axis.cpp
+    //!
+    //! @param d  Variadic list of @ref glossary-extent.
     //==================================================================================================================
     template<concepts::extent... T>
     requires( std::is_constructible_v<parent, int,T...> )
@@ -131,11 +180,19 @@ namespace kwk
     {}
 
     //==================================================================================================================
-    /// Construct shape from another shape type
+    //! @brief Construct shape from another shape type
+    //!
+    //! Copy the content of another kwk::shape if their extents and axis are compatible.
+    //!
+    //! @note This constructor is explicit if the order of current shape is not equal to the order of `other`.
+    //! @param other  Shape to copy
     //==================================================================================================================
     template<auto... D2>
     requires( constraint_t::is_contructible_from<parent{},typename shape<D2...>::parent{}>() )
-    KWK_TRIVIAL explicit(static_order != sizeof...(D2))
+    KWK_TRIVIAL
+#if !defined(KWK_DOXYGEN_INVOKED)
+    explicit(static_order != sizeof...(D2))
+#endif
     constexpr shape(shape<D2...> const& other) noexcept
     {
       constraint_t::construct(*this, other);
@@ -348,6 +405,7 @@ namespace kwk
 //   }(std::make_index_sequence<N>{});
 }
 
+#if !defined(KWK_DOXYGEN_INVOKED)
 // Tuple interface adaptation
 template<auto... D>
 struct  std::tuple_size<kwk::shape<D...>>
@@ -358,3 +416,4 @@ template<std::size_t N, auto... D>
 struct  std::tuple_element<N, kwk::shape<D...>>
 : std::tuple_element<N, typename kwk::shape<D...>::parent>
 {};
+#endif
