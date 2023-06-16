@@ -43,3 +43,9 @@ ninja -v kwk.out
 
 Sums the cycles count for 1 to K clusters, K clusters being N points.
 N points goes from 2 to 2^arraysize.
+
+
+## TO ADD
+
+std::distance(kwk,kwk)
+table == table

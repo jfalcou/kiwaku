@@ -179,7 +179,7 @@ void runTest(ParamArg p){
   std::vector<T> centroids(k, 0.0);
   std::vector<int> clusters(points.size(), -1);
 
-  std::vector<int> assignments = kMeansClustering(points, k, p.seed, maxIterations);
+  std::vector<int> assignments = kMeansClustering<T>(points, k, p.seed, maxIterations);
   // Print results
   for (size_t i = 0; i < points.size(); ++i) {
     std::cout << "Point " << points[i] << " belongs to Cluster " << assignments[i] << std::endl;

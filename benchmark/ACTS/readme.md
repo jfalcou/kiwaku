@@ -34,3 +34,7 @@ v_lb_connections_previous = find connection version acts en remontant -1 en -1
 Where ACTS ?
 
 Modification en 8 connexité, on utilise un lower_bound pour trouver la cellule en (x+1, y-1) à partir de laquelle, trouver les voisins à 1 ou 2 cellules précendentes se fait avec une boucle.
+
+## TODO
+
+Checker sans le kwk::view puisque l'on a une nouvelle table par iter
