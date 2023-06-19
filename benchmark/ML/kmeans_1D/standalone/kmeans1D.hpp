@@ -110,7 +110,15 @@ std::vector<int> kMeansClustering(std::vector<T>& points, size_t k, unsigned int
 
 template<typename T>
 void runBench(ParamArg p){
-  std::string fname = "../results/Benchmark_std_nano_float_" + std::to_string(p.array_size) + ".csv";
+  std::string fname;
+  
+  if(sizeof(T) == sizeof(float))
+  {
+    fname = "../results/Benchmark_std_nano_float_" + std::to_string(p.array_size) + ".csv";
+  } else {
+    fname = "../results/Benchmark_std_nano_double_" + std::to_string(p.array_size) + ".csv";
+  }
+  
   res_nano.open(fname);
   res_nano << "Function;Array Size;Clusters;Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(%)\n";
 

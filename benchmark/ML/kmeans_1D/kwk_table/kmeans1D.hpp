@@ -71,7 +71,7 @@ auto calculateCentroids(auto& points, auto& assignments, size_t k) {
 
   auto KWKcentroids = kwk::table{ kwk::source = centroids, kwk::of_size(k)};
   auto KWKclusterCounts = kwk::table{ kwk::source =clusterCounts, kwk::of_size(k) };
-
+ 
   for (int i = 0; i < points.numel(); ++i) {
     KWKcentroids(assignments(i)) += points(i);
     KWKclusterCounts(assignments(i))++;
@@ -94,7 +94,7 @@ auto kMeansClustering(auto& points, size_t k, unsigned int seed, size_t maxItera
   // Initialize centroids randomly
   std::mt19937 engine(seed);
   std::uniform_int_distribution<size_t> distribution(0, points.numel() - 1);
-
+  
   std::vector<T> centroids(k);
   auto KWKcentroids = kwk::table{ kwk::source = centroids, kwk::of_size(k)};
 
@@ -127,7 +127,15 @@ auto kMeansClustering(auto& points, size_t k, unsigned int seed, size_t maxItera
 
 template<typename T>
 void runBench(ParamArg p){
-  std::string fname = "../results/Benchmark_std_nano_float_" + std::to_string(p.array_size) + ".csv";
+  std::string fname;
+  
+  if(sizeof(T) == sizeof(float))
+  {
+    fname = "../results/Benchmark_std_nano_float_" + std::to_string(p.array_size) + ".csv";
+  } else {
+    fname = "../results/Benchmark_std_nano_double_" + std::to_string(p.array_size) + ".csv";
+  }
+  
   res_nano.open(fname);
   res_nano << "Function;Array Size;Clusters;Mean Nano(Cycles);Median Nano(Cycles);Min Nano(Cycles);Max Nano(Cycles);Err Nano(%)\n";
 
@@ -168,8 +176,8 @@ void runBench(ParamArg p){
       res_nano << labels[i] << ";"
       << sizes[i] << ";"
       << k << ";"
-      << cyc_op_mean << ";"
-      << cyc_op_med << ";"
+      << cyc_op_mean << ";" 
+      << cyc_op_med << ";" 
       << cyc_op_min << ";"
       << cyc_op_max << ";"
       << cyc_op_err << "\n";
@@ -183,7 +191,7 @@ void runTest(ParamArg p){
   // Number of clusters
   size_t maxIterations = 100;
   size_t k = 3;
-
+  
   auto points = initializePoints<T>(p.array_size, p.seed);
   std::sort(points.get_data(), points.get_data() + points.numel());
 
