@@ -11,9 +11,11 @@ var group__containers =
       [ "table", "structkwk_1_1table.html#a51452ca716dc0e8387cfd8b34ff745d4", null ],
       [ "table", "structkwk_1_1table.html#ac7376cc2405b06cfcb2768791dc2c2bf", null ],
       [ "table", "structkwk_1_1table.html#ac8f59477f1c2b6ee29e0b6d98e2151fa", null ],
+      [ "table", "structkwk_1_1table.html#a33f62be9622baf7cca1a95488b798ff9", null ],
       [ "table", "structkwk_1_1table.html#a373f15e4a2437514866999c99258631f", null ],
       [ "operator=", "structkwk_1_1table.html#a9fa35ccdff8c4ff9608d8724903138a7", null ],
-      [ "operator=", "structkwk_1_1table.html#a112d2e2a816cab550b0463c0d02459d3", null ]
+      [ "operator=", "structkwk_1_1table.html#a112d2e2a816cab550b0463c0d02459d3", null ],
+      [ "operator=", "structkwk_1_1table.html#a2b6d2f842750d336afd11e6348929772", null ]
     ] ],
     [ "kwk::view< Builder >", "structkwk_1_1view.html", [
       [ "const_pointer", "structkwk_1_1view.html#a7b61399e18244610e305e946fb39fcfa", null ],
