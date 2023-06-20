@@ -70,11 +70,24 @@ namespace kwk
     constexpr table& operator=(table&&) = default;
 
     /// Copy constructor
+    constexpr table(table const& other)
+            : table(other.settings())
+    {}
+
+    /// Copy constructor from other container
     constexpr table(concepts::container<as<value_type>, shape_type{}> auto const& other)
             : table(other.settings())
     {}
 
     /// Copy assignment operator
+    constexpr table& operator=(table const& other)
+    {
+      table local(other);
+      parent::swap(local);
+      return *this;
+    }
+
+    /// Copy assignment operator from other container
     constexpr table& operator=(concepts::container<as<value_type>, shape_type{}> auto const& other)
     {
       table local(other);
