@@ -27,4 +27,4 @@ message(STATUS "Testing = ${kiwaku_SOURCE_DIR}")
 
 add_executable(kmeans1D.out ../kmeans1D.cpp ../../parseArg.cpp)
 
-target_link_libraries(kmeans1D.out PUBLIC kwk_compiler_options) 
+target_link_libraries(kmeans1D.out PUBLIC kwk_bench_options) 

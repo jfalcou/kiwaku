@@ -10,7 +10,7 @@ def plot(df1, df2, metric, save):
   size = df1['Array Size'][1]
   plt.xlabel('Clusters')
   plt.ylabel('Cycles')
-  plt.title('Benchmark compare CCL std/kwk | N :' + str(size))
+  plt.title('Benchmark compare Kmeans 1D std/kwk | N :' + str(size))
   metric1 = ['std']
   metric2 = ['kwk']
   plt.legend(metric1 + metric2)
