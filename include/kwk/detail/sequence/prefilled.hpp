@@ -141,7 +141,7 @@ namespace kwk::__
     {
       [=, this]<int... I>(std::integer_sequence<int, I...>)
       {
-        __construct(def,((void)I,1)..., vs...);
+        this->__construct(def,((void)I,1)..., vs...);
       }(std::make_integer_sequence<int, static_size - sizeof...(vs)>{});
     }
 
