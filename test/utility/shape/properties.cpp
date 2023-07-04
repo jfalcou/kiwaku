@@ -41,9 +41,9 @@ TTS_CASE( "numel behavior on nD shape" )
 struct some_base  { double  y; };
 struct other_base { int     x; };
 
-struct ebo_carrier  : kwk::shape<kwk::extent[42][69]>, some_base {};
-struct complex_ebo  : kwk::shape<kwk::extent[42][69]>, some_base, other_base {};
-struct mixed_ebo    : some_base, kwk::shape<kwk::extent[42][69]>, other_base {};
+struct ebo_carrier  : kwk::shape<42,69>, some_base {};
+struct complex_ebo  : kwk::shape<42,69>, some_base, other_base {};
+struct mixed_ebo    : some_base, kwk::shape<42,69>, other_base {};
 
 TTS_CASE( "kwk::shape and Empty Base Optimisation" )
 {

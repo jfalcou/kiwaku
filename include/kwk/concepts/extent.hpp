@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/axis.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/utility/joker.hpp>
@@ -17,14 +18,28 @@ namespace kwk::concepts
   /// Concept for types acting as a joker value
   template<typename T> concept joker = is_joker_v<T>;
 
-  /// Concept for types usable as shape and stride construction
-  template<typename T, typename S>
-  concept extent = std::convertible_to<T,S> || joker<T> || rbr::concepts::option<T>;
-
-  /// Concept for shape and stride extent descriptor
+  //====================================================================================================================
+  //! @brief Shape and stride named values
+  //!
+  //! Named extents are options which keyword models kwk::concepts::axis
+  //====================================================================================================================
   template<typename T>
-  concept descriptor = requires(T)
-  {
-    typename std::remove_cvref_t<T>::contents_type;
-  };
+  concept named_extent = rbr::concepts::option<T> && axis<typename T::keyword_type>;
+
+  //====================================================================================================================
+  //! @brief Shape and stride numerical values
+  //!
+  //! Numerical extents are joker, axis or values convertible to `std::size_t`
+  //====================================================================================================================
+  template<typename T>
+  concept numeric_extent = std::convertible_to<T,std::size_t> || axis<T> || joker<T>;
+
+  //====================================================================================================================
+  //! @brief Shape and stride valid values
+  //!
+  //! kwk::shape and kwk::stride can only be constructed from types satisfying the extent concepts, i.e kwk::_, an axis
+  //! based option or any type convertible to integer.
+  //====================================================================================================================
+  template<typename T>
+  concept extent = numeric_extent<T> || named_extent<T>;
 }

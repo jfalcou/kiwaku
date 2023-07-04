@@ -17,21 +17,14 @@ namespace kwk_test
     constexpr slicer(T dim_): dim(dim_) { }
   };
 
-  template<auto Desc, std::size_t N, typename T>
-  constexpr auto reshape( kwk::shape<Desc> const& sh
+  template<auto... S, std::size_t N, typename T>
+  constexpr auto reshape( kwk::shape<S...> const& sh
                         , slicer<T> s
                         , kumi::index_t<N> const&
                         ) noexcept
   {
-
-    if constexpr (requires{ T::value; })
-    {
-      return kwk::fixed<N + 10 * T::value>;
-    }
-    else
-    {
-      return get<N>(sh) + 10 * s.dim;
-    }
+    if constexpr( kwk::concepts::static_constant<T> ) return kwk::fixed<N + 10 * T::value>;
+    else                                              return get<N>(sh) + 10 * s.dim;
   }
 }
 

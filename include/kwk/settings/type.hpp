@@ -19,13 +19,16 @@ namespace kwk::__
     {
       using stored_value_type = info<T>;
       using keyword_type      = type_;
-      using type = T;
+      using type              = T;
 
       constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
       friend std::ostream& operator<<(std::ostream& os, info const&)
       {
         return os << rbr::detail::type<T>.name();
       }
+
+      friend constexpr bool operator==(info, info) noexcept { return true;  }
+      constexpr bool operator==(auto) noexcept { return false; }
     };
 
     template<typename T> constexpr auto operator=(info<T> const& s) const noexcept
@@ -43,13 +46,16 @@ namespace kwk::__
 
 namespace kwk
 {
-  constexpr inline __::type_ type{};
+  constexpr inline __::type_ value_type{};
+
+  template<typename T>
+  using type = __::type_::info<T>;
 
   //================================================================================================
   //! @ingroup  settings
   //! @brief    Type setting for kwk::table
   //================================================================================================
-  template<typename T> constexpr inline __::type_::info<T> as{};
+  template<typename T> constexpr inline type<T> as{};
 
   /// Pre-defined type settings for float
   constexpr inline auto real32  = as<float>;

@@ -24,7 +24,7 @@ namespace kwk
   //! @brief Simple walkthrough over all possible indexes
   //!
   //! Applies the given function object `f` to every coordinates that are valid inside the given
-  //! @ref kwk::shape `shp`. Coordinates are iterated in order of the optimal memory access.
+  //! kwk::shape `shp`. Coordinates are iterated in order of the optimal memory access.
   //!
   //! @param f 	  Function object, to be applied to a variadic list of integral coordinates. The
   //!             signature of the function should be equivalent to the following:
@@ -32,25 +32,25 @@ namespace kwk
   //!             void f(std::integral auto... is);
   //!             @endcode
   //!
-  //! @param shp  A @ref kwk::shape used as boundaries for the coordinates
+  //! @param shp  A kwk::shape used as boundaries for the coordinates
   //! @return     The function object `f` which could have been modified.
   //!
   //! @groupheader{Example}
   //! @include docs/algorithms/for_each_shape.cpp
   //================================================================================================
-  template<typename Func, auto Desc>
-  constexpr auto for_each(Func f, shape<Desc> const& shp)
+  template<typename Func, auto... S>
+  constexpr auto for_each(Func f, shape<S...> const& shp)
   {
     return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     {
       return __::for_each(f, shp );
-    }( std::make_index_sequence<shape<Desc>::static_order>{} );
+    }( std::make_index_sequence<shape<S...>::static_order>{} );
   }
 
   //================================================================================================
   //! @brief Simple walkthrough over all elements of a container
   //!
-  //! Applies the given function object `f` to every elements of a given @ref kwk::container.
+  //! Applies the given function object `f` to every elements of a given kwk::container.
   //! Elements are iterated in order of the optimal memory access.
   //!
   //! @param f 	  Function object, to be applied to an element of `c`.  The
@@ -59,7 +59,7 @@ namespace kwk
   //!             void f(T&& v);
   //!             @endcode
   //!             with `T` convertible to the container's `value_type`.
-  //! @param c    A @ref kwk::container on which elements `f` will be applied.
+  //! @param c    A kwk::container on which elements `f` will be applied.
   //! @return     The function object `f` which could have been modified.
   //!
   //! @groupheader{Example}
@@ -75,7 +75,7 @@ namespace kwk
   //================================================================================================
   //! @brief Simple walkthrough over all elements of a container and their coordinates
   //!
-  //! Applies the given function object `f` to every elements of a given @ref kwk::container and
+  //! Applies the given function object `f` to every elements of a given kwk::container and
   //! their current coordinates. Elements are iterated in order of the optimal memory access.
   //!
   //! @param f 	  Function object, to be applied to an element of `c` and its coordinates.  The
@@ -84,7 +84,7 @@ namespace kwk
   //!             void f(T&& v, std::integral auto... is);
   //!             @endcode
   //!             with `T` convertible to the container's `value_type`.
-  //! @param c    A @ref kwk::container on which elements `f` will be applied.
+  //! @param c    A kwk::container on which elements `f` will be applied.
   //! @return     The function object `f` which could have been modified.
   //!
   //! @groupheader{Example}

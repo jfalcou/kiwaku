@@ -23,8 +23,8 @@ namespace kwk
   //! @param idx  Individual list of indexes representing the order N index to linearize
   //! @return The linear index equivalent to (idx...) for the current shape
   //================================================================================================
-  template<auto Shaper, std::integral... Index>
-  constexpr auto linear_index( shape<Shaper> const& sh, Index... idx ) noexcept
+  template<auto... S, std::integral... Index>
+  KWK_CONST constexpr auto linear_index( shape<S...> sh, Index... idx ) noexcept
   {
     KIWAKU_ASSERT ( sh.contains(idx...)
                   , "Linearizing out of bounds indexes "
@@ -41,8 +41,8 @@ namespace kwk
   //! @param idx  Individual list of indexes representing the order N index to linearize
   //! @return The linear index equivalent to (idx...) for the current shape
   //================================================================================================
-  template<auto Shaper, kumi::sized_product_type<Shaper.size()> Indexes>
-  constexpr auto linear_index( shape<Shaper> const& sh, Indexes idx ) noexcept
+  template<auto... S, kumi::sized_product_type<shape<S...>::static_order> Indexes>
+  KWK_CONST constexpr auto linear_index( shape<S...> sh, Indexes idx ) noexcept
   {
     return kumi::apply( [&](auto... i) { return linear_index(sh,i...); }, idx);
   }
@@ -55,9 +55,9 @@ namespace kwk
   //! @param indexes Range of integer representing the order N index to linearize
   //! @return The linear index equivalent to (indexes[0], ...) for the current shape
   //================================================================================================
-  template<auto Shaper, kwk::concepts::range Indexes>
-  requires( !kumi::sized_product_type<Indexes,Shaper.size()> )
-  constexpr auto linear_index( shape<Shaper> const& sh, Indexes const& indexes) noexcept
+  template<auto... S, kwk::concepts::range Indexes>
+  requires( !kumi::sized_product_type<Indexes,shape<S...>::static_order> )
+  constexpr auto linear_index( shape<S...> const& sh, Indexes const& indexes) noexcept
   {
     return [&]<std::size_t... I>(std::index_sequence<I...>  const&)
     {
@@ -65,6 +65,6 @@ namespace kwk
       auto constexpr  deref = [](auto,auto& p) { return *p++; };
 
       return linear_index(sh, kumi::tuple{deref(I,b)...} );
-    }(std::make_index_sequence<Shaper.size()>{});
+    }(std::make_index_sequence<shape<S...>::static_order>{});
   }
 }

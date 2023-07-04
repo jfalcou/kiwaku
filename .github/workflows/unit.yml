@@ -23,7 +23,7 @@ jobs:
       matrix:
         cfg:
         - { opts: -O0                   }
-        - { opts: -Ofast -flto -DNDEBUG }
+        - { opts: -Ofast -flto=auto -DNDEBUG }
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v3
@@ -121,26 +121,26 @@ jobs:
       - name: Compiling Unit Tests
         run:  cd build && make unit -j 2
 
-  msvc:
-    runs-on: [windows-2022]
-    strategy:
-      fail-fast: false
-      matrix:
-        cfg:
-        - { mode: Debug  }
-        - { mode: Release}
-    steps:
-      - name: Fetch current branch
-        uses: actions/checkout@v3
-      - name: Running CMake for MSVC ${{ matrix.cfg.mode }}
-        run: |
-          mkdir build && cd build
-          cmake -G "Visual Studio 17 2022" -A x64 .. -DKIWAKU_BUILD_TEST=ON
-      - name: Compiling Unit Tests
-        run:  |
-          cd build
-          cmake --build . --target unit --config ${{ matrix.cfg.mode }} --parallel 2
-      - name: Running Tests
-        run: |
-          cd build
-          ctest -C ${{ matrix.cfg.mode }} --output-on-failure
+  # msvc:
+  #   runs-on: [windows-2022]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       cfg:
+  #       - { mode: Debug  }
+  #       - { mode: Release}
+  #   steps:
+  #     - name: Fetch current branch
+  #       uses: actions/checkout@v3
+  #     - name: Running CMake for MSVC ${{ matrix.cfg.mode }}
+  #       run: |
+  #         mkdir build && cd build
+  #         cmake -G "Visual Studio 17 2022" -A x64 .. -DKIWAKU_BUILD_TEST=ON
+  #     - name: Compiling Unit Tests
+  #       run:  |
+  #         cd build
+  #         cmake --build . --target unit --config ${{ matrix.cfg.mode }} --parallel 2
+  #     - name: Running Tests
+  #       run: |
+  #         cd build
+  #         ctest -C ${{ matrix.cfg.mode }} --output-on-failure

@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/detail/abi.hpp>
 #include <ostream>
 
 namespace kwk
@@ -17,11 +18,15 @@ namespace kwk
   //================================================================================================
   struct joker
   {
-    friend std::ostream& operator<<(std::ostream& os, joker const&) { return os << "_"; }
+    KWK_TRIVIAL friend std::ostream& operator<<(std::ostream& os, joker const&) { return os << "_"; }
 
-    friend constexpr joker operator*(joker, joker) noexcept { return {}; }
-    friend constexpr joker operator*(joker,  auto) noexcept { return {}; }
-    friend constexpr joker operator*(auto , joker) noexcept { return {}; }
+    KWK_TRIVIAL friend constexpr bool   operator==(joker,joker) { return true;  }
+    KWK_TRIVIAL friend constexpr bool   operator==(joker,auto ) { return false; }
+    KWK_TRIVIAL friend constexpr bool   operator==(auto ,joker) { return false; }
+
+    KWK_TRIVIAL friend constexpr joker  operator*(joker, joker) noexcept { return {}; }
+    KWK_TRIVIAL friend constexpr joker  operator*(joker,  auto) noexcept { return {}; }
+    KWK_TRIVIAL friend constexpr joker  operator*(auto , joker) noexcept { return {}; }
   };
 
   //================================================================================================

@@ -11,7 +11,7 @@
 
 TTS_CASE( "1D behavior of linear_index" )
 {
-  kwk::shape sh{13};
+  kwk::_1D sh{13};
 
   for(int i = 0; i < sh.numel(); ++i)
   {
@@ -23,7 +23,7 @@ TTS_CASE( "1D behavior of linear_index" )
 
 TTS_CASE( "2D behavior of linear_index" )
 {
-  kwk::shape sh{4,3};
+  kwk::_2D sh{4,3};
 
   for(int i1 = 0; i1 < 4; ++i1)
   {
@@ -38,7 +38,7 @@ TTS_CASE( "2D behavior of linear_index" )
 
 TTS_CASE( "3D behavior of linear_index" )
 {
-  kwk::shape sh{4,3,2};
+  kwk::_3D sh{4,3,2};
 
   for(int i2 = 0; i2 < 4; ++i2)
   {
@@ -56,7 +56,7 @@ TTS_CASE( "3D behavior of linear_index" )
 
 TTS_CASE( "4D behavior of linear_index" )
 {
-  kwk::shape sh{5,4,3,2};
+  kwk::_4D sh{5,4,3,2};
 
   for(int i3 = 0; i3 < 5; ++i3)
   {

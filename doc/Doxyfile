@@ -12,7 +12,7 @@ CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 
 BRIEF_MEMBER_DESC      = YES
-REPEAT_BRIEF           = YES
+REPEAT_BRIEF           = NO
 ABBREVIATE_BRIEF       = "The $name class" \
                          "The $name widget" \
                          "The $name file" \
@@ -1054,7 +1054,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = ../include
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = KWK_USE_DOXYGEN
+PREDEFINED             = KWK_DOXYGEN_INVOKED
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 DIA_PATH               =

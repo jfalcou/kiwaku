@@ -18,13 +18,13 @@ namespace kwk::__
   template<rbr::concepts::settings Settings>
   KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), view_, source_, Settings const& opts)
   {
-    return opts[source | ptr_source<typename decltype(opts[type])::type>{}];
+    return opts[source | ptr_source<typename decltype(opts[value_type])::type>{}];
   }
 
   template<rbr::concepts::settings Settings>
   KWK_FORCEINLINE constexpr auto pick_(KWK_DELAY(), table_, source_, Settings const& opts)
   {
-    auto value = opts[type];
+    auto value = opts[value_type];
     return opts[source | ptr_source<typename decltype(value)::type>{}];
   }
 }

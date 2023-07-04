@@ -36,7 +36,7 @@ struct invoker
 namespace kwk
 {
 //==================================================================================================
-//! @addtogroup traits
+//! @addtogroup utility
 //! @{
 //! @defgroup invoke Generalized Tag Invoke Protocol
 //! @brief This module defines all the **KIWAKU** generalized tag_invoke protocol infrastructure.

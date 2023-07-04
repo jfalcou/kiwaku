@@ -51,23 +51,23 @@ namespace kwk
     //==============================================================================================
 
     /// Default constructor
-    constexpr table() : parent{kwk::table_} {}
+    KWK_TRIVIAL constexpr table() : parent{kwk::table_} {}
 
     /// Construct a table from a list of options
-    constexpr table(rbr::concepts::option auto const&... opts) : table{rbr::settings{opts...}} {}
+    KWK_TRIVIAL constexpr table(rbr::concepts::option auto const&... opts) : table{rbr::settings{opts...}} {}
 
     /// Construct a table from a settings descriptor
-    constexpr table(rbr::concepts::settings auto const& opts)
-            : parent{ []<typename S>(S const& p)
-                      { return rbr::merge(rbr::settings{kwk::table_}, p); }(opts)
-                    }
+    KWK_TRIVIAL constexpr table(rbr::concepts::settings auto const& opts)
+                        : parent{ []<typename S>(S const& p)
+                                  { return rbr::merge(rbr::settings{kwk::table_}, p); }(opts)
+                                }
     {}
 
     /// Move constructor
-    constexpr table(table&&) = default;
+    KWK_TRIVIAL constexpr table(table&&) = default;
 
     /// Move assignment operator
-    constexpr table& operator=(table&&) = default;
+    KWK_TRIVIAL constexpr table& operator=(table&&) = default;
 
     /// Copy constructor
     constexpr table(table const& other)
@@ -75,8 +75,8 @@ namespace kwk
     {}
 
     /// Copy constructor from other container
-    constexpr table(concepts::container<as<value_type>, shape_type{}> auto const& other)
-            : table(other.settings())
+    KWK_TRIVIAL constexpr table(concepts::container<type<value_type>, shape_type> auto const& other)
+                        : table(other.settings())
     {}
 
     /// Copy assignment operator
@@ -88,7 +88,7 @@ namespace kwk
     }
 
     /// Copy assignment operator from other container
-    constexpr table& operator=(concepts::container<as<value_type>, shape_type{}> auto const& other)
+    constexpr table& operator=(concepts::container<type<value_type>, shape_type> auto const& other)
     {
       table local(other);
       parent::swap(local);
@@ -122,11 +122,11 @@ namespace kwk
   //================================================================================================
 
   /// Type helper
-  template<auto... Settings> struct make_table
+  template<typename... Settings> struct make_table
   {
-    using type = table<__::builder<rbr::settings(table_,Settings...)>>;
+    using type = table<__::builder<rbr::settings(table_,Settings{}...)>>;
   };
 
-  template<auto... Settings>
+  template<typename... Settings>
   using make_table_t = typename make_table<Settings...>::type;
 }

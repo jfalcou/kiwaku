@@ -14,7 +14,7 @@ TTS_CASE_TPL( "Building a nD shape with kwk::kwk::shape{a1,...,an}", sizes<10>)
 {
   auto f  = []<std::size_t... Idx>(std::index_sequence<Idx...> const&)
             {
-              return kwk::shape( 3*static_cast<std::ptrdiff_t>(1+Idx)...);
+              return kwk::shape{ 3*static_cast<std::ptrdiff_t>(1+Idx)... };
             };
 
   auto sh = f(up_to<T>{});

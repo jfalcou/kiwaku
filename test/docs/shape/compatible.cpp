@@ -11,7 +11,7 @@
 int main()
 {
   // Defines a 3D shape type with dimension 2 fixed to 3
-  using shape_t = kwk::shape< kwk::extent()[3]() >;
+  using shape_t = kwk::shape<kwk::_,3,kwk::_>;
 
   // 4 x fixed<3> x 8 is compatible
   shape_t x = kwk::of_size(4, kwk::fixed<3>, 8);

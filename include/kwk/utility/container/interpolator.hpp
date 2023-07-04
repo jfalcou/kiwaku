@@ -53,7 +53,7 @@ namespace kwk::__
       // Turn the discrete indexing into values
       auto pos = kumi::map( [&](auto v){ return data(v); }, coord );
 
-      // A n-linear interpolation is then compurted as the inner product of the values at
+      // A n-linear interpolation is then computed as the inner product of the values at
       // the 2^n discrete position and the compound coefficient derived from the
       // non-integral parts of the requested point.
       return kumi::inner_product(pop_front(pos),pop_front(coeff),front(pos)*front(coeff));
@@ -65,7 +65,7 @@ namespace kwk::__
     template<typename Container, typename... Coords>
     auto interpolate(Container const& data, Coords... p) const
     {
-      return data(static_cast<typename Container::size_type>(p)...);
+      return data(static_cast<std::ptrdiff_t>(p)...);
     }
   };
 }

@@ -1,73 +1,40 @@
-//==================================================================================================
+//======================================================================================================================
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 
-#include <kwk/concepts/extent.hpp>
-#include <kwk/detail/abi.hpp>
-#include <kwk/detail/kumi.hpp>
-#include <kwk/detail/raberu.hpp>
-#include <kwk/detail/sequence/extent_builder.hpp>
-#include <kwk/detail/sequence/prefilled.hpp>
-#include <kwk/settings/extent.hpp>
-#include <kwk/utility/fixed.hpp>
-#include <kwk/utility/joker.hpp>
-#include <kwk/utility/slicer.hpp>
-#include <cstddef>
-
+#include <type_traits>
 #if !defined(_MSC_VER)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
+#include <kwk/concepts/extent.hpp>
+#include <kwk/detail/abi.hpp>
+#include <kwk/detail/kumi.hpp>
+#include <kwk/detail/sequence/prefilled.hpp>
+#include <kwk/detail/sequence/shape_constraints.hpp>
+#include <kwk/settings/extent.hpp>
+#include <kwk/utility/traits/to_descriptor.hpp>
+#include <kwk/utility/fixed.hpp>
+#include <kwk/utility/slicer.hpp>
+#include <cstddef>
+
 namespace kwk::__ { struct size_; }
 
 namespace kwk
 {
-  template<auto Shape> struct shape;
+  template<auto... D>
+  struct shape;
 
-  template<std::int32_t N, auto Desc>
-  constexpr auto compress(shape<Desc> const& s) noexcept;
+  template<std::int32_t N, auto... D>
+  constexpr auto compress(shape<D...> const&) noexcept;
 
-  //================================================================================================
-  //! @brief Generates a kwk::shape from a list of sizes
-  //! @tparam SizeType  Integral type used to store sizes. If unspecified, the most fitting integral
-  //!                   type is used.
-  //! @param  ds        Variadic pack of sizes
-  //================================================================================================
-  template<std::integral SizeType, int..., concepts::extent<SizeType>... Ds>
-  KWK_CONST constexpr auto of_size(Ds... ds) noexcept
-  {
-    return __::make_extent<kwk::shape,SizeType>(ds...);
-  }
-
-  /// @overload
-  template<int..., typename... Ds>
-  KWK_CONST constexpr   auto of_size( Ds... ds) noexcept
-          ->  decltype(of_size<typename __::largest_integral<Ds...>::type>(ds...)  )
-  {
-    return of_size<typename __::largest_integral<Ds...>::type>(ds...);
-  }
-
-  /// @overload
-  template<int..., kumi::product_type Ds>
-  KWK_CONST constexpr auto of_size( Ds ds) noexcept
-  {
-    return kumi::apply([](auto... s) { return of_size(s...); }, ds);
-  }
-
-  /// @overload
-  template<std::integral SizeType,int..., kumi::product_type Ds>
-  KWK_CONST constexpr auto of_size( Ds ds) noexcept
-  {
-    return kumi::apply([](auto... s) { return of_size<SizeType>(s...); }, ds);
-  }
-
-  //================================================================================================
+  //====================================================================================================================
   //! @ingroup containers
   //! @brief  Fixed order shape with mixed size capability
   //!
@@ -95,238 +62,181 @@ namespace kwk
   //!   kwk::shape s3 = kwk::of_size(kwk::fixed<2>,kwk::fixed<2>, n);  // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
-  //! - defining the layout of the kwk::shape and manually initializing it. The description of the
-  //!   kwk::shape layout is done with the kwk::extent object, one of the pre-defined layouts or.
-  //!   by combining axis descriptors.
+  //! - defining the layout of the kwk::shape using @ref glossary-extent and manually initializing it.
   //!
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-  //!   kwk::shape< kwk::extent[5] >          s1;                   // Order 1 shape with static size
-  //!   kwk::shape< kwk::_2D >                s2(n, m);             // Order 2 shape with dynamic sizes
-  //!   kwk::shape< kwk::width * kwk::height> s3(n,kwk::fixed<3>);  // Order 2 shape with mixed sizes
-  //!   kwk::shape< kwk::extent[2]()[3]>      s4( _, n, _);         // Order 3 shape with mixed sizes
+  //!   kwk::shape<5>                       s1;                   // Order 1 shape with static size
+  //!   kwk::shape<kwk::_,kwk::_>           s2(n, m);             // Order 2 shape with dynamic sizes
+  //!   kwk::shape<kwk::width, kwk::height> s3(n,kwk::fixed<3>);  // Order 2 shape with mixed sizes
+  //!   kwk::shape<2,kwk::_,3>              s4( _, n, _);         // Order 3 shape with mixed sizes
   //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //!
-  //! @tparam Shape An instance of a shape descriptor
-  //================================================================================================
-  template<auto Shape>
-  struct shape : kwk::__::prefilled<Shape>
+  //! @tparam D List of @ref glossary-extent types
+  //====================================================================================================================
+  template<auto... D>
+  struct shape : __::prefilled_t<D...>::type
   {
-    using parent = kwk::__::prefilled<Shape>;
+    using parent        = typename __::prefilled_t<D...>::type;
+    using constraint_t  = KWK_DEFAULT_SHAPE_CONSTRAINTS;
 
-    /// Compile-time shape descriptor
-    static constexpr auto descriptor = Shape;
+    //==================================================================================================================
+    // If you end up here, you built a shape with duplicate axis names
+    //==================================================================================================================
+    static_assert ( !__::prefilled_t<D...>::duplicate_axis()
+                  , "[KWK] Duplicate axis identifiers found when building shape."
+                  );
 
     /// Compile-time value for @ref glossary-order
-    static constexpr std::int32_t static_order = parent::static_size;
-
-    /// Type of dimensions' size
-    using size_type = typename parent::value_type;
+    static constexpr std::int32_t static_order  = parent::static_size;
 
     /// Indicates that the shape has at least one dimension specified at runtime
-    static constexpr bool is_dynamic        = parent::is_dynamic;
+    static constexpr bool is_dynamic            = parent::is_dynamic;
 
     /// Indicates that the shape's dimensions are all specified at runtime
-    static constexpr bool is_fully_dynamic  = parent::dynamic_size == static_order;
+    static constexpr bool is_fully_dynamic      = parent::is_fully_dynamic;
 
     /// Indicates that the shape's dimensions are all specified compile-time
-    static constexpr bool is_fully_static   = parent::is_fully_static;
+    static constexpr bool is_fully_static       = parent::is_fully_static;
 
     // shape is its self option keyword
-    using stored_value_type = shape<Shape>;
+    using stored_value_type = shape<D...>;
     using keyword_type      = __::size_;
 
     KWK_FORCEINLINE constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
 
-    //==============================================================================================
+    //==================================================================================================================
     //! @brief Constructs a default @ref kwk::shape equals to [0 0 ... 0]
-    //==============================================================================================
+    //==================================================================================================================
     constexpr shape() noexcept = default;
 
-    //==============================================================================================
-    //! @brief Constructor from set of dimensions
+    //==================================================================================================================
+    //! @brief Construct from a subset of @ref glossary-extent
     //!
-    //! Constructs a kwk::shape with a variadic list of integral-convertible  dimension values.
-    //! Values can either be any integral value or any fixed integral value.
+    //! This constructor takes a variadic list of @ref glossary-extent for each shape's dimension.
+    //! If the amount of value passed is less than the specified @ref glossary-order of the kwk::shape type,
+    //! all outermost missing extent are set to 1.
     //!
-    //! Passing a runtime dimension size where a static size is provided is undefined behavior if
-    //! both values are not equal.
+    //! Unless specified by a type settings, values are stored inside an instance of kwk::shape as std::int32_t.
     //!
-    //! This constructor will not take part in overload resolution if the number of values exceed
-    //! shape's order or if any value is neither convertible to kwk::shape::size_type.
+    //! @groupheader{Shape Construction Rules}
+    //! kwk::shape exposes different behavior depending on the way its descriptor is defined and its constructor
+    //! parameter are defined.
     //!
-    //! @param  values Variadic list of dimensions' values
-    //==============================================================================================
-    constexpr shape(std::convertible_to<size_type> auto... values) noexcept
-    requires( sizeof...(values) <= static_order )
-    {
-      this->fill(values...);
-    }
+    //! ### Numerical extents
+    //! kwk::shape supports numerical @ref glossary-extent in both type definition and parameters.
+    //! A numerical @ref glossary-extent is used to specify that a given @ref glossary-axis
+    //! has no specific semantic.
+    //!
+    //! Numerical @ref glossary-extent can be:
+    //!   * **An instance of kwk::_**: When used in the kwk::shape type, this means the corresponding @ref glossary-axis
+    //!     has to be specified in the constructor. If used as a value, this means the corresponding
+    //!     @ref glossary-axis will be initialized with its default value (0 or any static value if specified).
+    //!
+    //!   * **An integral value**: When used in the kwk::shape type, this means the corresponding @ref glossary-axis
+    //!     value is fixed at compile-time. If used as a value, it will fill the corresponding @ref glossary-axis.
+    //!     If the runtime value passed as an initialiser is not equal to the static size, the behavior is undefined.
+    //!     Static size parameters has no impact on the kwk::shape object size.
+    //!
+    //!   * **A type specifier**: When used in the kwk::shape type, this forces the storage type of the
+    //!     corresponding @ref glossary-axis. The value still needs to be specified at runtime.
+    //!
+    //! ### Example
+    //! @include docs/shape/numerical_axis.cpp
+    //!
+    //! ### Named extents
+    //! kwk::shape supports named @ref glossary-extent in both type definition and parameters.
+    //! A named @ref glossary-extent is used to specify that a given named @ref glossary-axis
+    //! has a specific semantic and that the ordering of the named @ref glossary-axis is important.
+    //!
+    //! Named @ref glossary-extent can be:
+    //!   * **Used Directly**: If all @ref glossary-extent type are named, they behave as named parameter
+    //!     and can be passed in any order. If they are mixed with other kind of @ref glossary-extent or
+    //!     passed a regular integral value, they must be ordered as required.
+    //!
+    //!   * **Used with a static size**: A named @ref glossary-extent can be suffixed by a call to
+    //!     the subscript operator with an integral value. This signify that this @ref glossary-axis
+    //!     as a size known at compile-time. Such @ref glossary-extent can then be initialized by kwk::_
+    //!     or an integral value of the same value. If the runtime value passed as an initialiser is not
+    //!     equal to the static size, the behavior is undefined. Static size parameters has no impact
+    //!     on the kwk::shape object size.
+    //!
+    //!   * **Used with a type specifier** :A  named @ref glossary-extent can be suffixed by a call to
+    //!     the subscript operator with a type settings (either kwk::as or a pre-defined one). The associated
+    //!     value has to be specified at runtime but will be stored as the chosen type.
+    //!
+    //! ### Example
+    //! @include docs/shape/named_axis.cpp
+    //!
+    //! @param d  Variadic list of @ref glossary-extent.
+    //==================================================================================================================
+    template<concepts::extent... T>
+    requires( std::is_constructible_v<parent, int,T...> )
+    KWK_TRIVIAL explicit constexpr shape(T... d) noexcept : parent(0, d...) {}
 
-    //==============================================================================================
-    //! @brief Construct from a subset of runtime dimension values specifiers
-    //!
-    //! This constructor takes a variadic list of arguments specifying the size specified for a
-    //! given runtime dimension. Those sizes are passed by using an axis descriptor, an integral
-    //! convertible type or kwk::_.
-    //!
-    //! If you pass kwk::_ as a dimension's value, it means that the shape will be using the
-    //! default value for this dimension (i.e. 0).
-    //!
-    //! Passing a dimension to overwrite a compile-time dimensions is undefined behavior.
-    //!
-    //! This constructor will not take part in overload resolution if its parameters doesn't
-    //! conform to the shape descriptor specified or deduced.
-    //!
-    //! @groupheader{Example}
-    //! @include docs/shape/mixed.cpp
-    //!
-    //! @param dims  Variadic list of dimension/size association
-    //==============================================================================================
-    template<concepts::extent<size_type>... A>
-    constexpr shape(A const... dims) noexcept
-    requires( !(std::convertible_to<A,size_type> && ...)
-            && make_combo<size_type>(Shape).is_equivalent(__::as_descriptor<size_type>(A{}...))
-            )
-    {
-      [=, this]<std::size_t... N>(std::index_sequence<N...>)
-      {
-        this->fill(__::as_axis(dims,get<N>(Shape),kumi::index<static_order-N-1>)...);
-      }(std::make_index_sequence<sizeof...(A)>{});
-    }
-
-    //==============================================================================================
-    //! @brief Constructs from a shape with compatible layout
-    //!
-    //! Constructs a kwk::shape from another one with compatible layout but potentially different
-    //! size_type.
-    //!
-    //! Two kwk::shapes have compatible layout if :
-    //!   + All their axis match
-    //!   + They have the same @ref glossary-order
-    //!   + Each axis of the constructed @ref kwk::shape can hold its equivalent from the source
-    //!     shape, i.e it's runtime specified or, if it's compile-time specified, has the same
-    //!     value than its source.
-    //!
-    //! This constructor does not participate in overload resolution if the shapes have a
-    //! non-compatible layout.
-    //!
-    //! @groupheader{Example}
-    //! @include docs/shape/compatible.cpp
-    //!
-    //! @param other  Source kwk::shape to copy
-    //==============================================================================================
-    template<auto OtherShape>
-    constexpr shape( shape<OtherShape> const& other ) noexcept
-    requires(   make_combo<size_type>(Shape).is_equivalent(OtherShape)
-            &&  make_combo<size_type>(Shape).is_compatible(OtherShape)
-            )
-    {
-      kumi::apply([this](auto const... vals){ this->fill(vals...); }, other);
-    }
-
-    //==============================================================================================
-    //! @brief Constructs from a shape with a lower order
-    //!
-    //! Constructs a kwk::shape from a shape with lower orders, filling the missing sizes with 1.
-    //! Lower order axis must be equivalent.
-    //!
-    //! @groupheader{Example}
-    //! @include docs/shape/odd_sized.cpp
-    //!
-    //! @param other  Shape to copy
-    //==============================================================================================
-    template<auto Other>
-    constexpr explicit shape( shape<Other> const& other ) noexcept
-              requires(shape<Other>::static_order < static_order)
-    {
-      kumi::apply([this](auto const... vals){ this->fill(vals...); }, other);
-    }
-
-    //==============================================================================================
-    //! @brief Constructs from a shape with a higher order
-    //!
-    //! Constructs a kwk::shape from a shape with higher orders, compacting the extra-dimensions
-    //! into the last.
-    //!
-    //! If you require compile-time shape descriptor to be updated, consider using @ref compress.
-    //!
-    //! This constructor does not participate in overload resolution of the shape is not fully
-    //! specified at runtime.
-    //!
-    //! @groupheader{Example}
-    //! @include docs/shape/odd_sized.cpp
-    //!
-    //! @param o  Shape to copy
-    //==============================================================================================
-    template<auto Other>
-    constexpr explicit  shape( shape<Other> const& o ) noexcept
-                        requires( shape<Other>::static_order > static_order && is_fully_dynamic)
-            : shape( compress<static_order>(o) )
+    //==================================================================================================================
+    /// Copy constructor
+    //==================================================================================================================
+    KWK_TRIVIAL constexpr shape(shape const& d) noexcept : parent(d)
     {}
 
-    //==============================================================================================
-    /// Assignment operator
-    //==============================================================================================
-    template<auto Other>
-    requires std::constructible_from<shape, shape<Other>>
-    constexpr shape& operator=( shape<Other> const& other ) & noexcept
+    //==================================================================================================================
+    //! @brief Construct shape from another shape type
+    //!
+    //! Copy the content of another kwk::shape if their extents and axis are compatible.
+    //!
+    //! @note This constructor is explicit if the order of current shape is not equal to the order of `other`.
+    //! @param other  Shape to copy
+    //==================================================================================================================
+    template<auto... D2>
+    requires( constraint_t::is_contructible_from<parent{},typename shape<D2...>::parent{}>() )
+    KWK_TRIVIAL
+#if !defined(KWK_DOXYGEN_INVOKED)
+    explicit(static_order != sizeof...(D2))
+#endif
+    constexpr shape(shape<D2...> const& other) noexcept
     {
-      shape that(other);
-      swap(that);
+      constraint_t::construct(*this, other);
+    }
+
+    //==================================================================================================================
+    /// Assignment operator
+    //==================================================================================================================
+    constexpr shape& operator=( shape const& other ) & noexcept
+    {
+      this->__base() = other.__base();
       return *this;
     }
 
-    //==============================================================================================
-    // If an error appears here, it means you try to assign a shape to a shape with non-equivalent
-    // axis description.
-    //  E.g:
-    //  shape<extent()()> x;
-    //  x = of_size(width = 4, height = 2);
-    //==============================================================================================
-    template<auto Other>
-    requires(!std::constructible_from<shape, shape<Other>>)
-    constexpr shape& operator=( shape<Other> const& other ) & noexcept = delete;
-
-    /// Swap shapes' contents
-    friend void swap( shape& x, shape& y ) noexcept { x.swap(y); }
-    using parent::swap;
-
-    /// Equality comparison operator
-    KWK_PURE friend constexpr bool operator==( shape const & a, shape const & b ) noexcept
+    template<auto... D2>
+    requires( constraint_t::is_contructible_from<parent{},typename shape<D2...>::parent{}>() )
+    constexpr shape& operator=( shape<D2...> const& other ) & noexcept
     {
-        return a.storage() == b.storage();
+      constraint_t::construct(*this, other);
+      return *this;
     }
 
-    template<auto S2>
-    KWK_PURE friend constexpr bool operator==(shape const & a, shape< S2 > const & b ) noexcept
-    requires(  compress<std::min(Shape.size(), S2.size())>(Shape)
-              .is_equivalent(compress<std::min(Shape.size(), S2.size())>(S2))
-            )
+    /// Equality comparison operator
+    template<auto... D2>
+    KWK_PURE friend constexpr bool operator==(shape const& a, shape<D2...> const& b) noexcept
     {
-      constexpr auto sz = std::min(Shape.size(), S2.size());
+      constexpr auto sz = std::min(static_order, shape<D2...>::static_order);
       bool result = true;
-      kumi::for_each ( [&](auto aa, auto bb) { result = result && (aa == bb); }
-                            , compress<sz>(a)
-                            , compress<sz>(b)
-                            );
+      kumi::for_each( [&](auto aa, auto bb) { result = result && (aa == bb); }
+                    , compress<sz>(a), compress<sz>(b)
+                    );
       return result;
     }
 
-    template<auto S2>
-    friend constexpr bool operator==(shape const& a, shape<S2> const& b) noexcept
-    requires(  !compress<std::min(Shape.size(), S2.size())>(Shape)
-              .is_equivalent(compress<std::min(Shape.size(), S2.size())>(S2))
-            ) = delete;
-
-    //==============================================================================================
+    //==================================================================================================================
     //! @brief Check if a position fits into current shape volume
     //!
-    //! Check if all coordinates of a given position fits inside a shape volume
+    //! Check if all coordinates of a given position fits inside a shape volume.
+    //! Does not participate in overload resolution if the order of the shape and the dimension of the coordinate
+    //! do not match.
     //!
     //! @param p  List of coordinates to check
-    //! @return `true` if all extent of other fits exactly inside current shape. `false` otherwise.
-    //!
-    //==============================================================================================
+    //! @return `true` if all extent of other fits exactly inside current shape, `false` otherwise.
+    //==================================================================================================================
     template<std::integral... Coords>
     KWK_PURE constexpr bool contains(Coords... p) const noexcept
     requires(static_order == sizeof...(Coords))
@@ -334,20 +244,28 @@ namespace kwk
       return kumi::apply( [&](auto... m) { return ((p < m) && ... && true); }, *this);
     }
 
-    template<std::integral... Coords>
-    constexpr bool contains(Coords...) const noexcept
-    requires(static_order != sizeof...(Coords)) = delete;
+    //==============================================================================================
+    //! @brief Check if a shape fit current's shape constraints on size and dimension
+    //! @param ref Shape to use as a reference extent
+    //! @return `true` if both shape has the same order and if each statically set dimension of
+    //!         `ref` is matched with an equal value in the current shape.
+    //==============================================================================================
+    template<auto... D2>
+    KWK_PURE constexpr bool fit_constraints(shape<D2...> const& ref) const noexcept
+    {
+      return constraint_t::fit_constraints(*this, ref);
+    }
 
     /// Number of dimensions
-    static constexpr auto order() noexcept { return static_order; }
+    KWK_PURE static constexpr auto order() noexcept { return static_order; }
 
-    //==============================================================================================
+    //==================================================================================================================
     //! @brief Number of non-trivial dimensions
     //!
     //! Computes the number of non-trivial dimensions, i.e dimension with size equals to 1 and that
     //! doesn't participate to the shape's extent.
-    //==============================================================================================
-    constexpr std::int32_t nbdims() const noexcept
+    //==================================================================================================================
+    KWK_PURE constexpr std::int32_t nbdims() const noexcept
     {
       if constexpr(static_order == 0)  return 0;
       else
@@ -357,62 +275,19 @@ namespace kwk
       }
     }
 
-    //==============================================================================================
+    //==================================================================================================================
     //! @brief Number of elements
     //!
     //! Computes the number of elements storable in current kwk::shape, i.e the product of all
     //! dimensions' size.
-    //==============================================================================================
-    constexpr std::int32_t numel() const noexcept
+    //==================================================================================================================
+    KWK_PURE constexpr std::int32_t numel() const noexcept
     {
       if constexpr(static_order == 0) return 0;
-      else return kumi::fold_left([](auto a, auto b){ return a*b; }, *this, std::int32_t{1});
+      else return kumi::fold_left([](auto a, auto b){ return a*b; }, *this, fixed<1>);
     }
 
-    //==============================================================================================
-    //! @brief Check if a shape fit current's shape constraints on size and dimension
-    //! @param ref Shape to use as a reference extent
-    //! @return `true` if both shape has the same order and if each statically set dimension of
-    //!         `ref` is matched with an equal value in the current shape.
-    //==============================================================================================
-    template<auto R>
-    KWK_PURE constexpr bool fit_constraints(shape<R> const& ref) const noexcept
-    {
-      if      constexpr(shape<R>::is_fully_dynamic                  ) return true;
-      else if constexpr(shape<R>::static_order != static_order      ) return false;
-      else if constexpr(shape<R>::is_fully_static && is_fully_static) return R.is_compatible(Shape);
-      else
-      {
-        return [&]<std::size_t... N>(std::index_sequence<N...>)
-        {
-          auto check = []<typename A>(A a,auto b) { return std::integral<A> || a == b; };
-
-          return (true && ... && check(get<N>(ref), get<N>(*this)) );
-        }(std::make_index_sequence<static_order>{});
-      }
-    }
-
-    template<typename T, typename... E>
-    constexpr bool is_similar( __::combo<T,E...> const& o) const noexcept
-    {
-      return descriptor.is_similar(o);
-    }
-
-    template<auto S2>
-    constexpr bool is_similar( shape<S2> const& ) const noexcept
-    {
-      return descriptor.is_similar(S2);
-    }
-
-    /// Stream insertion operator
-    friend std::ostream& operator<<(std::ostream& os, shape const& s)
-    {
-      os << "[";
-      kumi::for_each_index( [&](auto i, auto) { os << " " << get<i>(s); }, s);
-      return os << " ]";
-    }
-
-    //==============================================================================================
+    //==================================================================================================================
     //! @brief Shape slicing interface
     //!
     //! Computes the shape of the sub-volume described by the slicers passed as parameters
@@ -423,11 +298,10 @@ namespace kwk
     //! @param s  Variadic list of slicer instances
     //! @return   An instance of @ref kwk::shape corresponding to the shape of the selected
     //!           sub-volume
-    //==============================================================================================
+    //==================================================================================================================
     // has to be defined inline due to (Apple) Clang deficiencies
     // https://github.com/llvm/llvm-project/issues/58952
-    // but also after of_size
-    //==============================================================================================
+    //==================================================================================================================
     template<typename... Slicers>
     constexpr auto operator()(Slicers const&... s ) const noexcept
     requires( sizeof...(Slicers) <= static_order )
@@ -437,44 +311,109 @@ namespace kwk
                                       , kumi::tie(s...)
                                       );
 
-      return kumi::apply( [](auto... v) { return of_size(v...); }, sliced );
+      return kumi::apply( []<typename... V>(V... v) { return shape<to_descriptor(V{})...>{v...}; }, sliced );
     }
+
+    /// Stream insertion operator
+    friend std::ostream& operator<<(std::ostream& os, shape const& s)
+    {
+      os << "[";
+      kumi::for_each_index( [&](auto i, auto) { os << " " << +get<i>(s); }, s);
+      return os << " ]";
+    }
+
+    // Access to base type for internal implementation
+    KWK_TRIVIAL constexpr auto const& __base() const  noexcept { return static_cast<parent const&>(*this);  }
+    KWK_TRIVIAL constexpr auto &      __base()        noexcept { return static_cast<parent&>(*this);        }
   };
 
   /// Deduction guide for @ref kwk::shape
-  template<typename... T>
-  shape(T...) -> shape< __::descriptor_from<T...>() >;
+  template<concepts::extent... T>
+  shape(T...) -> shape<to_descriptor(T{})...>;
 
-  //================================================================================================
+  //====================================================================================================================
+  //! @brief Generates a kwk::shape from a list of @ref glossary-extent
+  //! @param  d        Variadic pack of @ref glossary-extent
+  //====================================================================================================================
+  template<int..., concepts::extent... D>
+  KWK_TRIVIAL constexpr auto of_size(D... d)
+  {
+    return shape<to_descriptor(D{})...>{d...};
+  }
+
+  //====================================================================================================================
+  //! @brief Generates a kwk::shape from a list of @ref glossary-extent
+  //! @tparam SizeType  Integral type used to store sizes.
+  //! @param  d         Variadic pack of @ref glossary-extent
+  //====================================================================================================================
+  template<std::integral SizeType, int..., concepts::extent... D>
+  KWK_TRIVIAL constexpr auto of_size(D... d)
+  {
+    return of_size(__::force_type<SizeType>(d)...);
+  }
+
+  //====================================================================================================================
+  //! @brief Generates a kwk::shape from a tuple of @ref glossary-extent
+  //! @param  t         Tuple of  @ref glossary-extent
+  //====================================================================================================================
+  template<int..., kumi::product_type T>
+  KWK_TRIVIAL constexpr auto of_size(T const& t)
+  {
+    return kumi::apply( [](auto... e) {  return of_size(e...); }, t);
+  }
+
+  //====================================================================================================================
+  //! @brief Generates a kwk::shape from a tuple of @ref glossary-extent
+  //! @tparam SizeType  Integral type used to store sizes.
+  //! @param  t         Tuple of  @ref glossary-extent
+  //====================================================================================================================
+  template<typename SizeType, int...,kumi::product_type T>
+  KWK_TRIVIAL constexpr auto of_size(T const& t)
+  {
+    return kumi::apply( [](auto... e) {  return of_size<SizeType>(e...); }, t);
+  }
+
+  //====================================================================================================================
   //! @brief Compress a kwk::shape to a given order
   //! @tparam N  Expected @ref glossary-order of the generated shape.
   //! @param  s  Original shape to compress
   //! @return A new kwk::shape instance which order has been set to N by compressing dimensions.
-  //================================================================================================
-  template<std::int32_t N, auto Desc>
-  constexpr auto compress(shape<Desc> const& s) noexcept
+  //====================================================================================================================
+  template<std::int32_t N, auto... D>
+  KWK_CONST constexpr auto compress(shape<D...> const& s) noexcept
+  requires(N>0 && N<=sizeof...(D))
   {
-    using old_t = typename shape<Desc>::parent;
-    using new_t = typename shape<compress<N>(Desc)>::parent;
-
-    shape<compress<N>(Desc)> that;
-    static_cast<new_t&>(that) = compress<N>(static_cast<old_t const&>(s));
-    return that;
+    constexpr std::int32_t sz = shape<D...>::static_order;
+    if constexpr(N == sz) return s;
+    else
+    {
+      auto [head,tail] = kumi::split(s, kumi::index<sz-N+1>);
+      auto value = kumi::fold_right( [](auto acc, auto v) { return acc * v; }, pop_front(head), get<0>(head));
+      return of_size(kumi::push_front(tail,value));
+    }
   }
+
+  using _1D = shape<_>;
+  using _2D = shape<_,_>;
+  using _3D = shape<_,_,_>;
+  using _4D = shape<_,_,_,_>;
+
+//  template<std::size_t N>
+//  using _nD = []<std::size_t... I>(std::index_sequence<I...>)
+//   {
+//     return of_size(along<N-I-1>...);
+//   }(std::make_index_sequence<N>{});
 }
 
+#if !defined(KWK_DOXYGEN_INVOKED)
 // Tuple interface adaptation
-template<auto Desc>
-struct  std::tuple_size<kwk::shape<Desc>>
-      : std::integral_constant<std::int32_t,kwk::shape<Desc>::static_order>
+template<auto... D>
+struct  std::tuple_size<kwk::shape<D...>>
+      : std::integral_constant<std::int32_t,sizeof...(D)>
 {};
 
-template<std::size_t N, auto Desc>
-struct  std::tuple_element<N, kwk::shape<Desc>>
-{
-  using type = typename kwk::shape<Desc>::size_type;
-};
-
-#if !defined(_MSC_VER)
-#pragma GCC diagnostic pop
+template<std::size_t N, auto... D>
+struct  std::tuple_element<N, kwk::shape<D...>>
+: std::tuple_element<N, typename kwk::shape<D...>::parent>
+{};
 #endif

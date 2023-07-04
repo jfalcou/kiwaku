@@ -27,7 +27,6 @@ namespace kwk
     using pointer           = typename data_t::pointer;
     using const_pointer     = typename data_t::const_pointer;
     using shape_type        = typename access_t::shape_type;
-    using size_type         = typename shape_type::size_type;
     using container_kind    = decltype(Tag);
 
     static constexpr std::int32_t static_order  = access_t::static_order;
@@ -61,22 +60,22 @@ namespace kwk
 
     friend void swap(container& a,container& b) noexcept { a.swap(b); }
 
-    static constexpr auto archetype() noexcept
+    KWK_TRIVIAL static constexpr auto archetype() noexcept
     {
       return rbr::settings(as<value_type>, shape_type{});
     }
 
-    static constexpr auto archetype(auto tag) noexcept
+    KWK_TRIVIAL static constexpr auto archetype(auto tag) noexcept
     {
       return rbr::settings(tag, as<value_type>, shape_type{});
     }
 
-    constexpr auto settings() const noexcept
+    KWK_TRIVIAL constexpr auto settings() const noexcept
     {
       return rbr::settings(source = pointer(get_data()), this->shape());
     }
 
-    constexpr auto settings(auto tag) const noexcept
+    KWK_TRIVIAL constexpr auto settings(auto tag) const noexcept
     {
       return rbr::settings(tag, source = pointer(get_data()), this->shape());
     }

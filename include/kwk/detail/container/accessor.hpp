@@ -26,7 +26,7 @@ namespace kwk::__
     constexpr auto  shape()   const noexcept  { return shape_;         }
     constexpr auto  stride()  const noexcept  { return stride_;        }
 
-    constexpr   accessor(): shape_ (), stride_() {}
+    KWK_TRIVIAL constexpr   accessor(): shape_ (), stride_() {}
 
     constexpr   accessor(rbr::concepts::settings auto const& opts)
               : shape_ ( pick(kwk::size   ,opts) )
@@ -49,8 +49,8 @@ namespace kwk::__
 
     constexpr void swap( accessor& other ) noexcept
     {
-      shape_.swap( other.shape_ );
-      stride_.swap( other.stride_ );
+      std::swap(shape_ , other.shape_  );
+      std::swap(stride_, other.stride_ );
     }
 
     shape_type    shape_;
@@ -72,9 +72,9 @@ namespace kwk::__
     constexpr auto  shape()   const noexcept  { return Shape;         }
     constexpr auto  stride()  const noexcept  { return Stride;        }
 
-    constexpr       accessor()  {}
-    constexpr       accessor(rbr::concepts::settings auto const&) noexcept {}
-    constexpr void  swap( accessor& ) noexcept {}
+    KWK_TRIVIAL constexpr       accessor()  {}
+    KWK_TRIVIAL constexpr       accessor(rbr::concepts::settings auto const&) noexcept {}
+    KWK_TRIVIAL constexpr void  swap( accessor& ) noexcept {}
 
     constexpr auto index(std::integral auto... is) const noexcept { return Stride.linearize(is...); }
   };
@@ -91,9 +91,9 @@ namespace kwk::__
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_order  = shape_type::static_size;
 
-    constexpr   accessor() : shape_{} {}
-    constexpr   accessor(rbr::concepts::settings auto const& opts)
-              : shape_ ( pick(kwk::size,opts) )
+    KWK_TRIVIAL constexpr   accessor() : shape_{} {}
+    KWK_TRIVIAL constexpr   accessor(rbr::concepts::settings auto const& opts)
+                          : shape_ ( pick(kwk::size,opts) )
     {}
 
     constexpr auto        size()          const noexcept  { return get<0>(shape_);  }
@@ -102,7 +102,7 @@ namespace kwk::__
     constexpr auto        index(auto is)  const noexcept  { return is;              }
 
     constexpr void reshape( shape_type const& s ) noexcept { shape_ = s; }
-    constexpr void swap( accessor& other )        noexcept { shape_.swap( other.shape_ ); }
+    constexpr void swap( accessor& other )        noexcept { std::swap(shape_ , other.shape_  ); }
 
     shape_type shape_;
   };
@@ -119,22 +119,22 @@ namespace kwk::__
     using stride_type                   = std::remove_cvref_t<decltype(Stride)>;
     static constexpr auto static_order  = shape_type::static_size;
 
-    constexpr accessor() : shape_{} {}
-    constexpr accessor(rbr::concepts::settings auto const& opts)
-              : shape_ ( pick(kwk::size,opts) )
+    KWK_TRIVIAL constexpr accessor() : shape_{} {}
+    KWK_TRIVIAL constexpr accessor(rbr::concepts::settings auto const& opts)
+                        : shape_ ( pick(kwk::size,opts) )
     {}
 
     constexpr auto  size()  const noexcept { return shape_.numel();  }
     constexpr auto  shape() const noexcept { return shape_;          }
 
-    constexpr auto stride() const noexcept { return stride_type{fixed<1>,get<1>(shape_)}; }
+    constexpr auto stride() const noexcept { return stride_type{get<1>(shape_),fixed<1>}; }
 
     constexpr void reshape( shape_type const& s ) { shape_ = s; }
 
     constexpr auto index(auto i0)           const noexcept { return i0; }
-    constexpr auto index(auto i0, auto i1)  const noexcept { return i1 + i0*get<1>(shape_); }
+    constexpr auto index(auto i1, auto i0)  const noexcept { return i0 + i1*get<1>(shape_); }
 
-    constexpr void swap( accessor& other ) noexcept { shape_.swap( other.shape_ ); }
+    constexpr void swap( accessor& other ) noexcept { std::swap(shape_ , other.shape_  ); }
 
     shape_type  shape_;
   };

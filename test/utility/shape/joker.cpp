@@ -13,22 +13,22 @@ TTS_CASE( "1D shape constructor with joker indexes" )
 {
   using namespace kwk::literals;
 
-  kwk::shape<kwk::_1D> d1(kwk::_);
+  kwk::_1D d1(kwk::_);
   TTS_EQUAL( get<0>(d1), 0);
 
-  kwk::shape<kwk::_1D> d2(3);
+  kwk::_1D d2(3);
   TTS_EQUAL( get<0>(d2), 3);
 
-  kwk::shape<kwk::_1D> d3(3_c);
+  kwk::_1D d3(3_c);
   TTS_EQUAL( get<0>(d3), 3);
 
-  kwk::shape<kwk::extent[3]> s1(kwk::_);
+  kwk::shape<3> s1(kwk::_);
   TTS_EQUAL( get<0>(s1), 3);
 
-  kwk::shape<kwk::extent[3]> s2(3);
+  kwk::shape<3> s2(3);
   TTS_EQUAL( get<0>(s2), 3);
 
-  kwk::shape<kwk::extent[3]> s3(3_c);
+  kwk::shape<3> s3(3_c);
   TTS_EQUAL( get<0>(s3), 3);
 };
 
@@ -57,9 +57,9 @@ inline auto d3 = kumi::tuple{kwk::_,9,33_c};
 
 // expected dimensions
 inline auto v0 = kumi::tuple{0,3,42};
-inline auto v1 = kumi::tuple{1,7,61};
-inline auto v2 = kumi::tuple{1,5,93};
-inline auto v3 = kumi::tuple{1,9,33};
+inline auto v1 = kumi::tuple{0,7,61};
+inline auto v2 = kumi::tuple{0,5,93};
+inline auto v3 = kumi::tuple{0,9,33};
 
 TTS_CASE( "2D shape constructor with joker indexes" )
 {
