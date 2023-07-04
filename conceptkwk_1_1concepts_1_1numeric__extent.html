@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::linear_index</title>
+<title>Kiwaku: kwk::concepts::numeric_extent Concept Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__utility_ga032b4c6695f7745bded81660a8975262.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1numeric__extent.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,62 +120,30 @@ $(document).ready(function(){initNavTree('group__utility_ga032b4c6695f7745bded81
 </div>
 </div>
 
+<div class="header">
+  <div class="headertitle"><div class="title">kwk::concepts::numeric_extent Concept Reference</div></div>
+</div><!--header-->
 <div class="contents">
-<a id="ga032b4c6695f7745bded81660a8975262" name="ga032b4c6695f7745bded81660a8975262"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga032b4c6695f7745bded81660a8975262">&#9670;&#160;</a></span>linear_index() <span class="overload">[1/3]</span></h2>
 
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;auto Shaper, std::integral... Index&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto kwk::linear_index </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;&#160;</td>
-          <td class="paramname"><em>sh</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Index...&#160;</td>
-          <td class="paramname"><em>idx</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
+<p>Shape and stride numerical values.  
+<a href="conceptkwk_1_1concepts_1_1numeric__extent.html#details">More...</a></p>
 
-<p>Computes a linear index from a order N list of indexes. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">sh</td><td>Shape used as a reference </td></tr>
-    <tr><td class="paramname">idx</td><td>Individual list of indexes representing the order N index to linearize </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The linear index equivalent to (idx...) for the current shape </dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+<p><code>#include &lt;kwk/concepts/extent.hpp&gt;</code></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Numerical extents are joker, axis or values convertible to <code>std::size_t</code> </p>
+</div><h2 class="groupheader">Concept definition</h2>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1numeric__extent.html">kwk::concepts::numeric_extent</a> =  std::convertible_to&lt;T,std::size_t&gt; || <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1axis.html">axis&lt;T&gt;</a> || <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1joker.html">joker&lt;T&gt;</a></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1axis_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1axis.html">kwk::concepts::axis</a></div><div class="ttdoc">Axis concept.</div><div class="ttdef"><b>Definition:</b> axis.hpp:21</div></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1joker_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1joker.html">kwk::concepts::joker</a></div><div class="ttdoc">Concept for types acting as a joker value.</div><div class="ttdef"><b>Definition:</b> extent.hpp:19</div></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1numeric__extent_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1numeric__extent.html">kwk::concepts::numeric_extent</a></div><div class="ttdoc">Shape and stride numerical values.</div><div class="ttdef"><b>Definition:</b> extent.hpp:35</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><b>concepts</b></li><li class="navelem"><a class="el" href="conceptkwk_1_1concepts_1_1numeric__extent.html">numeric_extent</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

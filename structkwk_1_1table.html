@@ -135,8 +135,7 @@ $(document).ready(function(){initNavTree('structkwk_1_1table.html',''); initResi
 <p><code>#include &lt;kwk/container/table.hpp&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Builder&gt;<br />
-struct kwk::table&lt; Builder &gt;</div><p>Owning, contiguous multi-dimensional container. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
+struct kwk::table&lt; Builder &gt;</div><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Builder</td><td>Policy generator for current table </td></tr>
   </table>
@@ -173,42 +172,42 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>shape_type</b> = typ
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Constructors</div></td></tr>
-<tr class="memitem:adb9ef9d36a6392ffcc1d28c66b521b40"><td class="memItemLeft" align="right" valign="top"><a id="adb9ef9d36a6392ffcc1d28c66b521b40" name="adb9ef9d36a6392ffcc1d28c66b521b40"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> ()</td></tr>
-<tr class="memdesc:adb9ef9d36a6392ffcc1d28c66b521b40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
-<tr class="separator:adb9ef9d36a6392ffcc1d28c66b521b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51452ca716dc0e8387cfd8b34ff745d4"><td class="memItemLeft" align="right" valign="top"><a id="a51452ca716dc0e8387cfd8b34ff745d4" name="a51452ca716dc0e8387cfd8b34ff745d4"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (rbr::concepts::option auto const &amp;... opts)</td></tr>
-<tr class="memdesc:a51452ca716dc0e8387cfd8b34ff745d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a table from a list of options. <br /></td></tr>
-<tr class="separator:a51452ca716dc0e8387cfd8b34ff745d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7376cc2405b06cfcb2768791dc2c2bf"><td class="memItemLeft" align="right" valign="top"><a id="ac7376cc2405b06cfcb2768791dc2c2bf" name="ac7376cc2405b06cfcb2768791dc2c2bf"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (rbr::concepts::settings auto const &amp;opts)</td></tr>
-<tr class="memdesc:ac7376cc2405b06cfcb2768791dc2c2bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a table from a settings descriptor. <br /></td></tr>
-<tr class="separator:ac7376cc2405b06cfcb2768791dc2c2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8f59477f1c2b6ee29e0b6d98e2151fa"><td class="memItemLeft" align="right" valign="top"><a id="ac8f59477f1c2b6ee29e0b6d98e2151fa" name="ac8f59477f1c2b6ee29e0b6d98e2151fa"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (<a class="el" href="structkwk_1_1table.html">table</a> &amp;&amp;)=default</td></tr>
-<tr class="memdesc:ac8f59477f1c2b6ee29e0b6d98e2151fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor. <br /></td></tr>
-<tr class="separator:ac8f59477f1c2b6ee29e0b6d98e2151fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a112d2e2a816cab550b0463c0d02459d3"><td class="memItemLeft" align="right" valign="top"><a id="a112d2e2a816cab550b0463c0d02459d3" name="a112d2e2a816cab550b0463c0d02459d3"></a>
-constexpr <a class="el" href="structkwk_1_1table.html">table</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structkwk_1_1table.html">table</a> &amp;&amp;)=default</td></tr>
-<tr class="memdesc:a112d2e2a816cab550b0463c0d02459d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment operator. <br /></td></tr>
-<tr class="separator:a112d2e2a816cab550b0463c0d02459d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4883ff1284e02c98db6a015ea642c1"><td class="memItemLeft" align="right" valign="top"><a id="a7c4883ff1284e02c98db6a015ea642c1" name="a7c4883ff1284e02c98db6a015ea642c1"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> ()</td></tr>
+<tr class="memdesc:a7c4883ff1284e02c98db6a015ea642c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
+<tr class="separator:a7c4883ff1284e02c98db6a015ea642c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04c53fc14137216b537ff031599fed33"><td class="memItemLeft" align="right" valign="top"><a id="a04c53fc14137216b537ff031599fed33" name="a04c53fc14137216b537ff031599fed33"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (rbr::concepts::option auto const &amp;... opts)</td></tr>
+<tr class="memdesc:a04c53fc14137216b537ff031599fed33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a table from a list of options. <br /></td></tr>
+<tr class="separator:a04c53fc14137216b537ff031599fed33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a276d42f30083cc64b43cdd3268b1ed39"><td class="memItemLeft" align="right" valign="top"><a id="a276d42f30083cc64b43cdd3268b1ed39" name="a276d42f30083cc64b43cdd3268b1ed39"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (rbr::concepts::settings auto const &amp;opts)</td></tr>
+<tr class="memdesc:a276d42f30083cc64b43cdd3268b1ed39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a table from a settings descriptor. <br /></td></tr>
+<tr class="separator:a276d42f30083cc64b43cdd3268b1ed39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5afafd1f488cfea2beee17bcaf4dd79e"><td class="memItemLeft" align="right" valign="top"><a id="a5afafd1f488cfea2beee17bcaf4dd79e" name="a5afafd1f488cfea2beee17bcaf4dd79e"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (<a class="el" href="structkwk_1_1table.html">table</a> &amp;&amp;)=default</td></tr>
+<tr class="memdesc:a5afafd1f488cfea2beee17bcaf4dd79e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor. <br /></td></tr>
+<tr class="separator:a5afafd1f488cfea2beee17bcaf4dd79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d6bad19f22bc3aba36bbb1c9e473092"><td class="memItemLeft" align="right" valign="top"><a id="a2d6bad19f22bc3aba36bbb1c9e473092" name="a2d6bad19f22bc3aba36bbb1c9e473092"></a>
+KWK_TRIVIAL constexpr <a class="el" href="structkwk_1_1table.html">table</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structkwk_1_1table.html">table</a> &amp;&amp;)=default</td></tr>
+<tr class="memdesc:a2d6bad19f22bc3aba36bbb1c9e473092"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment operator. <br /></td></tr>
+<tr class="separator:a2d6bad19f22bc3aba36bbb1c9e473092"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33f62be9622baf7cca1a95488b798ff9"><td class="memItemLeft" align="right" valign="top"><a id="a33f62be9622baf7cca1a95488b798ff9" name="a33f62be9622baf7cca1a95488b798ff9"></a>
 constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (<a class="el" href="structkwk_1_1table.html">table</a> const &amp;other)</td></tr>
 <tr class="memdesc:a33f62be9622baf7cca1a95488b798ff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br /></td></tr>
 <tr class="separator:a33f62be9622baf7cca1a95488b798ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a373f15e4a2437514866999c99258631f"><td class="memItemLeft" align="right" valign="top"><a id="a373f15e4a2437514866999c99258631f" name="a373f15e4a2437514866999c99258631f"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (concepts::container&lt; <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt; <a class="el" href="structkwk_1_1table.html#a5d510776e9e21567496f525718c2c870">value_type</a> &gt;, <a class="el" href="structkwk_1_1table.html#ad15f56bb61637a7cb51a727eddc71ac3">shape_type</a>{}&gt; auto const &amp;other)</td></tr>
-<tr class="memdesc:a373f15e4a2437514866999c99258631f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor from other container. <br /></td></tr>
-<tr class="separator:a373f15e4a2437514866999c99258631f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac774f47fb87744af3ea685b0fa6570af"><td class="memItemLeft" align="right" valign="top"><a id="ac774f47fb87744af3ea685b0fa6570af" name="ac774f47fb87744af3ea685b0fa6570af"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>table</b> (concepts::container&lt; type&lt; <a class="el" href="structkwk_1_1table.html#a5d510776e9e21567496f525718c2c870">value_type</a> &gt;, <a class="el" href="structkwk_1_1table.html#ad15f56bb61637a7cb51a727eddc71ac3">shape_type</a> &gt; auto const &amp;other)</td></tr>
+<tr class="memdesc:ac774f47fb87744af3ea685b0fa6570af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor from other container. <br /></td></tr>
+<tr class="separator:ac774f47fb87744af3ea685b0fa6570af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b6d2f842750d336afd11e6348929772"><td class="memItemLeft" align="right" valign="top"><a id="a2b6d2f842750d336afd11e6348929772" name="a2b6d2f842750d336afd11e6348929772"></a>
 constexpr <a class="el" href="structkwk_1_1table.html">table</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structkwk_1_1table.html">table</a> const &amp;other)</td></tr>
 <tr class="memdesc:a2b6d2f842750d336afd11e6348929772"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy assignment operator. <br /></td></tr>
 <tr class="separator:a2b6d2f842750d336afd11e6348929772"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fa35ccdff8c4ff9608d8724903138a7"><td class="memItemLeft" align="right" valign="top"><a id="a9fa35ccdff8c4ff9608d8724903138a7" name="a9fa35ccdff8c4ff9608d8724903138a7"></a>
-constexpr <a class="el" href="structkwk_1_1table.html">table</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (concepts::container&lt; <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt; <a class="el" href="structkwk_1_1table.html#a5d510776e9e21567496f525718c2c870">value_type</a> &gt;, <a class="el" href="structkwk_1_1table.html#ad15f56bb61637a7cb51a727eddc71ac3">shape_type</a>{}&gt; auto const &amp;other)</td></tr>
-<tr class="memdesc:a9fa35ccdff8c4ff9608d8724903138a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy assignment operator from other container. <br /></td></tr>
-<tr class="separator:a9fa35ccdff8c4ff9608d8724903138a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15dc8264a94e20fe389375058b9a81ee"><td class="memItemLeft" align="right" valign="top"><a id="a15dc8264a94e20fe389375058b9a81ee" name="a15dc8264a94e20fe389375058b9a81ee"></a>
+constexpr <a class="el" href="structkwk_1_1table.html">table</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (concepts::container&lt; type&lt; <a class="el" href="structkwk_1_1table.html#a5d510776e9e21567496f525718c2c870">value_type</a> &gt;, <a class="el" href="structkwk_1_1table.html#ad15f56bb61637a7cb51a727eddc71ac3">shape_type</a> &gt; auto const &amp;other)</td></tr>
+<tr class="memdesc:a15dc8264a94e20fe389375058b9a81ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy assignment operator from other container. <br /></td></tr>
+<tr class="separator:a15dc8264a94e20fe389375058b9a81ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>

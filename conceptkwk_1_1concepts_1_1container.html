@@ -130,26 +130,22 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1container.ht
 
 <p><code>#include &lt;kwk/concepts/container.hpp&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Container concept. </p>
-<p>A <a class="el" href="conceptkwk_1_1concepts_1_1container.html">kwk::concepts::container</a> is a type exhibiting the basic interface of a nD container and having a given set of settings. </p>
+<div class="textblock"><p>A <a class="el" href="conceptkwk_1_1concepts_1_1container.html">kwk::concepts::container</a> is a type exhibiting the basic interface of a nD container and having a given set of settings. </p>
 </div><h2 class="groupheader">Concept definition</h2>
-<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">auto</span>... Os&gt;</div>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Os&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1container.html">kwk::concepts::container</a> =    <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1basic__container.html">basic_container&lt;T&gt;</a></div>
 <div class="line">                    &amp;&amp;  same_value_type &lt; typename std::remove_cvref_t&lt;T&gt;::value_type</div>
 <div class="line">                                        , <span class="keyword">typename</span> rbr::result::fetch_t</div>
-<div class="line">                                          &lt; type</div>
-<div class="line">                                          | as&lt;typename std::remove_cvref_t&lt;T&gt;::value_type&gt;</div>
-<div class="line">                                          , <span class="keyword">decltype</span>(Os)...</div>
+<div class="line">                                          &lt; value_type | as&lt;typename std::remove_cvref_t&lt;T&gt;::value_type&gt;</div>
+<div class="line">                                          , Os...</div>
 <div class="line">                                          &gt;::type</div>
 <div class="line">                                  &gt;</div>
-<div class="line">                    &amp;&amp;  same_shape&lt; <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::shape_type</div>
-<div class="line">                                  , rbr::fetch( <a class="code hl_variable" href="group__settings.html#ga2846917ba45ea58670d9d45afe907925">size</a> | <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::shape_type{}</div>
-<div class="line">                                              , Os...</div>
-<div class="line">                                              )</div>
+<div class="line">                    &amp;&amp;  same_shape&lt; typename std::remove_cvref_t&lt;T&gt;::shape_type</div>
+<div class="line">                                  , rbr::fetch(<a class="code hl_variable" href="group__settings.html#ga2846917ba45ea58670d9d45afe907925">size</a> | <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::shape_type{}, Os{}...)</div>
 <div class="line">                                  &gt;</div>
 <div class="ttc" id="aconceptkwk_1_1concepts_1_1basic__container_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1basic__container.html">kwk::concepts::basic_container</a></div><div class="ttdoc">Basic container concept.</div><div class="ttdef"><b>Definition:</b> container.hpp:27</div></div>
 <div class="ttc" id="aconceptkwk_1_1concepts_1_1container_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1container.html">kwk::concepts::container</a></div><div class="ttdoc">Container concept.</div><div class="ttdef"><b>Definition:</b> container.hpp:63</div></div>
-<div class="ttc" id="agroup__settings_html_ga2846917ba45ea58670d9d45afe907925"><div class="ttname"><a href="group__settings.html#ga2846917ba45ea58670d9d45afe907925">kwk::size</a></div><div class="ttdeci">constexpr __::size_ size</div><div class="ttdoc">Size setting for kwk::table and kwk::view.</div><div class="ttdef"><b>Definition:</b> size.hpp:53</div></div>
+<div class="ttc" id="agroup__settings_html_ga2846917ba45ea58670d9d45afe907925"><div class="ttname"><a href="group__settings.html#ga2846917ba45ea58670d9d45afe907925">kwk::size</a></div><div class="ttdeci">constexpr __::size_ size</div><div class="ttdoc">Size setting for kwk::table and kwk::view.</div><div class="ttdef"><b>Definition:</b> size.hpp:46</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->

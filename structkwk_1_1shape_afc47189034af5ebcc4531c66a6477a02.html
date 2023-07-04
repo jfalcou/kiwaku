@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::shape::numel</title>
+<title>Kiwaku: kwk::shape::contains</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1shape_adc0d0bd23df2a073e1e7f3c1daeba895.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structkwk_1_1shape_afc47189034af5ebcc4531c66a6477a02.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,21 +121,25 @@ $(document).ready(function(){initNavTree('structkwk_1_1shape_adc0d0bd23df2a073e1
 </div>
 
 <div class="contents">
-<a id="adc0d0bd23df2a073e1e7f3c1daeba895" name="adc0d0bd23df2a073e1e7f3c1daeba895"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc0d0bd23df2a073e1e7f3c1daeba895">&#9670;&#160;</a></span>numel()</h2>
+<a id="afc47189034af5ebcc4531c66a6477a02" name="afc47189034af5ebcc4531c66a6477a02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc47189034af5ebcc4531c66a6477a02">&#9670;&#160;</a></span>contains()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;auto Shape&gt; </div>
+template&lt;auto... D&gt; </div>
+<div class="memtemplate">
+template&lt;std::integral... Coords&gt; <br />
+requires (<a class="el" href="structkwk_1_1shape.html#aef516befd154a7361b535d04bd2759fc">static_order</a> == sizeof...(Coords))</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::int32_t <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; Shape &gt;::numel </td>
+          <td class="memname">KWK_PURE constexpr bool <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; D &gt;::contains </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">Coords...&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -145,9 +149,14 @@ template&lt;auto Shape&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Number of elements. </p>
-<p>Computes the number of elements storable in current <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a>, i.e the product of all dimensions' size. </p>
+<p>Check if all coordinates of a given position fits inside a shape volume. Does not participate in overload resolution if the order of the shape and the dimension of the coordinate do not match.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>List of coordinates to check </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if all extent of other fits exactly inside current shape, <code>false</code> otherwise. </dd></dl>
 
 </div>
 </div>

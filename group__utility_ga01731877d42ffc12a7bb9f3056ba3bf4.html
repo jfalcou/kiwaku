@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::as_stride</title>
+<title>Kiwaku: kwk::literals::operator&quot;&quot;_c</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('namespacekwk_a378de528cdcd2041106f5c96de8e9b0d.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__utility_ga01731877d42ffc12a7bb9f3056ba3bf4.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,22 +121,21 @@ $(document).ready(function(){initNavTree('namespacekwk_a378de528cdcd2041106f5c96
 </div>
 
 <div class="contents">
-<a id="a378de528cdcd2041106f5c96de8e9b0d" name="a378de528cdcd2041106f5c96de8e9b0d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a378de528cdcd2041106f5c96de8e9b0d">&#9670;&#160;</a></span>as_stride()</h2>
+<a id="ga01731877d42ffc12a7bb9f3056ba3bf4" name="ga01731877d42ffc12a7bb9f3056ba3bf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga01731877d42ffc12a7bb9f3056ba3bf4">&#9670;&#160;</a></span>operator&quot;&quot;_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;auto Shape&gt; </div>
+template&lt;char... c&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">KWK_CONST constexpr auto kwk::as_stride </td>
+          <td class="memname">KWK_TRIVIAL constexpr auto kwk::literals::operator&quot;&quot;_c </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shape &gt; const&#160;</td>
-          <td class="paramname"><em>s</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -146,7 +145,7 @@ template&lt;auto Shape&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Converts a <a class="el" href="structkwk_1_1shape.html">kwk::shape</a> into its corresponding <a class="el" href="structkwk_1_1stride.html">kwk::stride</a>, conserving as much static informations as possible. </p>
+<p>The underlying type is computed from the actual value to be the smallest fitting type. This means, for example, that <code>123_c</code> is an instance of <code>kwk::constant&lt;unsigned char,123&gt;</code>. </p>
 
 </div>
 </div>

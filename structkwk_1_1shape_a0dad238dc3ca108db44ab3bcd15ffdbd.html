@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1shape_ac7e97418995728f2c6385b0b868de3e3.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structkwk_1_1shape_a0dad238dc3ca108db44ab3bcd15ffdbd.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,24 +121,24 @@ $(document).ready(function(){initNavTree('structkwk_1_1shape_ac7e97418995728f2c6
 </div>
 
 <div class="contents">
-<a id="ac7e97418995728f2c6385b0b868de3e3" name="ac7e97418995728f2c6385b0b868de3e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac7e97418995728f2c6385b0b868de3e3">&#9670;&#160;</a></span>shape() <span class="overload">[3/5]</span></h2>
+<a id="a0dad238dc3ca108db44ab3bcd15ffdbd" name="a0dad238dc3ca108db44ab3bcd15ffdbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dad238dc3ca108db44ab3bcd15ffdbd">&#9670;&#160;</a></span>shape() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;auto Shape&gt; </div>
+template&lt;auto... D&gt; </div>
 <div class="memtemplate">
-template&lt;auto OtherShape&gt; <br />
-requires ( make_combo&lt;<a class="el" href="structkwk_1_1shape.html#aaba2d5493ceffee04d772e4b27bd0b4a">size_type</a>&gt;(Shape).is_equivalent(OtherShape) &amp;&amp; make_combo&lt;<a class="el" href="structkwk_1_1shape.html#aaba2d5493ceffee04d772e4b27bd0b4a">size_type</a>&gt;(Shape).is_compatible(OtherShape) )</div>
+template&lt;auto... D2&gt; <br />
+requires ( constraint_t::is_contructible_from&lt;parent{},typename <a class="el" href="structkwk_1_1shape.html">shape</a>&lt;D2...&gt;::parent{}&gt;() )</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; Shape &gt;::shape </td>
+          <td class="memname">KWK_TRIVIAL constexpr <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; D &gt;::shape </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; OtherShape &gt; const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; D2... &gt; const &amp;&#160;</td>
           <td class="paramname"><em>other</em></td><td>)</td>
           <td></td>
         </tr>
@@ -149,48 +149,11 @@ requires ( make_combo&lt;<a class="el" href="structkwk_1_1shape.html#aaba2d5493c
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Constructs from a shape with compatible layout. </p>
-<p>Constructs a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> from another one with compatible layout but potentially different size_type.</p>
-<p>Two kwk::shapes have compatible layout if :</p><ul>
-<li>All their axis match</li>
-<li>They have the same <a class="el" href="glossary.html#glossary-order">Order</a></li>
-<li>Each axis of the constructed <a class="el" href="structkwk_1_1shape.html">kwk::shape</a> can hold its equivalent from the source shape, i.e it's runtime specified or, if it's compile-time specified, has the same value than its source.</li>
-</ul>
-<p>This constructor does not participate in overload resolution if the shapes have a non-compatible layout.</p>
-<h2 class="groupheader">Example </h2>
-<div class="fragment"><div class="line"><span class="comment">//==================================================================================================</span></div>
-<div class="line"><span class="comment">/*</span></div>
-<div class="line"><span class="comment">    KIWAKU - Containers Well Made</span></div>
-<div class="line"><span class="comment">    Copyright : KIWAKU Contributors &amp; Maintainers</span></div>
-<div class="line"><span class="comment">    SPDX-License-Identifier: BSL-1.0</span></div>
-<div class="line"><span class="comment">*/</span></div>
-<div class="line"><span class="comment">//==================================================================================================</span></div>
-<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;kwk/kwk.hpp&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main()</div>
-<div class="line">{</div>
-<div class="line">  <span class="comment">// Defines a 3D shape type with dimension 2 fixed to 3</span></div>
-<div class="line">  <span class="keyword">using </span>shape_t = <a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a>&lt; <a class="code hl_variable" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">kwk::extent</a>()[3]() &gt;;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// 4 x fixed&lt;3&gt; x 8 is compatible</span></div>
-<div class="line">  shape_t x = <a class="code hl_function" href="namespacekwk_ab830ed07a610c5e16cf12efd0969feac.html#ab830ed07a610c5e16cf12efd0969feac">kwk::of_size</a>(4, kwk::fixed&lt;3&gt;, 8);</div>
-<div class="line">  std::cout &lt;&lt; x &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// 4 x fixed&lt;3&gt; x fixed&lt;5&gt; is compatible</span></div>
-<div class="line">  shape_t y = <a class="code hl_function" href="namespacekwk_ab830ed07a610c5e16cf12efd0969feac.html#ab830ed07a610c5e16cf12efd0969feac">kwk::of_size</a>(4, kwk::fixed&lt;3&gt;, kwk::fixed&lt;5&gt;);</div>
-<div class="line">  std::cout &lt;&lt; y &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// 4 x 3 x fixed&lt;5&gt; is incompatible</span></div>
-<div class="line">  <span class="comment">// shape_t z = kwk::of_size(4, 3, kwk::fixed&lt;5&gt;);</span></div>
-<div class="line">}</div>
-<div class="ttc" id="agroup__settings_gab00c243a837b1a0326f3066ae519df04_html_gab00c243a837b1a0326f3066ae519df04"><div class="ttname"><a href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">kwk::extent</a></div><div class="ttdeci">constexpr __::combo&lt; std::int32_t &gt; extent</div><div class="ttdoc">Constexpr generator for extent lists.</div><div class="ttdef"><b>Definition:</b> extent.hpp:79</div></div>
-<div class="ttc" id="anamespacekwk_ab830ed07a610c5e16cf12efd0969feac_html_ab830ed07a610c5e16cf12efd0969feac"><div class="ttname"><a href="namespacekwk_ab830ed07a610c5e16cf12efd0969feac.html#ab830ed07a610c5e16cf12efd0969feac">kwk::of_size</a></div><div class="ttdeci">KWK_CONST constexpr auto of_size(Ds... ds) noexcept</div><div class="ttdoc">Generates a kwk::shape from a list of sizes.</div><div class="ttdef"><b>Definition:</b> shape.hpp:43</div></div>
-<div class="ttc" id="astructkwk_1_1shape_html"><div class="ttname"><a href="structkwk_1_1shape.html">kwk::shape</a></div><div class="ttdoc">Fixed order shape with mixed size capability.</div><div class="ttdef"><b>Definition:</b> shape.hpp:113</div></div>
-</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Copy the content of another <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> if their extents and axis are compatible.</p>
+<dl class="section note"><dt>Note</dt><dd>This constructor is explicit if the order of current shape is not equal to the order of <code>other</code>. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td>Source <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> to copy </td></tr>
+    <tr><td class="paramname">other</td><td>Shape to copy </td></tr>
   </table>
   </dd>
 </dl>

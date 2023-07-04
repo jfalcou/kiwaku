@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::stride::stride</title>
+<title>Kiwaku: kwk::compress</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1stride_abc94e76cd83bf1442bbe84630232b7a4.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('namespacekwk_a38b2400f855b10afb7308c8173da1f67.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,43 +121,45 @@ $(document).ready(function(){initNavTree('structkwk_1_1stride_abc94e76cd83bf1442
 </div>
 
 <div class="contents">
-<a id="abc94e76cd83bf1442bbe84630232b7a4" name="abc94e76cd83bf1442bbe84630232b7a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc94e76cd83bf1442bbe84630232b7a4">&#9670;&#160;</a></span>stride() <span class="overload">[1/2]</span></h2>
+<a id="a38b2400f855b10afb7308c8173da1f67" name="a38b2400f855b10afb7308c8173da1f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38b2400f855b10afb7308c8173da1f67">&#9670;&#160;</a></span>compress() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;auto Strides&gt; </div>
+template&lt;std::int32_t N, auto... D&gt; <br />
+requires (N&gt;0 &amp;&amp; N&lt;=sizeof...(D))</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structkwk_1_1stride.html">kwk::stride</a>&lt; Strides &gt;::stride </td>
+          <td class="memname">KWK_CONST constexpr auto kwk::compress </td>
           <td>(</td>
-          <td class="paramtype">std::convertible_to&lt; <a class="el" href="structkwk_1_1stride.html#af13fa4a74264d7f1b4ff8dadbd950a0e">size_type</a> &gt; auto...&#160;</td>
-          <td class="paramname"><em>values</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; D... &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Constructor from set of dimensions. </p>
-<p>Constructs a <a class="el" href="structkwk_1_1stride.html" title="Fixed order stride with mixed size capability.">kwk::stride</a> with a variadic list of stride values. Values can either be any integral value, any fixed integral value or <a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1" title="Joker value.">kwk::_</a>.</p>
-<p>If you pass <a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1" title="Joker value.">kwk::_</a> as a stride's value, it means that the stride will be using the default value for this dimension, i.e 1.</p>
-<p>Passing a runtime stride size where a static size is provided is undefined behavior if both values are not equal.</p>
-<p>This constructor will not take part in overload resolution if the number of values is not equal to the stride's order or if any value is neither convertible to int nor <a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1" title="Joker value.">kwk::_</a>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">values</td><td>Variadic list of dimensions' values </td></tr>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">N</td><td>Expected <a class="el" href="glossary.html#glossary-order">Order</a> of the generated shape. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>Original shape to compress </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> instance which order has been set to N by compressing dimensions. </dd></dl>
 
 </div>
 </div>
@@ -167,7 +169,7 @@ template&lt;auto Strides&gt; </div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1stride.html">stride</a></li>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

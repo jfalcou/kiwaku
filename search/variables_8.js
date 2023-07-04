@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['real32_0',['real32',['../namespacekwk.html#a3b13b1bcba3359943146be636c0207da',1,'kwk']]],
-  ['real64_1',['real64',['../namespacekwk.html#a1976486b798b854e789de80922a8b639',1,'kwk']]]
+  ['label_0',['label',['../group__settings.html#gabb68e6f180ef839836e0dc210cd1772f',1,'kwk']]],
+  ['linear_1',['linear',['../namespacekwk.html#a4259f9c8fbae77136122e737945a85a9',1,'kwk']]]
 ];

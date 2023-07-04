@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::shape::fit_constraints</title>
+<title>Kiwaku: kwk::coordinates</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1shape_a7b8d8254cb17a4d56eb9305858867ad1.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__utility_ga2ed80466eff89b28730c0033e65e571f.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,42 +121,50 @@ $(document).ready(function(){initNavTree('structkwk_1_1shape_a7b8d8254cb17a4d56e
 </div>
 
 <div class="contents">
-<a id="a7b8d8254cb17a4d56eb9305858867ad1" name="a7b8d8254cb17a4d56eb9305858867ad1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b8d8254cb17a4d56eb9305858867ad1">&#9670;&#160;</a></span>fit_constraints()</h2>
+<a id="ga2ed80466eff89b28730c0033e65e571f" name="ga2ed80466eff89b28730c0033e65e571f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2ed80466eff89b28730c0033e65e571f">&#9670;&#160;</a></span>coordinates()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;auto Shape&gt; </div>
-<div class="memtemplate">
-template&lt;auto R&gt; </div>
+template&lt;std::integral Idx, auto... Desc&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">KWK_PURE constexpr bool <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; Shape &gt;::fit_constraints </td>
+          <td class="memname">KWK_CONST constexpr auto kwk::coordinates </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; R &gt; const &amp;&#160;</td>
-          <td class="paramname"><em>ref</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">Idx&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc... &gt; const&#160;</td>
+          <td class="paramname"><em>shp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Check if a shape fit current's shape constraints on size and dimension. </p>
+<p>Behavior is undefined if idx is out of the index space defined by shp.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ref</td><td>Shape to use as a reference extent </td></tr>
+    <tr><td class="paramname">idx</td><td>Linear index to convert into a nD coordinate set </td></tr>
+    <tr><td class="paramname">shp</td><td>Shape used as a reference </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><code>true</code> if both shape has the same order and if each statically set dimension of <code>ref</code> is matched with an equal value in the current shape. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A std::array&lt;shape&lt;Desc&gt;::value_type, <a class="el" href="structkwk_1_1shape.html#aef516befd154a7361b535d04bd2759fc" title="Compile-time value for Order.">shape&lt;Desc&gt;::static_order</a>&gt; containing the multi-dimensional position corresponding to idx </dd></dl>
 
 </div>
 </div>
@@ -166,7 +174,7 @@ template&lt;auto R&gt; </div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1shape.html">shape</a></li>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

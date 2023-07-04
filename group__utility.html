@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: Miscellaneous helper</title>
+<title>Kiwaku: Miscellaneous Helpers</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -126,7 +126,7 @@ $(document).ready(function(){initNavTree('group__utility.html',''); initResizabl
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">Miscellaneous helper</div></div>
+  <div class="headertitle"><div class="title">Miscellaneous Helpers</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -135,8 +135,11 @@ $(document).ready(function(){initNavTree('group__utility.html',''); initResizabl
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="groups" name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__settings"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__settings.html">Container settings</a></td></tr>
-<tr class="memdesc:group__settings"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classes and functions related to table and views constructions. <br /></td></tr>
+<tr class="memitem:group__extension"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__extension.html">Advanced User Extension Points</a></td></tr>
+<tr class="memdesc:group__extension"><td class="mdescLeft">&#160;</td><td class="mdescRight">Traits and Callable Objects customizable by advanced users. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:group__invoke"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__invoke.html">Generalized Tag Invoke Protocol</a></td></tr>
+<tr class="memdesc:group__invoke"><td class="mdescLeft">&#160;</td><td class="mdescRight">This module defines all the <b>KIWAKU</b> generalized tag_invoke protocol infrastructure. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group__traits"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__traits.html">Type Traits</a></td></tr>
 <tr class="memdesc:group__traits"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constants and meta-functions providing information on <b>KIWAKU</b> components. <br /></td></tr>
@@ -150,27 +153,27 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="memTemplParams" colspan="2">template&lt;auto Desc&gt; </td></tr>
-<tr class="memitem:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga0a8c7d9e5c6db2bef77f929a4ff944ec.html#ga0a8c7d9e5c6db2bef77f929a4ff944ec">kwk::coordinates</a> (std::integral auto const idx, <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc &gt; const shp) noexcept</td></tr>
-<tr class="memdesc:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a tuple of coordinates from a linear index and a shape.  <br /></td></tr>
-<tr class="separator:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2ec3b967a56cb24a680d64cb87f2952c"><td class="memTemplParams" colspan="2">template&lt;char... c&gt; </td></tr>
-<tr class="memitem:ga2ec3b967a56cb24a680d64cb87f2952c"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga2ec3b967a56cb24a680d64cb87f2952c.html#ga2ec3b967a56cb24a680d64cb87f2952c">kwk::literals::operator&quot;&quot;_c</a> () noexcept</td></tr>
-<tr class="memdesc:ga2ec3b967a56cb24a680d64cb87f2952c"><td class="mdescLeft">&#160;</td><td class="mdescRight">User-defined literal suffix for compile-time constant.  <br /></td></tr>
-<tr class="separator:ga2ec3b967a56cb24a680d64cb87f2952c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga032b4c6695f7745bded81660a8975262"><td class="memTemplParams" colspan="2">template&lt;auto Shaper, std::integral... Index&gt; </td></tr>
-<tr class="memitem:ga032b4c6695f7745bded81660a8975262"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga032b4c6695f7745bded81660a8975262.html#ga032b4c6695f7745bded81660a8975262">kwk::linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;sh, Index... idx) noexcept</td></tr>
-<tr class="memdesc:ga032b4c6695f7745bded81660a8975262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a order N list of indexes.  <br /></td></tr>
-<tr class="separator:ga032b4c6695f7745bded81660a8975262"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="memTemplParams" colspan="2">template&lt;auto Shaper, kumi::sized_product_type&lt; Shaper.size()&gt; Indexes&gt; </td></tr>
-<tr class="memitem:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga453c1bba620b07a7e6e4185d7e89a31d.html#ga453c1bba620b07a7e6e4185d7e89a31d">kwk::linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;sh, Indexes idx) noexcept</td></tr>
-<tr class="memdesc:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a tuple of N indexes.  <br /></td></tr>
-<tr class="separator:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="memTemplParams" colspan="2">template&lt;auto Shaper, <a class="el" href="conceptkwk_1_1concepts_1_1range.html">kwk::concepts::range</a> Indexes&gt; <br />
-requires ( !kumi::sized_product_type&lt;Indexes,Shaper.size()&gt; )</td></tr>
-<tr class="memitem:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_gace68b8bfb1798dda6aea3e30ad00ec99.html#gace68b8bfb1798dda6aea3e30ad00ec99">kwk::linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;sh, Indexes const &amp;indexes) noexcept</td></tr>
-<tr class="memdesc:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a range of N indexes.  <br /></td></tr>
-<tr class="separator:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2ed80466eff89b28730c0033e65e571f"><td class="memTemplParams" colspan="2">template&lt;std::integral Idx, auto... Desc&gt; </td></tr>
+<tr class="memitem:ga2ed80466eff89b28730c0033e65e571f"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga2ed80466eff89b28730c0033e65e571f.html#ga2ed80466eff89b28730c0033e65e571f">kwk::coordinates</a> (Idx idx, <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc... &gt; const shp) noexcept</td></tr>
+<tr class="memdesc:ga2ed80466eff89b28730c0033e65e571f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a tuple of coordinates from a linear index and a shape.  <br /></td></tr>
+<tr class="separator:ga2ed80466eff89b28730c0033e65e571f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="memTemplParams" colspan="2">template&lt;char... c&gt; </td></tr>
+<tr class="memitem:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="memTemplItemLeft" align="right" valign="top">KWK_TRIVIAL constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga01731877d42ffc12a7bb9f3056ba3bf4.html#ga01731877d42ffc12a7bb9f3056ba3bf4">kwk::operator&quot;&quot;_c</a> () noexcept</td></tr>
+<tr class="memdesc:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">User-defined literal suffix for compile-time constant.  <br /></td></tr>
+<tr class="separator:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7fa6168ac36c59c4b3d76c790464da57"><td class="memTemplParams" colspan="2">template&lt;auto... S, std::integral... Index&gt; </td></tr>
+<tr class="memitem:ga7fa6168ac36c59c4b3d76c790464da57"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga7fa6168ac36c59c4b3d76c790464da57.html#ga7fa6168ac36c59c4b3d76c790464da57">kwk::linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; sh, Index... idx) noexcept</td></tr>
+<tr class="memdesc:ga7fa6168ac36c59c4b3d76c790464da57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a order N list of indexes.  <br /></td></tr>
+<tr class="separator:ga7fa6168ac36c59c4b3d76c790464da57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafda892d6d89b443f4171eac0eb178288"><td class="memTemplParams" colspan="2">template&lt;auto... S, kumi::sized_product_type&lt; <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt;::static_order &gt; Indexes&gt; </td></tr>
+<tr class="memitem:gafda892d6d89b443f4171eac0eb178288"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_gafda892d6d89b443f4171eac0eb178288.html#gafda892d6d89b443f4171eac0eb178288">kwk::linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; sh, Indexes idx) noexcept</td></tr>
+<tr class="memdesc:gafda892d6d89b443f4171eac0eb178288"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a tuple of N indexes.  <br /></td></tr>
+<tr class="separator:gafda892d6d89b443f4171eac0eb178288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae18793767c7f746a447cdb28c9237756"><td class="memTemplParams" colspan="2">template&lt;auto... S, <a class="el" href="conceptkwk_1_1concepts_1_1range.html">kwk::concepts::range</a> Indexes&gt; <br />
+requires ( !kumi::sized_product_type&lt;Indexes,<a class="el" href="structkwk_1_1shape.html">shape</a>&lt;S...&gt;::static_order&gt; )</td></tr>
+<tr class="memitem:gae18793767c7f746a447cdb28c9237756"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_gae18793767c7f746a447cdb28c9237756.html#gae18793767c7f746a447cdb28c9237756">kwk::linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;sh, Indexes const &amp;indexes) noexcept</td></tr>
+<tr class="memdesc:gae18793767c7f746a447cdb28c9237756"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a range of N indexes.  <br /></td></tr>
+<tr class="separator:gae18793767c7f746a447cdb28c9237756"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

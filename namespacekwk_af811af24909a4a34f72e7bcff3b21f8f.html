@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::of_size</title>
+<title>Kiwaku: kwk::with_strides</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('namespacekwk_ab830ed07a610c5e16cf12efd0969feac.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('namespacekwk_af811af24909a4a34f72e7bcff3b21f8f.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,22 +121,22 @@ $(document).ready(function(){initNavTree('namespacekwk_ab830ed07a610c5e16cf12efd
 </div>
 
 <div class="contents">
-<a id="ab830ed07a610c5e16cf12efd0969feac" name="ab830ed07a610c5e16cf12efd0969feac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab830ed07a610c5e16cf12efd0969feac">&#9670;&#160;</a></span>of_size()</h2>
+<a id="af811af24909a4a34f72e7bcff3b21f8f" name="af811af24909a4a34f72e7bcff3b21f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af811af24909a4a34f72e7bcff3b21f8f">&#9670;&#160;</a></span>with_strides()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;std::integral SizeType, int... , concepts::extent&lt; SizeType &gt;... Ds&gt; </div>
+template&lt;concepts::extent... D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">KWK_CONST constexpr auto kwk::of_size </td>
+          <td class="memname">constexpr auto kwk::with_strides </td>
           <td>(</td>
-          <td class="paramtype">Ds...&#160;</td>
-          <td class="paramname"><em>ds</em></td><td>)</td>
+          <td class="paramtype">D...&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -146,17 +146,9 @@ template&lt;std::integral SizeType, int... , concepts::extent&lt; SizeType &gt;.
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Generates a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> from a list of sizes. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">SizeType</td><td>Integral type used to store sizes. If unspecified, the most fitting integral type is used. </td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ds</td><td>Variadic pack of sizes </td></tr>
+    <tr><td class="paramname">d</td><td>Variadic pack of sizes </td></tr>
   </table>
   </dd>
 </dl>

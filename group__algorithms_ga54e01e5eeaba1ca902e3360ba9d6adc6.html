@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::extent</title>
+<title>Kiwaku: kwk::for_each</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__settings_gab00c243a837b1a0326f3066ae519df04.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,69 +121,68 @@ $(document).ready(function(){initNavTree('group__settings_gab00c243a837b1a0326f3
 </div>
 
 <div class="contents">
-<a id="gab00c243a837b1a0326f3066ae519df04" name="gab00c243a837b1a0326f3066ae519df04"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab00c243a837b1a0326f3066ae519df04">&#9670;&#160;</a></span>extent</h2>
+<a id="ga54e01e5eeaba1ca902e3360ba9d6adc6" name="ga54e01e5eeaba1ca902e3360ba9d6adc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga54e01e5eeaba1ca902e3360ba9d6adc6">&#9670;&#160;</a></span>for_each() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Func , auto... S&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">kwk::detail::combo&lt; std::ptrdiff_t &gt; kwk::extent = {}</td>
+          <td class="memname">constexpr auto kwk::for_each </td>
+          <td>(</td>
+          <td class="paramtype">Func&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>shp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Constexpr generator for extent lists. </p>
-<hr  />
-<p> <b>Required header</b>: </p><div class="fragment"><div class="line"><span class="preprocessor">#include&lt;kwk/settings/extent.hpp&gt;</span></div>
-</div><!-- fragment --> <hr  />
-<p><a class="el" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04" title="Constexpr generator for extent lists.">kwk::extent</a> is used to define the layout of a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> or <a class="el" href="structkwk_1_1stride.html" title="Fixed order stride with mixed size capability.">kwk::stride</a> in terms of order and potential compile-time sizes.</p>
-<p><a class="el" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04" title="Constexpr generator for extent lists.">kwk::extent</a> supports two member functions:</p><ul>
-<li><code>operator()()</code> that specifies that a given dimension is known at runtime</li>
-<li><code>operator[](auto N)</code> that specifies that a given dimension has a compile-time value of N</li>
-</ul>
-<p>Both of these operators can be chained as needed to describe a given shape.</p>
-<p>The actual integer type storing the size or stride of each dimensions can be specified by using kwk::extent_of.</p>
-<p>Usage of <a class="el" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">kwk::extent</a> is advised when one wants to properly type a given shape or stride. Other usage of <a class="el" href="structkwk_1_1shape.html">kwk::shape</a> descriptors are usually abstracted away via <a class="el" href="namespacekwk_ab830ed07a610c5e16cf12efd0969feac.html#ab830ed07a610c5e16cf12efd0969feac">kwk::of_size</a> or <a class="el" href="structkwk_1_1stride.html">kwk::stride</a>.</p>
-<h2 class="groupheader">Associated variables </h2>
-<p>Some pre-made descriptor are provided for common cases:</p>
-<ul>
-<li><code>kwk::_1D</code> : Dynamic order 1 <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> descriptor</li>
-<li><code>kwk::_2D</code> : Dynamic order 2 <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> descriptor</li>
-<li><code>kwk::_3D</code> : Dynamic order 3 <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> descriptor</li>
-<li><code>kwk::_4D</code> : Dynamic order 4 <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> descriptor</li>
-<li><code>kwk::_nD&lt;N&gt;</code> : Dynamic order N <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> descriptor</li>
-</ul>
-<h2 class="groupheader">Examples </h2>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;kwk/kwk.hpp&gt;</span></div>
+<p>Applies the given function object <code>f</code> to every coordinates that are valid inside the given <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> <code>shp</code>. Coordinates are iterated in order of the optimal memory access.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>Function object, to be applied to a variadic list of integral coordinates. The signature of the function should be equivalent to the following: <div class="fragment"><div class="line"><span class="keywordtype">void</span> f(std::integral <span class="keyword">auto</span>... is);</div>
+</div><!-- fragment --></td></tr>
+    <tr><td class="paramname">shp</td><td>A <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> used as boundaries for the coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The function object <code>f</code> which could have been modified.</dd></dl>
+<h2 class="groupheader">Example </h2>
+<div class="fragment"><div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;kwk/kwk.hpp&gt;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="comment">// Shape descriptors with runtime sizes</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a>&lt; <a class="code hl_variable" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">kwk::extent</a>()() &gt; d1(6, 8); <span class="comment">// Order 1 shape with runtime size 6 x 8</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a>&lt; <a class="code hl_variable" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">kwk::extent</a>()() &gt; d2;       <span class="comment">// Order 2 shape with runtime size 0 x 1</span></div>
+<div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">auto</span> print  = [](<span class="keyword">auto</span> p2, <span class="keyword">auto</span> p1, <span class="keyword">auto</span> p0)</div>
+<div class="line">                {</div>
+<div class="line">                  std::cout &lt;&lt; p2 &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p1 &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p0 &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                  <span class="keywordflow">if</span>(p1==2 &amp;&amp; p0==1) std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">                };</div>
 <div class="line"> </div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::extent_of&lt;short&gt;</a>()() &gt; s1(6, 8); <span class="comment">// Order 1 shape with runtime size 6 x 8 stored as short</span></div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Shape descriptors with compile-time sizes</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::extent[4]    &gt;</a> s2;   <span class="comment">// Order 1 shape with compile-time size 4</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::extent[2][2] &gt;</a> s3;   <span class="comment">// Order 2 shape with compile-time sizes 2 x 2</span></div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Shape descriptor mixing runtime and compile-time sizes</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a>&lt; <a class="code hl_variable" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">kwk::extent</a>[3]()[3]() &gt; h1;  <span class="comment">// Order 4 shape with size 3 x 1 x 3 x 1</span></div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Pre-made descriptors</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::_2D    &gt;</a> p1; <span class="comment">// Order 2 shape with default runtime size</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::_nD&lt;7&gt;</a> &gt; p2; <span class="comment">// Order 7 shape with default runtime size</span></div>
-<div class="line"><a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape&lt; kwk::_3D[3] &gt;</a> h2;  <span class="comment">// Order 4 shape with size 0 x 1 x 1 x 3</span></div>
-<div class="ttc" id="agroup__settings_gab00c243a837b1a0326f3066ae519df04_html_gab00c243a837b1a0326f3066ae519df04"><div class="ttname"><a href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">kwk::extent</a></div><div class="ttdeci">constexpr __::combo&lt; std::int32_t &gt; extent</div><div class="ttdoc">Constexpr generator for extent lists.</div><div class="ttdef"><b>Definition:</b> extent.hpp:79</div></div>
-<div class="ttc" id="astructkwk_1_1shape_html"><div class="ttname"><a href="structkwk_1_1shape.html">kwk::shape</a></div><div class="ttdoc">Fixed order shape with mixed size capability.</div><div class="ttdef"><b>Definition:</b> shape.hpp:113</div></div>
+<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(print, <a class="code hl_function" href="namespacekwk_af057bfaa645bda968136a76d111bc1d8.html#af057bfaa645bda968136a76d111bc1d8">kwk::of_size</a>(4,3,2));</div>
+<div class="line">}</div>
+<div class="ttc" id="agroup__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6_html_ga54e01e5eeaba1ca902e3360ba9d6adc6"><div class="ttname"><a href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a></div><div class="ttdeci">constexpr auto for_each(Func f, shape&lt; S... &gt; const &amp;shp)</div><div class="ttdoc">Simple walkthrough over all possible indexes.</div><div class="ttdef"><b>Definition:</b> for_each.hpp:42</div></div>
+<div class="ttc" id="anamespacekwk_af057bfaa645bda968136a76d111bc1d8_html_af057bfaa645bda968136a76d111bc1d8"><div class="ttname"><a href="namespacekwk_af057bfaa645bda968136a76d111bc1d8.html#af057bfaa645bda968136a76d111bc1d8">kwk::of_size</a></div><div class="ttdeci">KWK_TRIVIAL constexpr auto of_size(D... d)</div><div class="ttdoc">Generates a kwk::shape from a list of Extent.</div><div class="ttdef"><b>Definition:</b> shape.hpp:339</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

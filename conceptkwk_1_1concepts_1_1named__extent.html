@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::literals::operator&quot;&quot;_c</title>
+<title>Kiwaku: kwk::concepts::named_extent Concept Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__utility_ga2ec3b967a56cb24a680d64cb87f2952c.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1named__extent.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,46 +120,29 @@ $(document).ready(function(){initNavTree('group__utility_ga2ec3b967a56cb24a680d6
 </div>
 </div>
 
+<div class="header">
+  <div class="headertitle"><div class="title">kwk::concepts::named_extent Concept Reference</div></div>
+</div><!--header-->
 <div class="contents">
-<a id="ga2ec3b967a56cb24a680d64cb87f2952c" name="ga2ec3b967a56cb24a680d64cb87f2952c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2ec3b967a56cb24a680d64cb87f2952c">&#9670;&#160;</a></span>operator&quot;&quot;_c()</h2>
 
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;char... c&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto kwk::literals::operator&quot;&quot;_c </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
+<p>Shape and stride named values.  
+<a href="conceptkwk_1_1concepts_1_1named__extent.html#details">More...</a></p>
 
-<p><code>#include &lt;kwk/utility/fixed.hpp&gt;</code></p>
-
-<p>User-defined literal suffix for compile-time constant. </p>
-<p>The underlying type is computed from the actual value to be the smallest fitting type. This means, for example, that <code>123_c</code> is an instance of <code>kwk::constant&lt;unsigned char,123&gt;</code>. </p>
-
-</div>
-</div>
-</div><!-- contents -->
+<p><code>#include &lt;kwk/concepts/extent.hpp&gt;</code></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Named extents are options which keyword models <a class="el" href="conceptkwk_1_1concepts_1_1axis.html" title="Axis concept.">kwk::concepts::axis</a> </p>
+</div><h2 class="groupheader">Concept definition</h2>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1named__extent.html">kwk::concepts::named_extent</a> =  rbr::concepts::option&lt;T&gt; &amp;&amp; <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1axis.html">axis&lt;typename T::keyword_type&gt;</a></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1axis_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1axis.html">kwk::concepts::axis</a></div><div class="ttdoc">Axis concept.</div><div class="ttdef"><b>Definition:</b> axis.hpp:21</div></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1named__extent_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1named__extent.html">kwk::concepts::named_extent</a></div><div class="ttdoc">Shape and stride named values.</div><div class="ttdef"><b>Definition:</b> extent.hpp:27</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="group__utility.html">Miscellaneous helper</a></li>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><b>concepts</b></li><li class="navelem"><a class="el" href="conceptkwk_1_1concepts_1_1named__extent.html">named_extent</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

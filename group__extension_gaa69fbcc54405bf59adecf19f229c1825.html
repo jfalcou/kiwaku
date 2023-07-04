@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::shape::shape</title>
+<title>Kiwaku: kwk::to_descriptor</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1shape_a35c7e206533116a7acf12f8e587e653f.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__extension_gaa69fbcc54405bf59adecf19f229c1825.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,42 +121,45 @@ $(document).ready(function(){initNavTree('structkwk_1_1shape_a35c7e206533116a7ac
 </div>
 
 <div class="contents">
-<a id="a35c7e206533116a7acf12f8e587e653f" name="a35c7e206533116a7acf12f8e587e653f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35c7e206533116a7acf12f8e587e653f">&#9670;&#160;</a></span>shape() <span class="overload">[1/5]</span></h2>
+<a id="gaa69fbcc54405bf59adecf19f229c1825" name="gaa69fbcc54405bf59adecf19f229c1825"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa69fbcc54405bf59adecf19f229c1825">&#9670;&#160;</a></span>to_descriptor</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;auto Shape&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; Shape &gt;::shape </td>
-          <td>(</td>
-          <td class="paramtype">std::convertible_to&lt; <a class="el" href="structkwk_1_1shape.html#aaba2d5493ceffee04d772e4b27bd0b4a">size_type</a> &gt; auto...&#160;</td>
-          <td class="paramname"><em>values</em></td><td>)</td>
-          <td></td>
+          <td class="memname">kwk::to_descriptor = {}</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Constructor from set of dimensions. </p>
-<p>Constructs a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> with a variadic list of integral-convertible dimension values. Values can either be any integral value or any fixed integral value.</p>
-<p>Passing a runtime dimension size where a static size is provided is undefined behavior if both values are not equal.</p>
-<p>This constructor will not take part in overload resolution if the number of values exceed shape's order or if any value is neither convertible to <a class="el" href="structkwk_1_1shape.html#aaba2d5493ceffee04d772e4b27bd0b4a" title="Type of dimensions&#39; size.">kwk::shape::size_type</a>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">values</td><td>Variadic list of dimensions' values </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Convert a valid <a class="el" href="glossary.html#glossary-extent">Extent</a> value into the associated consteval descriptor suitable to define a shape or stride type.</p>
+<p>The default behavior is to:</p><ul>
+<li>convert any <a class="el" href="structkwk_1_1joker.html" title="Type of the kwk::_ object.">kwk::joker</a> to <a class="el" href="structkwk_1_1joker.html" title="Type of the kwk::_ object.">kwk::joker</a></li>
+<li>convert any integral value to its associated <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7" title="Type setting for kwk::table.">kwk::as</a> type descriptor</li>
+<li>convert any static constant to its value</li>
+<li>convert any <a class="el" href="glossary.html#glossary-axis">Axis</a> to an axis with the proper associated value while preserving pre-existing type constraints</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>This <a href="https://en.cppreference.com/w/cpp/named_req/Callable">Callable Object</a> can be customized using the <a class="el" href="group__invoke.html">generalized tag_invoke protocol</a>.</dd></dl>
+<h2 class="groupheader">Callable Signature </h2>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacekwk.html">kwk</a></div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Extent&gt;</div>
+<div class="line">  <span class="keyword">constexpr</span> <a class="code hl_variable" href="group__extension_gaa69fbcc54405bf59adecf19f229c1825.html#gaa69fbcc54405bf59adecf19f229c1825">to_descriptor</a>(Extent <span class="keyword">const</span>&amp; e) <span class="keyword">noexcept</span>;</div>
+<div class="line">}</div>
+<div class="ttc" id="agroup__extension_gaa69fbcc54405bf59adecf19f229c1825_html_gaa69fbcc54405bf59adecf19f229c1825"><div class="ttname"><a href="group__extension_gaa69fbcc54405bf59adecf19f229c1825.html#gaa69fbcc54405bf59adecf19f229c1825">kwk::to_descriptor</a></div><div class="ttdeci">constexpr tags::to_descriptor to_descriptor</div><div class="ttdoc">Extent value to descriptor converter</div><div class="ttdef"><b>Definition:</b> to_descriptor.hpp:69</div></div>
+<div class="ttc" id="anamespacekwk_html"><div class="ttname"><a href="namespacekwk.html">kwk</a></div><div class="ttdoc">Main KIWAKU namespace.</div><div class="ttdef"><b>Definition:</b> algorithm.hpp:11</div></div>
+</div><!-- fragment --><p><b>Parameters:</b></p><ul>
+<li><code>e</code> : <a class="el" href="glossary.html#glossary-extent">Extent</a> value to convert</li>
+</ul>
+<p><b>Returns:</b> A consteval descriptor usable in the type description of a shape or stride. </p>
 
 </div>
 </div>
@@ -166,7 +169,7 @@ template&lt;auto Shape&gt; </div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1shape.html">shape</a></li>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

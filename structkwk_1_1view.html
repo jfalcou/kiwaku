@@ -135,8 +135,7 @@ $(document).ready(function(){initNavTree('structkwk_1_1view.html',''); initResiz
 <p><code>#include &lt;kwk/container/view.hpp&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Builder&gt;<br />
-struct kwk::view&lt; Builder &gt;</div><p>Non-owning, contiguous multi-dimensional container. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
+struct kwk::view&lt; Builder &gt;</div><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Builder</td><td>Policy generator for current view </td></tr>
   </table>
@@ -173,26 +172,26 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>shape_type</b> = typ
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Constructors</div></td></tr>
-<tr class="memitem:a07c320dff7cf1796a618dd2c1efde81a"><td class="memItemLeft" align="right" valign="top"><a id="a07c320dff7cf1796a618dd2c1efde81a" name="a07c320dff7cf1796a618dd2c1efde81a"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> ()</td></tr>
-<tr class="memdesc:a07c320dff7cf1796a618dd2c1efde81a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
-<tr class="separator:a07c320dff7cf1796a618dd2c1efde81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1639c1a84c23d1b8003c1b2e01832c09"><td class="memItemLeft" align="right" valign="top"><a id="a1639c1a84c23d1b8003c1b2e01832c09" name="a1639c1a84c23d1b8003c1b2e01832c09"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> (rbr::concepts::option auto const &amp;... opts)</td></tr>
-<tr class="memdesc:a1639c1a84c23d1b8003c1b2e01832c09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a view from a list of options. <br /></td></tr>
-<tr class="separator:a1639c1a84c23d1b8003c1b2e01832c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37a160f5aa12e18154b365331acb0cd6"><td class="memItemLeft" align="right" valign="top"><a id="a37a160f5aa12e18154b365331acb0cd6" name="a37a160f5aa12e18154b365331acb0cd6"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> (rbr::concepts::settings auto const &amp;opts)</td></tr>
-<tr class="memdesc:a37a160f5aa12e18154b365331acb0cd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a view from a settings descriptor. <br /></td></tr>
-<tr class="separator:a37a160f5aa12e18154b365331acb0cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a37cb49e68d312fb62091cd5e192ba5"><td class="memItemLeft" align="right" valign="top"><a id="a7a37cb49e68d312fb62091cd5e192ba5" name="a7a37cb49e68d312fb62091cd5e192ba5"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> (concepts::container&lt; <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt; <a class="el" href="structkwk_1_1view.html#a91ecc4e3ea69660ff102b7eaf22283d8">value_type</a> &gt;, <a class="el" href="structkwk_1_1view.html#a7a1f24b9c101e77d63ac94dd00baf9b7">shape_type</a>{}&gt; auto const &amp;other)</td></tr>
-<tr class="memdesc:a7a37cb49e68d312fb62091cd5e192ba5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shallow copy constructor. <br /></td></tr>
-<tr class="separator:a7a37cb49e68d312fb62091cd5e192ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7a7bd2d5dd172ee6bd3ed8682c84a30"><td class="memItemLeft" align="right" valign="top"><a id="ac7a7bd2d5dd172ee6bd3ed8682c84a30" name="ac7a7bd2d5dd172ee6bd3ed8682c84a30"></a>
-constexpr <a class="el" href="structkwk_1_1view.html">view</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (concepts::container&lt; <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt; <a class="el" href="structkwk_1_1view.html#a91ecc4e3ea69660ff102b7eaf22283d8">value_type</a> &gt;, <a class="el" href="structkwk_1_1view.html#a7a1f24b9c101e77d63ac94dd00baf9b7">shape_type</a>{}&gt; auto const &amp;other)</td></tr>
-<tr class="memdesc:ac7a7bd2d5dd172ee6bd3ed8682c84a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shallow assignment operator. <br /></td></tr>
-<tr class="separator:ac7a7bd2d5dd172ee6bd3ed8682c84a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36b5f5f9d471287a60941203bdec43aa"><td class="memItemLeft" align="right" valign="top"><a id="a36b5f5f9d471287a60941203bdec43aa" name="a36b5f5f9d471287a60941203bdec43aa"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> ()</td></tr>
+<tr class="memdesc:a36b5f5f9d471287a60941203bdec43aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
+<tr class="separator:a36b5f5f9d471287a60941203bdec43aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37daf8d610e012cd152e4bf40667c28c"><td class="memItemLeft" align="right" valign="top"><a id="a37daf8d610e012cd152e4bf40667c28c" name="a37daf8d610e012cd152e4bf40667c28c"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> (rbr::concepts::option auto const &amp;... opts)</td></tr>
+<tr class="memdesc:a37daf8d610e012cd152e4bf40667c28c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a view from a list of options. <br /></td></tr>
+<tr class="separator:a37daf8d610e012cd152e4bf40667c28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d3475512e2a8b3a7643e96adfba4526"><td class="memItemLeft" align="right" valign="top"><a id="a6d3475512e2a8b3a7643e96adfba4526" name="a6d3475512e2a8b3a7643e96adfba4526"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> (rbr::concepts::settings auto const &amp;opts)</td></tr>
+<tr class="memdesc:a6d3475512e2a8b3a7643e96adfba4526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a view from a settings descriptor. <br /></td></tr>
+<tr class="separator:a6d3475512e2a8b3a7643e96adfba4526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adce0827fd1234150e7a8755e5bd959e5"><td class="memItemLeft" align="right" valign="top"><a id="adce0827fd1234150e7a8755e5bd959e5" name="adce0827fd1234150e7a8755e5bd959e5"></a>
+KWK_TRIVIAL constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> (concepts::container&lt; type&lt; <a class="el" href="structkwk_1_1view.html#a91ecc4e3ea69660ff102b7eaf22283d8">value_type</a> &gt;, <a class="el" href="structkwk_1_1view.html#a7a1f24b9c101e77d63ac94dd00baf9b7">shape_type</a> &gt; auto const &amp;other)</td></tr>
+<tr class="memdesc:adce0827fd1234150e7a8755e5bd959e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shallow copy constructor. <br /></td></tr>
+<tr class="separator:adce0827fd1234150e7a8755e5bd959e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8c92c029a6541df210fd12bead274aa"><td class="memItemLeft" align="right" valign="top"><a id="ad8c92c029a6541df210fd12bead274aa" name="ad8c92c029a6541df210fd12bead274aa"></a>
+constexpr <a class="el" href="structkwk_1_1view.html">view</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (concepts::container&lt; type&lt; <a class="el" href="structkwk_1_1view.html#a91ecc4e3ea69660ff102b7eaf22283d8">value_type</a> &gt;, <a class="el" href="structkwk_1_1view.html#a7a1f24b9c101e77d63ac94dd00baf9b7">shape_type</a> &gt; auto const &amp;other)</td></tr>
+<tr class="memdesc:ad8c92c029a6541df210fd12bead274aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shallow assignment operator. <br /></td></tr>
+<tr class="separator:ad8c92c029a6541df210fd12bead274aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>

@@ -125,13 +125,49 @@ $(document).ready(function(){initNavTree('glossary.html',''); initResizable(); }
 </div><!--header-->
 <div class="contents">
 <div class="toc"><h3>Table of Contents</h3>
-<ul><li class="level1"><a href="#glossary-order">Order</a></li>
+<ul><li class="level1"><a href="#glossary-shape">Shape-related Terms</a><ul><li class="level2"><a href="#glossary-axis">Axis</a></li>
+<li class="level2"><a href="#glossary-extent">Extent</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#glossary-container">Container-related Terms</a><ul><li class="level2"><a href="#glossary-order">Order</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="textblock"><p><a class="anchor" id="md____w_kiwaku_kiwaku_doc_rationale_glossary"></a></p>
-<h1><a class="anchor" id="glossary-order"></a>
-Order</h1>
-<p>The order of a container is defined as its number of dimensions. For <b>KIWAKU</b>, this number of dimensions is fixed at compile-time. </p>
+<h1><a class="anchor" id="glossary-shape"></a>
+Shape-related Terms</h1>
+<h2><a class="anchor" id="glossary-axis"></a>
+Axis</h2>
+<p>Multi-dimensional containers are more complex than mono-dimensional ones as the order and orientation of their elements. Most array library try to use term like row major or column major to describe the implicit order of the elements inside an array. If those terms fit well for the 2D cases and have some historical significance, it scales badly on more than 2D or for array which semantic is more rich than just rows and columns.</p>
+<p><b>KIWAKU</b> uses the notion of <a class="el" href="glossary.html#glossary-axis">Axis</a>. The orientation of an array's data can be described as being stored in a given order on a set of <a class="el" href="glossary.html#glossary-axis">Axis</a>. The order of the <a class="el" href="glossary.html#glossary-axis">Axis</a> in the array description then maps to the physical placement of elements in memory.</p>
+<p><b>KIWAKU</b>'s <a class="el" href="glossary.html#glossary-axis">Axis</a> can be:</p><ul>
+<li>designated by an index via <a class="el" href="namespacekwk.html#abf80c3212de5864c8fbd74ebe3f42550" title="Axis specifier for indexed axis.">kwk::along</a>. E.g: <code><a class="el" href="namespacekwk.html#abf80c3212de5864c8fbd74ebe3f42550" title="Axis specifier for indexed axis.">kwk::along</a>&lt;2&gt;</code>. Index-based axis can be used to specify the order of a set of <a class="el" href="glossary.html#glossary-axis">Axis</a> without additional semantic.</li>
+<li>designated by a name via <a class="el" href="namespacekwk.html#a14a23cb4d4dbc3874abf2a17c2ff367c" title="Axis specifier for named axis.">kwk::axis</a>. E.g: <code><a class="el" href="namespacekwk.html#a14a23cb4d4dbc3874abf2a17c2ff367c" title="Axis specifier for named axis.">kwk::axis</a>&lt;"phase"&gt;</code>. Name-based axis carry additional domain-specific semantic.</li>
+</ul>
+<p>When used in shape's definition, the order of <a class="el" href="glossary.html#glossary-axis">Axis</a> is used to deduce the physical memory layout. By design, the right-most <a class="el" href="glossary.html#glossary-axis">Axis</a> in a shape's definition is considered the innermost dimension and contains data in a contiguous way. All other <a class="el" href="glossary.html#glossary-axis">Axis</a> are then used as external dimension in their reverse order.</p>
+<p>For example:</p><ul>
+<li><code><a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a>&lt;<a class="el" href="namespacekwk.html#abf80c3212de5864c8fbd74ebe3f42550" title="Axis specifier for indexed axis.">kwk::along</a>&lt;1&gt;, <a class="el" href="namespacekwk.html#abf80c3212de5864c8fbd74ebe3f42550" title="Axis specifier for indexed axis.">kwk::along</a>&lt;0&gt;&gt;(5,10)</code> defines a 2D shape of 5 x 10 elements that are physically stored in 5 blocks of 10 contiguous elements.</li>
+<li><code><a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a>&lt;<a class="el" href="namespacekwk.html#a8e5bc23eeee850fe9161ae7972dfc69e" title="Predefined axis for width.">kwk::width</a>, <a class="el" href="namespacekwk.html#abf0a21038671dcb8af94763d6622059e" title="Predefined axis for height.">kwk::height</a>&gt;(5,10)</code> defines a 2D shape of 5 x 10 elements that are physically stored in 5 blocks of 10 contiguous elements. The so-called height of this shape is 10 and its width is 5. As the elements are stored by block of 10 contiguously, we can say that this shape is storing data in a column major way. in 5 blocks of 10 contiguous elements.</li>
+<li><code><a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a>&lt;<a class="el" href="namespacekwk.html#abf0a21038671dcb8af94763d6622059e" title="Predefined axis for height.">kwk::height</a>, <a class="el" href="namespacekwk.html#a8e5bc23eeee850fe9161ae7972dfc69e" title="Predefined axis for width.">kwk::width</a>&gt;(5,10)</code> defines a 2D shape of 5 x 10 elements that are physically stored in 5 blocks of 10 contiguous elements. The so-called width of this shape is 10 and its height is 5. As the elements are stored by block of 10 contiguously, we can say that this shape is storing data in a row major way.</li>
+</ul>
+<p>See how the naming of the <a class="el" href="glossary.html#glossary-axis">Axis</a> specifies the semantic over the physical storage while the actual definition of the shape stays the same. One could decide to define a 3D shape stored "channel first" by using a shape defined as <code><a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a>&lt;<a class="el" href="namespacekwk.html#a8e5bc23eeee850fe9161ae7972dfc69e" title="Predefined axis for width.">kwk::width</a>,<a class="el" href="namespacekwk.html#abf0a21038671dcb8af94763d6622059e" title="Predefined axis for height.">kwk::height</a>,<a class="el" href="namespacekwk.html#a84c0be3201cb42dd92a0986e2a2d9e20" title="Predefined axis for channel.">kwk::channel</a>&gt;</code>.</p>
+<h2><a class="anchor" id="glossary-extent"></a>
+Extent</h2>
+<p>An <a class="el" href="glossary.html#glossary-extent">Extent</a> is a value that represent the number of element along a given axis of a container. <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> and kwk::stride can be constructed from a series of <a class="el" href="glossary.html#glossary-extent">Extent</a>. The numerical value associated to an <a class="el" href="glossary.html#glossary-extent">Extent</a> is named <b>dimension</b>.</p>
+<p>Valid values for an <a class="el" href="glossary.html#glossary-extent">Extent</a> can be:</p><ul>
+<li>any integral value, e.g <code>42</code>. Its associated dimension is given by its value.</li>
+<li>any static integral value, e.g <code><a class="el" href="group__utility.html#gaac3d175a241803308de3f331028753e6" title="Provides a short-cut to define a std::integral_constant value from a literal integer.">kwk::fixed</a>&lt;13&gt;</code> or <code>37_c</code>. Its associated dimension is given by its value.</li>
+<li>the joker placeholder <code><a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1" title="Joker value.">kwk::_</a></code>. Its associated dimensions is 0.</li>
+<li>a type descriptor <code><a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7" title="Type setting for kwk::table.">kwk::as</a>&lt;T&gt;</code>, which acts as typed version of <code><a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1" title="Joker value.">kwk::_</a></code>. Its associated dimensions is <code>T{0}</code>.</li>
+<li>a typed or untyped specific <a class="el" href="glossary.html#glossary-axis">Axis</a>, e.g <code><a class="el" href="namespacekwk.html#abf0a21038671dcb8af94763d6622059e" title="Predefined axis for height.">kwk::height</a></code>, <code><a class="el" href="namespacekwk.html#abf80c3212de5864c8fbd74ebe3f42550" title="Axis specifier for indexed axis.">kwk::along</a>&lt;2&gt;[<a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7" title="Type setting for kwk::table.">kwk::as</a>&lt;int&gt;]</code> or <code><a class="el" href="namespacekwk.html#a14a23cb4d4dbc3874abf2a17c2ff367c" title="Axis specifier for named axis.">kwk::axis</a>&lt;"phase"&gt;</code>. Its associated dimensions is a properly typed 0.</li>
+<li>a specific <a class="el" href="glossary.html#glossary-axis">Axis</a> tied to a value, e.g <code><a class="el" href="namespacekwk.html#abf0a21038671dcb8af94763d6622059e" title="Predefined axis for height.">kwk::height</a> = 3</code> or <code><a class="el" href="namespacekwk.html#abf80c3212de5864c8fbd74ebe3f42550" title="Axis specifier for indexed axis.">kwk::along</a>&lt;2&gt; = 48_c</code>. Its associated dimension is given by its value.</li>
+</ul>
+<h1><a class="anchor" id="glossary-container"></a>
+Container-related Terms</h1>
+<h2><a class="anchor" id="glossary-order"></a>
+Order</h2>
+<p>The order of a container is defined as its number of dimensions. For <b>KIWAKU</b>, this number of dimensions is fixed at compile-time by the number of <a class="el" href="glossary.html#glossary-axis">Axis</a> used in a shape's definition. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

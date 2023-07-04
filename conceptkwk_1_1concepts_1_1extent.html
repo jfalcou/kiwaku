@@ -125,17 +125,18 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1extent.html'
 </div><!--header-->
 <div class="contents">
 
-<p>Concept for types usable as shape and stride construction.  
+<p>Shape and stride valid values.  
 <a href="conceptkwk_1_1concepts_1_1extent.html#details">More...</a></p>
 
 <p><code>#include &lt;kwk/concepts/extent.hpp&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Concept for types usable as shape and stride construction. </p>
+<div class="textblock"><p><a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> and kwk::stride can only be constructed from types satisfying the extent concepts, i.e <a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1" title="Joker value.">kwk::_</a>, an axis based option or any type convertible to integer. </p>
 </div><h2 class="groupheader">Concept definition</h2>
-<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> S&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1extent.html">kwk::concepts::extent</a> =  std::convertible_to&lt;T,S&gt; || <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1joker.html">joker&lt;T&gt;</a> || rbr::concepts::option&lt;T&gt;</div>
-<div class="ttc" id="aconceptkwk_1_1concepts_1_1extent_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1extent.html">kwk::concepts::extent</a></div><div class="ttdoc">Concept for types usable as shape and stride construction.</div><div class="ttdef"><b>Definition:</b> extent.hpp:22</div></div>
-<div class="ttc" id="aconceptkwk_1_1concepts_1_1joker_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1joker.html">kwk::concepts::joker</a></div><div class="ttdoc">Concept for types acting as a joker value.</div><div class="ttdef"><b>Definition:</b> extent.hpp:18</div></div>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1extent.html">kwk::concepts::extent</a> =  <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1numeric__extent.html">numeric_extent&lt;T&gt;</a> || <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1named__extent.html">named_extent&lt;T&gt;</a></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1extent_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1extent.html">kwk::concepts::extent</a></div><div class="ttdoc">Shape and stride valid values.</div><div class="ttdef"><b>Definition:</b> extent.hpp:44</div></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1named__extent_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1named__extent.html">kwk::concepts::named_extent</a></div><div class="ttdoc">Shape and stride named values.</div><div class="ttdef"><b>Definition:</b> extent.hpp:27</div></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1numeric__extent_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1numeric__extent.html">kwk::concepts::numeric_extent</a></div><div class="ttdoc">Shape and stride numerical values.</div><div class="ttdef"><b>Definition:</b> extent.hpp:35</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->

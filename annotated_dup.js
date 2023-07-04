@@ -10,7 +10,6 @@ var annotated_dup =
       [ "make_table", "structkwk_1_1make__table.html", null ],
       [ "make_view", "structkwk_1_1make__view.html", null ],
       [ "shape", "structkwk_1_1shape.html", "structkwk_1_1shape" ],
-      [ "stride", "structkwk_1_1stride.html", "structkwk_1_1stride" ],
       [ "table", "structkwk_1_1table.html", "structkwk_1_1table" ],
       [ "unsupported_call", "structkwk_1_1unsupported__call.html", null ],
       [ "view", "structkwk_1_1view.html", "structkwk_1_1view" ]

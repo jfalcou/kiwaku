@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::with_strides</title>
+<title>Kiwaku: kwk::of_size</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('namespacekwk_a095890c5da59bbfacfab9e26a6353eaf.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('namespacekwk_af057bfaa645bda968136a76d111bc1d8.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,36 +121,34 @@ $(document).ready(function(){initNavTree('namespacekwk_a095890c5da59bbfacfab9e26
 </div>
 
 <div class="contents">
-<a id="a095890c5da59bbfacfab9e26a6353eaf" name="a095890c5da59bbfacfab9e26a6353eaf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a095890c5da59bbfacfab9e26a6353eaf">&#9670;&#160;</a></span>with_strides()</h2>
+<a id="af057bfaa645bda968136a76d111bc1d8" name="af057bfaa645bda968136a76d111bc1d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af057bfaa645bda968136a76d111bc1d8">&#9670;&#160;</a></span>of_size() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... Ds&gt; </div>
+template&lt;int... , concepts::extent... D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr auto kwk::with_strides </td>
+          <td class="memname">KWK_TRIVIAL constexpr auto kwk::of_size </td>
           <td>(</td>
-          <td class="paramtype">Ds...&#160;</td>
-          <td class="paramname"><em>ds</em></td><td>)</td>
+          <td class="paramtype">D...&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Generates a <a class="el" href="structkwk_1_1stride.html" title="Fixed order stride with mixed size capability.">kwk::stride</a> from a list of stride value or joker. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ds</td><td>Variadic pack of sizes </td></tr>
+    <tr><td class="paramname">d</td><td>Variadic pack of <a class="el" href="glossary.html#glossary-extent">Extent</a> </td></tr>
   </table>
   </dd>
 </dl>

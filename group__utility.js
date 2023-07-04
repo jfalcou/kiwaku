@@ -1,13 +1,14 @@
 var group__utility =
 [
-    [ "Container settings", "group__settings.html", "group__settings" ],
+    [ "Advanced User Extension Points", "group__extension.html", "group__extension" ],
+    [ "Generalized Tag Invoke Protocol", "group__invoke.html", "group__invoke" ],
     [ "Type Traits", "group__traits.html", "group__traits" ],
     [ "kwk::joker", "structkwk_1_1joker.html", null ],
-    [ "kwk::coordinates", "group__utility_ga0a8c7d9e5c6db2bef77f929a4ff944ec.html#ga0a8c7d9e5c6db2bef77f929a4ff944ec", null ],
-    [ "kwk::linear_index", "group__utility_ga032b4c6695f7745bded81660a8975262.html#ga032b4c6695f7745bded81660a8975262", null ],
-    [ "kwk::linear_index", "group__utility_gace68b8bfb1798dda6aea3e30ad00ec99.html#gace68b8bfb1798dda6aea3e30ad00ec99", null ],
-    [ "kwk::linear_index", "group__utility_ga453c1bba620b07a7e6e4185d7e89a31d.html#ga453c1bba620b07a7e6e4185d7e89a31d", null ],
-    [ "kwk::literals::operator\"\"_c", "group__utility_ga2ec3b967a56cb24a680d64cb87f2952c.html#ga2ec3b967a56cb24a680d64cb87f2952c", null ],
+    [ "kwk::coordinates", "group__utility_ga2ed80466eff89b28730c0033e65e571f.html#ga2ed80466eff89b28730c0033e65e571f", null ],
+    [ "kwk::linear_index", "group__utility_gae18793767c7f746a447cdb28c9237756.html#gae18793767c7f746a447cdb28c9237756", null ],
+    [ "kwk::linear_index", "group__utility_ga7fa6168ac36c59c4b3d76c790464da57.html#ga7fa6168ac36c59c4b3d76c790464da57", null ],
+    [ "kwk::linear_index", "group__utility_gafda892d6d89b443f4171eac0eb178288.html#gafda892d6d89b443f4171eac0eb178288", null ],
+    [ "kwk::literals::operator\"\"_c", "group__utility_ga01731877d42ffc12a7bb9f3056ba3bf4.html#ga01731877d42ffc12a7bb9f3056ba3bf4", null ],
     [ "kwk::_", "group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1", null ],
     [ "kwk::fixed", "group__utility.html#gaac3d175a241803308de3f331028753e6", null ]
 ];

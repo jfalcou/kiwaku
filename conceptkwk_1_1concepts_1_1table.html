@@ -130,13 +130,12 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1table.html',
 
 <p><code>#include &lt;kwk/concepts/container.hpp&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Table concept. </p>
-<p>A <a class="el" href="conceptkwk_1_1concepts_1_1table.html">kwk::concepts::table</a> is a <a class="el" href="conceptkwk_1_1concepts_1_1container.html">kwk::concepts::container</a> type with the semantic of a <a class="el" href="structkwk_1_1table.html">kwk::table</a>. </p>
+<div class="textblock"><p>A <a class="el" href="conceptkwk_1_1concepts_1_1table.html">kwk::concepts::table</a> is a <a class="el" href="conceptkwk_1_1concepts_1_1container.html">kwk::concepts::container</a> type with the semantic of a <a class="el" href="structkwk_1_1table.html">kwk::table</a>. </p>
 </div><h2 class="groupheader">Concept definition</h2>
-<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">auto</span>... Settings&gt;</div>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Settings&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1table.html">kwk::concepts::table</a> =  <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1container.html">container</a>&lt;T,Settings...&gt; &amp;&amp; (<a class="code hl_variable" href="namespacekwk.html#a73b06e6568836ced3f015cda983dcff4">kwk::table_</a> == std::remove_cvref_t&lt;T&gt;::kind())</div>
 <div class="ttc" id="aconceptkwk_1_1concepts_1_1container_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1container.html">kwk::concepts::container</a></div><div class="ttdoc">Container concept.</div><div class="ttdef"><b>Definition:</b> container.hpp:63</div></div>
-<div class="ttc" id="aconceptkwk_1_1concepts_1_1table_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1table.html">kwk::concepts::table</a></div><div class="ttdoc">Table concept.</div><div class="ttdef"><b>Definition:</b> container.hpp:84</div></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1table_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1table.html">kwk::concepts::table</a></div><div class="ttdoc">Table concept.</div><div class="ttdef"><b>Definition:</b> container.hpp:81</div></div>
 <div class="ttc" id="anamespacekwk_html_a73b06e6568836ced3f015cda983dcff4"><div class="ttname"><a href="namespacekwk.html#a73b06e6568836ced3f015cda983dcff4">kwk::table_</a></div><div class="ttdeci">constexpr __::table_ table_</div><div class="ttdoc">kwk::table category setting</div><div class="ttdef"><b>Definition:</b> category.hpp:55</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

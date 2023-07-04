@@ -121,7 +121,7 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1deferred__callable.html'
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">kwk::deferred_callable Concept Reference<div class="ingroups"><a class="el" href="group__utility.html">Miscellaneous helper</a> &raquo; <a class="el" href="group__traits.html">Type Traits</a> &raquo; <a class="el" href="group__invoke.html">Generalized Tag Invoke Protocol</a></div></div></div>
+  <div class="headertitle"><div class="title">kwk::deferred_callable Concept Reference<div class="ingroups"><a class="el" href="group__utility.html">Miscellaneous Helpers</a> &raquo; <a class="el" href="group__invoke.html">Generalized Tag Invoke Protocol</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -130,8 +130,7 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1deferred__callable.html'
 
 <p><code>#include &lt;kwk/utility/invoke/protocol.hpp&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><b>KWK</b> deferred callable </p>
-<p>A type <code>T</code> satisfies kwk::deferred_callable_tag if and only if it is a <a class="el" href="conceptkwk_1_1callable.html" title="KWK callable">kwk::callable</a> and provides the required static function <code>deferred_call</code>. </p>
+<div class="textblock"><p>A type <code>T</code> satisfies kwk::deferred_callable_tag if and only if it is a <a class="el" href="conceptkwk_1_1callable.html" title="KWK callable">kwk::callable</a> and provides the required static function <code>deferred_call</code>. </p>
 </div><h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1deferred__callable.html">kwk::deferred_callable</a> =  <span class="keyword">requires</span>(T) { <span class="keyword">typename</span> T::deferred_callable_tag; }</div>

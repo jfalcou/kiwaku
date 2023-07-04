@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::stride::stride</title>
+<title>Kiwaku: kwk::of_size</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1stride_a998bfdb5c9a38fa019226269a3b70c31.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('namespacekwk_a609c516712b6762335df4587e4084e4b.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,74 +121,40 @@ $(document).ready(function(){initNavTree('structkwk_1_1stride_a998bfdb5c9a38fa01
 </div>
 
 <div class="contents">
-<a id="a998bfdb5c9a38fa019226269a3b70c31" name="a998bfdb5c9a38fa019226269a3b70c31"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a998bfdb5c9a38fa019226269a3b70c31">&#9670;&#160;</a></span>stride() <span class="overload">[2/2]</span></h2>
+<a id="a609c516712b6762335df4587e4084e4b" name="a609c516712b6762335df4587e4084e4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a609c516712b6762335df4587e4084e4b">&#9670;&#160;</a></span>of_size() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;auto Strides&gt; </div>
-<div class="memtemplate">
-template&lt;concepts::extent&lt; <a class="el" href="structkwk_1_1stride.html#af13fa4a74264d7f1b4ff8dadbd950a0e">size_type</a> &gt;... A&gt; <br />
-requires ( !(std::convertible_to&lt;A,<a class="el" href="structkwk_1_1stride.html#af13fa4a74264d7f1b4ff8dadbd950a0e">size_type</a>&gt; &amp;&amp; ...) &amp;&amp; make_combo&lt;<a class="el" href="structkwk_1_1stride.html#af13fa4a74264d7f1b4ff8dadbd950a0e">size_type</a>&gt;(Strides).is_equivalent(__::as_descriptor&lt;<a class="el" href="structkwk_1_1stride.html#af13fa4a74264d7f1b4ff8dadbd950a0e">size_type</a>&gt;(A{}...)) )</div>
+template&lt;typename SizeType , int... , kumi::product_type T&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structkwk_1_1stride.html">kwk::stride</a>&lt; Strides &gt;::stride </td>
+          <td class="memname">KWK_TRIVIAL constexpr auto kwk::of_size </td>
           <td>(</td>
-          <td class="paramtype">A const &amp;...&#160;</td>
-          <td class="paramname"><em>args</em></td><td>)</td>
+          <td class="paramtype">T const &amp;&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Construct from a subset of runtime dimension values. </p>
-<p>This constructor takes a variadic list of arguments specifying the size specified for a given runtime dimension. Those sizes are passed by using an axis descriptor</p>
-<p>Passing a dimension specifier to overwrite one of the compile-time dimensions is undefined behavior.</p>
-<p>This constructor will not take part in overload resolution if the shape is fully static.</p>
-<h2 class="groupheader">Example </h2>
-<div class="fragment"><div class="line"><span class="comment">//==================================================================================================</span></div>
-<div class="line"><span class="comment">/*</span></div>
-<div class="line"><span class="comment">    KIWAKU - Containers Well Made</span></div>
-<div class="line"><span class="comment">    Copyright : KIWAKU Contributors &amp; Maintainers</span></div>
-<div class="line"><span class="comment">    SPDX-License-Identifier: BSL-1.0</span></div>
-<div class="line"><span class="comment">*/</span></div>
-<div class="line"><span class="comment">//==================================================================================================</span></div>
-<div class="line"><span class="preprocessor">#include &lt;kwk/kwk.hpp&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main()</div>
-<div class="line">{</div>
-<div class="line">  <span class="keyword">using namespace </span>kwk::literals;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// _ is the dimension specifier</span></div>
-<div class="line">  <span class="keyword">using </span><a class="code hl_variable" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1">kwk::_</a>;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// Constructs shape of 3 x 5 x 9</span></div>
-<div class="line">  <a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a> x(3, 5, 9);</div>
-<div class="line">  std::cout &lt;&lt; x &lt;&lt; <span class="stringliteral">&quot; : &quot;</span> &lt;&lt; get&lt;0&gt;(x) &lt;&lt; <span class="stringliteral">&quot; x &quot;</span> &lt;&lt; get&lt;1&gt;(x) &lt;&lt; <span class="stringliteral">&quot; x &quot;</span> &lt;&lt; get&lt;2&gt;(x) &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// Constructs shape with width = 7 and height = 9 in this order</span></div>
-<div class="line">  <a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a> y(kwk::width = 7, kwk::height = 9);</div>
-<div class="line">  std::cout &lt;&lt; y &lt;&lt; <span class="stringliteral">&quot; : &quot;</span> &lt;&lt; y[kwk::width] &lt;&lt; <span class="stringliteral">&quot; x &quot;</span> &lt;&lt; y[kwk::height] &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// Constructs shape with 4 x color = 10 with 4 being known at compile time</span></div>
-<div class="line">  <a class="code hl_struct" href="structkwk_1_1shape.html">kwk::shape</a> z(4_c, kwk::axis&lt;&quot;color&quot;&gt; = 9);</div>
-<div class="line">  std::cout &lt;&lt; z &lt;&lt; <span class="stringliteral">&quot; : &quot;</span> &lt;&lt; get&lt;0&gt;(z) &lt;&lt; <span class="stringliteral">&quot; x &quot;</span> &lt;&lt; z[kwk::axis&lt;<span class="stringliteral">&quot;color&quot;</span>&gt;] &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line">}</div>
-<div class="ttc" id="agroup__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1_html_ga5008705a9f99e5f4bf3eab64f12e8ac1"><div class="ttname"><a href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1">kwk::_</a></div><div class="ttdeci">constexpr joker _</div><div class="ttdoc">Joker value.</div><div class="ttdef"><b>Definition:</b> joker.hpp:56</div></div>
-<div class="ttc" id="astructkwk_1_1shape_html"><div class="ttname"><a href="structkwk_1_1shape.html">kwk::shape</a></div><div class="ttdoc">Fixed order shape with mixed size capability.</div><div class="ttdef"><b>Definition:</b> shape.hpp:113</div></div>
-</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">SizeType</td><td>Integral type used to store sizes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">args</td><td>Variadic list of dimension/size association </td></tr>
+    <tr><td class="paramname">t</td><td>Tuple of <a class="el" href="glossary.html#glossary-extent">Extent</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -201,7 +167,7 @@ requires ( !(std::convertible_to&lt;A,<a class="el" href="structkwk_1_1stride.ht
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1stride.html">stride</a></li>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

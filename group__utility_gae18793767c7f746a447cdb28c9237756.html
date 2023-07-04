@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__utility_ga453c1bba620b07a7e6e4185d7e89a31d.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__utility_gae18793767c7f746a447cdb28c9237756.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,13 +121,14 @@ $(document).ready(function(){initNavTree('group__utility_ga453c1bba620b07a7e6e41
 </div>
 
 <div class="contents">
-<a id="ga453c1bba620b07a7e6e4185d7e89a31d" name="ga453c1bba620b07a7e6e4185d7e89a31d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga453c1bba620b07a7e6e4185d7e89a31d">&#9670;&#160;</a></span>linear_index() <span class="overload">[3/3]</span></h2>
+<a id="gae18793767c7f746a447cdb28c9237756" name="gae18793767c7f746a447cdb28c9237756"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae18793767c7f746a447cdb28c9237756">&#9670;&#160;</a></span>linear_index() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;auto Shaper, kumi::sized_product_type&lt; Shaper.size()&gt; Indexes&gt; </div>
+template&lt;auto... S, <a class="el" href="conceptkwk_1_1concepts_1_1range.html">kwk::concepts::range</a> Indexes&gt; <br />
+requires ( !kumi::sized_product_type&lt;Indexes,<a class="el" href="structkwk_1_1shape.html">shape</a>&lt;S...&gt;::static_order&gt; )</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -135,14 +136,14 @@ template&lt;auto Shaper, kumi::sized_product_type&lt; Shaper.size()&gt; Indexes&
         <tr>
           <td class="memname">constexpr auto kwk::linear_index </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;&#160;</td>
           <td class="paramname"><em>sh</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Indexes&#160;</td>
-          <td class="paramname"><em>idx</em>&#160;</td>
+          <td class="paramtype">Indexes const &amp;&#160;</td>
+          <td class="paramname"><em>indexes</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -156,16 +157,14 @@ template&lt;auto Shaper, kumi::sized_product_type&lt; Shaper.size()&gt; Indexes&
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Computes a linear index from a tuple of N indexes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sh</td><td>Shape used as a reference </td></tr>
-    <tr><td class="paramname">idx</td><td>Individual list of indexes representing the order N index to linearize </td></tr>
+    <tr><td class="paramname">indexes</td><td>Range of integer representing the order N index to linearize </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The linear index equivalent to (idx...) for the current shape </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The linear index equivalent to (indexes[0], ...) for the current shape </dd></dl>
 
 </div>
 </div>

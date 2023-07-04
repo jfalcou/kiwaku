@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::concepts::descriptor Concept Reference</title>
+<title>Kiwaku: kwk::shape::operator()</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1descriptor.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structkwk_1_1shape_acb9e3582270f53c087a2ebbd8cf5f288.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,31 +120,54 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1descriptor.h
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">kwk::concepts::descriptor Concept Reference</div></div>
-</div><!--header-->
 <div class="contents">
+<a id="acb9e3582270f53c087a2ebbd8cf5f288" name="acb9e3582270f53c087a2ebbd8cf5f288"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb9e3582270f53c087a2ebbd8cf5f288">&#9670;&#160;</a></span>operator()()</h2>
 
-<p>Concept for shape and stride extent descriptor.  
-<a href="conceptkwk_1_1concepts_1_1descriptor.html#details">More...</a></p>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;auto... D&gt; </div>
+<div class="memtemplate">
+template&lt;typename... Slicers&gt; <br />
+requires ( sizeof...(Slicers) &lt;= <a class="el" href="structkwk_1_1shape.html#aef516befd154a7361b535d04bd2759fc">static_order</a> )</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>&lt; D &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">Slicers const &amp;...&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Computes the shape of the sub-volume described by the slicers passed as parameters</p>
+<p>Does not participate in overload resolution if the number of parameters is not equal to the shape order.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>Variadic list of slicer instances </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An instance of <a class="el" href="structkwk_1_1shape.html">kwk::shape</a> corresponding to the shape of the selected sub-volume </dd></dl>
 
-<p><code>#include &lt;kwk/concepts/extent.hpp&gt;</code></p>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Concept for shape and stride extent descriptor. </p>
-</div><h2 class="groupheader">Concept definition</h2>
-<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1descriptor.html">kwk::concepts::descriptor</a> =  <span class="keyword">requires</span>(T)</div>
-<div class="line">  {</div>
-<div class="line">    <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::contents_type;</div>
-<div class="line">  }</div>
-<div class="ttc" id="aconceptkwk_1_1concepts_1_1descriptor_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1descriptor.html">kwk::concepts::descriptor</a></div><div class="ttdoc">Concept for shape and stride extent descriptor.</div><div class="ttdef"><b>Definition:</b> extent.hpp:26</div></div>
-</div><!-- fragment --></div><!-- contents -->
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><b>concepts</b></li><li class="navelem"><a class="el" href="conceptkwk_1_1concepts_1_1descriptor.html">descriptor</a></li>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1shape.html">shape</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

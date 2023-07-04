@@ -28,18 +28,18 @@ var NAVTREE =
     [ "Kiwaku - Containers Well Made", "index.html", "index" ],
     [ "Installation and Quick Start", "about.html", [
       [ "Installation & Quick Start", "about.html#install", null ],
-      [ "Pre-requisites", "about.html#autotoc_md3", null ],
-      [ "Retrieving the source", "about.html#autotoc_md4", [
-        [ "Github", "about.html#autotoc_md5", null ],
-        [ "CPM", "about.html#autotoc_md6", null ]
+      [ "Pre-requisites", "about.html#autotoc_md7", null ],
+      [ "Retrieving the source", "about.html#autotoc_md8", [
+        [ "Github", "about.html#autotoc_md9", null ],
+        [ "CPM", "about.html#autotoc_md10", null ]
       ] ],
-      [ "Installation from Source", "about.html#autotoc_md7", [
-        [ "Setting up the Library", "about.html#autotoc_md8", null ],
-        [ "Building the Documentation", "about.html#autotoc_md9", null ]
+      [ "Installation from Source", "about.html#autotoc_md11", [
+        [ "Setting up the Library", "about.html#autotoc_md12", null ],
+        [ "Building the Documentation", "about.html#autotoc_md13", null ]
       ] ],
-      [ "Using the library", "about.html#autotoc_md10", [
-        [ "Compilation", "about.html#autotoc_md11", null ],
-        [ "Execution", "about.html#autotoc_md12", null ]
+      [ "Using the library", "about.html#autotoc_md14", [
+        [ "Compilation", "about.html#autotoc_md15", null ],
+        [ "Execution", "about.html#autotoc_md16", null ]
       ] ]
     ] ],
     [ "Tutorials", "tutorials.html", "tutorials" ],

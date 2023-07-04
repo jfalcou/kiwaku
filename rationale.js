@@ -1,6 +1,12 @@
 var rationale =
 [
     [ "Glossary", "glossary.html", [
-      [ "Order", "glossary.html#glossary-order", null ]
+      [ "Shape-related Terms", "glossary.html#glossary-shape", [
+        [ "Axis", "glossary.html#glossary-axis", null ],
+        [ "Extent", "glossary.html#glossary-extent", null ]
+      ] ],
+      [ "Container-related Terms", "glossary.html#glossary-container", [
+        [ "Order", "glossary.html#glossary-order", null ]
+      ] ]
     ] ]
 ];

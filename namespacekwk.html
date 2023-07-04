@@ -135,8 +135,7 @@ $(document).ready(function(){initNavTree('namespacekwk.html',''); initResizable(
 <p>Main <b>KIWAKU</b> namespace.  
 <a href="namespacekwk.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Main <b>KIWAKU</b> namespace. </p>
-<p>KIWAKU - Containers Well Made Copyright : KIWAKU Project Contributors SPDX-License-Identifier: BSL-1.0 </p>
+<div class="textblock"><p>KIWAKU - Containers Well Made Copyright : KIWAKU Project Contributors SPDX-License-Identifier: BSL-1.0 </p>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -173,9 +172,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1shape.html">shape</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed order shape with mixed size capability.  <a href="structkwk_1_1shape.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1stride.html">stride</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed order stride with mixed size capability.  <a href="structkwk_1_1stride.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1table.html">table</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning, contiguous multi-dimensional container.  <a href="structkwk_1_1table.html#details">More...</a><br /></td></tr>
@@ -214,10 +210,10 @@ template&lt;auto &amp; Func&gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga3498851926832cb560f8faddfb65ad5f"><td class="memTemplParams" colspan="2">template&lt;typename Func , auto Desc&gt; </td></tr>
-<tr class="memitem:ga3498851926832cb560f8faddfb65ad5f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__algorithms_ga3498851926832cb560f8faddfb65ad5f.html#ga3498851926832cb560f8faddfb65ad5f">for_each</a> (Func f, <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc &gt; const &amp;shp)</td></tr>
-<tr class="memdesc:ga3498851926832cb560f8faddfb65ad5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple walkthrough over all possible indexes.  <br /></td></tr>
-<tr class="separator:ga3498851926832cb560f8faddfb65ad5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="memTemplParams" colspan="2">template&lt;typename Func , auto... S&gt; </td></tr>
+<tr class="memitem:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">for_each</a> (Func f, <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;shp)</td></tr>
+<tr class="memdesc:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple walkthrough over all possible indexes.  <br /></td></tr>
+<tr class="separator:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaf3aeaeeb46b1eb7403cc5afa621a41b"><td class="memTemplParams" colspan="2">template&lt;typename Func , concepts::container Container&gt; </td></tr>
 <tr class="memitem:gaaf3aeaeeb46b1eb7403cc5afa621a41b"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__algorithms_gaaf3aeaeeb46b1eb7403cc5afa621a41b.html#gaaf3aeaeeb46b1eb7403cc5afa621a41b">for_each</a> (Func f, Container &amp;&amp;c)</td></tr>
 <tr class="memdesc:gaaf3aeaeeb46b1eb7403cc5afa621a41b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple walkthrough over all elements of a container.  <br /></td></tr>
@@ -226,63 +222,74 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa95698990fc82c3b1e6d804ccf5bf674"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__algorithms_gaa95698990fc82c3b1e6d804ccf5bf674.html#gaa95698990fc82c3b1e6d804ccf5bf674">for_each_index</a> (Func f, Container &amp;&amp;c)</td></tr>
 <tr class="memdesc:gaa95698990fc82c3b1e6d804ccf5bf674"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple walkthrough over all elements of a container and their coordinates.  <br /></td></tr>
 <tr class="separator:gaa95698990fc82c3b1e6d804ccf5bf674"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e4b17ad916d73ab24ad3efb521155d4"><td class="memTemplParams" colspan="2">template&lt;std::int32_t N, auto Desc&gt; </td></tr>
-<tr class="memitem:a9e4b17ad916d73ab24ad3efb521155d4"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a9e4b17ad916d73ab24ad3efb521155d4.html#a9e4b17ad916d73ab24ad3efb521155d4">compress</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc &gt; const  &amp;s) noexcept</td></tr>
-<tr class="memdesc:a9e4b17ad916d73ab24ad3efb521155d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compress a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> to a given order.  <br /></td></tr>
-<tr class="separator:a9e4b17ad916d73ab24ad3efb521155d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab830ed07a610c5e16cf12efd0969feac"><td class="memTemplParams" colspan="2">template&lt;std::integral SizeType, int... , concepts::extent&lt; SizeType &gt;... Ds&gt; </td></tr>
-<tr class="memitem:ab830ed07a610c5e16cf12efd0969feac"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_ab830ed07a610c5e16cf12efd0969feac.html#ab830ed07a610c5e16cf12efd0969feac">of_size</a> (Ds... ds) noexcept</td></tr>
-<tr class="memdesc:ab830ed07a610c5e16cf12efd0969feac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> from a list of sizes.  <br /></td></tr>
-<tr class="separator:ab830ed07a610c5e16cf12efd0969feac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc12ec375d4932e152416a7c1b082edc"><td class="memTemplParams" colspan="2"><a id="afc12ec375d4932e152416a7c1b082edc" name="afc12ec375d4932e152416a7c1b082edc"></a>
-template&lt;int... , typename... Ds&gt; </td></tr>
-<tr class="memitem:afc12ec375d4932e152416a7c1b082edc"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>of_size</b> (Ds... ds) noexcept -&gt; decltype(of_size&lt; typename __::largest_integral&lt; Ds... &gt;::type &gt;(ds...))</td></tr>
-<tr class="memdesc:afc12ec375d4932e152416a7c1b082edc"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. <br /></td></tr>
-<tr class="separator:afc12ec375d4932e152416a7c1b082edc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a109cdf77d5b3da01838e352fc9c29ef0"><td class="memTemplParams" colspan="2"><a id="a109cdf77d5b3da01838e352fc9c29ef0" name="a109cdf77d5b3da01838e352fc9c29ef0"></a>
-template&lt;int... , kumi::product_type Ds&gt; </td></tr>
-<tr class="memitem:a109cdf77d5b3da01838e352fc9c29ef0"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>of_size</b> (Ds ds) noexcept</td></tr>
-<tr class="memdesc:a109cdf77d5b3da01838e352fc9c29ef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. <br /></td></tr>
-<tr class="separator:a109cdf77d5b3da01838e352fc9c29ef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42aa9b83fd21219f9ba1f239e631ca8e"><td class="memTemplParams" colspan="2"><a id="a42aa9b83fd21219f9ba1f239e631ca8e" name="a42aa9b83fd21219f9ba1f239e631ca8e"></a>
-template&lt;std::integral SizeType, int... , kumi::product_type Ds&gt; </td></tr>
-<tr class="memitem:a42aa9b83fd21219f9ba1f239e631ca8e"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>of_size</b> (Ds ds) noexcept</td></tr>
-<tr class="memdesc:a42aa9b83fd21219f9ba1f239e631ca8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. <br /></td></tr>
-<tr class="separator:a42aa9b83fd21219f9ba1f239e631ca8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a695d4843b2e420aeb2b214ffa8537489"><td class="memTemplParams" colspan="2"><a id="a695d4843b2e420aeb2b214ffa8537489" name="a695d4843b2e420aeb2b214ffa8537489"></a>
-template&lt;typename... T&gt; </td></tr>
-<tr class="memitem:a695d4843b2e420aeb2b214ffa8537489"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>shape</b> (T...) -&gt; <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; __::descriptor_from&lt; T... &gt;() &gt;</td></tr>
-<tr class="memdesc:a695d4843b2e420aeb2b214ffa8537489"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduction guide for <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>. <br /></td></tr>
-<tr class="separator:a695d4843b2e420aeb2b214ffa8537489"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a378de528cdcd2041106f5c96de8e9b0d"><td class="memTemplParams" colspan="2">template&lt;auto Shape&gt; </td></tr>
-<tr class="memitem:a378de528cdcd2041106f5c96de8e9b0d"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a378de528cdcd2041106f5c96de8e9b0d.html#a378de528cdcd2041106f5c96de8e9b0d">as_stride</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shape &gt; const s) noexcept</td></tr>
-<tr class="separator:a378de528cdcd2041106f5c96de8e9b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a095890c5da59bbfacfab9e26a6353eaf"><td class="memTemplParams" colspan="2">template&lt;typename... Ds&gt; </td></tr>
-<tr class="memitem:a095890c5da59bbfacfab9e26a6353eaf"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a095890c5da59bbfacfab9e26a6353eaf.html#a095890c5da59bbfacfab9e26a6353eaf">with_strides</a> (Ds... ds) noexcept</td></tr>
-<tr class="memdesc:a095890c5da59bbfacfab9e26a6353eaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="structkwk_1_1stride.html" title="Fixed order stride with mixed size capability.">kwk::stride</a> from a list of stride value or joker.  <br /></td></tr>
-<tr class="separator:a095890c5da59bbfacfab9e26a6353eaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="memTemplParams" colspan="2">template&lt;auto Desc&gt; </td></tr>
-<tr class="memitem:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga0a8c7d9e5c6db2bef77f929a4ff944ec.html#ga0a8c7d9e5c6db2bef77f929a4ff944ec">coordinates</a> (std::integral auto const idx, <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc &gt; const shp) noexcept</td></tr>
-<tr class="memdesc:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a tuple of coordinates from a linear index and a shape.  <br /></td></tr>
-<tr class="separator:ga0a8c7d9e5c6db2bef77f929a4ff944ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9d9ba85008a66e30a04039b551834b8"><td class="memTemplParams" colspan="2">template&lt;std::int32_t N, auto... D&gt; </td></tr>
+<tr class="memitem:ac9d9ba85008a66e30a04039b551834b8"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_ac9d9ba85008a66e30a04039b551834b8.html#ac9d9ba85008a66e30a04039b551834b8">compress</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; D... &gt; const &amp;) noexcept</td></tr>
+<tr class="memdesc:ac9d9ba85008a66e30a04039b551834b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compress a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> to a given order.  <br /></td></tr>
+<tr class="separator:ac9d9ba85008a66e30a04039b551834b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ba16b4bab496b5eb5af6e0e457fcfa5"><td class="memTemplParams" colspan="2"><a id="a4ba16b4bab496b5eb5af6e0e457fcfa5" name="a4ba16b4bab496b5eb5af6e0e457fcfa5"></a>
+template&lt;concepts::extent... T&gt; </td></tr>
+<tr class="memitem:a4ba16b4bab496b5eb5af6e0e457fcfa5"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>shape</b> (T...) -&gt; <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; <a class="el" href="group__extension_gaa69fbcc54405bf59adecf19f229c1825.html#gaa69fbcc54405bf59adecf19f229c1825">to_descriptor</a>(T{})... &gt;</td></tr>
+<tr class="memdesc:a4ba16b4bab496b5eb5af6e0e457fcfa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduction guide for <a class="el" href="structkwk_1_1shape.html">kwk::shape</a>. <br /></td></tr>
+<tr class="separator:a4ba16b4bab496b5eb5af6e0e457fcfa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af057bfaa645bda968136a76d111bc1d8"><td class="memTemplParams" colspan="2">template&lt;int... , concepts::extent... D&gt; </td></tr>
+<tr class="memitem:af057bfaa645bda968136a76d111bc1d8"><td class="memTemplItemLeft" align="right" valign="top">KWK_TRIVIAL constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_af057bfaa645bda968136a76d111bc1d8.html#af057bfaa645bda968136a76d111bc1d8">of_size</a> (D... d)</td></tr>
+<tr class="memdesc:af057bfaa645bda968136a76d111bc1d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> from a list of <a class="el" href="glossary.html#glossary-extent">Extent</a>.  <br /></td></tr>
+<tr class="separator:af057bfaa645bda968136a76d111bc1d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85d26b460225e930b00810941dfd25d0"><td class="memTemplParams" colspan="2">template&lt;std::integral SizeType, int... , concepts::extent... D&gt; </td></tr>
+<tr class="memitem:a85d26b460225e930b00810941dfd25d0"><td class="memTemplItemLeft" align="right" valign="top">KWK_TRIVIAL constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a85d26b460225e930b00810941dfd25d0.html#a85d26b460225e930b00810941dfd25d0">of_size</a> (D... d)</td></tr>
+<tr class="memdesc:a85d26b460225e930b00810941dfd25d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> from a list of <a class="el" href="glossary.html#glossary-extent">Extent</a>.  <br /></td></tr>
+<tr class="separator:a85d26b460225e930b00810941dfd25d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab834c2ddb996108d675b9015c8eef30b"><td class="memTemplParams" colspan="2">template&lt;int... , kumi::product_type T&gt; </td></tr>
+<tr class="memitem:ab834c2ddb996108d675b9015c8eef30b"><td class="memTemplItemLeft" align="right" valign="top">KWK_TRIVIAL constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_ab834c2ddb996108d675b9015c8eef30b.html#ab834c2ddb996108d675b9015c8eef30b">of_size</a> (T const &amp;t)</td></tr>
+<tr class="memdesc:ab834c2ddb996108d675b9015c8eef30b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> from a tuple of <a class="el" href="glossary.html#glossary-extent">Extent</a>.  <br /></td></tr>
+<tr class="separator:ab834c2ddb996108d675b9015c8eef30b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a609c516712b6762335df4587e4084e4b"><td class="memTemplParams" colspan="2">template&lt;typename SizeType , int... , kumi::product_type T&gt; </td></tr>
+<tr class="memitem:a609c516712b6762335df4587e4084e4b"><td class="memTemplItemLeft" align="right" valign="top">KWK_TRIVIAL constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a609c516712b6762335df4587e4084e4b.html#a609c516712b6762335df4587e4084e4b">of_size</a> (T const &amp;t)</td></tr>
+<tr class="memdesc:a609c516712b6762335df4587e4084e4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> from a tuple of <a class="el" href="glossary.html#glossary-extent">Extent</a>.  <br /></td></tr>
+<tr class="separator:a609c516712b6762335df4587e4084e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38b2400f855b10afb7308c8173da1f67"><td class="memTemplParams" colspan="2">template&lt;std::int32_t N, auto... D&gt; <br />
+requires (N&gt;0 &amp;&amp; N&lt;=sizeof...(D))</td></tr>
+<tr class="memitem:a38b2400f855b10afb7308c8173da1f67"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a38b2400f855b10afb7308c8173da1f67.html#a38b2400f855b10afb7308c8173da1f67">compress</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; D... &gt; const &amp;s) noexcept</td></tr>
+<tr class="memdesc:a38b2400f855b10afb7308c8173da1f67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compress a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> to a given order.  <br /></td></tr>
+<tr class="separator:a38b2400f855b10afb7308c8173da1f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa090076284bbdd664ad5562af3577722"><td class="memTemplParams" colspan="2"><a id="aa090076284bbdd664ad5562af3577722" name="aa090076284bbdd664ad5562af3577722"></a>
+template&lt;concepts::extent... T&gt; </td></tr>
+<tr class="memitem:aa090076284bbdd664ad5562af3577722"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>stride</b> (T...) -&gt; stride&lt; <a class="el" href="group__extension_gaa69fbcc54405bf59adecf19f229c1825.html#gaa69fbcc54405bf59adecf19f229c1825">to_descriptor</a>(T{})... &gt;</td></tr>
+<tr class="memdesc:aa090076284bbdd664ad5562af3577722"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduction guide for kwk::stride. <br /></td></tr>
+<tr class="separator:aa090076284bbdd664ad5562af3577722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af811af24909a4a34f72e7bcff3b21f8f"><td class="memTemplParams" colspan="2">template&lt;concepts::extent... D&gt; </td></tr>
+<tr class="memitem:af811af24909a4a34f72e7bcff3b21f8f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_af811af24909a4a34f72e7bcff3b21f8f.html#af811af24909a4a34f72e7bcff3b21f8f">with_strides</a> (D... d) noexcept</td></tr>
+<tr class="memdesc:af811af24909a4a34f72e7bcff3b21f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a kwk::stride from a list of stride value or joker.  <br /></td></tr>
+<tr class="separator:af811af24909a4a34f72e7bcff3b21f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a4819e5b66e39687cfd30e7c8134238"><td class="memTemplParams" colspan="2">template&lt;auto... D&gt; </td></tr>
+<tr class="memitem:a5a4819e5b66e39687cfd30e7c8134238"><td class="memTemplItemLeft" align="right" valign="top">KWK_PURE constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a5a4819e5b66e39687cfd30e7c8134238.html#a5a4819e5b66e39687cfd30e7c8134238">as_stride</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; D... &gt; s) noexcept</td></tr>
+<tr class="separator:a5a4819e5b66e39687cfd30e7c8134238"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2ed80466eff89b28730c0033e65e571f"><td class="memTemplParams" colspan="2">template&lt;std::integral Idx, auto... Desc&gt; </td></tr>
+<tr class="memitem:ga2ed80466eff89b28730c0033e65e571f"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga2ed80466eff89b28730c0033e65e571f.html#ga2ed80466eff89b28730c0033e65e571f">coordinates</a> (Idx idx, <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc... &gt; const shp) noexcept</td></tr>
+<tr class="memdesc:ga2ed80466eff89b28730c0033e65e571f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a tuple of coordinates from a linear index and a shape.  <br /></td></tr>
+<tr class="separator:ga2ed80466eff89b28730c0033e65e571f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45cc145ad95771a2681d1f685bf185e5"><td class="memTemplParams" colspan="2"><a id="a45cc145ad95771a2681d1f685bf185e5" name="a45cc145ad95771a2681d1f685bf185e5"></a>
 template&lt;typename O , typename R &gt; </td></tr>
 <tr class="memitem:a45cc145ad95771a2681d1f685bf185e5"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>end_t</b> (O, R) -&gt; end_t&lt; O, R &gt;</td></tr>
 <tr class="memdesc:a45cc145ad95771a2681d1f685bf185e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduction guide. <br /></td></tr>
 <tr class="separator:a45cc145ad95771a2681d1f685bf185e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga032b4c6695f7745bded81660a8975262"><td class="memTemplParams" colspan="2">template&lt;auto Shaper, std::integral... Index&gt; </td></tr>
-<tr class="memitem:ga032b4c6695f7745bded81660a8975262"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga032b4c6695f7745bded81660a8975262.html#ga032b4c6695f7745bded81660a8975262">linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;sh, Index... idx) noexcept</td></tr>
-<tr class="memdesc:ga032b4c6695f7745bded81660a8975262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a order N list of indexes.  <br /></td></tr>
-<tr class="separator:ga032b4c6695f7745bded81660a8975262"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="memTemplParams" colspan="2">template&lt;auto Shaper, kumi::sized_product_type&lt; Shaper.size()&gt; Indexes&gt; </td></tr>
-<tr class="memitem:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga453c1bba620b07a7e6e4185d7e89a31d.html#ga453c1bba620b07a7e6e4185d7e89a31d">linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;sh, Indexes idx) noexcept</td></tr>
-<tr class="memdesc:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a tuple of N indexes.  <br /></td></tr>
-<tr class="separator:ga453c1bba620b07a7e6e4185d7e89a31d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="memTemplParams" colspan="2">template&lt;auto Shaper, <a class="el" href="conceptkwk_1_1concepts_1_1range.html">kwk::concepts::range</a> Indexes&gt; <br />
-requires ( !kumi::sized_product_type&lt;Indexes,Shaper.size()&gt; )</td></tr>
-<tr class="memitem:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_gace68b8bfb1798dda6aea3e30ad00ec99.html#gace68b8bfb1798dda6aea3e30ad00ec99">linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Shaper &gt; const &amp;sh, Indexes const &amp;indexes) noexcept</td></tr>
-<tr class="memdesc:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a range of N indexes.  <br /></td></tr>
-<tr class="separator:gace68b8bfb1798dda6aea3e30ad00ec99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="memTemplParams" colspan="2">template&lt;char... c&gt; </td></tr>
+<tr class="memitem:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="memTemplItemLeft" align="right" valign="top">KWK_TRIVIAL constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga01731877d42ffc12a7bb9f3056ba3bf4.html#ga01731877d42ffc12a7bb9f3056ba3bf4">operator&quot;&quot;_c</a> () noexcept</td></tr>
+<tr class="memdesc:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">User-defined literal suffix for compile-time constant.  <br /></td></tr>
+<tr class="separator:ga01731877d42ffc12a7bb9f3056ba3bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7fa6168ac36c59c4b3d76c790464da57"><td class="memTemplParams" colspan="2">template&lt;auto... S, std::integral... Index&gt; </td></tr>
+<tr class="memitem:ga7fa6168ac36c59c4b3d76c790464da57"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_ga7fa6168ac36c59c4b3d76c790464da57.html#ga7fa6168ac36c59c4b3d76c790464da57">linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; sh, Index... idx) noexcept</td></tr>
+<tr class="memdesc:ga7fa6168ac36c59c4b3d76c790464da57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a order N list of indexes.  <br /></td></tr>
+<tr class="separator:ga7fa6168ac36c59c4b3d76c790464da57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafda892d6d89b443f4171eac0eb178288"><td class="memTemplParams" colspan="2">template&lt;auto... S, kumi::sized_product_type&lt; <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt;::static_order &gt; Indexes&gt; </td></tr>
+<tr class="memitem:gafda892d6d89b443f4171eac0eb178288"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_gafda892d6d89b443f4171eac0eb178288.html#gafda892d6d89b443f4171eac0eb178288">linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; sh, Indexes idx) noexcept</td></tr>
+<tr class="memdesc:gafda892d6d89b443f4171eac0eb178288"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a tuple of N indexes.  <br /></td></tr>
+<tr class="separator:gafda892d6d89b443f4171eac0eb178288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae18793767c7f746a447cdb28c9237756"><td class="memTemplParams" colspan="2">template&lt;auto... S, <a class="el" href="conceptkwk_1_1concepts_1_1range.html">kwk::concepts::range</a> Indexes&gt; <br />
+requires ( !kumi::sized_product_type&lt;Indexes,<a class="el" href="structkwk_1_1shape.html">shape</a>&lt;S...&gt;::static_order&gt; )</td></tr>
+<tr class="memitem:gae18793767c7f746a447cdb28c9237756"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utility_gae18793767c7f746a447cdb28c9237756.html#gae18793767c7f746a447cdb28c9237756">linear_index</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;sh, Indexes const &amp;indexes) noexcept</td></tr>
+<tr class="memdesc:gae18793767c7f746a447cdb28c9237756"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a linear index from a range of N indexes.  <br /></td></tr>
+<tr class="separator:gae18793767c7f746a447cdb28c9237756"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a897c0c275002e635427cf0c945c0915f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekwk_a897c0c275002e635427cf0c945c0915f.html#a897c0c275002e635427cf0c945c0915f">allocate</a> (<a class="el" href="structkwk_1_1any__allocator.html">any_allocator</a> &amp;a, std::size_t n)</td></tr>
 <tr class="memdesc:a897c0c275002e635427cf0c945c0915f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates data from an opaque allocator instance.  <br /></td></tr>
 <tr class="separator:a897c0c275002e635427cf0c945c0915f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -341,13 +348,36 @@ constexpr __::table_&#160;</td><td class="memItemRight" valign="bottom"><b>table
 constexpr __::allocator_&#160;</td><td class="memItemRight" valign="bottom"><b>allocator</b> = {}</td></tr>
 <tr class="memdesc:gac4c926f0ac22e4c1aacc25d88325fc41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocator setting for <a class="el" href="structkwk_1_1table.html" title="Owning, contiguous multi-dimensional container.">kwk::table</a>. <br /></td></tr>
 <tr class="separator:gac4c926f0ac22e4c1aacc25d88325fc41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf80c3212de5864c8fbd74ebe3f42550"><td class="memTemplParams" colspan="2"><a id="abf80c3212de5864c8fbd74ebe3f42550" name="abf80c3212de5864c8fbd74ebe3f42550"></a>
+template&lt;std::int32_t N&gt; </td></tr>
+<tr class="memitem:abf80c3212de5864c8fbd74ebe3f42550"><td class="memTemplItemLeft" align="right" valign="top">constexpr __::axis_&lt; N &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>along</b> = {}</td></tr>
+<tr class="memdesc:abf80c3212de5864c8fbd74ebe3f42550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis specifier for indexed axis. <br /></td></tr>
+<tr class="separator:abf80c3212de5864c8fbd74ebe3f42550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14a23cb4d4dbc3874abf2a17c2ff367c"><td class="memTemplParams" colspan="2"><a id="a14a23cb4d4dbc3874abf2a17c2ff367c" name="a14a23cb4d4dbc3874abf2a17c2ff367c"></a>
+template&lt;rbr::literals::str ID&gt; </td></tr>
+<tr class="memitem:a14a23cb4d4dbc3874abf2a17c2ff367c"><td class="memTemplItemLeft" align="right" valign="top">constexpr __::axis_&lt; ID &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>axis</b> = {}</td></tr>
+<tr class="memdesc:a14a23cb4d4dbc3874abf2a17c2ff367c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis specifier for named axis. <br /></td></tr>
+<tr class="separator:a14a23cb4d4dbc3874abf2a17c2ff367c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf0a21038671dcb8af94763d6622059e"><td class="memItemLeft" align="right" valign="top"><a id="abf0a21038671dcb8af94763d6622059e" name="abf0a21038671dcb8af94763d6622059e"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>height</b> = <a class="el" href="namespacekwk.html#a14a23cb4d4dbc3874abf2a17c2ff367c">axis</a>&lt;&quot;height&quot;&gt;</td></tr>
+<tr class="memdesc:abf0a21038671dcb8af94763d6622059e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Predefined axis for height. <br /></td></tr>
+<tr class="separator:abf0a21038671dcb8af94763d6622059e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e5bc23eeee850fe9161ae7972dfc69e"><td class="memItemLeft" align="right" valign="top"><a id="a8e5bc23eeee850fe9161ae7972dfc69e" name="a8e5bc23eeee850fe9161ae7972dfc69e"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>width</b> = <a class="el" href="namespacekwk.html#a14a23cb4d4dbc3874abf2a17c2ff367c">axis</a>&lt;&quot;width&quot;&gt;</td></tr>
+<tr class="memdesc:a8e5bc23eeee850fe9161ae7972dfc69e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Predefined axis for width. <br /></td></tr>
+<tr class="separator:a8e5bc23eeee850fe9161ae7972dfc69e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbe9690d935124a104a7760b4f93c81f"><td class="memItemLeft" align="right" valign="top"><a id="adbe9690d935124a104a7760b4f93c81f" name="adbe9690d935124a104a7760b4f93c81f"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>depth</b> = <a class="el" href="namespacekwk.html#a14a23cb4d4dbc3874abf2a17c2ff367c">axis</a>&lt;&quot;depth&quot;&gt;</td></tr>
+<tr class="memdesc:adbe9690d935124a104a7760b4f93c81f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Predefined axis for depth. <br /></td></tr>
+<tr class="separator:adbe9690d935124a104a7760b4f93c81f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c0be3201cb42dd92a0986e2a2d9e20"><td class="memItemLeft" align="right" valign="top"><a id="a84c0be3201cb42dd92a0986e2a2d9e20" name="a84c0be3201cb42dd92a0986e2a2d9e20"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>channel</b> = <a class="el" href="namespacekwk.html#a14a23cb4d4dbc3874abf2a17c2ff367c">axis</a>&lt;&quot;channel&quot;&gt;</td></tr>
+<tr class="memdesc:a84c0be3201cb42dd92a0986e2a2d9e20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Predefined axis for channel. <br /></td></tr>
+<tr class="separator:a84c0be3201cb42dd92a0986e2a2d9e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga75c22e379a8fd072b0a8133d1da630cc"><td class="memItemLeft" align="right" valign="top">
 constexpr __::category_&#160;</td><td class="memItemRight" valign="bottom"><b>category</b> = {}</td></tr>
 <tr class="memdesc:ga75c22e379a8fd072b0a8133d1da630cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Category setting discriminating <b>KIWAKU</b> containers. <br /></td></tr>
 <tr class="separator:ga75c22e379a8fd072b0a8133d1da630cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab00c243a837b1a0326f3066ae519df04"><td class="memItemLeft" align="right" valign="top">constexpr __::combo&lt; std::int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__settings_gab00c243a837b1a0326f3066ae519df04.html#gab00c243a837b1a0326f3066ae519df04">extent</a> = {}</td></tr>
-<tr class="memdesc:gab00c243a837b1a0326f3066ae519df04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constexpr generator for extent lists.  <br /></td></tr>
-<tr class="separator:gab00c243a837b1a0326f3066ae519df04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabb68e6f180ef839836e0dc210cd1772f"><td class="memItemLeft" align="right" valign="top">
 constexpr __::label_&#160;</td><td class="memItemRight" valign="bottom"><b>label</b> = {}</td></tr>
 <tr class="memdesc:gabb68e6f180ef839836e0dc210cd1772f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Label setting for <a class="el" href="structkwk_1_1table.html" title="Owning, contiguous multi-dimensional container.">kwk::table</a> and <a class="el" href="structkwk_1_1view.html" title="Non-owning, contiguous multi-dimensional container.">kwk::view</a>. <br /></td></tr>
@@ -364,49 +394,49 @@ constexpr __::source_&#160;</td><td class="memItemRight" valign="bottom"><b>sour
 constexpr __::strides_&#160;</td><td class="memItemRight" valign="bottom"><b>strides</b> = {}</td></tr>
 <tr class="memdesc:ga9f6509c2ec5668331e3d18e48ec35478"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stride setting for <a class="el" href="structkwk_1_1table.html" title="Owning, contiguous multi-dimensional container.">kwk::table</a> and <a class="el" href="structkwk_1_1view.html" title="Non-owning, contiguous multi-dimensional container.">kwk::view</a>. <br /></td></tr>
 <tr class="separator:ga9f6509c2ec5668331e3d18e48ec35478"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9f9402c28c0024e21b8ad6d149a1c43e"><td class="memTemplParams" colspan="2">
+<tr class="memitem:gaaf19133293919817e89249657fca02e7"><td class="memTemplParams" colspan="2">
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ga9f9402c28c0024e21b8ad6d149a1c43e"><td class="memTemplItemLeft" align="right" valign="top">constexpr __::type_::info&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>as</b> {}</td></tr>
-<tr class="memdesc:ga9f9402c28c0024e21b8ad6d149a1c43e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type setting for <a class="el" href="structkwk_1_1table.html" title="Owning, contiguous multi-dimensional container.">kwk::table</a>. <br /></td></tr>
-<tr class="separator:ga9f9402c28c0024e21b8ad6d149a1c43e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaf19133293919817e89249657fca02e7"><td class="memTemplItemLeft" align="right" valign="top">constexpr type&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>as</b> {}</td></tr>
+<tr class="memdesc:gaaf19133293919817e89249657fca02e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type setting for <a class="el" href="structkwk_1_1table.html" title="Owning, contiguous multi-dimensional container.">kwk::table</a>. <br /></td></tr>
+<tr class="separator:gaaf19133293919817e89249657fca02e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b13b1bcba3359943146be636c0207da"><td class="memItemLeft" align="right" valign="top"><a id="a3b13b1bcba3359943146be636c0207da" name="a3b13b1bcba3359943146be636c0207da"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>real32</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;float&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>real32</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;float&gt;</td></tr>
 <tr class="memdesc:a3b13b1bcba3359943146be636c0207da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for float. <br /></td></tr>
 <tr class="separator:a3b13b1bcba3359943146be636c0207da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1976486b798b854e789de80922a8b639"><td class="memItemLeft" align="right" valign="top"><a id="a1976486b798b854e789de80922a8b639" name="a1976486b798b854e789de80922a8b639"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>real64</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;double&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>real64</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;double&gt;</td></tr>
 <tr class="memdesc:a1976486b798b854e789de80922a8b639"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for double. <br /></td></tr>
 <tr class="separator:a1976486b798b854e789de80922a8b639"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1a0fbb9847b2b2973593c7d4932c40b"><td class="memItemLeft" align="right" valign="top"><a id="ae1a0fbb9847b2b2973593c7d4932c40b" name="ae1a0fbb9847b2b2973593c7d4932c40b"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int8</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::int8_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int8</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::int8_t&gt;</td></tr>
 <tr class="memdesc:ae1a0fbb9847b2b2973593c7d4932c40b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::int8_t. <br /></td></tr>
 <tr class="separator:ae1a0fbb9847b2b2973593c7d4932c40b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbd328aa9e82a0ee607645b7fd64fb47"><td class="memItemLeft" align="right" valign="top"><a id="adbd328aa9e82a0ee607645b7fd64fb47" name="adbd328aa9e82a0ee607645b7fd64fb47"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int16</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::int16_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int16</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::int16_t&gt;</td></tr>
 <tr class="memdesc:adbd328aa9e82a0ee607645b7fd64fb47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::int16_t. <br /></td></tr>
 <tr class="separator:adbd328aa9e82a0ee607645b7fd64fb47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04308cf65bf93d23987086e475f0b1d9"><td class="memItemLeft" align="right" valign="top"><a id="a04308cf65bf93d23987086e475f0b1d9" name="a04308cf65bf93d23987086e475f0b1d9"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int32</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::int32_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int32</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::int32_t&gt;</td></tr>
 <tr class="memdesc:a04308cf65bf93d23987086e475f0b1d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::int32_t. <br /></td></tr>
 <tr class="separator:a04308cf65bf93d23987086e475f0b1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab69f3e46fbf9221c2e8edef4fe87508f"><td class="memItemLeft" align="right" valign="top"><a id="ab69f3e46fbf9221c2e8edef4fe87508f" name="ab69f3e46fbf9221c2e8edef4fe87508f"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int64</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::int64_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>int64</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::int64_t&gt;</td></tr>
 <tr class="memdesc:ab69f3e46fbf9221c2e8edef4fe87508f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::int64_t. <br /></td></tr>
 <tr class="separator:ab69f3e46fbf9221c2e8edef4fe87508f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f71b86ce8ff3d8509d9f6d3ae2c3aca"><td class="memItemLeft" align="right" valign="top"><a id="a0f71b86ce8ff3d8509d9f6d3ae2c3aca" name="a0f71b86ce8ff3d8509d9f6d3ae2c3aca"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint8</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::uint8_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint8</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::uint8_t&gt;</td></tr>
 <tr class="memdesc:a0f71b86ce8ff3d8509d9f6d3ae2c3aca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::uint8_t. <br /></td></tr>
 <tr class="separator:a0f71b86ce8ff3d8509d9f6d3ae2c3aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8a19b45d256ce1a4a572150004d813d"><td class="memItemLeft" align="right" valign="top"><a id="ab8a19b45d256ce1a4a572150004d813d" name="ab8a19b45d256ce1a4a572150004d813d"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint16</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::uint16_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint16</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::uint16_t&gt;</td></tr>
 <tr class="memdesc:ab8a19b45d256ce1a4a572150004d813d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::uint16_t. <br /></td></tr>
 <tr class="separator:ab8a19b45d256ce1a4a572150004d813d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ec6a92e4a523254a8dce7478a563cf5"><td class="memItemLeft" align="right" valign="top"><a id="a1ec6a92e4a523254a8dce7478a563cf5" name="a1ec6a92e4a523254a8dce7478a563cf5"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint32</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::uint32_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint32</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::uint32_t&gt;</td></tr>
 <tr class="memdesc:a1ec6a92e4a523254a8dce7478a563cf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::uint32_t. <br /></td></tr>
 <tr class="separator:a1ec6a92e4a523254a8dce7478a563cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d3f09d48d522d3c4bac37b976486be7"><td class="memItemLeft" align="right" valign="top"><a id="a7d3f09d48d522d3c4bac37b976486be7" name="a7d3f09d48d522d3c4bac37b976486be7"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint64</b> = <a class="el" href="group__settings.html#ga9f9402c28c0024e21b8ad6d149a1c43e">as</a>&lt;std::uint64_t&gt;</td></tr>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>uint64</b> = <a class="el" href="group__settings.html#gaaf19133293919817e89249657fca02e7">as</a>&lt;std::uint64_t&gt;</td></tr>
 <tr class="memdesc:a7d3f09d48d522d3c4bac37b976486be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-defined type settings for std::uint64_t. <br /></td></tr>
 <tr class="separator:a7d3f09d48d522d3c4bac37b976486be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9733afb75003de91691984b8a4af4543"><td class="memItemLeft" align="right" valign="top"><a id="a9733afb75003de91691984b8a4af4543" name="a9733afb75003de91691984b8a4af4543"></a>
@@ -429,6 +459,12 @@ template&lt;auto N&gt; </td></tr>
 <tr class="memitem:ga5008705a9f99e5f4bf3eab64f12e8ac1"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structkwk_1_1joker.html">joker</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1">_</a> = {}</td></tr>
 <tr class="memdesc:ga5008705a9f99e5f4bf3eab64f12e8ac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Joker value.  <br /></td></tr>
 <tr class="separator:ga5008705a9f99e5f4bf3eab64f12e8ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga43082cc6e75ad44b0e334bfb0f8d5740"><td class="memItemLeft" align="right" valign="top">constexpr tags::as_dimension&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__extension_ga43082cc6e75ad44b0e334bfb0f8d5740.html#ga43082cc6e75ad44b0e334bfb0f8d5740">as_dimension</a> = {}</td></tr>
+<tr class="memdesc:ga43082cc6e75ad44b0e334bfb0f8d5740"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize an <a class="el" href="glossary.html#glossary-extent">Extent</a> value.  <br /></td></tr>
+<tr class="separator:ga43082cc6e75ad44b0e334bfb0f8d5740"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa69fbcc54405bf59adecf19f229c1825"><td class="memItemLeft" align="right" valign="top">constexpr tags::to_descriptor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__extension_gaa69fbcc54405bf59adecf19f229c1825.html#gaa69fbcc54405bf59adecf19f229c1825">to_descriptor</a> = {}</td></tr>
+<tr class="memdesc:gaa69fbcc54405bf59adecf19f229c1825"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="glossary.html#glossary-extent">Extent</a> value to descriptor converter  <br /></td></tr>
+<tr class="separator:gaa69fbcc54405bf59adecf19f229c1825"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
