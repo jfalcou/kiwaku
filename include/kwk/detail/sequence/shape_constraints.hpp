@@ -17,10 +17,10 @@
 namespace kwk
 {
   template<auto... D>
-  struct shape2;
+  struct shape;
 
   template<std::int32_t N, auto... D>
-  constexpr auto compress(shape2<D...> const&) noexcept;
+  constexpr auto compress(shape<D...> const&) noexcept;
 
   struct basic_shape_checks
   {

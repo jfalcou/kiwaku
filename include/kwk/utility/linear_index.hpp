@@ -16,7 +16,7 @@
 
 namespace kwk
 {
-  template<auto S> struct shape;
+  template<auto... S> struct shape;
 
   //================================================================================================
   //! @ingroup utility

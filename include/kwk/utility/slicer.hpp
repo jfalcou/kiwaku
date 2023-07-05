@@ -41,8 +41,8 @@ namespace kwk
   inline constexpr auto from    = rbr::keyword(__::from_{}  );
   inline constexpr auto length  = rbr::keyword(__::length_{});
 
-  template<auto D> struct shape;
-  template<auto D> struct stride;
+  template<auto... D> struct shape;
+  template<auto... D> struct stride;
 
   //================================================================================================
   // range(...) specifications
@@ -204,8 +204,8 @@ namespace kwk
   //================================================================================================
   // Slicing helper
   //================================================================================================
-  template<auto... D, typename... Slicers>
-  auto origin(shape<D...> const& shp, Slicers... slice) noexcept
+  template<auto... DS, typename... Slicers>
+  auto origin(shape<DS...> const& shp, Slicers... slice) noexcept
   {
     auto c = compress<sizeof...(slice)>(shp);
     return  linear_index( c
@@ -234,4 +234,3 @@ namespace kwk
 #if !defined(_MSC_VER)
 #pragma GCC diagnostic pop
 #endif
-

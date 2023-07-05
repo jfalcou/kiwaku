@@ -16,8 +16,8 @@ namespace kwk_test
     T dim;
     constexpr slicer(T dim_): dim(dim_) { }
 
-    template<auto Desc, std::size_t N>
-    constexpr auto reshape( kwk::shape<Desc> const& sh
+    template<auto... Desc, std::size_t N>
+    constexpr auto reshape( kwk::shape<Desc...> const& sh
                           , kumi::index_t<N> const&
                           ) const noexcept
     {
@@ -121,7 +121,7 @@ TTS_CASE("Check that slicing keeps static values")
   TTS_EQUAL(get<3>(res4), 43U);
   TTS_EQUAL(get<3>(res7), 43U);
 
-  TTS_EQUAL(get<4>(res7)    , 54U);
-  TTS_EQUAL(get<5>(res7)    , 65U);
-  TTS_EQUAL(get<6>(res7)    , 76U);
+  TTS_EQUAL(get<4>(res7), 54U);
+  TTS_EQUAL(get<5>(res7), 65U);
+  TTS_EQUAL(get<6>(res7), 76U);
 };

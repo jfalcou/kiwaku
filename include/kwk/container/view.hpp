@@ -118,6 +118,6 @@ namespace kwk
   template<rbr::concepts::option... Os> auto make_view(Os const&... os) { return view{os...}; };
 
   /// Type helper
-  template<rbr::concepts::option auto... Os>
-  using make_view_t = view< __::builder<rbr::settings(view_, Os...)>>;
+  template<typename... Settings>
+  using make_view_t = view<__::builder<rbr::settings(view_,Settings{}...)>>;
 }

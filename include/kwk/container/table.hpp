@@ -136,6 +136,6 @@ namespace kwk
   template<rbr::concepts::option... Os> auto make_table(Os const&... os) { return table{os...}; };
 
   /// Type helper
-  template<rbr::concepts::option auto... Os>
-  using make_table_t = table< __::builder<rbr::settings(table_, Os...)>>;
+  template<typename... Settings>
+  using make_table_t = table<__::builder<rbr::settings(table_,Settings{}...)>>;
 }

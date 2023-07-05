@@ -24,9 +24,6 @@ namespace kwk::__
 
 namespace kwk
 {
-  template<auto Strides> struct stride;
-  template<auto Shaper> struct shape;
-
   //================================================================================================
   //! @ingroup containers
   //! @brief  Fixed order stride with mixed size capability
@@ -63,10 +60,10 @@ namespace kwk
   //!
   //! @tparam Strides An instance of a stride descriptor
   //================================================================================================
-  template<auto... S>
-  struct stride  : __::prefilled_t<S...>::type
+  template<auto... Strides>
+  struct stride  : __::prefilled_t<Strides...>::type
   {
-    using parent = typename __::prefilled_t<S...>::type;
+    using parent = typename __::prefilled_t<Strides...>::type;
 
     /// Compile-time value for @ref glossary-order
     static constexpr std::int32_t static_order = parent::static_size;
@@ -81,7 +78,7 @@ namespace kwk
     //==============================================================================================
     // stride is its self option keyword
     //==============================================================================================
-    using stored_value_type = stride<S...>;
+    using stored_value_type = stride<Strides...>;
     using keyword_type      = __::strides_;
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
