@@ -25,12 +25,12 @@ namespace kwk
   //!
   //! @param idx  Linear index to convert into a nD coordinate set
   //! @param shp  Shape used as a reference
-  //! @return A std::array<shape<Desc>::value_type, shape<Desc>::static_order> containing the
+  //! @return A std::array<largest_integral<shape<D...>>, shape<D...>::static_order> containing the
   //! multi-dimensional position corresponding to idx
   //================================================================================================
-  template<std::integral Idx,auto... Desc>
+  template<std::integral Idx,auto... D>
   KWK_CONST constexpr
-  auto coordinates( Idx idx, shape<Desc...> const shp) noexcept
+  auto coordinates( Idx const idx, shape<D...> const shp ) noexcept
   {
     KIWAKU_ASSERT ( idx < shp.numel()
                   ,   "Converting index " << idx
@@ -46,11 +46,12 @@ namespace kwk
 
     return [&]<int... i>(std::integer_sequence<int, i...>)
     {
+      using coord_t = typename __::largest_integral<decltype(D)...>::type;
       auto const strides{as_stride(shp)};
 
-      return std::array { static_cast<Idx>( idx / get<0  >(strides)                 )
-                        , static_cast<Idx>((idx / get<i+1>(strides)) % get<i+1>(shp))...
+      return std::array { static_cast<coord_t>( idx / get<0  >(strides)                 )
+                        , static_cast<coord_t>((idx / get<i+1>(strides)) % get<i+1>(shp))...
                         };
-    }(std::make_integer_sequence<int, shape<Desc...>::static_order - 1 >{});
+    }(std::make_integer_sequence<int, shape<D...>::static_order - 1>{});
   }
 }
