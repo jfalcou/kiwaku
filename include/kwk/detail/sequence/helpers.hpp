@@ -114,7 +114,7 @@ namespace kwk::__
   // Type short-cut for internal representation of types in axis
   //====================================================================================================================
   template<typename T>        struct stored_type : T {};
-  template<concepts::joker T> struct stored_type<T> { using type = std::int32_t; };
+  template<concepts::joker T> struct stored_type<T> { using type = std::uint16_t; };
 
   template<typename T>
   using stored_t = typename stored_type<typename T::content_type>::type;
