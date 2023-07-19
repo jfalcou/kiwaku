@@ -55,7 +55,7 @@ namespace kwk
   //! @ingroup utility
   //! @brief Joker value
   //!
-  //! The joker value defined as @ref kwk::_ is used in various context to means 'just use the
+  //! The joker value defined as @ref kwk::_ is used in various context to mean 'just use the
   //! most meaningful value'.
   //================================================================================================
   inline constexpr joker _ = {};
