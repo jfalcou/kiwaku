@@ -18,7 +18,7 @@ namespace kwk::__
 {
   struct empty_tuple
   {
-    static constexpr bool is_homogeneous = false;
+    static constexpr bool is_homogeneous = true;
     constexpr auto operator==(empty_tuple const&) const noexcept { return true; }
   };
 
@@ -71,7 +71,7 @@ namespace kwk::__
     static constexpr  bool  is_fully_explicit = (D.is_explicit && ... && true);
 
     // Do we have runtime storage for a given index ?
-    static constexpr auto contains(int i) { return setup.index[i] != -1;  }
+    static constexpr auto contains(int i) { return setup.index[i] != -1; }
 
     // Default constructor
     KWK_TRIVIAL constexpr prefilled() noexcept : storage_type{} {}
@@ -269,44 +269,29 @@ namespace kwk::__
     }
 
     // Dynamic access - We rely on KUMI internals for speed and ease of detection
-    KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::size_t> auto i) const noexcept
-    requires(is_dynamic && static_size>0)
+    KWK_TRIVIAL constexpr auto& operator[](std::convertible_to<std::uint32_t> auto i) noexcept
+    requires(is_fully_dynamic && static_size>0)
     {
-      static_assert(is_homogeneous, "[KWK] - Dynamic axis access requires homogeneous extent types.");
-      auto const idx = static_cast<std::size_t>(i);
-
-      KIWAKU_ASSERT ( idx<static_size
-                    , "[KWK] - Out of bounds access at index: " << idx << " for a max. of " << static_size
-                    );
+      auto const idx = static_cast<std::uint32_t>(i);
 
       KIWAKU_ASSERT ( contains(idx)
                     ,   "[KWK] - Access at index "  << idx
                     <<  " overwrites a compile-time value of " << kumi::to_tuple(*this)
                     );
 
-      // KUMI internal shortcut
-      if constexpr(dynamic_size==1) return storage().impl.member0;
-      else                          return storage().impl.members[idx];
+      return get(idx);
     }
 
-    KWK_TRIVIAL constexpr auto& operator[](std::convertible_to<std::size_t> auto i) noexcept
-    requires(is_dynamic && static_size>0)
+    KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::uint32_t> auto i) const noexcept
+    requires(is_fully_dynamic && static_size>0)
     {
-      static_assert(is_homogeneous, "[KWK] - Dynamic axis access requires homogeneous extent types.");
-      auto const idx = static_cast<std::size_t>(i);
+      return const_cast<prefilled &>(*this).get(static_cast<std::uint32_t>(i));
+    }
 
-      KIWAKU_ASSERT ( idx<static_size
-                    , "[KWK] - Out of bounds access at index: " << idx << " for a max. of " << static_size
-                    );
-
-      KIWAKU_ASSERT ( contains(idx)
-                    ,   "[KWK] - Access at index "  << idx
-                    <<  " overwrites a compile-time value of " << kumi::to_tuple(*this)
-                    );
-
-      // KUMI internal shortcut
-      if constexpr(dynamic_size==1) return storage().impl.member0;
-      else                          return storage().impl.members[idx];
+    KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::uint32_t> auto i) const noexcept
+    requires(!(is_fully_dynamic && static_size>0))
+    {
+      return as_array()[i]; // rely on std::array bounds checking
     }
 
     // Named access via Axis
@@ -424,6 +409,20 @@ namespace kwk::__
     KWK_TRIVIAL constexpr storage_type const&   storage() const&  { return static_cast<storage_type const&>(*this);   }
     KWK_TRIVIAL constexpr storage_type &&       storage() &&      { return static_cast<storage_type&&>(*this);        }
     KWK_TRIVIAL constexpr storage_type const&&  storage() const&& { return static_cast<storage_type const&&>(*this);  }
+
+  private:
+    constexpr auto& get(std::uint32_t const idx) noexcept
+    {
+      static_assert(is_homogeneous, "[KWK] - Dynamic axis access requires homogeneous extent types.");
+
+      KIWAKU_ASSERT ( idx<static_size
+                    , "[KWK] - Out of bounds access at index: " << idx << " for a max. of " << static_size
+                    );
+
+      // KUMI internal shortcut
+      if constexpr(dynamic_size==1) return storage().impl.member0;
+      else                          return storage().impl.members[idx];
+    }
   };
 
   //====================================================================================================================
