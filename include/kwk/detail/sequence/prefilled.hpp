@@ -279,13 +279,13 @@ namespace kwk::__
                     <<  " overwrites a compile-time value of " << kumi::to_tuple(*this)
                     );
 
-      return get(idx);
+      return get_indexed( idx );
     }
 
     KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::uint32_t> auto i) const noexcept
     requires(is_fully_dynamic && static_size>0)
     {
-      return const_cast<prefilled &>(*this).get(static_cast<std::uint32_t>(i));
+      return const_cast<prefilled &>(*this).get_indexed(static_cast<std::uint32_t>(i));
     }
 
     KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::uint32_t> auto i) const noexcept
@@ -411,7 +411,7 @@ namespace kwk::__
     KWK_TRIVIAL constexpr storage_type const&&  storage() const&& { return static_cast<storage_type const&&>(*this);  }
 
   private:
-    constexpr auto& get(std::uint32_t const idx) noexcept
+    constexpr auto& get_indexed(std::uint32_t const idx) noexcept
     {
       static_assert(is_homogeneous, "[KWK] - Dynamic axis access requires homogeneous extent types.");
 
