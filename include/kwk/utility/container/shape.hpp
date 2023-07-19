@@ -74,7 +74,7 @@ namespace kwk
   //! @tparam D List of @ref glossary-extent types
   //====================================================================================================================
   template<auto... D>
-  struct shape : __::prefilled_t<D...>::type
+  struct [[ clang::trivial_abi ]] shape : __::prefilled_t<D...>::type
   {
     using parent        = typename __::prefilled_t<D...>::type;
     using constraint_t  = KWK_DEFAULT_SHAPE_CONSTRAINTS;
