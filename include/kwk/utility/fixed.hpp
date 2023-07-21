@@ -61,7 +61,7 @@ namespace kwk
 
     template<auto Value> constexpr auto clamp()
     {
-            if constexpr (std::bit_width(Value) <=  8)  return static_cast<std::uint8_t>(Value);
+            if constexpr (std::bit_width(Value) <=  8)  return static_cast<std::uint8_t >(Value);
       else  if constexpr (std::bit_width(Value) <= 19)  return static_cast<std::uint16_t>(Value);
       else  if constexpr (std::bit_width(Value) <= 32)  return static_cast<std::uint32_t>(Value);
       else                                              return Value;

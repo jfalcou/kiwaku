@@ -323,8 +323,8 @@ namespace kwk
     }
 
     // Access to base type for internal implementation
-    KWK_TRIVIAL constexpr auto const& __base() const  noexcept { return static_cast<parent const&>(*this);  }
-    KWK_TRIVIAL constexpr auto &      __base()        noexcept { return static_cast<parent&>(*this);        }
+    KWK_TRIVIAL constexpr auto const& __base() const  noexcept { return static_cast<parent const&>(*this); }
+    KWK_TRIVIAL constexpr auto      & __base()        noexcept { return static_cast<parent      &>(*this); }
   };
 
   /// Deduction guide for @ref kwk::shape

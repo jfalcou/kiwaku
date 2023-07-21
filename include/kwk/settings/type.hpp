@@ -79,11 +79,11 @@ namespace kwk
   constexpr inline auto uint8   = as<std::uint8_t>;
 
   /// Pre-defined type settings for std::uint16_t
-  constexpr inline auto uint16=  as<std::uint16_t>;
+  constexpr inline auto uint16  = as<std::uint16_t>;
 
   /// Pre-defined type settings for std::uint32_t
-  constexpr inline auto uint32=  as<std::uint32_t>;
+  constexpr inline auto uint32  = as<std::uint32_t>;
 
   /// Pre-defined type settings for std::uint64_t
-  constexpr inline auto uint64=  as<std::uint64_t>;
+  constexpr inline auto uint64  = as<std::uint64_t>;
 }
