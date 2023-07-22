@@ -17,6 +17,8 @@
 
 namespace kwk
 {
+  namespace __ { template <typename T> struct to_int<type_::info<T>> { using type = T; }; }
+
   //================================================================================================
   //! @ingroup utility
   //! @brief  Computes a tuple of coordinates from a linear index and a shape
@@ -30,7 +32,7 @@ namespace kwk
   //================================================================================================
   template<std::integral Idx,auto... D>
   KWK_CONST constexpr
-  auto coordinates( Idx const idx, shape<D...> const shp ) noexcept
+  auto coordinates(Idx const idx, shape<D...> const shp) noexcept
   {
     KIWAKU_ASSERT ( idx < shp.numel()
                   ,   "Converting index " << idx
@@ -44,9 +46,9 @@ namespace kwk
          idx                               % shp[3],
     */
 
+    using coord_t = typename __::largest_integral<__::to_int_t<decltype(D)>...>::type;
     return [&]<int... i>(std::integer_sequence<int, i...>)
     {
-      using coord_t = typename __::largest_integral<decltype(D)...>::type;
       auto const strides{as_stride(shp)};
 
       return std::array { static_cast<coord_t>( idx / get<0  >(strides)                 )
