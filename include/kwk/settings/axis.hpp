@@ -27,7 +27,7 @@ namespace kwk::__
     using is_product_type = void;
     using axis_kind       = axis_<ID,joker>;
     using content_type    = Content;
-    using base_type       = std::int32_t;
+    using base_type       = std::uint16_t;
     using id_type         = decltype(ID);
 
     static constexpr auto identifier  = ID;
@@ -103,7 +103,13 @@ namespace kwk::__
       return axis_<ID,decltype(v)>{v};
     }
 
-    Content value = {};
+    KWK_PURE explicit constexpr operator Content          () const noexcept { return value; }
+    KWK_PURE          constexpr          Content operator*() const noexcept { return value; }
+
+#ifndef _WIN32 // https://github.com/llvm/llvm-project/issues/49358 Missing [[no_unique_address]] support on Windows
+    [[no_unique_address]] // allow empty axis_ for empty Content (e.g. joker)
+#endif
+    Content value{};
   };
 
   template<auto ID, typename C1, typename C2>

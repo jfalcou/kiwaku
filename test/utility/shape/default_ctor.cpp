@@ -11,12 +11,14 @@
 
 using kwk::_;
 
+using axis_base_type = decltype(kwk::along<0>)::base_type;
+
 TTS_CASE( "Default constructed shape behavior - Mixed 1D")
 {
   kwk::shape<_> shape_d;
   kwk::shape<7> shape_s;
 
-  TTS_EQUAL(sizeof(shape_d)  ,1*sizeof(std::int32_t) );
+  TTS_EQUAL(sizeof(shape_d)  ,1*sizeof(axis_base_type));
   TTS_EQUAL(sizeof(shape_s)  , 1UL );
 
   TTS_EQUAL(shape_d.nbdims() , 1   );
@@ -39,10 +41,10 @@ TTS_CASE( "Default constructed shape behavior - Mixed 2D")
   kwk::shape<7,_> shape_sd;
   kwk::shape<7,5> shape_ss;
 
-  TTS_EQUAL(sizeof(shape_dd), 2*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_ds), 1*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_sd), 1*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_ss),  1UL);
+  TTS_EQUAL(sizeof(shape_dd), 2*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_ds), 1*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_sd), 1*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_ss), 1UL);
 
   TTS_EQUAL(shape_dd.nbdims() , 2L);
   TTS_EQUAL(shape_ds.nbdims() , 2L);
@@ -71,14 +73,14 @@ TTS_CASE( "Default constructed shape behavior - Mixed 3D")
   kwk::shape<7,5,_> shape_ssd;
   kwk::shape<7,5,3> shape_sss;
 
-  TTS_EQUAL(sizeof(shape_ddd) , 3*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_dds) , 2*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_dsd) , 2*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_dss) , 1*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_sdd) , 2*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_sds) , 1*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_ssd) , 1*sizeof(std::int32_t));
-  TTS_EQUAL(sizeof(shape_sss) ,  1UL);
+  TTS_EQUAL(sizeof(shape_ddd) , 3*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_dds) , 2*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_dsd) , 2*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_dss) , 1*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_sdd) , 2*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_sds) , 1*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_ssd) , 1*sizeof(axis_base_type));
+  TTS_EQUAL(sizeof(shape_sss) , 1UL);
 
   TTS_EQUAL(shape_ddd.nbdims(), 3L);
   TTS_EQUAL(shape_dds.nbdims(), 3L);
@@ -127,22 +129,22 @@ TTS_CASE( "Default constructed shape behavior - Mixed 4D")
   kwk::shape<9,7,5,_> shape_sssd;
   kwk::shape<9,7,5,3> shape_ssss;
 
-  TTS_EQUAL(sizeof(shape_dddd) , 4*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_ddds) , 3*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_ddsd) , 3*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_ddss) , 2*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_dsdd) , 3*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_dsds) , 2*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_dssd) , 2*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_dsss) , 1*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_sddd) , 3*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_sdds) , 2*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_sdsd) , 2*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_sdss) , 1*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_ssdd) , 2*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_ssds) , 1*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_sssd) , 1*sizeof(std::int32_t) );
-  TTS_EQUAL(sizeof(shape_ssss) ,  1UL );
+  TTS_EQUAL(sizeof(shape_dddd) , 4*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_ddds) , 3*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_ddsd) , 3*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_ddss) , 2*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_dsdd) , 3*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_dsds) , 2*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_dssd) , 2*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_dsss) , 1*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_sddd) , 3*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_sdds) , 2*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_sdsd) , 2*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_sdss) , 1*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_ssdd) , 2*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_ssds) , 1*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_sssd) , 1*sizeof(axis_base_type) );
+  TTS_EQUAL(sizeof(shape_ssss) , 1UL );
 
   TTS_EQUAL(shape_dddd.nbdims(), 4L);
   TTS_EQUAL(shape_ddds.nbdims(), 4L);
