@@ -64,13 +64,15 @@ namespace kwk
   template<auto N>
   struct constant : std::integral_constant<decltype(N), N>
   {
+    KWK_CONST KWK_TRIVIAL constexpr operator decltype(N)() const noexcept { return N; }
+
     friend std::ostream& operator<<(std::ostream& os, constant)
     {
       return os << +N << "_c";
     }
 
-    KWK_TRIVIAL constexpr auto operator-() const noexcept { return constant<-N>{}; }
-    KWK_TRIVIAL constexpr auto operator+() const noexcept { return *this; }
+    KWK_CONST KWK_TRIVIAL constexpr auto operator-() const noexcept { return constant<-N>{}; }
+    KWK_CONST KWK_TRIVIAL constexpr auto operator+() const noexcept { return *this; }
   };
 
   template<auto N, auto M>
