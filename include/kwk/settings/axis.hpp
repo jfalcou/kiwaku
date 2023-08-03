@@ -8,7 +8,9 @@
 #pragma once
 
 #include <kwk/concepts/axis.hpp>
+#include <kwk/concepts/values.hpp>
 #include <kwk/detail/abi.hpp>
+#include <kwk/detail/assert.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/detail/traits.hpp>
 #include <kwk/detail/stdfix.hpp>
@@ -27,15 +29,16 @@ namespace kwk::__
     using is_product_type = void;
     using axis_kind       = axis_<ID,joker>;
     using content_type    = Content;
-    using base_type       = std::uint16_t;
+    using base_type       = joker::value_type<>;
     using id_type         = decltype(ID);
 
     static constexpr auto identifier  = ID;
-    static constexpr bool is_dynamic  = !std::integral<content_type>;
+    static constexpr bool is_joker    = std::is_same_v<content_type, joker>;
+    static constexpr bool is_dynamic  = !std::integral<content_type> && !concepts::static_constant<content_type>;
     static constexpr bool is_indexed  = std::integral<id_type>;
     static constexpr bool is_implicit = []()
     {
-      if constexpr(std::integral<id_type>) return ID < 0; else return false;
+      if constexpr(is_indexed) return ID < 0; else return false;
     }();
 
     static constexpr bool is_explicit = !is_implicit;
@@ -103,6 +106,10 @@ namespace kwk::__
       return axis_<ID,decltype(v)>{v};
     }
 
+    template <typename T>
+    KWK_PURE constexpr bool operator ==(T const v) const noexcept requires(!concepts::axis<T>) { return value == v; }
+    KWK_PURE constexpr bool operator ==(joker    ) const noexcept                              { return std::same_as<content_type, joker>; }
+
     KWK_PURE explicit constexpr operator Content          () const noexcept { return value; }
     KWK_PURE          constexpr          Content operator*() const noexcept { return value; }
 
@@ -148,4 +155,24 @@ namespace kwk
 
   /// Predefined axis for channel
   inline constexpr auto channel = axis<"channel">;
+
+  // thin as_dimension
+         constexpr auto extent(std::integral             auto const dim) noexcept { return dim; }
+         constexpr auto extent(concepts::axis            auto const dim) noexcept { return dim.value; }
+         constexpr auto extent(concepts::static_constant auto const dim) noexcept { return dim; }
+  inline constexpr auto extent(joker                                   ) noexcept { return joker::value_type<>{0}; } // use zero as a numeric (compile time) value to represent dynamic/runtime axes?
+
+  constexpr auto axis_with_extent(concepts::axis            auto const axis, auto  const extent) noexcept { return          axis [extent]; }
+  constexpr auto axis_with_extent(std::integral             auto const axis, auto  const extent) noexcept { return decltype(axis){extent}; }
+  constexpr auto axis_with_extent(std::integral             auto           , joker const extent) noexcept { return                extent ; }
+  constexpr auto axis_with_extent(joker                                    , auto  const extent) noexcept { return                extent ; }
+  constexpr auto axis_with_extent(concepts::static_constant auto const axis, auto  const extent) noexcept
+  {
+    KIWAKU_ASSERT(extent == axis, "Static axis and extent size mismatch");
+#ifdef __clang__
+    __builtin_assume(extent == axis.value);
+#endif
+      return axis;
+  }
+  constexpr auto axis_with_extent(concepts::axis auto const axis, concepts::axis auto const extent) noexcept { return          axis [extent.value]; }
 }

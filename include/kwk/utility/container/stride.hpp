@@ -121,7 +121,7 @@ namespace kwk
   template<auto... D>
   KWK_PURE constexpr auto as_stride(shape<D...> s) noexcept
   {
-    if constexpr(sizeof...(D) == 1) return stride{s.template axis<0>() = fixed<1>};
+    if constexpr(sizeof...(D) == 1) return stride{s.template axis_with_extent<0>(fixed<1>)};
     else
     {
       auto const d  = kumi::fold_left ( [](auto a, auto m){ return push_front(a, m * front(a)); }
@@ -131,7 +131,7 @@ namespace kwk
 
       return [&]<std::size_t... I>(std::index_sequence<I...>, auto t)
       {
-        return stride{ (s.template axis<I>() =  get<I>(t))... };
+        return stride{ (s.template axis_with_extent<I>(get<I>(t)))... };
       }(std::make_index_sequence<sizeof...(D)>{}, d);
     }
   }
