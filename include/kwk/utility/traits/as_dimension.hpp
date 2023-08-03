@@ -68,9 +68,9 @@ namespace kwk
 
 namespace kwk::__
 {
-  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), joker               , std::integral auto d) { return d; }
-  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), concepts::axis auto , std::integral auto d) { return d; }
-  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), std::integral auto v, std::integral auto  ) { return v; }
+  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), joker                , std::integral auto d) { return d; }
+  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), concepts::axis auto v, std::integral auto  ) { return v.value; }
+  KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), std::integral  auto v, std::integral auto  ) { return v; }
 
   KWK_TRIVIAL constexpr auto as_dimension_(KWK_DELAY(), concepts::static_constant auto a, std::integral auto)
   {
