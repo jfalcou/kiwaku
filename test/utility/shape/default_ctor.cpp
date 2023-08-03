@@ -7,11 +7,12 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kwk/utility/container/shape.hpp>
+#include <kwk/utility/joker.hpp>
 #include "utility/shape/shape.hpp"
 
 using kwk::_;
 
-using axis_base_type = decltype(kwk::along<0>)::base_type;
+using axis_base_type = kwk::joker::default_type;
 
 TTS_CASE( "Default constructed shape behavior - Mixed 1D")
 {
