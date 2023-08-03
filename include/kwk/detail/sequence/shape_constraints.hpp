@@ -12,6 +12,8 @@
 
 #if !defined(KWK_DEFAULT_SHAPE_CONSTRAINTS)
 #define KWK_DEFAULT_SHAPE_CONSTRAINTS ::kwk::basic_shape_checks
+#elif defined(KWK_DEFAULT_SHAPE_CONSTRAINTS_INCLUDE)
+#include KWK_DEFAULT_SHAPE_CONSTRAINTS_INCLUDE
 #endif
 
 namespace kwk
