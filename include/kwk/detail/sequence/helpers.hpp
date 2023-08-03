@@ -9,6 +9,7 @@
 
 #include <kwk/concepts/axis.hpp>
 #include <kwk/concepts/extent.hpp>
+#include <kwk/concepts/values.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <kwk/detail/kumi.hpp>
 #include <kwk/settings/axis.hpp>
@@ -34,7 +35,7 @@ namespace kwk::__
         // Check if the current extent descriptor is an integer (ie a static size) or not
         auto check = [&]<typename T>(T)
         {
-          if constexpr(std::integral<T>) index[pos] = -1;
+          if constexpr(std::integral<T> || concepts::static_constant<T>) index[pos] = -1;
           else
           {
             stored[stored_pos++] = pos;
@@ -113,9 +114,9 @@ namespace kwk::__
   //====================================================================================================================
   // Type short-cut for internal representation of types in axis
   //====================================================================================================================
-  template<typename T>        struct stored_type : T {};
-  template<concepts::joker T> struct stored_type<T> { using type = std::uint16_t; };
+  template<typename        T, unsigned N, auto descriptors> struct stored_type : T {};
+  template<concepts::joker T, unsigned N, auto descriptors> struct stored_type<T, N, descriptors> { using type = joker::value_type<get<N>(descriptors).value.integral_value_type_size>; };
 
-  template<typename T>
-  using stored_t = typename stored_type<typename T::content_type>::type;
+  template<typename T, unsigned N, auto descriptors>
+  using stored_t = typename stored_type<typename T::content_type, N, descriptors>::type;
 }

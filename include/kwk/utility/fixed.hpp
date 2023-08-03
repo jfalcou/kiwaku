@@ -27,20 +27,12 @@ namespace kwk
 
   namespace __
   {
-    template<typename T>  struct  to_int        { using type = T;     };
-    template<>            struct  to_int<joker> { using type = char;  };
+    template<typename T>  struct  to_int        { using type = T;                   };
+    template<>            struct  to_int<joker> { using type = joker::value_type<>; };
 
-    template<rbr::concepts::option T>
-    struct to_int<T>
-    {
-      using type = typename T::stored_value_type;
-    };
-
-    template<concepts::static_constant T>
-    struct  to_int<T>
-    {
-      using type = typename T::value_type;
-    };
+    template<rbr::concepts::option     T> struct to_int<T> { using type = typename T::stored_value_type; };
+    template<concepts::static_constant T> struct to_int<T> { using type = typename T::value_type       ; };
+    template<concepts::axis            T> struct to_int<T> { using type = typename T::content_type     ; };
 
     template<typename T> using   to_int_t = typename to_int<T>::type;
 
@@ -97,7 +89,13 @@ namespace kwk
   //! @brief Provides a short-cut to define a `std::integral_constant` value from a literal integer
   //================================================================================================
   template<auto N>
-  inline constexpr auto fixed = constant<N>{};
+  inline constexpr auto fixed = []()
+  {
+    if constexpr(concepts::static_constant<decltype(N)>) // prevent recursive constant<constant<..>>
+      return N;
+    else
+      return constant<N>{};
+  }();
 
   inline namespace literals
   {
