@@ -10,6 +10,8 @@
 #include <kwk/detail/raberu.hpp>
 #include <cstdint>
 
+namespace kwk { struct joker; }
+
 namespace kwk::__
 {
   struct type_ : rbr::as_keyword<type_>
@@ -44,10 +46,15 @@ namespace kwk::__
   };
 
   template<typename T> consteval auto extent(type_::info<T>) { return std::uint8_t{0}; } // see the note for joker?
+  template<typename T> consteval T    axis_with_extent(type_::info<T>, auto const extent) noexcept { return {extent}; }
+  template<typename T> consteval auto axis_with_extent(type_::info<T>, joker            ) noexcept { return type_::info<T>{}; }
 }
 
 namespace kwk
 {
+  using __::extent;
+  using __::axis_with_extent;
+
   constexpr inline __::type_ value_type{};
 
   template<typename T>
