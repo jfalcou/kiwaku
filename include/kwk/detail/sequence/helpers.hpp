@@ -114,9 +114,9 @@ namespace kwk::__
   //====================================================================================================================
   // Type short-cut for internal representation of types in axis
   //====================================================================================================================
-  template<typename        T, unsigned N, auto descriptors> struct stored_type : T {};
-  template<concepts::joker T, unsigned N, auto descriptors> struct stored_type<T, N, descriptors> { using type = joker::value_type<get<N>(descriptors).value.integral_value_type_size>; };
+  template<typename T>        struct stored_type : T {};
+  template<concepts::joker T> struct stored_type<T> { using type = joker::default_type; };
 
-  template<typename T, unsigned N, auto descriptors>
-  using stored_t = typename stored_type<typename T::content_type, N, descriptors>::type;
+  template<typename T>
+  using stored_t = typename stored_type<typename T::content_type>::type;
 }

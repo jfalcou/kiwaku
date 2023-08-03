@@ -22,6 +22,7 @@
 #include <kwk/utility/traits/to_descriptor.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <kwk/utility/slicer.hpp>
+#include <kwk/utility/traits/extent.hpp> // merely for shape::static_values
 #include <cstddef>
 
 namespace kwk::__ { struct size_; }
@@ -178,7 +179,7 @@ namespace kwk
     //==================================================================================================================
     template<concepts::extent... T>
     requires(std::is_constructible_v<parent, int,T...>)
-    KWK_TRIVIAL explicit(sizeof...(T) == 1) constexpr shape(T... d) noexcept : parent(joker::value_type<>{0}, d...) {}
+    KWK_TRIVIAL explicit(sizeof...(T) == 1) constexpr shape(T... d) noexcept : parent(joker::default_type{0}, d...) {}
 
     //==================================================================================================================
     /// Copy constructor

@@ -27,7 +27,7 @@ namespace kwk::__
         return os << rbr::detail::type<T>.name();
       }
 
-      friend constexpr bool operator==(info, info) noexcept { return true;  }
+      friend constexpr bool operator==(info, info) noexcept { return true; }
       constexpr bool operator==(auto) noexcept { return false; }
     };
 
@@ -42,6 +42,8 @@ namespace kwk::__
       return os << "Type: " << s;
     }
   };
+
+  template<typename T> consteval auto extent(type_::info<T>) { return std::uint8_t{0}; } // see the note for joker?
 }
 
 namespace kwk

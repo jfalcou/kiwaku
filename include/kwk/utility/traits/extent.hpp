@@ -8,7 +8,10 @@
 #pragma once
 
 #include <kwk/concepts/axis.hpp>
+#include <kwk/concepts/values.hpp>
 #include <kwk/detail/kumi.hpp>
+
+#include <concepts>
 
 namespace kwk
 {
@@ -55,4 +58,9 @@ namespace kwk
   template<std::int32_t N, auto Desc>
   struct is_static_extent : std::bool_constant<is_static_extent_v<N,Desc>>
   {};
+
+  // thin as_dimension
+  constexpr auto extent(std::integral             auto const dim) noexcept { return dim; }
+  constexpr auto extent(concepts::axis            auto const dim) noexcept { return dim.value; }
+  constexpr auto extent(concepts::static_constant auto const dim) noexcept { return dim; }
 }

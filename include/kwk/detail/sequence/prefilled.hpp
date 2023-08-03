@@ -13,6 +13,7 @@
 #include <kwk/detail/raberu.hpp>
 #include <kwk/detail/sequence/helpers.hpp>
 #include <kwk/utility/traits/as_dimension.hpp>
+#include <kwk/utility/traits/extent.hpp>
 
 namespace kwk::__
 {
@@ -25,7 +26,7 @@ namespace kwk::__
   // TODO: move to kumi
   template <int index, typename... T>
   using type_pack_element =
-#ifdef __clang__
+#if defined(__clang__) && __has_builtin(__type_pack_element)
     __type_pack_element<index, T...>;
 #else
     kumi::element_t<index, kumi::tuple<T...>>;
@@ -55,16 +56,7 @@ namespace kwk::__
       {
         return [&]<std::size_t... N>(std::index_sequence<N...>)
         {
-          return kumi::tuple
-          <
-            stored_t
-            <
-              type_nttp_pack_element<setup.stored[N], D...>,
-              setup.stored[N],
-              descriptors
-            >
-            ...
-          >{};
+          return kumi::tuple<stored_t<type_nttp_pack_element<setup.stored[N], D...>>...>{};
         }(std::make_index_sequence<dynamic_size>{});
       }
     }
@@ -108,7 +100,8 @@ namespace kwk::__
     {
       if constexpr(is_fully_dynamic)
       {
-        static_cast<storage_type&>(*this) = storage_type{/*extent(vs)*/kwk::as_dimension(vs, def)...};
+        using kwk::extent;
+        static_cast<storage_type&>(*this) = storage_type{extent(vs)...};
       }
       else
       {
@@ -391,7 +384,7 @@ namespace kwk::__
     {
       if constexpr(is_homogeneous && is_fully_dynamic)
       {
-             if constexpr(dynamic_size==0) return std::array<joker::value_type<>, 0>{};
+             if constexpr(dynamic_size==0) return std::array<joker::default_type, 0>{};
         else if constexpr(dynamic_size==1) return std::array{storage().impl.member0};
         else
           return reinterpret_cast

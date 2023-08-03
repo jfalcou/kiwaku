@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/axis.hpp>
 #include <kwk/concepts/values.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
@@ -27,8 +28,8 @@ namespace kwk
 
   namespace __
   {
-    template<typename T>  struct  to_int        { using type = T;                   };
-    template<>            struct  to_int<joker> { using type = joker::value_type<>; };
+    template<typename T>  struct  to_int{ using type = T; };
+    template<>            struct  to_int<joker>;
 
     template<rbr::concepts::option     T> struct to_int<T> { using type = typename T::stored_value_type; };
     template<concepts::static_constant T> struct to_int<T> { using type = typename T::value_type       ; };
@@ -88,14 +89,8 @@ namespace kwk
   //! @ingroup utility
   //! @brief Provides a short-cut to define a `std::integral_constant` value from a literal integer
   //================================================================================================
-  template<auto N>
-  inline constexpr auto fixed = []()
-  {
-    if constexpr(concepts::static_constant<decltype(N)>) // prevent recursive constant<constant<..>>
-      return N;
-    else
-      return constant<N>{};
-  }();
+  template<                          auto N> constexpr auto fixed   {constant<N>{}};
+  template<concepts::static_constant auto N> constexpr auto fixed<N>{         N   }; // prevent recursive constant<constant<..>>
 
   inline namespace literals
   {
