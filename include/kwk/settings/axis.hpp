@@ -15,6 +15,7 @@
 #include <kwk/detail/traits.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <kwk/utility/joker.hpp>
+#include <concepts>
 #include <type_traits>
 #include <ostream>
 
@@ -22,6 +23,8 @@ namespace kwk { struct joker; }
 
 namespace kwk::__
 {
+  struct type_;
+
   template<auto               ID> constexpr bool is_implicit    { false };
   template<std::integral auto ID> constexpr bool is_implicit<ID>{ ID < 0 };
 
@@ -103,9 +106,13 @@ namespace kwk::__
       return axis_<ID,decltype(v)>{v};
     }
 
-    template <typename T>
-    KWK_PURE constexpr bool operator ==(T const v) const noexcept requires(!concepts::axis<T>) { return value == v; }
-    KWK_PURE constexpr bool operator ==(joker    ) const noexcept                              { return std::same_as<content_type, joker>; }
+    template <typename T> requires( !concepts::axis<T> )
+    KWK_PURE constexpr bool operator ==(T const v) const noexcept
+    requires requires{ { (Content const){} == v } -> std::convertible_to<bool>; } // poorman's std::equality_comparable_with<T, content_type>
+    { return value == v; }
+
+    // test whether an axis has an unspecified (runtime) value
+    KWK_PURE constexpr bool operator==( joker ) const noexcept { return std::same_as<content_type, joker> || requires{ requires std::same_as<typename content_type::keyword_type, __::type_>; }; }
 
     KWK_PURE explicit constexpr operator Content          () const noexcept { return value; }
     KWK_PURE          constexpr          Content operator*() const noexcept { return value; }
