@@ -9,6 +9,7 @@
 
 #include <kwk/concepts/axis.hpp>
 #include <kwk/concepts/values.hpp>
+#include <kwk/detail/abi.hpp>
 #include <kwk/detail/kumi.hpp>
 
 #include <concepts>
@@ -60,7 +61,7 @@ namespace kwk
   {};
 
   // thin as_dimension
-  constexpr auto extent(std::integral             auto const dim) noexcept { return dim; }
-  constexpr auto extent(concepts::axis            auto const dim) noexcept { return dim.value; }
-  constexpr auto extent(concepts::static_constant auto const dim) noexcept { return dim; }
+  KWK_CONST constexpr auto extent(std::integral             auto const dim) noexcept { return dim; }
+  KWK_CONST constexpr auto extent(concepts::axis            auto const dim) noexcept { return dim.value; }
+  KWK_CONST constexpr auto extent(concepts::static_constant auto const dim) noexcept { return dim; }
 }
