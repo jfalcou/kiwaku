@@ -75,11 +75,7 @@ namespace kwk
   //! @tparam D List of @ref glossary-extent types
   //====================================================================================================================
   template<auto... D>
-  struct
-#ifdef __clang__
-  [[clang::trivial_abi]]
-#endif
-  shape : __::prefilled_t<D...>::type
+  struct shape : __::prefilled_t<D...>::type
   {
     using parent        = typename __::prefilled_t<D...>::type;
     using constraint_t  = KWK_DEFAULT_SHAPE_CONSTRAINTS;
@@ -184,8 +180,7 @@ namespace kwk
     //==================================================================================================================
     /// Copy constructor
     //==================================================================================================================
-    KWK_TRIVIAL constexpr shape(shape const& d) noexcept : parent(d)
-    {}
+    constexpr shape(shape const&) noexcept = default;
 
     //==================================================================================================================
     //! @brief Construct shape from another shape type
@@ -209,15 +204,11 @@ namespace kwk
     //==================================================================================================================
     /// Assignment operator
     //==================================================================================================================
-    constexpr shape& operator=( shape const& other ) & noexcept
-    {
-      this->__base() = other.__base();
-      return *this;
-    }
+    constexpr shape& operator=( shape const& other ) noexcept = default;
 
     template<auto... D2>
     requires( constraint_t::is_contructible_from<parent{},typename shape<D2...>::parent{}>() )
-    constexpr shape& operator=( shape<D2...> const& other ) & noexcept
+    constexpr shape& operator=( shape<D2...> const& other ) noexcept
     {
       constraint_t::construct(*this, other);
       return *this;
