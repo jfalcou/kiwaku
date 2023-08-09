@@ -71,6 +71,7 @@ namespace kumi::_
   {
     static constexpr bool is_homogeneous = true;
     T0 members[N];
+    constexpr bool operator==(binder_n const & other) const noexcept = default;
   };
   template<int... Is, typename T0, typename T1, typename... Ts>
   requires(all_the_same<T0,T1,Ts...> && no_references<T0,T1,Ts...>)
@@ -106,6 +107,7 @@ namespace kumi::_
     using kumi_specific_layout = void;
     using member0_type = T;
     member0_type member0;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template<typename T0, typename T1>
   requires(no_references<T0,T1>)
@@ -117,6 +119,7 @@ namespace kumi::_
     using member1_type = T1;
     member0_type member0;
     member1_type member1;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template<typename T0, typename T1, typename T2>
   requires(no_references<T0,T1,T2>)
@@ -130,6 +133,7 @@ namespace kumi::_
     member0_type member0;
     member1_type member1;
     member2_type member2;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template<typename T0, typename T1, typename T2, typename T3>
   requires(no_references<T0,T1,T2,T3>)
@@ -145,6 +149,7 @@ namespace kumi::_
     member1_type member1;
     member2_type member2;
     member3_type member3;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template<typename T0, typename T1, typename T2, typename T3, typename T4>
   requires(no_references<T0,T1,T2,T3,T4>)
@@ -162,6 +167,7 @@ namespace kumi::_
     member2_type member2;
     member3_type member3;
     member4_type member4;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5>
   requires(no_references<T0,T1,T2,T3,T4,T5>)
@@ -181,6 +187,7 @@ namespace kumi::_
     member3_type member3;
     member4_type member4;
     member5_type member5;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template< typename T0, typename T1, typename T2, typename T3, typename T4
           , typename T5, typename T6
@@ -204,6 +211,7 @@ namespace kumi::_
     member4_type member4;
     member5_type member5;
     member6_type member6;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template< typename T0, typename T1, typename T2, typename T3, typename T4
           , typename T5, typename T6, typename T7
@@ -229,6 +237,7 @@ namespace kumi::_
     member5_type member5;
     member6_type member6;
     member7_type member7;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template< typename T0, typename T1, typename T2, typename T3, typename T4
           , typename T5, typename T6, typename T7, typename T8
@@ -256,6 +265,7 @@ namespace kumi::_
     member6_type member6;
     member7_type member7;
     member8_type member8;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template< typename T0, typename T1, typename T2, typename T3, typename T4
           , typename T5, typename T6, typename T7, typename T8, typename T9
@@ -285,6 +295,7 @@ namespace kumi::_
     member7_type member7;
     member8_type member8;
     member9_type member9;
+    constexpr bool operator==(binder const & other) const noexcept = default;
   };
   template<std::size_t I,typename Binder>
   requires requires(Binder) { typename Binder::kumi_specific_layout; }
@@ -659,6 +670,7 @@ namespace kumi
       (std::make_index_sequence<sizeof...(Ts)>());
       return *this;
     }
+    constexpr bool operator==(tuple const & other) const noexcept = default;
     template<typename... Us>
     friend constexpr auto operator==(tuple const &self, tuple<Us...> const &other) noexcept
     requires( (sizeof...(Ts) == sizeof...(Us) ) && equality_comparable<tuple,tuple<Us...>> )

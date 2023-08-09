@@ -8,11 +8,14 @@
 #pragma once
 
 #include <kwk/concepts/axis.hpp>
+#include <kwk/concepts/values.hpp>
 #include <kwk/detail/abi.hpp>
+#include <kwk/detail/assert.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <kwk/detail/traits.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <kwk/utility/joker.hpp>
+#include <concepts>
 #include <type_traits>
 #include <ostream>
 
@@ -20,6 +23,11 @@ namespace kwk { struct joker; }
 
 namespace kwk::__
 {
+  struct type_;
+
+  template<auto               ID> constexpr bool is_implicit    { false };
+  template<std::integral auto ID> constexpr bool is_implicit<ID>{ ID < 0 };
+
   // Axis descriptor with an ID
   template<auto ID, typename Content = joker>
   struct axis_ : rbr::as_keyword<axis_<ID,Content>>
@@ -27,17 +35,12 @@ namespace kwk::__
     using is_product_type = void;
     using axis_kind       = axis_<ID,joker>;
     using content_type    = Content;
-    using base_type       = std::int32_t;
     using id_type         = decltype(ID);
 
     static constexpr auto identifier  = ID;
-    static constexpr bool is_dynamic  = !std::integral<content_type>;
+    static constexpr bool is_dynamic  = !std::integral<content_type> && !concepts::static_constant<content_type>;
     static constexpr bool is_indexed  = std::integral<id_type>;
-    static constexpr bool is_implicit = []()
-    {
-      if constexpr(std::integral<id_type>) return ID < 0; else return false;
-    }();
-
+    static constexpr bool is_implicit = __::is_implicit<ID>;
     static constexpr bool is_explicit = !is_implicit;
 
     // Equivalence
@@ -103,7 +106,21 @@ namespace kwk::__
       return axis_<ID,decltype(v)>{v};
     }
 
-    Content value = {};
+    template <typename T> requires( !concepts::axis<T> )
+    KWK_PURE constexpr bool operator ==(T const v) const noexcept
+    requires requires{ { (Content const){} == v } -> std::convertible_to<bool>; } // poorman's std::equality_comparable_with<T, content_type>
+    { return value == v; }
+
+    // test whether an axis has an unspecified (runtime) value
+    KWK_PURE constexpr bool operator==( joker ) const noexcept { return std::same_as<content_type, joker> || requires{ requires std::same_as<typename content_type::keyword_type, __::type_>; }; }
+
+    KWK_PURE explicit constexpr operator Content          () const noexcept { return value; }
+    KWK_PURE          constexpr          Content operator*() const noexcept { return value; }
+
+#ifndef _WIN32 // https://github.com/llvm/llvm-project/issues/49358 Missing [[no_unique_address]] support on Windows
+    [[no_unique_address]] // allow empty axis_ for empty Content (e.g. joker)
+#endif
+    Content value{};
   };
 
   template<auto ID, typename C1, typename C2>
@@ -142,4 +159,19 @@ namespace kwk
 
   /// Predefined axis for channel
   inline constexpr auto channel = axis<"channel">;
+
+
+  constexpr auto axis_with_extent(concepts::axis            auto const axis, auto  const extent) noexcept { return          axis [extent]; }
+  constexpr auto axis_with_extent(std::integral             auto const axis, auto  const extent) noexcept { return decltype(axis){extent}; }
+  constexpr auto axis_with_extent(std::integral             auto           , joker const extent) noexcept { return                extent ; }
+  constexpr auto axis_with_extent(joker                                    , auto  const extent) noexcept { return                extent ; }
+  constexpr auto axis_with_extent(concepts::static_constant auto const axis, auto  const extent) noexcept
+  {
+    KIWAKU_ASSERT(extent == axis, "Static axis and extent size mismatch");
+#ifdef __clang__
+    __builtin_assume(extent == axis.value);
+#endif
+      return axis;
+  }
+  constexpr auto axis_with_extent(concepts::axis auto const axis, concepts::axis auto const extent) noexcept { return axis[extent.value]; }
 }

@@ -8,7 +8,12 @@
 #pragma once
 
 #include <kwk/detail/abi.hpp>
+#include <cstdint>
 #include <ostream>
+
+#ifndef KWK_DEFAULT_JOKER_UNDERLYING_TYPE
+#define KWK_DEFAULT_JOKER_UNDERLYING_TYPE int;
+#endif
 
 namespace kwk
 {
@@ -27,6 +32,8 @@ namespace kwk
     KWK_TRIVIAL friend constexpr joker  operator*(joker, joker) noexcept { return {}; }
     KWK_TRIVIAL friend constexpr joker  operator*(joker,  auto) noexcept { return {}; }
     KWK_TRIVIAL friend constexpr joker  operator*(auto , joker) noexcept { return {}; }
+
+    using default_type = KWK_DEFAULT_JOKER_UNDERLYING_TYPE;
   };
 
   //================================================================================================
@@ -55,8 +62,16 @@ namespace kwk
   //! @ingroup utility
   //! @brief Joker value
   //!
-  //! The joker value defined as @ref kwk::_ is used in various context to means 'just use the
+  //! The joker value defined as @ref kwk::_ is used in various context to mean 'just use the
   //! most meaningful value'.
   //================================================================================================
   inline constexpr joker _ = {};
+
+  inline constexpr auto extent(joker) noexcept { return joker::default_type{0}; } // use zero as a numeric (compile time) value to represent dynamic/runtime axes?
+
+  namespace __
+  {
+      template<typename T>  struct  to_int;
+      template<>            struct  to_int<joker> { using type = joker::default_type; };
+  }
 }

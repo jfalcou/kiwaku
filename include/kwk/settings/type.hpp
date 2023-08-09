@@ -10,6 +10,8 @@
 #include <kwk/detail/raberu.hpp>
 #include <cstdint>
 
+namespace kwk { struct joker; }
+
 namespace kwk::__
 {
   struct type_ : rbr::as_keyword<type_>
@@ -27,7 +29,7 @@ namespace kwk::__
         return os << rbr::detail::type<T>.name();
       }
 
-      friend constexpr bool operator==(info, info) noexcept { return true;  }
+      friend constexpr bool operator==(info, info) noexcept { return true; }
       constexpr bool operator==(auto) noexcept { return false; }
     };
 
@@ -42,10 +44,17 @@ namespace kwk::__
       return os << "Type: " << s;
     }
   };
+
+  template<typename T> consteval auto extent(type_::info<T>) { return std::uint8_t{0}; } // see the note for joker?
+  template<typename T> consteval T    axis_with_extent(type_::info<T>, auto const extent) noexcept { return {extent}; }
+  template<typename T> consteval auto axis_with_extent(type_::info<T>, joker            ) noexcept { return type_::info<T>{}; }
 }
 
 namespace kwk
 {
+  using __::extent;
+  using __::axis_with_extent;
+
   constexpr inline __::type_ value_type{};
 
   template<typename T>
@@ -79,11 +88,11 @@ namespace kwk
   constexpr inline auto uint8   = as<std::uint8_t>;
 
   /// Pre-defined type settings for std::uint16_t
-  constexpr inline auto uint16=  as<std::uint16_t>;
+  constexpr inline auto uint16  = as<std::uint16_t>;
 
   /// Pre-defined type settings for std::uint32_t
-  constexpr inline auto uint32=  as<std::uint32_t>;
+  constexpr inline auto uint32  = as<std::uint32_t>;
 
   /// Pre-defined type settings for std::uint64_t
-  constexpr inline auto uint64=  as<std::uint64_t>;
+  constexpr inline auto uint64  = as<std::uint64_t>;
 }

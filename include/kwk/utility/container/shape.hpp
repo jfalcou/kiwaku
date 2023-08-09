@@ -22,6 +22,7 @@
 #include <kwk/utility/traits/to_descriptor.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <kwk/utility/slicer.hpp>
+#include <kwk/utility/traits/extent.hpp> // merely for shape::static_values
 #include <cstddef>
 
 namespace kwk::__ { struct size_; }
@@ -98,7 +99,10 @@ namespace kwk
     /// Indicates that the shape's dimensions are all specified compile-time
     static constexpr bool is_fully_static       = parent::is_fully_static;
 
-    // shape is its self option keyword
+    static constexpr auto static_axes   = kumi::tuple{       D ...};
+    static constexpr auto static_values = kumi::tuple{extent(D)...};
+
+    // shape is itself an option keyword
     using stored_value_type = shape<D...>;
     using keyword_type      = __::size_;
 
@@ -170,28 +174,27 @@ namespace kwk
     //! @param d  Variadic list of @ref glossary-extent.
     //==================================================================================================================
     template<concepts::extent... T>
-    requires( std::is_constructible_v<parent, int,T...> )
-    KWK_TRIVIAL explicit constexpr shape(T... d) noexcept : parent(0, d...) {}
+    requires(std::is_constructible_v<parent, int,T...>)
+    KWK_TRIVIAL explicit(sizeof...(T) == 1) constexpr shape(T... d) noexcept : parent(joker::default_type{0}, d...) {}
 
     //==================================================================================================================
     /// Copy constructor
     //==================================================================================================================
-    KWK_TRIVIAL constexpr shape(shape const& d) noexcept : parent(d)
-    {}
+    constexpr shape(shape const&) noexcept = default;
 
     //==================================================================================================================
     //! @brief Construct shape from another shape type
     //!
     //! Copy the content of another kwk::shape if their extents and axis are compatible.
     //!
-    //! @note This constructor is explicit if the order of current shape is not equal to the order of `other`.
+    //! @note This constructor is explicit if the order of current shape is less than the order of `other` (thus requiring 'compression').
     //! @param other  Shape to copy
     //==================================================================================================================
     template<auto... D2>
     requires( constraint_t::is_contructible_from<parent{},typename shape<D2...>::parent{}>() )
     KWK_TRIVIAL
 #if !defined(KWK_DOXYGEN_INVOKED)
-    explicit(static_order != sizeof...(D2))
+    explicit(static_order < sizeof...(D2))
 #endif
     constexpr shape(shape<D2...> const& other) noexcept
     {
@@ -201,21 +204,22 @@ namespace kwk
     //==================================================================================================================
     /// Assignment operator
     //==================================================================================================================
-    constexpr shape& operator=( shape const& other ) & noexcept
-    {
-      this->__base() = other.__base();
-      return *this;
-    }
+    constexpr shape& operator=( shape const& other ) noexcept = default;
 
     template<auto... D2>
     requires( constraint_t::is_contructible_from<parent{},typename shape<D2...>::parent{}>() )
-    constexpr shape& operator=( shape<D2...> const& other ) & noexcept
+    constexpr shape& operator=( shape<D2...> const& other ) noexcept
     {
       constraint_t::construct(*this, other);
       return *this;
     }
 
     /// Equality comparison operator
+    KWK_PURE friend constexpr bool operator==(shape const& a, shape const& b) noexcept
+    {
+        return a.storage() == b.storage();
+    }
+
     template<auto... D2>
     KWK_PURE friend constexpr bool operator==(shape const& a, shape<D2...> const& b) noexcept
     {
@@ -323,8 +327,8 @@ namespace kwk
     }
 
     // Access to base type for internal implementation
-    KWK_TRIVIAL constexpr auto const& __base() const  noexcept { return static_cast<parent const&>(*this);  }
-    KWK_TRIVIAL constexpr auto &      __base()        noexcept { return static_cast<parent&>(*this);        }
+    KWK_TRIVIAL constexpr auto const& __base() const  noexcept { return static_cast<parent const&>(*this); }
+    KWK_TRIVIAL constexpr auto      & __base()        noexcept { return static_cast<parent      &>(*this); }
   };
 
   /// Deduction guide for @ref kwk::shape

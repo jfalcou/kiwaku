@@ -50,7 +50,7 @@ namespace kwk
         [[noreturn]] inline
         void assert_termination(std::ostringstream & stream, char const * const condition, char const * const function, char const * const file, unsigned const line) noexcept
         {
-            boost::assertion_failed_msg(condition, std::move(stream).str().c_str(), function, file, line);
+            boost::assertion_failed_msg(condition, std::move(stream).str().c_str(), function, file, static_cast<long>(line));
             KWK_UNREACHABLE();
         }
 

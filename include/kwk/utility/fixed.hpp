@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/axis.hpp>
 #include <kwk/concepts/values.hpp>
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/raberu.hpp>
@@ -27,20 +28,12 @@ namespace kwk
 
   namespace __
   {
-    template<typename T>  struct  to_int        { using type = T;     };
-    template<>            struct  to_int<joker> { using type = char;  };
+    template<typename T>  struct  to_int{ using type = T; };
+    template<>            struct  to_int<joker>;
 
-    template<rbr::concepts::option T>
-    struct to_int<T>
-    {
-      using type = typename T::stored_value_type;
-    };
-
-    template<concepts::static_constant T>
-    struct  to_int<T>
-    {
-      using type = typename T::value_type;
-    };
+    template<rbr::concepts::option     T> struct to_int<T> { using type = typename T::stored_value_type; };
+    template<concepts::static_constant T> struct to_int<T> { using type = typename T::value_type       ; };
+    template<concepts::axis            T> struct to_int<T> { using type = typename T::content_type     ; };
 
     template<typename T> using   to_int_t = typename to_int<T>::type;
 
@@ -61,7 +54,7 @@ namespace kwk
 
     template<auto Value> constexpr auto clamp()
     {
-            if constexpr (std::bit_width(Value) <=  8)  return static_cast<std::uint8_t>(Value);
+            if constexpr (std::bit_width(Value) <=  8)  return static_cast<std::uint8_t >(Value);
       else  if constexpr (std::bit_width(Value) <= 19)  return static_cast<std::uint16_t>(Value);
       else  if constexpr (std::bit_width(Value) <= 32)  return static_cast<std::uint32_t>(Value);
       else                                              return Value;
@@ -71,13 +64,15 @@ namespace kwk
   template<auto N>
   struct constant : std::integral_constant<decltype(N), N>
   {
+    KWK_CONST KWK_TRIVIAL constexpr operator decltype(N)() const noexcept { return N; }
+
     friend std::ostream& operator<<(std::ostream& os, constant)
     {
       return os << +N << "_c";
     }
 
-    KWK_TRIVIAL constexpr auto operator-() const noexcept { return constant<-N>{}; }
-    KWK_TRIVIAL constexpr auto operator+() const noexcept { return *this; }
+    KWK_CONST KWK_TRIVIAL constexpr auto operator-() const noexcept { return constant<-N>{}; }
+    KWK_CONST KWK_TRIVIAL constexpr auto operator+() const noexcept { return *this; }
   };
 
   template<auto N, auto M>
@@ -96,8 +91,8 @@ namespace kwk
   //! @ingroup utility
   //! @brief Provides a short-cut to define a `std::integral_constant` value from a literal integer
   //================================================================================================
-  template<auto N>
-  inline constexpr auto fixed = constant<N>{};
+  template<                          auto N> constexpr auto fixed   {constant<N>{}};
+  template<concepts::static_constant auto N> constexpr auto fixed<N>{         N   }; // prevent recursive constant<constant<..>>
 
   inline namespace literals
   {

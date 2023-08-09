@@ -13,14 +13,31 @@
 #include <kwk/detail/raberu.hpp>
 #include <kwk/detail/sequence/helpers.hpp>
 #include <kwk/utility/traits/as_dimension.hpp>
+#include <kwk/utility/traits/extent.hpp>
 
 namespace kwk::__
 {
   struct empty_tuple
   {
-    static constexpr bool is_homogeneous = false;
+    static constexpr bool is_homogeneous = true;
     constexpr auto operator==(empty_tuple const&) const noexcept { return true; }
   };
+
+  // TODO: move to kumi
+  template <int index, typename... T>
+  using type_pack_element =
+#if defined(__clang__) && __has_builtin(__type_pack_element)
+    __type_pack_element<index, T...>;
+#else
+    kumi::element_t<index, kumi::tuple<T...>>;
+#endif
+  template <int index, auto... NTTP>
+  using type_nttp_pack_element = type_pack_element<index, decltype(NTTP)...>;
+
+  template <auto an_axis, bool> constexpr auto axis_as_unit_aux               { an_axis       };
+  template <auto an_axis      > constexpr auto axis_as_unit_aux<an_axis, true>{ an_axis.value }; // indexed axes have no 'units'/are dimensionless/plain numbers
+
+  template <auto an_axis> constexpr auto axis_as_unit{ axis_as_unit_aux<an_axis, an_axis.is_indexed> };
 
   template<auto... D>
   struct prefilled_base
@@ -39,8 +56,7 @@ namespace kwk::__
       {
         return [&]<std::size_t... N>(std::index_sequence<N...>)
         {
-          using base = decltype(kumi::make_tuple(D...));
-          return kumi::tuple<stored_t<kumi::element_t<setup.stored[N], base>>... >{};
+          return kumi::tuple<stored_t<type_nttp_pack_element<setup.stored[N], D...>>...>{};
         }(std::make_index_sequence<dynamic_size>{});
       }
     }
@@ -67,11 +83,13 @@ namespace kwk::__
     static constexpr  bool  is_dynamic        = !is_fully_static;
     static constexpr  bool  is_fully_dynamic  = dynamic_size == static_size;
     static constexpr  bool  is_homogeneous    = storage_type::is_homogeneous;
-    static constexpr  bool  is_fully_implicit = (D.is_implicit && ... && true);
-    static constexpr  bool  is_fully_explicit = (D.is_explicit && ... && true);
+    static constexpr  bool  is_fully_implicit = ( D.is_implicit && ... && true);
+    static constexpr  bool  is_fully_explicit = ( D.is_explicit && ... && true);
+    static constexpr  bool  is_untyped        = ( D.is_indexed  && ... && true);
+    static constexpr  bool  is_fully_typed    = (!D.is_indexed  && ... && true);
 
     // Do we have runtime storage for a given index ?
-    static constexpr auto contains(int i) { return setup.index[i] != -1;  }
+    static constexpr auto contains(int i) { return setup.index[i] != -1; }
 
     // Default constructor
     KWK_TRIVIAL constexpr prefilled() noexcept : storage_type{} {}
@@ -80,24 +98,32 @@ namespace kwk::__
 
     constexpr void __construct(auto def, concepts::numeric_extent auto... vs) noexcept
     {
-      auto const input = kumi::tie(vs...);
-      kumi::for_each_index( [&]<typename I>(I, auto v)
-                            {
-                              if constexpr(contains(I::value))
+      if constexpr(is_fully_dynamic)
+      {
+        using kwk::extent;
+        static_cast<storage_type&>(*this) = storage_type{extent(vs)...};
+      }
+      else
+      {
+        auto const input = kumi::tie(vs...);
+        kumi::for_each_index( [&]<typename I>(I, auto v)
                               {
-                                __get<I::value>() = kwk::as_dimension(v, def);
+                                if constexpr(contains(I::value))
+                                {
+                                  __get<I::value>() = kwk::as_dimension(v, def);
+                                }
+                                else
+                                {
+                                  KIWAKU_ASSERT ( (v == _) || v == __get<I::value>()
+                                                ,   "[KWK] - Runtime/Compile-time mismatch for axis "
+                                                << kumi::get<I::value>(descriptors) << " as "
+                                                << v << " was provided instead."
+                                                );
+                                }
                               }
-                              else
-                              {
-                                KIWAKU_ASSERT ( (v == _) || v == __get<I::value>()
-                                              ,   "[KWK] - Runtime/Compile-time mismatch for axis "
-                                              << kumi::get<I::value>(descriptors) << " as "
-                                              << v << " was provided instead."
-                                              );
-                              }
-                            }
-                          , input
-                          );
+                            , input
+                            );
+      }
     }
 
     constexpr void __construct(auto def, concepts::named_extent auto... vs) noexcept
@@ -163,7 +189,7 @@ namespace kwk::__
         auto ff = []<auto I, typename X>(constant<I>, X)
         {
           if constexpr(rbr::concepts::option<X>) return typename X::keyword_type{};
-          else  return implicit<static_size - 1 - I>;
+          else return implicit<static_size - 1 - I>;
         };
 
         return [&]<std::size_t... I>(std::index_sequence<I...>)
@@ -201,13 +227,6 @@ namespace kwk::__
         }
       , other
       );
-    }
-
-    // Static axis access
-    template<std::size_t N>
-    KWK_TRIVIAL constexpr auto axis() const noexcept
-    {
-      return get<N>(descriptors).base();
     }
 
     // Static tuple access impl
@@ -269,44 +288,29 @@ namespace kwk::__
     }
 
     // Dynamic access - We rely on KUMI internals for speed and ease of detection
-    KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::size_t> auto i) const noexcept
-    requires(is_dynamic && static_size>0)
+    KWK_TRIVIAL constexpr auto& operator[](std::convertible_to<std::uint32_t> auto i) noexcept
+    requires(is_fully_dynamic && static_size>0)
     {
-      static_assert(is_homogeneous, "[KWK] - Dynamic axis access requires homogeneous extent types.");
-      auto const idx = static_cast<std::size_t>(i);
-
-      KIWAKU_ASSERT ( idx<static_size
-                    , "[KWK] - Out of bounds access at index: " << idx << " for a max. of " << static_size
-                    );
+      auto const idx = static_cast<std::uint32_t>(i);
 
       KIWAKU_ASSERT ( contains(idx)
                     ,   "[KWK] - Access at index "  << idx
                     <<  " overwrites a compile-time value of " << kumi::to_tuple(*this)
                     );
 
-      // KUMI internal shortcut
-      if constexpr(dynamic_size==1) return storage().impl.member0;
-      else                          return storage().impl.members[idx];
+      return get_indexed(idx);
     }
 
-    KWK_TRIVIAL constexpr auto& operator[](std::convertible_to<std::size_t> auto i) noexcept
-    requires(is_dynamic && static_size>0)
+    KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::uint32_t> auto i) const noexcept
+    requires(is_fully_dynamic && static_size>0)
     {
-      static_assert(is_homogeneous, "[KWK] - Dynamic axis access requires homogeneous extent types.");
-      auto const idx = static_cast<std::size_t>(i);
+      return const_cast<prefilled &>(*this).get_indexed(static_cast<std::uint32_t>(i));
+    }
 
-      KIWAKU_ASSERT ( idx<static_size
-                    , "[KWK] - Out of bounds access at index: " << idx << " for a max. of " << static_size
-                    );
-
-      KIWAKU_ASSERT ( contains(idx)
-                    ,   "[KWK] - Access at index "  << idx
-                    <<  " overwrites a compile-time value of " << kumi::to_tuple(*this)
-                    );
-
-      // KUMI internal shortcut
-      if constexpr(dynamic_size==1) return storage().impl.member0;
-      else                          return storage().impl.members[idx];
+    KWK_TRIVIAL constexpr auto operator[](std::convertible_to<std::uint32_t> auto i) const noexcept
+    requires(!(is_fully_dynamic && static_size>0))
+    {
+      return as_array()[i]; // rely on std::array bounds checking
     }
 
     // Named access via Axis
@@ -317,10 +321,10 @@ namespace kwk::__
     }
 
     template<concepts::axis A>
-    KWK_TRIVIAL constexpr decltype(auto) operator[](A) const noexcept
+    KWK_TRIVIAL constexpr decltype(auto) operator[](A const a) const noexcept
     requires(__find_axis(A{}) < static_size)
     {
-      return __get<__find_axis(A{})>();
+      return a[__get<__find_axis(A{})>()]; // return a 'typed axis' wrapper of the raw value (at least for the non mutable case)
     }
 
     template<concepts::axis A>
@@ -334,12 +338,34 @@ namespace kwk::__
     // If an error occurs here, this means you tried to access a shape/stride value by an axis
     // descriptor which is not contained in said shape/stride.
     //  E.g:
-    //    kwk::shape< width * height > x;
+    //    kwk::shape< width, height > x;
     //    x[depth] = 4;
     //==================================================================================================================
     template<concepts::axis A>
     requires(__find_axis(A{}) >= static_size)
     constexpr auto operator[](A) const noexcept = delete;
+
+
+    // Static axis access
+    template<std::size_t N>
+    using axis_kind = typename type_nttp_pack_element<N, D...>::axis_kind;
+
+    template<std::size_t N>
+    static constexpr auto axis_at{__::axis_as_unit<get<N>(descriptors)>};
+
+    template<auto AxisID>
+    static constexpr auto axis{axis_at<__find_axis(AxisID)>};
+
+    template<std::size_t axis_index>
+    static constexpr auto axis_with_extent(auto const value) noexcept
+    {
+        auto const the_axis{get<axis_index>(descriptors)};
+        if constexpr(the_axis.is_indexed)
+            return value;
+        else
+            return the_axis[value];
+    }
+
 
     // Total size of the tuple
     static constexpr std::int32_t size() noexcept { return static_size; }
@@ -356,13 +382,31 @@ namespace kwk::__
     // Conversion to std::array
     constexpr decltype(auto) as_array() const noexcept
     {
-      return kumi::apply( []<typename... T>(T... m)
-                          {
-                            using type = typename largest_integral<T...>::type;
-                            return std::array<type,static_size>{static_cast<type>(m)...};
-                          }
-                        , *this
-                        );
+      if constexpr(is_homogeneous && is_fully_dynamic)
+      {
+             if constexpr(dynamic_size==0) return std::array<joker::default_type, 0>{};
+        else if constexpr(dynamic_size==1) return std::array{storage().impl.member0};
+        else
+          return reinterpret_cast
+          <
+            std::array
+            <
+              std::tuple_element_t<0, storage_type>,
+              dynamic_size
+            > const &
+          >
+          (storage().impl.members);
+      }
+      else
+      {
+        return kumi::apply( []<typename... T>(T... m)
+                            {
+                              using type = typename largest_integral<T...>::type;
+                              return std::array<type,static_size>{static_cast<type>(m)...};
+                            }
+                          , *this
+                          );
+      }
     }
 
     // Equivalence checks for same order/axis kind
@@ -373,7 +417,7 @@ namespace kwk::__
       else                                                        return false;
     }
 
-    // Compatiblity checks  if they have the same size and don't contain conflicting static values
+    // Compatiblity checks if they have the same size and don't contain conflicting static values
     template<auto... Os>
     constexpr bool is_compatible(prefilled<Os...> const& other) const noexcept
     {
@@ -424,6 +468,20 @@ namespace kwk::__
     KWK_TRIVIAL constexpr storage_type const&   storage() const&  { return static_cast<storage_type const&>(*this);   }
     KWK_TRIVIAL constexpr storage_type &&       storage() &&      { return static_cast<storage_type&&>(*this);        }
     KWK_TRIVIAL constexpr storage_type const&&  storage() const&& { return static_cast<storage_type const&&>(*this);  }
+
+  private:
+    constexpr auto& get_indexed(std::uint32_t const idx) noexcept
+    {
+      static_assert(is_homogeneous, "[KWK] - Dynamic axis access requires homogeneous extent types.");
+
+      KIWAKU_ASSERT ( idx<static_size
+                    , "[KWK] - Out of bounds access at index: " << idx << " for a max. of " << static_size
+                    );
+
+      // KUMI internal shortcut
+      if constexpr(dynamic_size==1) return storage().impl.member0;
+      else                          return storage().impl.members[idx];
+    }
   };
 
   //====================================================================================================================
@@ -438,7 +496,7 @@ namespace kwk::__
     {
       return []<std::size_t... I>(std::index_sequence<I...>)
       {
-        return kwk::__::box< prefilled<get<I>(normalized)...> >{};
+        return kwk::__::box<prefilled<get<I>(normalized)...>>{};
       }(std::make_index_sequence<sizeof...(D)>{});
     }
 

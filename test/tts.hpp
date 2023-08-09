@@ -107,7 +107,10 @@ namespace tts::detail
     std::string     name;
     tts::callable   behaviour;
   };
-  inline std::vector<test> suite = {};
+#ifdef __clang__ // static-initialization-order-fiasco wrkrnd (actually required only for clang-cl)
+  __attribute__(( init_priority( 101 ) ))
+#endif
+  inline std::vector<test> suite;
   bool inline test::acknowledge(test&& f)
   {
     suite.emplace_back( std::forward<test>(f));

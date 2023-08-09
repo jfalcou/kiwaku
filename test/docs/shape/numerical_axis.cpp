@@ -33,7 +33,7 @@ int main()
   //====================================================================================================================
   // Numerical extents with type specifier
   //====================================================================================================================
-  kwk::shape<kwk::uint8, kwk::as<unsigned char>> s7(100,100);
+  kwk::shape<kwk::uint8, kwk::as<unsigned char>> s7(std::uint8_t{100},std::uint8_t{100});
 
   std::cout << "Size of s7: " << sizeof(s7) << "\n";
   std::cout << s7 << "\n";

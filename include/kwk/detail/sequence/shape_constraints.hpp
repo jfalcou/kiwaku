@@ -7,12 +7,14 @@
 //======================================================================================================================
 #pragma once
 
+#if defined(KWK_DEFAULT_SHAPE_CONSTRAINTS_INCLUDE)
+#include KWK_DEFAULT_SHAPE_CONSTRAINTS_INCLUDE
+#else
+
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/kumi.hpp>
 
-#if !defined(KWK_DEFAULT_SHAPE_CONSTRAINTS)
 #define KWK_DEFAULT_SHAPE_CONSTRAINTS ::kwk::basic_shape_checks
-#endif
 
 namespace kwk
 {
@@ -84,3 +86,5 @@ namespace kwk
     }
   };
 }
+
+#endif // KWK_DEFAULT_SHAPE_CONSTRAINTS_INCLUDE
