@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/container/container.hpp>
+#include <kwk/concepts/slicer.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <type_traits>
 
@@ -54,7 +55,8 @@ namespace kwk
     KWK_TRIVIAL constexpr table() : parent{kwk::table_} {}
 
     /// Construct a table from a list of options
-    KWK_TRIVIAL constexpr table(rbr::concepts::option auto const&... opts) : table{rbr::settings{opts...}} {}
+    KWK_TRIVIAL constexpr table(rbr::concepts::option auto const&... opts)
+              : parent{rbr::settings{kwk::table_,opts...}} {}
 
     /// Construct a table from a settings descriptor
     KWK_TRIVIAL constexpr table(rbr::concepts::settings auto const& opts)
@@ -98,17 +100,19 @@ namespace kwk
     //==============================================================================================
     //! @}
     //==============================================================================================
-    template<typename... Slicers>
-    requires(sizeof...(Slicers) <= static_order)
-    auto slice(Slicers... slice) const noexcept
+    using parent::operator();
+
+    template<concepts::slicer... Slicers>
+    requires( (sizeof...(Slicers) <= static_order) && !(std::integral<Slicers> && ...) )
+    auto operator()(Slicers... slice) const noexcept
     {
       auto shp = this->shape();
       auto str = compress<sizeof...(slice)>(this->stride());
 
-      return make_view( source = this->get_data() + origin(shp, slice...)
-                      , shp(slice...)
-                      , str(slice...)
-                      );
+      if constexpr(preserve_reachability<Slicers...>)
+        return make_view(source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...));
+      else
+        return make_view(source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...), unreachable);
     }
   };
 

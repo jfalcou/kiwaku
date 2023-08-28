@@ -10,6 +10,7 @@
 #include <kwk/container/pick.hpp>
 #include <kwk/detail/container/metadata.hpp>
 #include <kwk/detail/container/accessor.hpp>
+#include <kwk/settings/reachable.hpp>
 #include <kwk/detail/memory/block.hpp>
 #include <kwk/detail/raberu.hpp>
 
@@ -26,6 +27,9 @@ namespace kwk::__
     // Computes shape & stride type
     static constexpr auto shape   = pick(size, options);
     static constexpr auto stride  = pick(strides, options);
+
+    // Retrieve reachability status
+    static constexpr auto preserve_reachability = !Options[unreachable];
 
     // Builds all elements of a container: accessor, metadata, memory block
     using accessor    = __::accessor<shape, stride, options_t::contains(strides)>;

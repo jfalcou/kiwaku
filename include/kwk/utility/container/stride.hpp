@@ -24,6 +24,9 @@ namespace kwk::__
 
 namespace kwk
 {
+  template<concepts::extent... D>
+  constexpr auto with_strides(D... d) noexcept;
+
   //================================================================================================
   //! @ingroup containers
   //! @brief  Fixed order stride with mixed size capability
@@ -183,10 +186,10 @@ namespace kwk
     }
   }
 
-  template<std::int32_t N, auto Desc>
-  constexpr auto compress(stride<Desc> const& s) noexcept
+  template<std::int32_t N, auto... D>
+  constexpr auto compress(stride<D...> const& s) noexcept
   {
-    auto extracted = kumi::extract(s, kumi::index<stride<Desc>::static_size-N>);
+    auto extracted = kumi::extract(s, kumi::index<stride<D...>::static_size-N>);
     return with_strides(extracted);
   }
 }

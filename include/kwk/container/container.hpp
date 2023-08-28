@@ -9,6 +9,7 @@
 
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/container/pick.hpp>
+#include <kwk/utility/traits/reachable.hpp>
 #include <kwk/detail/container/builder.hpp>
 #include <kwk/detail/memory/block.hpp>
 #include <type_traits>
@@ -29,8 +30,9 @@ namespace kwk
     using shape_type        = typename access_t::shape_type;
     using container_kind    = decltype(Tag);
 
-    static constexpr std::int32_t static_order  = access_t::static_order;
-    static constexpr bool         has_label     = meta_t::has_label;
+    static constexpr std::int32_t static_order          = access_t::static_order;
+    static constexpr bool         has_label             = meta_t::has_label;
+    static constexpr bool         preserve_reachability = Builder::preserve_reachability;
 
     constexpr container( container_kind ) noexcept
             : meta_t{}, data_t{}, access_t{}

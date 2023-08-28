@@ -7,21 +7,15 @@
 //==================================================================================================
 #pragma once
 
-#include <cstddef>
+#include <kwk/detail/raberu.hpp>
 
-namespace kwk::concepts
+namespace kwk
 {
+  namespace __ { struct unreachable_ {}; }
+
   //================================================================================================
-  //! @brief Allocator concept
-  //!
-  //! A **KIWAKU** Allocator is a type which instances can be passed to the following free functions:
-  //!   + `allocate(Allocator& alloc, std::size_t size)`
-  //!   + `deallocate(Allocator& alloc, void* ptr)`
+  //! @ingroup  settings
+  //! @brief    Data reachability option
   //================================================================================================
-  template<typename Allocator>
-  concept allocator = requires(Allocator& alloc, void* ptr, std::size_t size)
-  {
-    { allocate  (alloc, size) };
-    { deallocate(alloc, ptr ) };
-  };
+  inline constexpr auto unreachable = rbr::flag(__::unreachable_{});
 }

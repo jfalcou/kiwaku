@@ -9,13 +9,13 @@
 
 #include <kwk/concepts/values.hpp>
 #include <kwk/detail/raberu.hpp>
+#include <kwk/detail/stdfix.hpp>
 #include <kwk/utility/end.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <kwk/utility/joker.hpp>
 #include <kwk/utility/linear_index.hpp>
 #include <kwk/utility/traits/extent.hpp>
 
-#include <concepts>
 #include <ostream>
 
 #if !defined(_MSC_VER)
@@ -26,7 +26,7 @@
 namespace kwk
 {
   //================================================================================================
-  // Keyword for range(...) specifications
+  // Keyword for slice(...) specifications
   //================================================================================================
   namespace __
   {
@@ -45,7 +45,7 @@ namespace kwk
   template<auto... D> struct stride;
 
   //================================================================================================
-  // range(...) specifications
+  // slice(...) specifications
   //================================================================================================
   template<typename Begin, typename Step, typename End, typename Length>
   struct slicer
@@ -55,10 +55,11 @@ namespace kwk
     End     end;
     Length  len;
 
-    static constexpr bool has_begin  = !std::same_as<Begin,joker>;
-    static constexpr bool has_step   = !std::same_as<Step,joker>;
-    static constexpr bool has_end    = !std::same_as<End,joker>;
-    static constexpr bool has_length = !std::same_as<Length,joker>;
+    using kwk_is_interval = void;
+    static constexpr bool has_begin   = !std::same_as<Begin,joker>;
+    static constexpr bool has_step    = !std::same_as<Step,joker>;
+    static constexpr bool has_end     = !std::same_as<End,joker>;
+    static constexpr bool has_length  = !std::same_as<Length,joker>;
 
     slicer(Begin b, Step s, End e, Length l) : begin{b},step{s},end{e}, len{l} {}
 
@@ -174,53 +175,50 @@ namespace kwk
 
   template<typename B, typename S, typename E, typename L> slicer(B,S,E,L)  -> slicer<B,S,E,L>;
 
-  namespace __
-  {
-    template<auto... D, typename S, std::size_t N>
-    constexpr auto reindex(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
-    {
-      if      constexpr(std::same_as<S,joker>)            return 0;
-      else if constexpr(concepts::extremum<S>)            return s.size(get<N>(sh));
-      else if constexpr( requires{ s.reindex(sh,idx); } ) return s.reindex(sh,idx);
-      else                                                return s;
-    }
-
-    template<auto... D, typename S, std::size_t N>
-    constexpr auto reshape(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
-    {
-      if      constexpr(std::same_as<S,joker>)            return get<N>(sh);
-      else if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);
-      else                                                return fixed<1>;
-    }
-
-    template<auto... D, typename S, std::size_t N>
-    constexpr auto restride(stride<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
-    {
-      if constexpr( requires{ s.restride(sh,idx); } ) return s.restride(sh,idx);
-      else                                            return get<N>(sh);
-    }
-  }
-
   //================================================================================================
   // Slicing helper
   //================================================================================================
+  template<auto... D, typename S, std::size_t N>
+  constexpr auto reindex(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+  {
+    if      constexpr(std::same_as<S,joker>)            return 0;
+    else if constexpr(concepts::extremum<S>)            return s.size(get<N>(sh));
+    else if constexpr( requires{ s.reindex(sh,idx); } ) return s.reindex(sh,idx);
+    else                                                return s;
+  }
+
+  template<auto... D, typename S, std::size_t N>
+  constexpr auto reshape(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+  {
+    if      constexpr(std::same_as<S,joker>)            return get<N>(sh);
+    else if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);
+    else                                                return fixed<1>;
+  }
+
+  template<auto... D, typename S, std::size_t N>
+  constexpr auto restride(stride<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+  {
+    if constexpr( requires{ s.restride(sh,idx); } ) return s.restride(sh,idx);
+    else                                            return get<N>(sh);
+  }
+
   template<auto... DS, typename... Slicers>
   auto origin(shape<DS...> const& shp, Slicers... slice) noexcept
   {
     auto c = compress<sizeof...(slice)>(shp);
     return  linear_index( c
                         , kumi::map_index
-                          ( [&](auto i, auto e) { return __::reindex(c,e,i); }
+                          ( [&](auto i, auto e) { return reindex(c,e,i); }
                           , kumi::tie(slice...)
                           )
                         );
   }
 
   //================================================================================================
-  // range constructor
+  // slice constructor
   //================================================================================================
   template<rbr::concepts::option... Os>
-  constexpr auto range(Os... os) noexcept
+  constexpr auto slice(Os... os) noexcept
   requires(   (rbr::settings<Os...>::contains_only(by, to    , from)  )
           ||  (rbr::settings<Os...>::contains_only(by, to    , length))
           ||  (rbr::settings<Os...>::contains_only(by, length, from)  )
@@ -229,6 +227,16 @@ namespace kwk
     auto const opts = rbr::settings{os...};
     return slicer{opts[from | _], opts[by | _], opts[to | _],  opts[length | _]};
   }
+
+  template<typename E>
+  requires( concepts::extremum<E> || std::integral<E> )
+  constexpr auto between(std::integral auto b, E e) noexcept { return slicer{b,_,e,_}; }
+
+  constexpr auto every      (std::integral auto s) noexcept { return slicer{_    ,s,_    ,_}; }
+  constexpr auto first      (std::integral auto n) noexcept { return slicer{_    ,_,_    ,n}; }
+  constexpr auto drop_first (std::integral auto n) noexcept { return slicer{n    ,_,_    ,_}; }
+  constexpr auto last       (std::integral auto n) noexcept { return slicer{end-n,_,_    ,n}; }
+  constexpr auto drop_last  (std::integral auto n) noexcept { return slicer{_    ,_,end-n,_}; }
 }
 
 #if !defined(_MSC_VER)
