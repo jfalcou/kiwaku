@@ -6,17 +6,17 @@
 **/
 //==================================================================================================
 #pragma once
-
-#include <kwk/detail/abi.hpp>
-#include <kwk/container/settings/label.hpp>
-#include <kwk/concepts/container.hpp>
 #include <kwk/container/view.hpp>
 
-namespace kwk
+namespace kwk 
 {
-  constexpr auto relabel(concepts::container auto&& c, auto&& l)
-  requires requires { kwk::label = KWK_FWD(l); }
-  {
-    return view{ rbr::merge( rbr::settings(label = KWK_FWD(l)), KWK_FWD(c).settings()) };
-  }
+auto reverse(kwk::concepts::container auto const& c)
+{
+  auto nst = kumi::apply([](auto... m) { return kwk::with_strides(-m...); }, c.stride());
+
+  return kwk::view( kwk::source = c.get_data() + c.numel() - 1
+                  , c.shape()
+                  , nst
+                  );
+}
 }

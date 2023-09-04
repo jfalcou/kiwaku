@@ -65,10 +65,10 @@ namespace kwk
   //! @groupheader{Example}
   //! @include docs/algorithms/for_each.cpp
   //================================================================================================
-  template<typename Func, concepts::container Container>
-  constexpr auto for_each(Func f, Container&& c)
+  template<typename Func, concepts::container C0, concepts::container... Cs>
+  constexpr auto for_each(Func f, C0&& c0, Cs&&... cs)
   {
-    kwk::for_each([&](auto... is) { return f(KWK_FWD(c)(is...)); }, c.shape() );
+    kwk::for_each([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
     return f;
   }
 
@@ -98,6 +98,9 @@ namespace kwk
                   );
     return f;
   }
+
+
+  
 
   //================================================================================================
   //! @}

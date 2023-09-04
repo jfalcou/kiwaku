@@ -7,16 +7,23 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/abi.hpp>
-#include <kwk/container/settings/size.hpp>
 #include <kwk/concepts/container.hpp>
-#include <kwk/container/view.hpp>
+#include <kwk/algorithm/algos/for_each.hpp>
+#include <kwk/detail/abi.hpp>
+#include <cstddef>
+#include <utility>
+
+// ALGO:
+/*
+is_sorted // Maybe
+
+sort
+partial_sort
+nth_element
+stable_sort
+*/
 
 namespace kwk
 {
-  constexpr auto reshape(concepts::container auto&& c, auto&& sz)
-  requires requires { kwk::size = KWK_FWD(sz); }
-  {
-    return view{ rbr::merge( rbr::settings(size = KWK_FWD(sz)), KWK_FWD(c).settings()) };
-  }
+
 }

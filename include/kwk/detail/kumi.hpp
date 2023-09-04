@@ -1134,7 +1134,7 @@ namespace kumi
   {
     return [&]<std::size_t... I>(std::index_sequence<I...>)
     {
-      return kumi::tuple{T(v+I)...};
+      return kumi::tuple{T(v+static_cast<T>(I))...};
     }(std::make_index_sequence<N>{});
   }
   namespace result

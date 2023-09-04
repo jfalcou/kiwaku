@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/algorithm/for_each.hpp>
+#include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/container/pick.hpp>
 #include <kwk/detail/container/builder.hpp>
 #include <kwk/detail/memory/block.hpp>

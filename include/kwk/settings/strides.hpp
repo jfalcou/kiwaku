@@ -15,7 +15,7 @@ namespace kwk::__
 {
   struct strides_ : rbr::as_keyword<strides_>
   {
-    template<auto Strider> auto operator=(stride<Strider> const& s) const noexcept
+    template<auto... S> auto operator=(stride<S...> const& s) const noexcept
     {
       return s;
     }

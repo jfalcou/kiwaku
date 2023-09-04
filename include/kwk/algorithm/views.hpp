@@ -10,12 +10,14 @@
 namespace kwk
 {
   //================================================================================================
-  //! @defgroup algorithms Algorithms and View generators
-  //! @brief Algorithms, view generators, and associated traits
+  //! @ingroup algorithms 
+  //! @defgroup algo_views View Generators
+  //! @brief Common functions generating views
   //!
-  //! This module defines the main **KIWAKU**'s algorithms and view generator.
+  //! This module defines the common **KIWAKU**'s view generators.
   //================================================================================================
 }
 
-#include <kwk/algorithm/algos.hpp>
-#include <kwk/algorithm/views.hpp>
+#include <kwk/algorithm/views/relabel.hpp>
+#include <kwk/algorithm/views/reshape.hpp>
+#include <kwk/algorithm/views/reverse.hpp>
