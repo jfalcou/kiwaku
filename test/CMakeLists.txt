@@ -6,7 +6,8 @@
 include(make_unit)
 set(unit_root "${CMAKE_SOURCE_DIR}/test")
 
-glob_unit(${unit_root} "algorithms/*.cpp")
+glob_unit(${unit_root} "algorithm/algos/*.cpp")
+glob_unit(${unit_root} "algorithm/views/*.cpp")
 glob_unit(${unit_root} "concepts/*.cpp")
 glob_unit(${unit_root} "container/table/*.cpp")
 glob_unit(${unit_root} "container/view/*.cpp")

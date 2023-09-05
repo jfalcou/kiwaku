@@ -7,7 +7,7 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kwk/container.hpp>
-#include <kwk/algorithm/for_each.hpp>
+#include <kwk/algorithm/algos/for_each.hpp>
 #include <array>
 #include <vector>
 
