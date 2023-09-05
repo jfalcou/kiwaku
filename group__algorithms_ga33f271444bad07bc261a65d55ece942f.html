@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: Algorithms and View generators</title>
+<title>Kiwaku: kwk::for_each</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__algorithms.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__algorithms_ga33f271444bad07bc261a65d55ece942f.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,47 +120,104 @@ $(document).ready(function(){initNavTree('group__algorithms.html',''); initResiz
 </div>
 </div>
 
-<div class="header">
-  <div class="summary">
-<a href="#groups">Modules</a> &#124;
-<a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">Algorithms and View generators</div></div>
-</div><!--header-->
 <div class="contents">
+<a id="ga33f271444bad07bc261a65d55ece942f" name="ga33f271444bad07bc261a65d55ece942f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga33f271444bad07bc261a65d55ece942f">&#9670;&#160;</a></span>for_each() <span class="overload">[1/2]</span></h2>
 
-<p>Algorithms, view generators, and associated traits.  
-<a href="#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="groups" name="groups"></a>
-Modules</h2></td></tr>
-<tr class="memitem:group__algos"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__algos.html">Algorithms</a></td></tr>
-<tr class="memdesc:group__algos"><td class="mdescLeft">&#160;</td><td class="mdescRight">Algorithms and associated traits. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group__algo__views"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__algo__views.html">View Generators</a></td></tr>
-<tr class="memdesc:group__algo__views"><td class="mdescLeft">&#160;</td><td class="mdescRight">Common functions generating views. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="memTemplParams" colspan="2">template&lt;typename Func , auto... S&gt; </td></tr>
-<tr class="memitem:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a> (Func f, <a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;shp)</td></tr>
-<tr class="memdesc:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple walkthrough over all possible indexes.  <br /></td></tr>
-<tr class="separator:ga54e01e5eeaba1ca902e3360ba9d6adc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga33f271444bad07bc261a65d55ece942f"><td class="memTemplParams" colspan="2">template&lt;typename Func , concepts::container C0, concepts::container... Cs&gt; </td></tr>
-<tr class="memitem:ga33f271444bad07bc261a65d55ece942f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__algorithms_ga33f271444bad07bc261a65d55ece942f.html#ga33f271444bad07bc261a65d55ece942f">kwk::for_each</a> (Func f, C0 &amp;&amp;c0, Cs &amp;&amp;... cs)</td></tr>
-<tr class="memdesc:ga33f271444bad07bc261a65d55ece942f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple walkthrough over all elements of a container.  <br /></td></tr>
-<tr class="separator:ga33f271444bad07bc261a65d55ece942f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa95698990fc82c3b1e6d804ccf5bf674"><td class="memTemplParams" colspan="2">template&lt;typename Func , concepts::container Container&gt; </td></tr>
-<tr class="memitem:gaa95698990fc82c3b1e6d804ccf5bf674"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__algorithms_gaa95698990fc82c3b1e6d804ccf5bf674.html#gaa95698990fc82c3b1e6d804ccf5bf674">kwk::for_each_index</a> (Func f, Container &amp;&amp;c)</td></tr>
-<tr class="memdesc:gaa95698990fc82c3b1e6d804ccf5bf674"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple walkthrough over all elements of a container and their coordinates.  <br /></td></tr>
-<tr class="separator:gaa95698990fc82c3b1e6d804ccf5bf674"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Func , concepts::container C0, concepts::container... Cs&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto kwk::for_each </td>
+          <td>(</td>
+          <td class="paramtype">Func&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">C0 &amp;&amp;&#160;</td>
+          <td class="paramname"><em>c0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Cs &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>cs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
 </table>
+</div><div class="memdoc">
+<p>Applies the given function object <code>f</code> to every elements of a given kwk::container. Elements are iterated in order of the optimal memory access.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>Function object, to be applied to an element of <code>c</code>. The signature of the function should be equivalent to the following: <div class="fragment"><div class="line"><span class="keywordtype">void</span> f(T&amp;&amp; v);</div>
+</div><!-- fragment --> with <code>T</code> convertible to the container's <code>value_type</code>. </td></tr>
+    <tr><td class="paramname">c</td><td>A kwk::container on which elements <code>f</code> will be applied. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The function object <code>f</code> which could have been modified.</dd></dl>
+<h2 class="groupheader">Example </h2>
+<div class="fragment"><div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;kwk/kwk.hpp&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="line">{</div>
+<div class="line">  <span class="keywordtype">int</span> data[] = {3, -4, 2, -8, 15, 267};</div>
+<div class="line">  <span class="keyword">auto</span> v = <a class="code hl_struct" href="structkwk_1_1view.html">kwk::view</a>{ <a class="code hl_variable" href="group__settings.html#gaef8fdcbb44ad887e90784c21469e06eb">kwk::source</a> = data };</div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">auto</span> print = [](<span class="keyword">const</span> <span class="keywordtype">int</span>&amp; n) { std::cout &lt;&lt; n &lt;&lt; <span class="charliteral">&#39; &#39;</span>; };</div>
+<div class="line"> </div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;Before:\t&quot;</span>;</div>
+<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(print, v);</div>
+<div class="line">  std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">// increment elements in-place</span></div>
+<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>( [](<span class="keywordtype">int</span> &amp;n){ n++; }, v);</div>
+<div class="line"> </div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;After:\t&quot;</span>;</div>
+<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(print, v);</div>
+<div class="line">  std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">struct </span>Sum</div>
+<div class="line">  {</div>
+<div class="line">    <span class="keywordtype">void</span> operator()(<span class="keywordtype">int</span> n) { sum += n; }</div>
+<div class="line">    <span class="keywordtype">int</span> sum{0};</div>
+<div class="line">  };</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">// invoke Sum::operator() for each element</span></div>
+<div class="line">  Sum s = <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(Sum{}, v);</div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;sum:\t&quot;</span> &lt;&lt; s.sum &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">}</div>
+<div class="ttc" id="agroup__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6_html_ga54e01e5eeaba1ca902e3360ba9d6adc6"><div class="ttname"><a href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a></div><div class="ttdeci">constexpr auto for_each(Func f, shape&lt; S... &gt; const &amp;shp)</div><div class="ttdoc">Simple walkthrough over all possible indexes.</div><div class="ttdef"><b>Definition:</b> for_each.hpp:42</div></div>
+<div class="ttc" id="agroup__settings_html_gaef8fdcbb44ad887e90784c21469e06eb"><div class="ttname"><a href="group__settings.html#gaef8fdcbb44ad887e90784c21469e06eb">kwk::source</a></div><div class="ttdeci">constexpr __::source_ source</div><div class="ttdoc">Data source setting for kwk::table and kwk::view.</div><div class="ttdef"><b>Definition:</b> source.hpp:61</div></div>
+<div class="ttc" id="astructkwk_1_1view_html"><div class="ttname"><a href="structkwk_1_1view.html">kwk::view</a></div><div class="ttdoc">Non-owning, contiguous multi-dimensional container.</div><div class="ttdef"><b>Definition:</b> view.hpp:24</div></div>
+</div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->
