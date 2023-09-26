@@ -63,6 +63,35 @@ TTS_CASE("Check for kwk::transform(value, new_value) 2D")
   TTS_EQUAL(count,   d.numel());
 };
 
+TTS_CASE("Check for kwk::transform(value, new_value) 2D - with contexts")
+{
+  int data[2*3];
+  double res[2*3];
+  double vdata[2*3];
+  
+  fill_data(data, kwk::of_size(2,3), true);
+  fill_data(vdata, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto v = kwk::view{kwk::source = res, kwk::of_size(2,3)};
+
+  for(int i = 0; i<2; i++)
+    for(int j = 0; j<3; j++)
+      vdata[i*3+j] = 1.0/(1.0+vdata[i*3+j]);
+  
+  int count = 0;
+  transform( kwk::cpu, 
+  [&](auto e)
+  { 
+    count++;
+    return 1.0/(1.0+e);
+  }, v, d);
+
+  TTS_ALL_EQUAL(res, vdata);
+
+  TTS_EQUAL(count,   d.numel());
+};
+
 TTS_CASE("Check for kwk::transform(value, new_value) 3D")
 {
   int data[2*3*4];

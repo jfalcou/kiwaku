@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/container.hpp>
+#include <kwk/context/context.hpp>
 #include <kwk/detail/algorithm/for_each.hpp>
 #include <kwk/detail/abi.hpp>
 #include <cstddef>
@@ -47,6 +48,14 @@ namespace kwk
     }( std::make_index_sequence<shape<S...>::static_order>{} );
   }
 
+
+  template<typename Context, typename Func, concepts::container C0, concepts::container... Cs>
+  constexpr auto for_each(Context const& ctx, Func f, C0&& c0, Cs&&... cs)
+  {
+    ctx.for_each([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
+    return f;
+  }
+  
   //================================================================================================
   //! @brief Simple walkthrough over all elements of a container
   //!
@@ -68,8 +77,8 @@ namespace kwk
   template<typename Func, concepts::container C0, concepts::container... Cs>
   constexpr auto for_each(Func f, C0&& c0, Cs&&... cs)
   {
-    kwk::for_each([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
-    return f;
+    // kwk::for_each([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
+    return kwk::for_each(cpu, f, KWK_FWD(c0), KWK_FWD(cs)...);
   }
 
   //================================================================================================
