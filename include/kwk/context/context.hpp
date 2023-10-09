@@ -17,3 +17,4 @@ namespace kwk
 }
 
 #include<kwk/context/cpu/context.hpp>
+#include<kwk/context/base.hpp>

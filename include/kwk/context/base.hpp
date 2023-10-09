@@ -35,49 +35,72 @@ struct base_context
   template<concepts::container Out, concepts::container In>
   constexpr auto copy(Out& out, In&& in) const
   {
-    this->transform([](auto in) { return in; }, out, KWK_FWD(in) );
+    self().transform([](auto in) { return in; }, out, KWK_FWD(in) );
   }
 
-  // //==============================================================================================
-  // // n-Dimensional for_each generator
-  // // Piles up single for() lambda across each dimension then run them
-  // //==============================================================================================
-  // template<typename Func, typename Dims>
-  // constexpr auto generate_for_each(Func f, Dims const& ds) const
-  // {
-  //   auto loops = kumi::fold_left ( [](auto acc, auto m)
-  //                                   {
-  //                                     return [=](auto... is)
-  //                                     {
-  //                                       for(to_int_t<decltype(m)> i = 0;i<m;++i)
-  //                                         acc(is...,i);
-  //                                     };
-  //                                   }
-  //                                 , ds
-  //                                 , [&](auto... is) { return f(is...); }
-  //                                 );
-  //   loops();
-  //   return f;
-  // }
+  template<typename Func, concepts::container In>
+  constexpr auto reduce(In const& in, Func f, auto init) const
+  {
+    self().for_each([&](auto... is) { init = f(init, in(is...)); }, in.shape() );
+    return init;
+  }
 
-  // template<typename Func, typename Dims>
-  // constexpr auto generate_for_until(Func f, Dims const& ds) const
-  // {
-  //   bool found = false;
-  //   auto loops = kumi::fold_left ( [&found](auto acc, auto m)
-  //                                   {
-  //                                     return [&found,acc,m](auto... is)
-  //                                     {
-  //                                       for(to_int_t<decltype(m)> i = 0;!found && i<m;++i)
-  //                                         acc(is...,i);
-  //                                     };
-  //                                   }
-  //                                 , ds
-  //                                 , [&](auto... is) { found = f(is...); }
-  //                                 );
-  //   loops();
-  //   return f;
-  // }
+  template<typename Func, concepts::container In>
+  constexpr auto all_of(In const& in, Func f) const
+  {
+    // Lorsque reduce est redéfini dans la classe appelée, ça devrait être le bon
+    // reduce qui sera sélectionné (et pas celui de base)
+    // TODO: à tester dans les tests
+    return self().reduce(in, [f](auto a, auto e) {  return a && f(e); }, true );
+  }
+
+  template<concepts::container In>
+  constexpr auto count(In const& in, auto value) const
+  {
+    // Choses the right method :
+    // Takes the reduce(..) method of the Context if it has one
+    // Otherwise takes its own reduce(..) method.
+
+    return self().reduce(in, [value](auto a, auto e) { return a + ((e==value) ? 1 : 0); }, std::size_t{0} );
+  }
+
+
+
+  template<typename Func, concepts::container In>
+  constexpr auto any_of(In const& in, Func f) const
+  {
+    return self().reduce(in, [f](auto a, auto e) {  return a || f(e); }, false );
+  }
+
+  template<typename Func, concepts::container In>
+  constexpr auto none_of(In const& in, Func f) const
+  {
+    return !self().any_of(in, f);
+  }
+
+  template<typename Func, concepts::container In>
+  constexpr auto count_if(In const& in, Func f) const
+  {
+    return self().reduce(in, [f](auto a, auto e) {  return a + (f(e) ? 1 : 0); }, std::size_t{} );
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 };
 
 }
