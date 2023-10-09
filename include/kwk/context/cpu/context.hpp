@@ -38,7 +38,7 @@ struct cpu_context : base_context<cpu_context>
   }
 
   template<typename Func, concepts::container Container>
-  constexpr auto for_each_index(Func f, Container&& c)
+  constexpr auto for_each_index(Func f, Container&& c) const
   {
     this->for_each ( [&](auto... is) { return f(KWK_FWD(c)(is...), is...); }
                   , c.shape()
@@ -46,7 +46,7 @@ struct cpu_context : base_context<cpu_context>
     return f;
   }
 
-  
+
 
 };
 

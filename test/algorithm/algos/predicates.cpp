@@ -50,6 +50,27 @@ TTS_CASE("Check for kwk::all_of(in, func) 2D")
   TTS_EQUAL(count, d.numel());
 };
 
+TTS_CASE("Check for kwk::all_of(in, func) 2D - with CPU context")
+{
+  int data[2*3];
+  bool vdata = true;
+
+  fill_data(data, kwk::of_size(2,3), false);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  int count = 0;
+  auto res = kwk::all_of(kwk::cpu, d, [&](auto e)
+  {
+    count++;
+    return (e == 0);
+  });
+
+  TTS_EQUAL(res,   vdata);
+  TTS_EQUAL(count, d.numel());
+};
+
+
 TTS_CASE("Check for kwk::all_of(in, func) 3D")
 {
   int data[2*3*4];
@@ -143,6 +164,26 @@ TTS_CASE("Check for kwk::any_of(in, func) 2D")
 
   int count = 0;
   auto res = kwk::any_of(d, [&](auto e)
+  {
+    count++;
+    return (e == 12);
+  });
+
+  TTS_EQUAL(res,   vdata);
+  TTS_EQUAL(count, d.numel());
+};
+
+TTS_CASE("Check for kwk::any_of(in, func) 2D - with CPU context")
+{
+  int data[2*3];
+  bool vdata = true;
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  int count = 0;
+  auto res = kwk::any_of(kwk::cpu, d, [&](auto e)
   {
     count++;
     return (e == 12);
@@ -253,6 +294,27 @@ TTS_CASE("Check for kwk::none_of(in, func) 2D")
   TTS_EQUAL(count, d.numel());
 };
 
+TTS_CASE("Check for kwk::none_of(in, func) 2D - with CPU context")
+{
+  int data[2*3];
+  bool vdata = true;
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  int count = 0;
+  auto res = kwk::none_of(kwk::cpu, d, [&](auto e)
+  {
+    count++;
+    return (e == 23);
+  });
+
+  TTS_EQUAL(res,   vdata);
+  TTS_EQUAL(count, d.numel());
+};
+
+
 TTS_CASE("Check for kwk::none_of(in, func) 3D")
 {
   int data[2*3*4];
@@ -340,6 +402,19 @@ TTS_CASE("Check for kwk::count(in, value) 2D")
   TTS_EQUAL(res,   1UL);
 };
 
+TTS_CASE("Check for kwk::count(in, value) 2D  - with CPU context")
+{
+  int data[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  auto res = kwk::count(kwk::cpu, d, 12);
+
+  TTS_EQUAL(res,   1UL);
+};
+
 TTS_CASE("Check for kwk::count(in, value) 3D")
 {
   int data[2*3*4];
@@ -414,6 +489,25 @@ TTS_CASE("Check for kwk::count_if(in, func) 3D")
 
   int count = 0;
   auto res = kwk::count_if(d, [&](auto e)
+  {
+    count++;
+    return (e >= 120);
+  });
+
+  TTS_EQUAL(res,   4UL);
+  TTS_EQUAL(count, d.numel());
+};
+
+TTS_CASE("Check for kwk::count_if(in, func) 3D - with CPU context")
+{
+  int data[2*3*4];
+
+  fill_data(data, kwk::of_size(2,3,4), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+
+  int count = 0;
+  auto res = kwk::count_if(kwk::cpu, d, [&](auto e)
   {
     count++;
     return (e >= 120);
