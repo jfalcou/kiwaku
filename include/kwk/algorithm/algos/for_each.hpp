@@ -21,6 +21,16 @@ namespace kwk
   //! @{
   //================================================================================================
 
+  template<typename Context, typename Func, auto... S>
+  constexpr auto for_each(Context ctx, Func f, shape<S...> const& shp)
+  {
+    return ctx.for_each(f, shp);
+    // return [&]<std::size_t... N>(std::index_sequence<N...> const&)
+    // {
+    //   return __::for_each(f, shp );
+    // }( std::make_index_sequence<shape<S...>::static_order>{} );
+  }
+
   //================================================================================================
   //! @brief Simple walkthrough over all possible indexes
   //!
@@ -42,11 +52,14 @@ namespace kwk
   template<typename Func, auto... S>
   constexpr auto for_each(Func f, shape<S...> const& shp)
   {
-    return [&]<std::size_t... N>(std::index_sequence<N...> const&)
-    {
-      return __::for_each(f, shp );
-    }( std::make_index_sequence<shape<S...>::static_order>{} );
+    kwk::for_each(cpu, f, shp);
+    // return [&]<std::size_t... N>(std::index_sequence<N...> const&)
+    // {
+    //   return __::for_each(f, shp );
+    // }( std::make_index_sequence<shape<S...>::static_order>{} );
   }
+
+  
 
 
   template<typename Context, typename Func, concepts::container C0, concepts::container... Cs>

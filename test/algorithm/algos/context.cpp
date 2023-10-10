@@ -34,6 +34,9 @@ namespace test
     using messaging_context::messaging_context;
     template<typename Func, auto... S>
     constexpr auto for_each(Func, kwk::shape<S...> const&) const { return set_message("for_each used!"); }
+
+    template<typename Func, kwk::concepts::container C0, kwk::concepts::container... Cs>
+    constexpr auto for_each(Func, C0&&, Cs&&...) { return set_message("for_each used!"); } // return f;
   };
 
   struct context_count : kwk::base_context<context_count>, messaging_context
@@ -74,6 +77,28 @@ namespace test
     template<typename Func, kwk::concepts::container In>
     constexpr auto count_if(In const&, Func) const { set_message("count_if used!"); return 0; }
   };
+
+  struct context_copy : kwk::base_context<context_copy>, messaging_context
+  {
+    using messaging_context::messaging_context;
+    template<kwk::concepts::container Out, kwk::concepts::container In>
+    constexpr auto copy(Out&, In&&) const { set_message("copy used!"); return 0; }
+  };
+
+  struct context_copy_if : kwk::base_context<context_copy_if>, messaging_context
+  {
+    using messaging_context::messaging_context;
+    template<typename Func, kwk::concepts::container Out, kwk::concepts::container In>
+    constexpr auto copy_if(Func, Out&, In&&) const { set_message("copy_if used!"); return 0; }
+  };
+
+  struct context_transform : kwk::base_context<context_transform>, messaging_context
+  {
+    using messaging_context::messaging_context;
+    template< typename Func, kwk::concepts::container Out
+            , kwk::concepts::container C0, kwk::concepts::container... Cs>
+    constexpr auto transform(Func, Out&, C0&&, Cs&&...) const { set_message("transform used!"); return 0; }
+  };
 }
 
 // TODO: continuer à utiliser les chaines de caractères
@@ -91,9 +116,31 @@ TTS_CASE("Check for function overload")
   for (std::size_t i = 0; i < d0 * d1; ++i) { data[i] = 0; }
   data[1] = 6;
   data[3] = 6;
+  int data2[d0 * d1];
 
-  auto v = kwk::view{kwk::source = data, kwk::of_size(d0, d1)};
+  auto v  = kwk::view{kwk::source = data, kwk::of_size(d0, d1)};
+  auto v2 = kwk::view{kwk::source = data2, kwk::of_size(d0, d1)};
 
+  // FOR_EACH (for_each)
+  {
+    test::context_for_each c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    c1.for_each( [](auto e) {}, v);
+    TTS_EQUAL(c1.get_message(),   std::string{"for_each used!"});
+  }
+
+  // TRANSFORM (transform -> for_each)
+  {
+    test::context_transform c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    c1.transform( [](auto e) { return 1.0/(1.0+e); }, v, v2);
+    TTS_EQUAL(c1.get_message(),   std::string{"transform used!"});
+
+    test::context_for_each c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    c2.transform( [](auto e) { return 1.0/(1.0+e); }, v, v2);
+    TTS_EQUAL(c2.get_message(),   std::string{"for_each used!"});
+  }
 
   // COUNT (count -> reduce -> for_each)
   {
@@ -174,18 +221,49 @@ TTS_CASE("Check for function overload")
   {
     test::context_count_if c1;
     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-    c1.count_if(v, 6);
+    c1.count_if(v, v);
     TTS_EQUAL(c1.get_message(),   std::string{"count_if used!"});
 
     test::context_reduce c2;
     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-    c2.count_if(v, 6);
+    c2.count_if(v, v);
     TTS_EQUAL(c2.get_message(),   std::string{"reduce used!"});
 
     test::context_for_each c3;
     TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
-    c3.count_if(v, 6);
+    c3.count_if(v, v);
     TTS_EQUAL(c3.get_message(),   std::string{"for_each used!"});
+  }
+
+  // COPY (copy -> transform -> for_each)
+  {
+    test::context_copy c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    c1.copy(v, v2);
+    TTS_EQUAL(c1.get_message(),   std::string{"copy used!"});
+
+    test::context_transform c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    c2.copy(v, v2);
+    TTS_EQUAL(c2.get_message(),   std::string{"transform used!"});
+
+    test::context_for_each c3;
+    TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
+    c3.copy(v, v2);
+    TTS_EQUAL(c3.get_message(),   std::string{"for_each used!"});
+  }
+
+  // COPY_IF (copy_if -> for_each)
+  {
+    test::context_copy_if c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    c1.copy_if([](auto) {return true;}, v, v2);
+    TTS_EQUAL(c1.get_message(),   std::string{"copy_if used!"});
+
+    test::context_for_each c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    c2.copy_if([](auto) {return true;}, v, v2);
+    TTS_EQUAL(c2.get_message(),   std::string{"for_each used!"});
   }
 
 
