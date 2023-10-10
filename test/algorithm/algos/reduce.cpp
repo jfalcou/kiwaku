@@ -38,6 +38,20 @@ TTS_CASE("Check for kwk::reduce(in) 2D")
   TTS_EQUAL(res, vdata);
 };
 
+TTS_CASE("Check for kwk::reduce(in) 2D - with CPU context")
+{
+  int data[2*3];
+  int vdata = 36;
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  auto res = kwk::reduce(kwk::cpu, d);
+
+  TTS_EQUAL(res, vdata);
+};
+
 TTS_CASE("Check for kwk::reduce(in) 3D")
 {
   int data[2*3*4];
@@ -98,6 +112,27 @@ TTS_CASE("Check for kwk::reduce(in, func) 2D")
 
   int count = 0;
   auto res = reduce(d,
+  [&count](auto a, auto e)
+  { 
+    count++;
+    return (a+10*e);
+  });
+
+  TTS_EQUAL(res,   vdata);
+  TTS_EQUAL(count,   d.numel());
+};
+
+TTS_CASE("Check for kwk::reduce(in, func) 2D - with CPU context")
+{
+  int data[2*3];
+  int vdata = 360;
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  int count = 0;
+  auto res = reduce(kwk::cpu, d,
   [&count](auto a, auto e)
   { 
     count++;
@@ -174,6 +209,30 @@ TTS_CASE("Check for float kwk::reduce(in, func)")
   TTS_EQUAL(count,   d.numel());
 };
 
+TTS_CASE("Check for float kwk::reduce(in, func) - with CPU context")
+{
+  float data[2*2]      = { 1.f,2.2f
+                          , 3.3f,4.4f
+                          };
+
+  float vdata        =  10.9f;
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,2)};
+
+  
+  int count = 0;
+  auto res = reduce(kwk::cpu, d,
+  [&count](auto a, auto e)
+  { 
+    count++;
+    return (a+e);
+  });
+
+  TTS_EQUAL(res,   vdata);
+
+  TTS_EQUAL(count,   d.numel());
+};
+
 TTS_CASE("Check for kwk::reduce(in, func, init) 1D")
 {
   int data[2];
@@ -227,6 +286,27 @@ TTS_CASE("Check for kwk::reduce(in, func, init) 3D")
 
   int count = 0;
   auto res = reduce(d,
+  [&count](auto a, auto e)
+  { 
+    count++;
+    return (a+e);
+  }, 1000);
+
+  TTS_EQUAL(res,   vdata);
+  TTS_EQUAL(count,   d.numel());
+};
+
+TTS_CASE("Check for kwk::reduce(in, func, init) 3D - with CPU context")
+{
+  int data[2*3*4];
+  int vdata = 2476;
+
+  fill_data(data, kwk::of_size(2,3,4), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+
+  int count = 0;
+  auto res = reduce(kwk::cpu, d,
   [&count](auto a, auto e)
   { 
     count++;

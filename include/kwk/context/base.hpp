@@ -84,6 +84,12 @@ struct base_context
     return self().reduce(in, [f](auto a, auto e) {  return a + (f(e) ? 1 : 0); }, std::size_t{} );
   }
 
+  template<typename Func, concepts::container Out, concepts::container In>
+  constexpr auto copy_if(Func f, Out& out, In&& in) const
+  {
+    self().for_each([&](auto... is) { if(f(in(is...))) out(is...) = KWK_FWD(in)(is...); }, out.shape() );
+  }
+
 
 
 

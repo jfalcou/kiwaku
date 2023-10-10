@@ -42,6 +42,22 @@ TTS_CASE("Check for kwk::copy(out, in) 2D")
   TTS_ALL_EQUAL(data, vdata);
 };
 
+TTS_CASE("Check for kwk::copy(out, in) 2D - with CPU context")
+{
+  int data[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  int vdata[2*3];
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2,3)};
+  
+  kwk::copy(kwk::cpu, v, d);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
 TTS_CASE("Check for kwk::copy(out, in) 3D")
 {
   int data[2*3*4];
@@ -90,6 +106,22 @@ TTS_CASE("Check for double kwk::copy(out, in) 2D")
   TTS_ALL_EQUAL(data, vdata);
 };
 
+TTS_CASE("Check for double kwk::copy(out, in) 2D - with CPU context")
+{
+  double data[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  double vdata[2*3];
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2,3)};
+  
+  kwk::copy(kwk::cpu, v, d);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
 TTS_CASE("Check for kwk::copy_if(func, out, in) 1D")
 {
   int data[2];
@@ -131,6 +163,34 @@ TTS_CASE("Check for kwk::copy_if(func, out, in) 2D")
   
   int count = 0;
   kwk::copy_if([&](auto e)
+  {
+    count++;
+    return (e==10);
+  }
+  ,r, d);
+
+  TTS_ALL_EQUAL(rdata, vdata);
+  TTS_EQUAL(count, d.numel());
+};
+
+TTS_CASE("Check for kwk::copy_if(func, out, in) 2D - with CPU context")
+{
+  int data[2*3];
+  fill_data(data, kwk::of_size(2,3), true);
+
+  int rdata[2*3];
+  fill_data(rdata, kwk::of_size(2,3), false);
+
+  int vdata[2*3];
+  fill_data(vdata, kwk::of_size(2,3), false);
+
+  vdata[1*3+0] = 10;
+  
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto r = kwk::view{kwk::source = rdata, kwk::of_size(2,3)};
+  
+  int count = 0;
+  kwk::copy_if(kwk::cpu, [&](auto e)
   {
     count++;
     return (e==10);
