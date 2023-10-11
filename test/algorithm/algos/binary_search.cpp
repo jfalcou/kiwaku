@@ -45,6 +45,24 @@ TTS_CASE("Check for kwk::lower_bound(In, value) 2D")
     TTS_EXPECT(res == std::nullopt);
 };
 
+
+TTS_CASE("Check for kwk::lower_bound(In, value) 2D - with CPU context")
+{
+  int data[2*3];
+  int vdata[] = {1,1};
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  auto res = kwk::lower_bound(kwk::cpu, d, 21);
+
+  if(res)
+    TTS_ALL_EQUAL(*res, vdata);
+  else
+    TTS_EXPECT(res == std::nullopt);
+};
+
 TTS_CASE("Check for kwk::lower_bound(In, value) 3D")
 {
   int data[2*3*4];
@@ -130,6 +148,26 @@ TTS_CASE("Check for kwk::lower_bound(In, value, func) 3D")
   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
 
   auto res = kwk::lower_bound(d, 101, [](auto e, auto s)
+  {
+    return e < (s-1);
+  });
+
+  if(res)
+    TTS_ALL_EQUAL(*res, vdata);
+  else
+    TTS_EXPECT(res == std::nullopt);
+};
+
+TTS_CASE("Check for kwk::lower_bound(In, value, func) 3D - with CPU context")
+{
+  int data[2*3*4];
+  int vdata[] = {1,0,0};
+
+  fill_data(data, kwk::of_size(2,3,4), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+
+  auto res = kwk::lower_bound(kwk::cpu, d, 101, [](auto e, auto s)
   {
     return e < (s-1);
   });
@@ -232,6 +270,23 @@ TTS_CASE("Check for kwk::upper_bound(In, value) 4D")
     TTS_EXPECT(res == std::nullopt);
 };
 
+TTS_CASE("Check for kwk::upper_bound(In, value) 4D - with CPU context")
+{
+  int data[2*3*4*5];
+  int vdata[] = {1,0,0,0};
+
+  fill_data(data, kwk::of_size(2,3,4,5), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
+
+  auto res = kwk::upper_bound(kwk::cpu, d, 234);
+
+  if(res)
+    TTS_ALL_EQUAL(*res, vdata);
+  else
+    TTS_EXPECT(res == std::nullopt);
+};
+
 TTS_CASE("Check for kwk::upper_bound(In, value, func) 1D")
 {
   int data[2];
@@ -265,6 +320,29 @@ TTS_CASE("Check for kwk::upper_bound(In, value, func) 2D")
   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
 
   auto res = kwk::upper_bound(d, 9, [](auto e, auto s)
+  {
+    return e > (s+1);
+  });
+
+  if(res)
+    TTS_ALL_EQUAL(*res, vdata);
+  else
+    TTS_EXPECT(res == std::nullopt);
+};
+
+
+TTS_CASE("Check for kwk::upper_bound(In, value, func) 2D - with CPU context")
+{
+  int data[2*3];
+  int vdata[] = {1,1};
+
+  const std::vector<int> rdata {0, 1, 2, 10, 11, 12};
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  auto res = kwk::upper_bound(kwk::cpu, d, 9, [](auto e, auto s)
   {
     return e > (s+1);
   });
@@ -331,6 +409,29 @@ TTS_CASE("Check for kwk::binary_search(In, value) 1D")
   size_t i = 0;
   for (auto needle : needles)
     if(kwk::binary_search(d, needle))
+      res[i++] = true;
+    else
+      res[i++] = false;
+
+  TTS_ALL_EQUAL(res, vres);
+};
+
+
+TTS_CASE("Check for kwk::binary_search(In, value) 1D - with CPU context")
+{
+  int data[2];
+  int needles[] = {0,1,2};
+
+  std::array<bool,3> res;
+  std::array<bool,3> vres {true, true, false};
+
+  fill_data(data, kwk::of_size(2), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+
+  size_t i = 0;
+  for (auto needle : needles)
+    if(kwk::binary_search(kwk::cpu, d, needle))
       res[i++] = true;
     else
       res[i++] = false;
@@ -443,6 +544,29 @@ TTS_CASE("Check for kwk::binary_search(In, value, func) 2D")
   size_t i = 0;
   for (auto needle : needles)
     if(kwk::binary_search(d, needle, [](auto e, auto s){return e < s;}))
+      res[i++] = true;
+    else
+      res[i++] = false;
+
+  TTS_ALL_EQUAL(res, vres);
+};
+
+
+TTS_CASE("Check for kwk::binary_search(In, value, func) 2D - with CPU context")
+{
+  int data[2*3];
+  int needles[] = {0,11,21};
+
+  std::array<bool,3> res;
+  std::array<bool,3> vres {true, true, false};
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  size_t i = 0;
+  for (auto needle : needles)
+    if(kwk::binary_search(kwk::cpu, d, needle, [](auto e, auto s){return e < s;}))
       res[i++] = true;
     else
       res[i++] = false;

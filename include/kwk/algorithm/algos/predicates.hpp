@@ -48,7 +48,7 @@ namespace kwk
   }
 
   template<typename Context, typename Func, concepts::container In>
-  constexpr auto none_of(Context ctx, In const& in, Func f)
+  constexpr auto none_of(Context const& ctx, In const& in, Func f)
   {
     return ctx.none_of(in, f);
     // return !any_of(in, f);

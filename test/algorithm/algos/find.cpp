@@ -38,6 +38,20 @@ TTS_CASE("Check for kwk::find(In, value) 2D")
   TTS_EQUAL(res, vdata);
 };
 
+TTS_CASE("Check for kwk::find(In, value) 2D - with CPU context")
+{
+  int data[2*3];
+  auto vdata = kumi::iota<2>(1);
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  auto res = kwk::find(kwk::cpu, d, 12);
+
+  TTS_EQUAL(res, vdata);
+};
+
 TTS_CASE("Check for kwk::find(In, value) 3D")
 {
   int data[2*3*4];
@@ -93,6 +107,22 @@ TTS_CASE("Check for kwk::find_if(In, func) 2D")
 
   int count = 0;
   auto res = kwk::find_if(d, [&](auto e){ count++; return (e==12); });
+
+  TTS_EQUAL(res, vdata);
+  TTS_EQUAL(count, d.numel());
+};
+
+TTS_CASE("Check for kwk::find_if(In, func) 2D - with CPU context")
+{
+  int data[2*3];
+  auto vdata = kumi::iota<2>(1);
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  int count = 0;
+  auto res = kwk::find_if(kwk::cpu, d, [&](auto e){ count++; return (e==12); });
 
   TTS_EQUAL(res, vdata);
   TTS_EQUAL(count, d.numel());
@@ -163,6 +193,22 @@ TTS_CASE("Check for kwk::find_if_not(In, func) 2D")
   TTS_EQUAL(count, d.numel());
 };
 
+TTS_CASE("Check for kwk::find_if_not(In, func) 2D - with CPU context")
+{
+  int data[2*3];
+  auto vdata = kumi::iota<2>(1);
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  int count = 0;
+  auto res = kwk::find_if_not(kwk::cpu, d, [&](auto e){ count++; return (e<12); });
+
+  TTS_EQUAL(res, vdata);
+  TTS_EQUAL(count, d.numel());
+};
+
 TTS_CASE("Check for kwk::find_if_not(In, func) 3D")
 {
   int data[2*3*4];
@@ -228,6 +274,22 @@ TTS_CASE("Check for kwk::find_first_of(In, func) 2D")
   TTS_EQUAL(res, vdata);
 };
 
+TTS_CASE("Check for kwk::find_first_of(In, func) 2D - with CPU context")
+{
+  int data[2*3];
+  int value[] = {11, 12};
+  auto vdata = kumi::generate<2, int>(1);
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto v = kwk::view{kwk::source = value};
+
+  auto res = kwk::find_first_of(kwk::cpu, d, v);
+
+  TTS_EQUAL(res, vdata);
+};
+
 TTS_CASE("Check for kwk::find_first_of(In, func) 3D")
 {
   int data[2*3*4];
@@ -275,6 +337,8 @@ TTS_CASE("Check for kwk::find_last(In, value) 1D")
 
   TTS_EQUAL(res, vdata);
 };
+
+// TODO : intégrer le contexte lorsque ça sera possible
 
 // Wait for merge V2
 // TTS_CASE("Check for kwk::find_last(In, value) 2D")
