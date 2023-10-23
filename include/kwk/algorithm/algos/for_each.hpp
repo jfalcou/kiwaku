@@ -9,12 +9,12 @@
 
 #include <kwk/concepts/container.hpp>
 #include <kwk/context/context.hpp>
-// #include <kwk/context/cpu/context.hpp>
 #include <kwk/detail/algorithm/for_each.hpp>
 #include <kwk/detail/abi.hpp>
 #include <cstddef>
 #include <utility>
 
+// #include <kwk/context/cpu/context.hpp>
 namespace kwk
 {
   //================================================================================================
@@ -23,7 +23,7 @@ namespace kwk
   //================================================================================================
 
   template<typename Context, typename Func, auto... S>
-  constexpr auto for_each(Context ctx, Func f, shape<S...> const& shp)
+  constexpr auto for_each(Context& ctx, Func f, shape<S...> const& shp)
   {
     return ctx.for_each(f, shp);
     // return [&]<std::size_t... N>(std::index_sequence<N...> const&)
@@ -54,17 +54,13 @@ namespace kwk
   constexpr auto for_each(Func f, shape<S...> const& shp)
   {
     kwk::for_each(cpu, f, shp);
-    // return [&]<std::size_t... N>(std::index_sequence<N...> const&)
-    // {
-    //   return __::for_each(f, shp );
-    // }( std::make_index_sequence<shape<S...>::static_order>{} );
   }
 
   
 
 
   template<typename Context, typename Func, concepts::container C0, concepts::container... Cs>
-  constexpr auto for_each(Context const& ctx, Func f, C0&& c0, Cs&&... cs)
+  constexpr auto for_each(Context& ctx, Func f, C0&& c0, Cs&&... cs)
   {
     ctx.for_each([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
     return f;
@@ -113,13 +109,20 @@ namespace kwk
   //! @groupheader{Example}
   //! @include docs/algorithms/for_each_index.cpp
   //================================================================================================
+  template<typename Context, typename Func, concepts::container Container>
+  constexpr auto for_each_index(Context& ctx, Func f, Container&& c)
+  {
+    for_each( ctx
+            , [&](auto... is) { return f(KWK_FWD(c)(is...), is...); }
+            , c.shape()
+            );
+    return f;
+  }
+  
   template<typename Func, concepts::container Container>
   constexpr auto for_each_index(Func f, Container&& c)
   {
-    kwk::for_each ( [&](auto... is) { return f(KWK_FWD(c)(is...), is...); }
-                  , c.shape()
-                  );
-    return f;
+    return for_each_index(cpu, f, c);
   }
 
 

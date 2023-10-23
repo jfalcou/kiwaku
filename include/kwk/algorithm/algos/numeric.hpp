@@ -20,105 +20,232 @@ partial_sum -> à voir si duplicata inclusive scan
 adjacent_difference -> à voir à part
 */
 
+// TODO: remettre le namespace kwk:: devant les appels de fonctions
+
 namespace kwk
 {
+  template<typename Context, typename Func_R, typename Func_T, concepts::container In>
+  constexpr auto transform_reduce(Context& ctx, In const& in1, In const& in2, auto init, Func_R R, Func_T T)
+  {
+    // return error for in1.shape() != in2.shape()
+    for_each(ctx, [&](auto... is) { init = R(init, T(in1(is...), in2(is...))); }, in1.shape() );
+    return init;
+  }
   template<typename Func_R, typename Func_T, concepts::container In>
   constexpr auto transform_reduce(In const& in1, In const& in2, auto init, Func_R R, Func_T T)
   {
-    // return error for in1.shape() != in2.shape()
-    kwk::for_each([&](auto... is) { init = R(init, T(in1(is...), in2(is...))); }, in1.shape() );
-    return init;
+    return transform_reduce(cpu, in1, in2, init, R, T);
   }
 
+
+
   // voir pour avoir version func_T et init sans func_R ?
+  template<typename Context, typename Func_T, concepts::container In>
+  constexpr auto transform_reduce(Context& ctx, In const& in1, In const& in2, auto init, Func_T T)
+  {
+    // return error for in1.shape() != in2.shape()
+    return transform_reduce(ctx, in1, in2, init, [](auto r, auto d){ return (r+d); },  T);
+  }
   template<typename Func_T, concepts::container In>
   constexpr auto transform_reduce(In const& in1, In const& in2, auto init, Func_T T)
   {
-    // return error for in1.shape() != in2.shape()
-    return kwk::transform_reduce(in1, in2, init, [](auto r, auto d){ return (r+d); },  T);
+    return transform_reduce(cpu, in1, in2, init, T);
   }
 
-  template<typename Func_T, concepts::container In>
+
+
+
+  template<typename Context, concepts::container In>
+  constexpr auto transform_reduce(Context& ctx, In const& in1, In const& in2, auto init)
+  {
+    // return error for in1.shape() != in2.shape()
+    return transform_reduce(ctx, in1, in2, init, [](auto i1, auto i2){ return (i1+i2); });
+  }
+  template<concepts::container In>
   constexpr auto transform_reduce(In const& in1, In const& in2, auto init)
   {
-    // return error for in1.shape() != in2.shape()
-    return kwk::transform_reduce(in1, in2, init, [](auto i1, auto i2){ return (i1+i2); });
+    return transform_reduce(cpu, in1, in2, init);
   }
 
-  template<typename Func_T, concepts::container In>
-  constexpr auto transform_reduce(In const& in1, In const& in2)
+
+
+
+
+  template<typename Context, concepts::container In>
+  constexpr auto transform_reduce(Context& ctx, In const& in1, In const& in2)
   {
     // return error for in1.shape() != in2.shape()
-    return kwk::transform_reduce(in1, in2, typename In::value_type{});
+    return transform_reduce(ctx, in1, in2, typename In::value_type{});
+  }
+  template<concepts::container In>
+  constexpr auto transform_reduce(In const& in1, In const& in2)
+  {
+    return transform_reduce(cpu, in1, in2);
   }
 
-  template<typename Func_1, typename Func_2, concepts::container In>
-  constexpr auto inner_product(In const& in1, In const& in2, auto init, Func_1 f1, Func_2 f2)
+
+
+
+
+
+  template<typename Context, typename Func_1, typename Func_2, concepts::container In>
+  constexpr auto inner_product(Context& ctx, In const& in1, In const& in2, auto init, Func_1 f1, Func_2 f2)
   {
     if(in1.shape() != in2.shape()) return -1;
     //pareil que for each element in in1, in2 ?
-    kwk::for_each([&](auto... is) { init = f1(init, f2(in1(is...), in2(is...))); }, in1.shape() );
+    for_each(ctx, [&](auto... is) { init = f1(init, f2(in1(is...), in2(is...))); }, in1.shape() );
     return init;
   }
-
-  template<concepts::container In>
-  constexpr auto inner_product(In const& in1, In const& in2, auto init)
+  template<typename Func_1, typename Func_2, concepts::container In>
+  constexpr auto inner_product(In const& in1, In const& in2, auto init, Func_1 f1, Func_2 f2)
   {
-    return kwk::inner_product(in1, in2, init,
+    return inner_product(cpu, in1, in2, init, f1, f2);
+  }
+
+
+
+
+
+
+  template<typename Context, concepts::container In>
+  constexpr auto inner_product(Context& ctx, In const& in1, In const& in2, auto init)
+  {
+    return inner_product(ctx, in1, in2, init,
           [](auto r, auto d){ return (r+d); },
           [](auto i1, auto i2){ return (i1*i2); });
   }
+  template<concepts::container In>
+  constexpr auto inner_product(In const& in1, In const& in2, auto init)
+  {
+    return inner_product(cpu, in1, in2, init);
+  }
 
+
+
+
+
+  template<typename Context, concepts::container In>
+  constexpr auto inner_product(Context& ctx, In const& in1, In const& in2)
+  {
+    return inner_product(ctx, in1, in2, typename In::value_type{});
+  }
   template<concepts::container In>
   constexpr auto inner_product(In const& in1, In const& in2)
   {
-    return kwk::inner_product(in1, in2, typename In::value_type{});
+    return inner_product(cpu, in1, in2);
   }
 
+
+
+
+
+
+  template<typename Context, typename Func1, typename Func2, concepts::container In, concepts::container Out >
+  constexpr auto transform_exclusive_scan(Context& ctx, const In in, Out&  out, auto init, Func1 f1, Func2 f2)
+  {
+    auto sum = init;
+    for_each(ctx, [&](auto... is)
+    {
+      out(is...) = sum;
+      sum = f1(sum, f2(in(is...)));
+    }, in.shape() );
+  }
   template< typename Func1, typename Func2, concepts::container In, concepts::container Out >
   constexpr auto transform_exclusive_scan(const In in, Out&  out, auto init, Func1 f1, Func2 f2)
   {
-    auto sum = init;
-    kwk::for_each([&](auto... is)
-    {
-      out(is...) = sum;
-      sum = f1(sum, f2(in(is...)));
-    }, in.shape() );
+    transform_exclusive_scan(cpu, in, out, init, f1, f2);
   }
 
+
+
+
+
+
+  template<typename Context, typename Func, concepts::container In, concepts::container Out >
+  constexpr auto exclusive_scan(Context& ctx, const In in, Out&  out, auto init, Func f)
+  {
+    transform_exclusive_scan(ctx, in, out, init, f, [](auto e){return e;});
+  }
   template< typename Func, concepts::container In, concepts::container Out >
   constexpr auto exclusive_scan(const In in, Out&  out, auto init, Func f)
   {
-    kwk::transform_exclusive_scan(in, out, init, f, [](auto e){return e;});
+    exclusive_scan(cpu, in, out, init, f);
   }
 
+
+
+
+
+
+  template<typename Context, concepts::container In, concepts::container Out >
+  constexpr auto exclusive_scan(Context& ctx, const In in, Out& out, auto init)
+  {
+    exclusive_scan(ctx, in, out, init, [](auto e, auto i){return (e + i);});
+  }
   template< concepts::container In, concepts::container Out >
   constexpr auto exclusive_scan(const In in, Out&  out, auto init)
   {
-    kwk::exclusive_scan(in, out, init, [](auto e, auto i){return (e + i);});
+    exclusive_scan(cpu, in, out, init);
   }
 
-  // a corriger
-  template< typename Func1, typename Func2, concepts::container In, concepts::container Out >
-  constexpr auto transform_inclusive_scan(const In in, Out&  out, auto init, Func1 f1, Func2 f2)
+
+
+
+
+
+
+  // (Sasa?) a corriger
+  template<typename Context, typename Func1, typename Func2, concepts::container In, concepts::container Out >
+  constexpr auto transform_inclusive_scan(Context& ctx, const In in, Out& out, auto init, Func1 f1, Func2 f2)
   {
     auto sum = init;
-    kwk::for_each([&](auto... is)
+    for_each(ctx, [&](auto... is)
     {
       sum = f1(sum, f2(in(is...)));
       out(is...) = sum;
     }, in.shape() );
   }
+  template< typename Func1, typename Func2, concepts::container In, concepts::container Out >
+  constexpr auto transform_inclusive_scan(const In in, Out& out, auto init, Func1 f1, Func2 f2)
+  {
+    transform_inclusive_scan(cpu, in, out, init, f1, f2);
+  }
 
+
+
+
+
+
+
+  template<typename Context, typename Func, concepts::container In, concepts::container Out >
+  constexpr auto inclusive_scan(Context& ctx, const In in, Out& out, auto init, Func f)
+  {
+    transform_inclusive_scan(ctx, in, out, init, f, [](auto e){return e;});
+  }
   template< typename Func, concepts::container In, concepts::container Out >
   constexpr auto inclusive_scan(const In in, Out&  out, auto init, Func f)
   {
-    kwk::transform_inclusive_scan(in, out, init, f, [](auto e){return e;});
+    inclusive_scan(cpu, in, out, init, f);
   }
 
+
+
+
+
+
+  template<typename Context, concepts::container In, concepts::container Out >
+  constexpr auto inclusive_scan(Context& ctx, const In in, Out&  out, auto init)
+  {
+    inclusive_scan(ctx, in, out, init, [](auto e, auto i){return (e + i);});
+  }
   template< concepts::container In, concepts::container Out >
   constexpr auto inclusive_scan(const In in, Out&  out, auto init)
   {
-    kwk::inclusive_scan(in, out, init, [](auto e, auto i){return (e + i);});
+    inclusive_scan(cpu, in, out, init);
   }
+
+
+
+
+
 }

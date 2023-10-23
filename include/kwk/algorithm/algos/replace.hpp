@@ -15,15 +15,25 @@
 
 namespace kwk
 {
+  template<typename Context, concepts::container Out>
+  constexpr auto replace(Context& ctx, Out& out, auto old_value, auto new_value)
+  {
+    for_each(ctx, [&](auto... is) { if(out(is...) == old_value) KWK_FWD(out)(is...) = new_value; }, out.shape() );
+  }
   template<concepts::container Out>
   constexpr auto replace(Out& out, auto old_value, auto new_value)
   {
-    kwk::for_each([&](auto... is) { if(out(is...) == old_value) KWK_FWD(out)(is...) = new_value; }, out.shape() );
+    replace(cpu, out, old_value, new_value);
   }
 
+  template<typename Context, typename Func, concepts::container Out>
+  constexpr auto replace_if(Context& ctx, Out& out, Func f, auto new_value)
+  {
+    for_each(ctx, [&](auto... is) { if(f(out(is...))) KWK_FWD(out)(is...) = new_value; }, out.shape() );
+  }
   template<typename Func, concepts::container Out>
   constexpr auto replace_if(Out& out, Func f, auto new_value)
   {
-    kwk::for_each([&](auto... is) { if(f(out(is...))) KWK_FWD(out)(is...) = new_value; }, out.shape() );
+    replace_if(cpu, out, f, new_value);
   }
 }

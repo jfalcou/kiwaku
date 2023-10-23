@@ -22,40 +22,40 @@ min, max, minmax -> valeurs
 
 namespace kwk
 {
-  template<typename Context, typename Func, concepts::container In>
-  constexpr auto reduce(Context const& ctx, In const& in, Func f, auto init)
-  {
-    // kwk::for_each([&](auto... is) { init = f(init, in(is...)); }, in.shape() );
-    return ctx.reduce(in, f, init);
-  }
 
+  // transform and reduce are members of base_context
+  template<typename Context, typename Func, concepts::container In>
+  constexpr auto reduce(Context& ctx, In const& in, Func f, auto init)
+  {
+    return ctx.reduce(in, f, init);
+    // for_each(ctx, [&](auto... is) { init = f(init, in(is...)); }, in.shape() );
+    // return init;
+  }
   template<typename Func, concepts::container In>
   constexpr auto reduce(In const& in, Func f, auto init)
   {
-    return kwk::reduce(cpu, in, f, init);
+    return reduce(cpu, in, f, init);
   }
 
   template<typename Context, typename Func, concepts::container In>
-  constexpr auto reduce(Context const& ctx, In const& in, Func f)
+  constexpr auto reduce(Context& ctx, In const& in, Func f)
   {
-    return ctx.reduce(in, f, typename In::value_type{});
+    return reduce(ctx, in, f, typename In::value_type{});
   }
-  
   template<typename Func, concepts::container In>
   constexpr auto reduce(In const& in, Func f)
   {
-    return kwk::reduce(cpu, in, f);
+    return reduce(cpu, in, f);
   }
 
   template<typename Context, concepts::container In>
-  constexpr auto reduce(Context const& ctx, In const& in)
+  constexpr auto reduce(Context& ctx, In const& in)
   {
     return reduce(ctx, in, [](auto a, auto e) { return a+e; });
   }
-
   template<concepts::container In>
   constexpr auto reduce(In const& in)
   {
-    return kwk::reduce(cpu, in);
+    return reduce(cpu, in);
   }
 }
