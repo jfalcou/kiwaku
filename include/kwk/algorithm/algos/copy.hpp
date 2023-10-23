@@ -27,3 +27,4 @@ namespace kwk
     kwk::for_each([&](auto... is) { if(f(in(is...))) out(is...) = KWK_FWD(in)(is...); }, out.shape() );
   }
 }
+// temporary test
