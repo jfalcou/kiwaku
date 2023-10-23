@@ -338,6 +338,23 @@ TTS_CASE("Check for kwk::find_last(In, value) 1D")
   TTS_EQUAL(res, vdata);
 };
 
+TTS_CASE("Check for kwk::find_last(In, value) 1D - with CPU context")
+{
+  int data[2];
+  auto vdata = kumi::iota<1>(1);
+
+  fill_data(data, kwk::of_size(2), false);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+
+  auto res = kwk::find_last(kwk::cpu, d, 0);
+
+  std::cout << res << std::endl;
+
+  TTS_EQUAL(res, vdata);
+};
+
+
 // TODO : intégrer le contexte lorsque ça sera possible
 
 // Wait for merge V2
@@ -373,6 +390,22 @@ TTS_CASE("Check for kwk::find_last(In, value) 3D")
   TTS_EQUAL(res, vdata);
 };
 
+TTS_CASE("Check for kwk::find_last(In, value) 3D - with CPU context")
+{
+  int data[2*3*4];
+  auto vdata = kumi::iota<3>(1);
+
+  fill_data(data, kwk::of_size(2,3,4), false);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+
+  auto res = kwk::find_last(kwk::cpu, d, 0);
+
+  std::cout << res << std::endl;
+
+  TTS_EQUAL(res, vdata);
+};
+
 TTS_CASE("Check for kwk::find_last(In, value) 4D")
 {
   int data[2*3*4*5];
@@ -399,6 +432,22 @@ TTS_CASE("Check for kwk::find_last_if(In, value) 1D")
   auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
 
   auto res = kwk::find_last_if(d, [](auto e){return e==0;});
+
+  std::cout << res << std::endl;
+
+  TTS_EQUAL(res, vdata);
+};
+
+TTS_CASE("Check for kwk::find_last_if(In, value) 1D - with CPU context")
+{
+  int data[2];
+  auto vdata = kumi::iota<1>(1);
+
+  fill_data(data, kwk::of_size(2), false);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+
+  auto res = kwk::find_last_if(kwk::cpu, d, [](auto e){return e==0;});
 
   std::cout << res << std::endl;
 
@@ -438,6 +487,22 @@ TTS_CASE("Check for kwk::find_last_if(In, value) 3D")
   TTS_EQUAL(res, vdata);
 };
 
+TTS_CASE("Check for kwk::find_last_if(In, value) 3D - with CPU context")
+{
+  int data[2*3*4];
+  auto vdata = kumi::iota<3>(1);
+
+  fill_data(data, kwk::of_size(2,3,4), false);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+
+  auto res = kwk::find_last_if(kwk::cpu, d, [](auto e){return e==0;});
+
+  std::cout << res << std::endl;
+
+  TTS_EQUAL(res, vdata);
+};
+
 TTS_CASE("Check for kwk::find_last_if(In, value) 4D")
 {
   int data[2*3*4*5];
@@ -464,6 +529,22 @@ TTS_CASE("Check for kwk::find_last_if_not(In, value) 1D")
   auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
 
   auto res = kwk::find_last_if_not(d, [](auto e){return e!=0;});
+
+  std::cout << res << std::endl;
+
+  TTS_EQUAL(res, vdata);
+};
+
+TTS_CASE("Check for kwk::find_last_if_not(In, value) 1D - with CPU context")
+{
+  int data[2];
+  auto vdata = kumi::iota<1>(1);
+
+  fill_data(data, kwk::of_size(2), false);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+
+  auto res = kwk::find_last_if_not(kwk::cpu, d, [](auto e){return e!=0;});
 
   std::cout << res << std::endl;
 
@@ -512,6 +593,22 @@ TTS_CASE("Check for kwk::find_last_if_not(In, value) 4D")
   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
 
   auto res = kwk::find_last_if_not(d, [](auto e){return e!=0;});
+
+  std::cout << res << std::endl;
+
+  TTS_EQUAL(res, vdata);
+};
+
+TTS_CASE("Check for kwk::find_last_if_not(In, value) 4D - with CPU context")
+{
+  int data[2*3*4*5];
+  auto vdata = kumi::iota<4>(1);
+
+  fill_data(data, kwk::of_size(2,3,4,5), false);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
+
+  auto res = kwk::find_last_if_not(kwk::cpu, d, [](auto e){return e!=0;});
 
   std::cout << res << std::endl;
 

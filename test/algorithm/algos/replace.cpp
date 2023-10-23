@@ -44,6 +44,23 @@ TTS_CASE("Check for kwk::replace(value, new_value) 2D")
   TTS_ALL_EQUAL(data, vdata);
 };
 
+TTS_CASE("Check for kwk::replace(value, new_value) 2D - with CPU context")
+{
+  int data[2*3];
+  int vdata[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+  fill_data(vdata, kwk::of_size(2,3), true);
+
+  vdata[1*3+2] = 120;
+
+  auto v = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  kwk::replace(kwk::cpu, v, 12, 120);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
 TTS_CASE("Check for kwk::replace(value, new_value) 3D")
 {
   int data[2*3*4];
@@ -122,6 +139,28 @@ TTS_CASE("Check for kwk::replace_if(func, new_value) 2D")
   TTS_EQUAL(count,   v.numel());
 };
 
+TTS_CASE("Check for kwk::replace_if(func, new_value) 2D - with CPU context")
+{
+  int data[2*3];
+  int vdata[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+  fill_data(vdata, kwk::of_size(2,3), false);
+
+  auto v = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  int count = 0;
+  kwk::replace_if(kwk::cpu, v, [&](auto e)
+  { 
+    count++;
+    return (e>=0);
+  } 
+  , 0);
+
+  TTS_ALL_EQUAL(data, vdata);
+  TTS_EQUAL(count,   v.numel());
+};
+
 TTS_CASE("Check for kwk::replace_if(func, new_value) 3D")
 {
   int data[2*3*4];
@@ -183,6 +222,33 @@ TTS_CASE("Check for kwk::replace_if(func, new_value) 4D smaller view")
 
   int count = 0;
   kwk::replace_if(v, [&](auto e)
+  { 
+    count++;
+    return (e>=0);
+  } 
+  , 0);
+
+  TTS_ALL_EQUAL(data, vdata);
+  TTS_EQUAL(count,   v.numel());
+};
+
+TTS_CASE("Check for kwk::replace_if(func, new_value) 4D smaller view - with CPU context")
+{
+  int data[2*3*4*5];
+  int vdata[2*3*4*5];
+
+  fill_data(data, kwk::of_size(2,3,4,5), true);
+  fill_data(vdata, kwk::of_size(2,3,4,5), false);
+
+  for(int j = 0; j<3; j++)
+    for(int k = 0; k<4; k++)
+      for(int l = 0; l<5; l++)
+        vdata[1*5*4*3+j*5*4+k*5+l] = 1000+100*j+10*k+l;
+
+  auto v = kwk::view{kwk::source = data, kwk::of_size(1,3,4,5)};
+
+  int count = 0;
+  kwk::replace_if(kwk::cpu, v, [&](auto e)
   { 
     count++;
     return (e>=0);

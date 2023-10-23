@@ -112,92 +112,92 @@ struct base_context
 
 
   // vvv BINARY_SEARCH vvv
-  template <typename Func, concepts::container Out>
-  constexpr auto lower_bound(Out const& out, auto value, Func func) const
-  {
-    auto count = out.numel();
-    auto first = 0;
-    auto it = 0; 
-    auto step = 0;
-
-    while (count > 0)
-    {
-        it = first;
-        step = count / 2; 
-        it += step;
-
-        auto p = kwk::coordinates(it, out.shape());
-        auto pos = std::apply([](auto... i) { return kumi::tuple{i...}; }, p);
-        if (func(out(pos), value))
-        {
-            first = ++it; 
-            count -= step + 1; 
-        }
-        else
-            count = step;
-    }
-    return (first < out.numel()) ?  std::optional<std::array<int,Out::static_order>>{kwk::coordinates(it, out.shape())} 
-                                  :  std::nullopt;
-  }
-
-  // template <concepts::container Out>
-  // constexpr auto lower_bound(Out const& out, auto value) const
+  // template <typename Func, concepts::container Out>
+  // constexpr auto lower_bound(Out const& out, auto value, Func func) const
   // {
-  //   return self().lower_bound(out, value, [](auto e, auto i){return e<i;});
+  //   auto count = out.numel();
+  //   auto first = 0;
+  //   auto it = 0; 
+  //   auto step = 0;
+
+  //   while (count > 0)
+  //   {
+  //       it = first;
+  //       step = count / 2; 
+  //       it += step;
+
+  //       auto p = kwk::coordinates(it, out.shape());
+  //       auto pos = std::apply([](auto... i) { return kumi::tuple{i...}; }, p);
+  //       if (func(out(pos), value))
+  //       {
+  //           first = ++it; 
+  //           count -= step + 1; 
+  //       }
+  //       else
+  //           count = step;
+  //   }
+  //   return (first < out.numel()) ?  std::optional<std::array<int,Out::static_order>>{kwk::coordinates(it, out.shape())} 
+  //                                 :  std::nullopt;
   // }
 
-  template <typename Func, concepts::container Out>
-  constexpr auto upper_bound(Out const& out, auto value, Func func) const
-  {
-    auto count = out.numel();
-    auto first = 0;
-    auto it = 0; 
-    auto step = 0;
+  // // template <concepts::container Out>
+  // // constexpr auto lower_bound(Out const& out, auto value) const
+  // // {
+  // //   return self().lower_bound(out, value, [](auto e, auto i){return e<i;});
+  // // }
 
-    while (count > 0)
-    {
-        it = first; 
-        step = count / 2; 
-        it += step;
+  // template <typename Func, concepts::container Out>
+  // constexpr auto upper_bound(Out const& out, auto value, Func func) const
+  // {
+  //   auto count = out.numel();
+  //   auto first = 0;
+  //   auto it = 0; 
+  //   auto step = 0;
+
+  //   while (count > 0)
+  //   {
+  //       it = first; 
+  //       step = count / 2; 
+  //       it += step;
  
-        auto p = kwk::coordinates(it, out.shape());
-        auto pos = std::apply([](auto... i) { return kumi::tuple{i...}; }, p);
-        if (!func(value, out(pos)))
-        {
-            first = ++it; 
-            count -= step + 1; 
-        }
-        else
-            count = step;
-    }
-    return (first < out.numel()) ?  std::optional<std::array<int,Out::static_order>>{kwk::coordinates(it, out.shape())} 
-                                  :  std::nullopt;
-  }
-
-  // template <concepts::container Out>
-  // constexpr auto upper_bound(Out const& out, auto value) const
-  // {
-  //   return self().upper_bound( out, value, [](auto e, auto i){return e<i;});
+  //       auto p = kwk::coordinates(it, out.shape());
+  //       auto pos = std::apply([](auto... i) { return kumi::tuple{i...}; }, p);
+  //       if (!func(value, out(pos)))
+  //       {
+  //           first = ++it; 
+  //           count -= step + 1; 
+  //       }
+  //       else
+  //           count = step;
+  //   }
+  //   return (first < out.numel()) ?  std::optional<std::array<int,Out::static_order>>{kwk::coordinates(it, out.shape())} 
+  //                                 :  std::nullopt;
   // }
 
-  template <typename Func, concepts::container Out>
-  constexpr bool binary_search(Out const& out, auto value, Func func) const
-  {
-    auto first = kwk::coordinates(0, out.shape());
-    auto f = std::apply([](auto... i) { return kumi::tuple{i...}; }, first);
+  // // template <concepts::container Out>
+  // // constexpr auto upper_bound(Out const& out, auto value) const
+  // // {
+  // //   return self().upper_bound( out, value, [](auto e, auto i){return e<i;});
+  // // }
 
-    if (func(value, out(f))) return false;
+  // template <typename Func, concepts::container Out>
+  // constexpr bool binary_search(Out const& out, auto value, Func func) const
+  // {
+  //   auto first = kwk::coordinates(0, out.shape());
+  //   auto f = std::apply([](auto... i) { return kumi::tuple{i...}; }, first);
 
-    auto p = self().lower_bound(out, value, func);
-    bool outbound;
+  //   if (func(value, out(f))) return false;
 
-    if(p)
-      outbound = false;
-    else
-      outbound = true;
+  //   auto p = self().lower_bound(out, value, func);
+  //   bool outbound;
 
-    return (!outbound);
-  }
+  //   if(p)
+  //     outbound = false;
+  //   else
+  //     outbound = true;
+
+  //   return (!outbound);
+  // }
 
   // template <concepts::container Out>
   // constexpr bool binary_search(Out const& out, auto value) const
