@@ -24,18 +24,34 @@ struct base_context
 
   public:
 
+  static auto const&  in   (kwk::concepts::container auto const& c) { return c; }
+  static auto&        out  (kwk::concepts::container auto& c)       { return c; }
+  static auto&        inout(kwk::concepts::container auto& c)       { return c; }
+
   template< typename Func, concepts::container Out
           , concepts::container C0, concepts::container... Cs
           >
   constexpr auto transform(Func f, Out& out, C0&& c0, Cs&&... cs) const
   {
-    self().for_each([&](auto... is) { out(is...) = f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, out.shape() );
+    // self().for_each([&](auto... is) { out(is...) = f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, out.shape() );
+
+    self().for_each (
+                      [f](auto& o, auto const& i0, auto const&... in) { o = f(i0, in...); }
+                    , Context::out(out)
+                    , Context::in(c0)
+                    , Context::in(cs)...
+                    );
   }
 
   template<typename Func, concepts::container In>
   constexpr auto reduce(In const& in, Func f, auto init) const
   {
-    self().for_each([&](auto... is) { init = f(init, in(is...)); }, in.shape() );
+    // self().for_each([&](auto... is) { init = f(init, in(is...)); }, in.shape() );
+
+    self().for_each (
+                      [&](auto const& i) { init = f(init, i); }
+                    , Context::in(in)
+                    );
     return init;
   }
 

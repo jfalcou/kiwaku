@@ -84,6 +84,7 @@ namespace kwk
   template <typename Context, concepts::container Out, concepts::container Values>
   constexpr auto find_first_of(Context& ctx, Out const& out, Values const& in)
   {
+    // TODO: possible performance issue with contexts (any_of will call a new proxy each time it is called) 
     return find_if(ctx, out, [&](auto e)
     {
       return any_of(ctx, in, [&](auto x){return (x==e);});
