@@ -5,38 +5,35 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
-#include <kwk/algorithm/algos/for_each.hpp>
-#include <kwk/algorithm/algos/transform.hpp>
-#include <kwk/container.hpp>
-#include "test.hpp"
-#include "../transform.hpp"
+
+#include "../generic/transform.hpp"
 
 #include <kwk/context/sycl/context.hpp>
 
 TTS_CASE("Check for kwk::transform(value, new_value) 1D - SYCL context")
 {
-  kwk::test::transform_value_new_value_1D(kwk::sycl::sycl_context);
+  kwk::test::transform_value_new_value_1D(kwk::sycl::default_context);
 };
 
 TTS_CASE("Check for kwk::transform(value, new_value) 2D - SYCL context")
 {
-  kwk::test::transform_value_new_value_2D(kwk::sycl::sycl_context);
+  kwk::test::transform_value_new_value_2D(kwk::sycl::default_context);
 };
 
 TTS_CASE("Check for kwk::transform(value, new_value) 3D - SYCL context")
 {
-  kwk::test::transform_value_new_value_3D(kwk::sycl::sycl_context);
+  kwk::test::transform_value_new_value_3D(kwk::sycl::default_context);
 };
 
 TTS_CASE("Check for kwk::transform(value, new_value) 4D - SYCL context")
 {
-  kwk::test::transform_value_new_value_4D(kwk::sycl::sycl_context);
+  kwk::test::transform_value_new_value_4D(kwk::sycl::default_context);
 };
 
 // TTS_CASE("Check for kwk::transform(value, new_value) 1D")
 // {
 //   // Pas possible de faire un test générique en conservant les particularités du cpu
-//   kwk::test::transform_value_new_value_1D(kwk::sycl::sycl_context);
+//   kwk::test::transform_value_new_value_1D(kwk::sycl::default_context);
 //   //  error: 'int &' cannot be used as the type of a kernel parameter
 //   //     count++;
 //   //     ^

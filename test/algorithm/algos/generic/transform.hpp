@@ -1,7 +1,12 @@
-
+//==================================================================================================
+/*
+  KIWAKU - Containers Well Made
+  Copyright : KIWAKU Contributors & Maintainers
+  SPDX-License-Identifier: BSL-1.0
+*/
+//==================================================================================================
 #pragma once
 
-#include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/algorithm/algos/transform.hpp>
 #include <kwk/container.hpp>
 #include "test.hpp"
@@ -9,7 +14,7 @@
 namespace kwk::test
 {
   template<typename Context>
-  void transform_value_new_value_1D(Context&& c)
+  void transform_value_new_value_1D(Context&& ctx)
   {
     int data[2];
     double res[2];
@@ -20,17 +25,13 @@ namespace kwk::test
     auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
     auto v = kwk::view{kwk::source = res, kwk::of_size(2)};
 
-    transform(c, 
-    [&](auto e)
-    {
-      return 1.0/(1.0+e);
-    }, v, d);
+    ::kwk::transform(ctx, [&](auto e) { return 1.0/(1.0+e); }, v, d);
 
     TTS_ALL_EQUAL(res, vdata);
   }
 
   template<typename Context>
-  void transform_value_new_value_2D(Context&& c)
+  void transform_value_new_value_2D(Context&& ctx)
   {
     int data[2*3];
     double res[2*3];
@@ -46,17 +47,13 @@ namespace kwk::test
       for(int j = 0; j<3; j++)
         vdata[i*3+j] = 1.0/(1.0+vdata[i*3+j]);
 
-    transform(c, 
-    [&](auto e)
-    {
-      return 1.0/(1.0+e);
-    }, v, d);
+    ::kwk::transform(ctx, [&](auto e) { return 1.0/(1.0+e); }, v, d);
 
     TTS_ALL_EQUAL(res, vdata);
   };
 
   template<typename Context>
-  void transform_value_new_value_3D(Context&& c)
+  void transform_value_new_value_3D(Context&& ctx)
   {
     int data[2*3*4];
     double res[2*3*4];
@@ -73,17 +70,13 @@ namespace kwk::test
         for(int k = 0; k<4; k++)
           vdata[i*4*3+j*4+k] = 1.0/(1.0+vdata[i*4*3+j*4+k]);
 
-    transform(c, 
-    [&](auto e)
-    { 
-      return 1.0/(1.0+e);
-    }, v, d);
+    ::kwk::transform(ctx, [&](auto e) {  return 1.0/(1.0+e);  }, v, d);
 
     TTS_ALL_EQUAL(res, vdata);
   };
 
   template<typename Context>
-  void transform_value_new_value_4D(Context&& c)
+  void transform_value_new_value_4D(Context&& ctx)
   {
     int data[2*3*4*5];
     double res[2*3*4*5];
@@ -101,11 +94,7 @@ namespace kwk::test
           for(int l = 0; l<5; l++)
             vdata[i*5*4*3+j*5*4+k*5+l] = 1.0/(1.0+vdata[i*5*4*3+j*5*4+k*5+l]);
 
-    transform(c, 
-    [&](auto e)
-    { 
-      return 1.0/(1.0+e);
-    }, v, d);
+    ::kwk::transform(ctx, [&](auto e) {  return 1.0/(1.0+e);  }, v, d);
 
     TTS_ALL_EQUAL(res, vdata);
   };

@@ -9,7 +9,7 @@
 #include <kwk/algorithm/algos/transform.hpp>
 #include <kwk/container.hpp>
 #include "test.hpp"
-#include "../transform.hpp"
+#include "../generic/transform.hpp"
 
 TTS_CASE("Check for kwk::transform(value, new_value) 1D - CPU context")
 {
