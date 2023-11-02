@@ -23,6 +23,8 @@ min, max, minmax -> valeurs
 namespace kwk
 {
 
+  // TODO: Trouver les bons algos en SYCL ?
+
   // transform and reduce are members of base_context
   template<typename Context, typename Func, concepts::container In>
   constexpr auto reduce(Context& ctx, In const& in, Func f, auto init)

@@ -23,6 +23,8 @@ starts_with -> sous vue de k depuis le début (interprété 1D ?)
 namespace kwk
 {
 
+  // TODO: Trouver les bons algos en SYCL ?
+
   template<typename Context, typename Func, concepts::container In>
   constexpr auto all_of(Context& ctx, In const& in, Func f)
   {
