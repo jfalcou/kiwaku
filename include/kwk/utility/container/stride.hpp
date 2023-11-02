@@ -45,7 +45,9 @@ namespace kwk
     using stored_value_type = stride<S...>;
     using keyword_type      = __::strides_;
 
-    constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    // constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    constexpr auto const&  operator()(keyword_type const&) const noexcept { return *this; }
+
 
     //==============================================================================================
     //! @brief Constructs a default @ref kwk::stride equals to [1 1 ... 1]
