@@ -10,6 +10,9 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 
+#include <kwk/constants.hpp>
+
+
 TTS_CASE("Check for kwk::replace(value, new_value) 1D")
 {
   int data[2];
@@ -60,6 +63,25 @@ TTS_CASE("Check for kwk::replace(value, new_value) 2D - with CPU context")
 
   TTS_ALL_EQUAL(data, vdata);
 };
+
+#if KWK_USE_SYCL
+TTS_CASE("Check for kwk::replace(value, new_value) 2D - with SYCL context")
+{
+  int data[2*3];
+  int vdata[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+  fill_data(vdata, kwk::of_size(2,3), true);
+
+  vdata[1*3+2] = 120;
+
+  auto v = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  kwk::replace(kwk::sycl::sycl_context, v, 12, 120);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+#endif
 
 TTS_CASE("Check for kwk::replace(value, new_value) 3D")
 {
@@ -161,6 +183,30 @@ TTS_CASE("Check for kwk::replace_if(func, new_value) 2D - with CPU context")
   TTS_EQUAL(count,   v.numel());
 };
 
+#if KWK_USE_SYCL
+TTS_CASE("Check for kwk::replace_if(func, new_value) 2D - with SYCL context")
+{
+  int data[2*3];
+  int vdata[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+  fill_data(vdata, kwk::of_size(2,3), false);
+
+  auto v = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  // int count = 0;
+  kwk::replace_if(kwk::sycl::sycl_context, v, [](auto e)
+  { 
+    // count++;
+    return (e>=0);
+  } 
+  , 0);
+
+  TTS_ALL_EQUAL(data, vdata);
+  // TTS_EQUAL(count,   v.numel());
+};
+#endif
+
 TTS_CASE("Check for kwk::replace_if(func, new_value) 3D")
 {
   int data[2*3*4];
@@ -258,6 +304,32 @@ TTS_CASE("Check for kwk::replace_if(func, new_value) 4D smaller view - with CPU 
   TTS_ALL_EQUAL(data, vdata);
   TTS_EQUAL(count,   v.numel());
 };
+
+#if KWK_USE_SYCL
+TTS_CASE("Check for kwk::replace_if(func, new_value) 4D smaller view - with SYCL context")
+{
+  int data[2*3*4*5];
+  int vdata[2*3*4*5];
+
+  fill_data(data, kwk::of_size(2,3,4,5), true);
+  fill_data(vdata, kwk::of_size(2,3,4,5), false);
+
+  for(int j = 0; j<3; j++)
+    for(int k = 0; k<4; k++)
+      for(int l = 0; l<5; l++)
+        vdata[1*5*4*3+j*5*4+k*5+l] = 1000+100*j+10*k+l;
+
+  auto v = kwk::view{kwk::source = data, kwk::of_size(1,3,4,5)};
+
+  kwk::replace_if(kwk::sycl::sycl_context, v, [](auto e)
+  { 
+    return (e>=0);
+  } 
+  , 0);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+#endif
 
 // How to take a view from 2 3 4 5 to 2 3 4 4 ?
 

@@ -19,9 +19,16 @@ namespace kwk
   template< typename Context, typename Func, concepts::container Out
           , concepts::container C0, concepts::container... Cs
           >
-  constexpr auto transform(Context& ctx, Func f, Out& out, C0&& c0, Cs&&... cs)
+  constexpr auto transform(Context& ctx, [[maybe_unused]] Func f,  [[maybe_unused]] Out& out,  [[maybe_unused]] C0&& c0,  [[maybe_unused]] Cs&&... cs)
   {
-    ctx.transform(f, out, KWK_FWD(c0), KWK_FWD(cs)...);
+    // TODO: souci si j'appelle directement ctx.transform (problème de const avec base_context)
+    // ctx.transform(f, out, KWK_FWD(c0), KWK_FWD(cs)...);
+    ctx.for_each (
+                    [f](auto& o, auto const& i0, auto const&... in) { o = f(i0, in...); }
+                  , Context::out(out)
+                  , Context::in(c0)
+                  , Context::in(cs)...
+                  );
   }
 
   template< typename Func, concepts::container Out
