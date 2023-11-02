@@ -14,7 +14,7 @@
 #include <kwk/settings/type.hpp>
 #include <kwk/container/settings/category.hpp>
 #include <type_traits>
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 namespace kwk::concepts
 {
