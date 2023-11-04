@@ -57,6 +57,15 @@ namespace bench
       return elapsed_ * 1000;
     }
 
+    std::size_t ElapsedTimeMSReset()
+    {
+      PauseTiming();
+      ResumeTiming();
+      double res = elapsed_ * 1000;
+      Init();
+      return res;
+    }
+
     std::string Str()
     {
       // long t = static_cast<long>(elapsed_);
