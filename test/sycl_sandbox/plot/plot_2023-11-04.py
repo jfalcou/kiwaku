@@ -142,22 +142,24 @@ def load_file(path):
 
 # suffix = "_heavy_sh$t_blop_cuda"
 
-is_heavy = True
+is_heavy = False
 
 if is_heavy:
   suffix = "_heavy_blop"
   suffix_title = "transform: [](auto e) { return very_complicated_stuff; }"
 
-  lcpu      = load_file("heavy/cpu_context" + suffix + ".txt")
-  lsycl_cpu = load_file("heavy/sycl_context_cpu" + suffix + ".txt")
-  lsycl_gpu = load_file("heavy/sycl_context_gpu" + suffix + ".txt")
+  lcpu        = load_file("heavy/cpu_context" + suffix + ".txt")
+  lcpu_native = load_file("heavy/cpu_native" + suffix + ".txt")
+  lsycl_cpu   = load_file("heavy/sycl_context_cpu" + suffix + ".txt")
+  lsycl_gpu   = load_file("heavy/sycl_context_gpu" + suffix + ".txt")
 else:
   suffix = "_copy_blop"
   suffix_title = "transform: [](auto e) { return e; }"
 
-  lcpu      = load_file("copy/cpu_context" + suffix + ".txt")
-  lsycl_cpu = load_file("copy/sycl_context_cpu" + suffix + ".txt")
-  lsycl_gpu = load_file("copy/sycl_context_gpu" + suffix + ".txt")
+  lcpu        = load_file("copy/cpu_context" + suffix + ".txt")
+  lcpu_native = load_file("copy/cpu_native" + suffix + ".txt")
+  lsycl_cpu   = load_file("copy/sycl_context_cpu" + suffix + ".txt")
+  lsycl_gpu   = load_file("copy/sycl_context_gpu" + suffix + ".txt")
 
 # values1 = [lcpu["med_host_alloc"],      lomp["med_host_alloc"],      lsycl["med_host_alloc"]      ]
 # values2 = [lcpu["med_copy_and_kernel"], lomp["med_copy_and_kernel"], lsycl["med_copy_and_kernel"] ]
@@ -210,18 +212,20 @@ if display_speedup:
 
   # cpu_diff  = pu.make_absolute_list(lcpu , "med_copy_and_kernel")
   # sycl_diff = pu.make_absolute_list(lsycl, "med_copy_and_kernel")
-  sycl_cpu = pu.make_div_list(lsycl_cpu, lcpu, start_index, 100, "med_copy_and_kernel")
-  sycl_gpu = pu.make_div_list(lsycl_gpu, lcpu, start_index, 100, "med_copy_and_kernel")
+  sycl_cpu   = pu.make_div_list(lsycl_cpu, lcpu_native, start_index, 100, "med_copy_and_kernel")
+  sycl_gpu   = pu.make_div_list(lsycl_gpu, lcpu_native, start_index, 100, "med_copy_and_kernel")
+  ctx_cpu    = pu.make_div_list(lcpu, lcpu_native, start_index, 100, "med_copy_and_kernel")
 
   ref_list = []
   for i in sycl_cpu:
     ref_list.append(100)
   
-  min_value = min(100, min(sycl_cpu), min(sycl_gpu))
-  max_value = max(100, max(sycl_cpu), max(sycl_gpu))
+  min_value = min(100, min(sycl_cpu), min(sycl_gpu), min(ctx_cpu))
+  max_value = max(100, max(sycl_cpu), max(sycl_gpu), max(ctx_cpu))
 
 
-  plt.plot  (range(1, len(sycl_cpu)+1), ref_list, color="grey", label="context::cpu - i3-4360 CPU @ 3.70GHz", linestyle="solid", linewidth=line_width)
+  plt.plot  (range(1, len(ref_list)+1), ref_list, color="grey", label="native cpu - i3-4360 CPU @ 3.70GHz", linestyle="solid", linewidth=line_width)
+  plt.plot  (range(1, len(ctx_cpu)+1), ctx_cpu, color="black", label="context::cpu - i3-4360 CPU @ 3.70GHz", linestyle="dotted", linewidth=line_width)
   plt.plot  (range(1, len(sycl_cpu)+1), sycl_cpu, color="blue", label="context::sycl - i3-4360 CPU @ 3.70GHz", linestyle="dashdot", linewidth=line_width)
   plt.plot  (range(1, len(sycl_gpu)+1), sycl_gpu, color="green", label="context::sycl - NVIDIA GeForce GTX 1050", linestyle="dashed", linewidth=line_width)
 
@@ -237,15 +241,17 @@ else:
   # if plot_diff:
     # ldiff0 = pu.make_diff_list(compare_to_list, lorentz_standalone_list, plot_keyword)
   # else:
-  cpu_list  = pu.make_absolute_list(lcpu , "med_copy_and_kernel")
-  sycl_cpu = pu.make_absolute_list(lsycl_cpu, "med_copy_and_kernel")
-  sycl_gpu = pu.make_absolute_list(lsycl_gpu, "med_copy_and_kernel")
+  cpu_list   = pu.make_absolute_list(lcpu     , "med_copy_and_kernel")
+  sycl_cpu   = pu.make_absolute_list(lsycl_cpu, "med_copy_and_kernel")
+  sycl_gpu   = pu.make_absolute_list(lsycl_gpu, "med_copy_and_kernel")
+  native_cpu = pu.make_absolute_list(lcpu_native, "med_copy_and_kernel")
 
-  min_value = min(min(cpu_list), min(sycl_cpu), min(sycl_gpu))
-  max_value = max(max(cpu_list), max(sycl_cpu), max(sycl_gpu))
+  min_value = min(min(cpu_list), min(sycl_cpu), min(sycl_gpu), min(native_cpu))
+  max_value = max(max(cpu_list), max(sycl_cpu), max(sycl_gpu), max(native_cpu))
 
   #  (opti matrix)
-  plt.plot  (range(1, len(cpu_list)+1), cpu_list, color="grey", label="context::cpu - i3-4360 CPU @ 3.70GHz" , linestyle="solid"  , linewidth=line_width)
+  plt.plot  (range(1, len(native_cpu)+1), native_cpu, color="grey", label="native cpu - i3-4360 CPU @ 3.70GHz" , linestyle="solid"  , linewidth=line_width)
+  plt.plot  (range(1, len(cpu_list)+1), cpu_list, color="black", label="context::cpu - i3-4360 CPU @ 3.70GHz" , linestyle="dotted"  , linewidth=line_width)
   plt.plot  (range(1, len(sycl_cpu)+1), sycl_cpu, color="blue", label="context::sycl - i3-4360 CPU @ 3.70GHz", linestyle="dashdot", linewidth=line_width)
   plt.plot  (range(1, len(sycl_gpu)+1), sycl_gpu, color="green", label="context::sycl - NVIDIA GeForce GTX 1050", linestyle="dashed", linewidth=line_width)
 
