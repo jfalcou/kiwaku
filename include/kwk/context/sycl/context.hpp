@@ -24,7 +24,7 @@ namespace kwk::sycl
     static auto inout(kwk::concepts::container auto& c)       { return kwk::sycl::inout{c}; }
 
     template<typename Func>
-    void for_each(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
+    void map(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
     {
       std::cout 
       << "Running on device: "
@@ -43,33 +43,6 @@ namespace kwk::sycl
       parent::wait();
     }
 
-    template< typename Func, concepts::container Out
-              , concepts::container C0, concepts::container... Cs
-              >
-    auto transform(Func f, Out& out, C0 const& c0, Cs const&... cs)
-    {
-      self().for_each ( [f](auto& o, auto const& i0, auto const&... in) { o = f(i0, in...); }
-                      , this->out(out)
-                      , this->in(c0), this->in(cs)...
-                      );
-    }
-
-    // TODO: regarder la doc de SYCL pour savoir comment c'est censé fonctionner les réductions en SYCL (y a des variables de réduction)
-    // Regarder les exemples (gene Codeplay etc)
-
-    // template<typename Func, concepts::container In>
-    // auto reduce(In const& in, Func f, auto init) const
-    // {
-      // on uilisera cpu::reduce ?
-    //   // self().for_each([&](auto... is) { init = f(init, in(is...)); }, in.shape() );
-
-    //   self().for_each (
-    //                     [&](auto const& i) { init = f(init, i); }
-    //                   , this->in(in)
-    //                   );
-    //   return init;
-    // }
-  };
-
-  inline kwk::sycl::context default_context  = {};
+  // inline kwk::sycl::context default_context{::sycl::gpu_selector_v};
+  inline kwk::sycl::context default_context{};
 }

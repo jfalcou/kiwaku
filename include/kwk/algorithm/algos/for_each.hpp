@@ -1,10 +1,10 @@
-//==================================================================================================
+//======================================================================================================================
 /**
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 **/
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 
 #include <kwk/concepts/container.hpp>
@@ -17,22 +17,22 @@
 // #include <kwk/context/cpu/context.hpp>
 namespace kwk
 {
-  //================================================================================================
+  //====================================================================================================================
   //! @addtogroup algorithms
   //! @{
-  //================================================================================================
+  //====================================================================================================================
 
   template<typename Context, typename Func, auto... S>
   constexpr auto for_each(Context& ctx, Func f, shape<S...> const& shp)
   {
-    return ctx.for_each(f, shp);
+    return ctx.map(f, shp);
     // return [&]<std::size_t... N>(std::index_sequence<N...> const&)
     // {
     //   return __::for_each(f, shp );
     // }( std::make_index_sequence<shape<S...>::static_order>{} );
   }
 
-  //================================================================================================
+  //====================================================================================================================
   //! @brief Simple walkthrough over all possible indexes
   //!
   //! Applies the given function object `f` to every coordinates that are valid inside the given
@@ -49,7 +49,7 @@ namespace kwk
   //!
   //! @groupheader{Example}
   //! @include docs/algorithms/for_each_shape.cpp
-  //================================================================================================
+  //====================================================================================================================
   template<typename Func, auto... S>
   constexpr auto for_each(Func f, shape<S...> const& shp)
   {
@@ -62,11 +62,11 @@ namespace kwk
   template<typename Context, typename Func, concepts::container C0, concepts::container... Cs>
   constexpr auto for_each(Context& ctx, Func f, C0&& c0, Cs&&... cs)
   {
-    ctx.for_each([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
+    ctx.map([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
     return f;
   }
   
-  //================================================================================================
+  //====================================================================================================================
   //! @brief Simple walkthrough over all elements of a container
   //!
   //! Applies the given function object `f` to every elements of a given kwk::container.
@@ -83,7 +83,7 @@ namespace kwk
   //!
   //! @groupheader{Example}
   //! @include docs/algorithms/for_each.cpp
-  //================================================================================================
+  //====================================================================================================================
   template<typename Func, concepts::container C0, concepts::container... Cs>
   constexpr auto for_each(Func f, C0&& c0, Cs&&... cs)
   {
@@ -91,7 +91,7 @@ namespace kwk
     return kwk::for_each(cpu, f, KWK_FWD(c0), KWK_FWD(cs)...);
   }
 
-  //================================================================================================
+  //====================================================================================================================
   //! @brief Simple walkthrough over all elements of a container and their coordinates
   //!
   //! Applies the given function object `f` to every elements of a given kwk::container and
@@ -108,7 +108,7 @@ namespace kwk
   //!
   //! @groupheader{Example}
   //! @include docs/algorithms/for_each_index.cpp
-  //================================================================================================
+  //====================================================================================================================
   template<typename Context, typename Func, concepts::container Container>
   constexpr auto for_each_index(Context& ctx, Func f, Container&& c)
   {
@@ -128,7 +128,7 @@ namespace kwk
 
   
 
-  //================================================================================================
+  //====================================================================================================================
   //! @}
-  //================================================================================================
+  //====================================================================================================================
 }

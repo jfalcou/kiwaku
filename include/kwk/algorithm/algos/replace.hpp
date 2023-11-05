@@ -15,7 +15,7 @@ namespace kwk
   template<typename Context, typename Func, concepts::container Out>
   constexpr void replace_if(Context& ctx, Out& out, Func f, auto new_value)
   {
-    ctx.for_each([=](auto& o) { if(f(o)) o = new_value; }, Context::inout(out));
+    ctx.map([=](auto& o) { if(f(o)) o = new_value; }, Context::inout(out));
   }
   template<typename Func, concepts::container Out>
   constexpr void replace_if(Out& out, Func f, auto new_value)
