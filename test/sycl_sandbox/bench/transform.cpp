@@ -25,6 +25,7 @@
 
 #define HEAVY true
 #define INCREASE_SIZE_COUNT 7
+#define REPEAT_ITERATION_COUNT 5
 
 #if HEAVY
   std::string make_suffix() {
@@ -138,6 +139,45 @@ bench::result_item main_bench(Context& ctx, std::size_t array_length, std::size_
   return ritem;
 };
 
+bench::result_item main_bench_cpu_naive(std::size_t array_length, std::size_t repeat_count)
+{
+  bench::result_item ritem{array_length};
+
+  std::cout << "main_bench - len(" << array_length << ")\n";
+
+  const double ERROR_TOLERANCE = 0.001;
+
+  for (std::size_t r = 0; r < repeat_count; ++r)
+  {
+    bench::chrono_t chrono;
+    chrono.Init();
+    double* in_array  = new double[array_length];
+    double* out_array = new double[array_length];
+
+    for (std::size_t i = 0; i < array_length; ++i) { in_array[i]  = i; out_array[i] = 0; }
+
+    ritem.host_alloc.push_back(chrono.ElapsedTimeMSReset());
+
+    for (std::size_t i = 0; i < array_length; ++i)
+    {
+      out_array[i] = global_fct(in_array[i]);
+    }
+
+    ritem.copies_and_kernel.push_back(chrono.ElapsedTimeMSReset());
+
+    for (std::size_t i = 0; i < array_length; ++i)
+    {
+      assert(std::abs(out_array[i] - global_fct(in_array[i])) < ERROR_TOLERANCE);
+    }
+
+    ritem.check.push_back(chrono.ElapsedTimeMSReset());
+    delete[] in_array;
+    delete[] out_array;
+  }
+
+  return ritem;
+};
+
 
 
 int main(int argc, char* argv[])
@@ -154,7 +194,6 @@ int main(int argc, char* argv[])
 
   array_printer_t ap;
   bench::result_vector rvect;
-  std::size_t repeat_count = 5;
   ap.add({"device", "alloc_host", "cpy+ker", "check"});
 
   // sycl_context_cpu when compiled with "-fsycl"
@@ -166,15 +205,17 @@ int main(int argc, char* argv[])
   for (std::size_t size : array_size_vect)
   {
     ap.add({"size", std::to_string(size), "-", "-"});
-    bench::result_item r = main_bench(kwk::sycl::default_context, size, repeat_count);
+    bench::result_item r = main_bench(kwk::sycl::default_context, size, REPEAT_ITERATION_COUNT);
     rvect.items.push_back(r);
-    for (std::size_t i = 0; i < repeat_count; ++i)
+    for (std::size_t i = 0; i < REPEAT_ITERATION_COUNT; ++i)
     {
       ap.add({"", std::to_string(r.host_alloc[i]), std::to_string(r.copies_and_kernel[i]), std::to_string(r.check[i])});
     }
   }
   rvect.write_to_gfile();
   write_f.close();
+
+
 
   write_f.open("cpu_context" + suffix + ".txt");
   write_f << file_version << "\n";
@@ -183,9 +224,28 @@ int main(int argc, char* argv[])
   for (std::size_t size : array_size_vect)
   {
     ap.add({"size", std::to_string(size), "-", "-"});
-    bench::result_item r = main_bench(kwk::cpu, size, repeat_count);
+    bench::result_item r = main_bench(kwk::cpu, size, REPEAT_ITERATION_COUNT);
     rvect.items.push_back(r);
-    for (std::size_t i = 0; i < repeat_count; ++i)
+    for (std::size_t i = 0; i < REPEAT_ITERATION_COUNT; ++i)
+    {
+      ap.add({"", std::to_string(r.host_alloc[i]), std::to_string(r.copies_and_kernel[i]), std::to_string(r.check[i])});
+    }
+  }
+  rvect.write_to_gfile();
+  write_f.close();
+
+  
+
+  write_f.open("cpu_native" + suffix + ".txt");
+  write_f << file_version << "\n";
+  rvect.clear();
+  ap.add({"CPU-NATIVE", "-", "-", "-"});
+  for (std::size_t size : array_size_vect)
+  {
+    ap.add({"size", std::to_string(size), "-", "-"});
+    bench::result_item r = main_bench_cpu_naive(size, REPEAT_ITERATION_COUNT);
+    rvect.items.push_back(r);
+    for (std::size_t i = 0; i < REPEAT_ITERATION_COUNT; ++i)
     {
       ap.add({"", std::to_string(r.host_alloc[i]), std::to_string(r.copies_and_kernel[i]), std::to_string(r.check[i])});
     }
