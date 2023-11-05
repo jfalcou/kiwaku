@@ -1,10 +1,10 @@
-//==================================================================================================
+//======================================================================================================================
 /**
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 **/
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 
 #include <kwk/concepts/container.hpp>
@@ -22,14 +22,21 @@ min, max, minmax -> valeurs
 
 namespace kwk
 {
-
   // TODO: Trouver les bons algos en SYCL ?
 
+  // Reduce is not a required part of Contexts (unlike map)
+  // 
+  // TODO reduce: soit on fait ctx.reduce, soit dans le contexte
+  // sycl on réécrit la fonction reduce avec sycl_context.
   // transform and reduce are members of base_context
   template<typename Context, typename Func, concepts::container In>
   constexpr auto reduce(Context& ctx, In const& in, Func f, auto init)
   {
-    return ctx.reduce(in, f, init);
+    ctx.map( [&](auto const& i) { init = f(init, i); }
+                , ctx.in(in)
+                );
+    return init;
+    // return ctx.reduce(in, f, init);
     // for_each(ctx, [&](auto... is) { init = f(init, in(is...)); }, in.shape() );
     // return init;
   }
