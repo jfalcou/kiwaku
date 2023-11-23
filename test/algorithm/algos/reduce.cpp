@@ -24,6 +24,25 @@ TTS_CASE("Check for kwk::reduce(in) 1D")
   TTS_EQUAL(res, vdata);
 };
 
+TTS_CASE("Check for kwk::reduce(in) 1D - larger")
+{
+  const std::size_t size = 1600000;
+  double data[size];
+
+  auto global_fct = [](auto init, auto x) { return init + x; };
+
+  double sum = 0;
+  for (std::size_t i = 0; i < size; ++i) { data[i] = i; sum = global_fct(sum, i); }
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(size)};
+
+  auto res = kwk::reduce(d, global_fct);
+
+  std::cout << res << "\n";
+
+  TTS_EQUAL(res, sum);
+};
+
 TTS_CASE("Check for kwk::reduce(in) 2D")
 {
   int data[2*3];

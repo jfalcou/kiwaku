@@ -25,7 +25,7 @@ namespace kwk
   // TODO: Trouver les bons algos en SYCL ?
 
   // Reduce is not a required part of Contexts (unlike map)
-  // 
+  // A custom overloaded reduce(my_context, ...) is required to use a custom context.
   // TODO reduce: soit on fait ctx.reduce, soit dans le contexte
   // sycl on réécrit la fonction reduce avec sycl_context.
   // transform and reduce are members of base_context
