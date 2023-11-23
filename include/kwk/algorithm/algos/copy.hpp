@@ -36,7 +36,7 @@ namespace kwk
   {
     // TODO: remettre kwk:: devant
     // for_each(ctx, [&](auto... is) { if(f(in(is...))) out(is...) = KWK_FWD(in)(is...); }, out.shape() );
-    ctx.map([&](auto& o, auto const& i) { if(f(i)) o = i; }, ctx.out(out), ctx.in(in));
+    ctx.map([f](auto& o, auto const& i) { if(f(i)) o = i; }, ctx.out(out), ctx.in(in));
   }
 
   template<typename Func, concepts::container Out, concepts::container In>

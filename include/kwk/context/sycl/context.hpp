@@ -153,6 +153,72 @@ namespace kwk::sycl
       }
     }
 
+
+
+
+  //   void VectorAdd(queue &q, const IntVector &a_vector, const IntVector &b_vector, IntVector &sum_parallel) {
+  //   range<1> num_items{a_vector.size()};
+
+  //   buffer a_buf(a_vector);
+  //   buffer b_buf(b_vector);
+  //   buffer sum_buf(sum_parallel.data(), num_items);
+
+  //   for (size_t i = 0; i < num_repetitions; i++ ) {
+
+  //     q.submit([&](handler &h) {
+  //       accessor a(a_buf, h, read_only);
+  //       accessor b(b_buf, h, read_only);
+  //       accessor sum(sum_buf, h, write_only, no_init);
+  //       h.parallel_for(num_items, [=](auto i) { sum[i] = a[i] + b[i]; });
+  //     });
+  //   };
+  //   // Wait until compute tasks on GPU done
+  //   q.wait();
+  // }
+
+    template<concepts::container Out, concepts::container In>
+    auto copy_2(Out& out, In const& in)
+    {
+      std::cout << "sycl copy called\n";
+
+      ::sycl::buffer buf_out{out.get_data(), ::sycl::range<1>(out.numel())};
+      ::sycl::buffer buf_in {in.get_data() , ::sycl::range<1>(in.numel())};
+
+      parent::submit([&](::sycl::handler &h) 
+      {
+        auto access_in  = ::sycl::accessor{buf_in , h, ::sycl::read_only};
+        auto access_out = ::sycl::accessor{buf_out, h, ::sycl::write_only};
+
+        std::cout << "sycl copy - before kernel\n";
+
+        // For each element of the input tables, call our lambda parameter with the input accessors
+        h.parallel_for(out.numel(), [=](auto i) { access_out[i] = access_in[i]; });
+
+        std::cout << "sycl copy - after kernel\n";
+      });
+      parent::wait();
+    }
+    
+    template<concepts::container Out, concepts::container In>
+    auto copy_1(Out& out, In const& in)
+    {
+      std::cout << "sycl copy called\n";
+      auto proxy_in  = kwk::sycl::context::in(in);
+      auto proxy_out = kwk::sycl::context::out(out);
+
+      parent::submit([&](::sycl::handler &h) 
+      {
+        // Maps each sycl proxy to an accessor
+        auto access_in  = proxy_in.access(h);
+        auto access_out = proxy_out.access(h);
+
+        // For each element of the input tables, call our lambda parameter with the input accessors
+        h.parallel_for(proxy_out.size(), [=](auto i) { access_out[i] = access_in[i]; });
+      });
+      parent::wait();
+    }
+
+
     // TODO: regarder la doc de SYCL pour savoir comment c'est censé fonctionner les réductions en SYCL (y a des variables de réduction)
     // Regarder les exemples (spec Kronos à préférer au code de Intel)
   };
@@ -169,5 +235,11 @@ namespace kwk
   {
     // std::cout << "sycl reduce\n";
     return ctx.reduce(in, f, init);
+  }
+
+  template<concepts::container Out, concepts::container In>
+  constexpr auto copy(kwk::sycl::context& ctx, Out& out, In const& in)
+  {
+    ctx.copy_1(out, in);
   }
 }
