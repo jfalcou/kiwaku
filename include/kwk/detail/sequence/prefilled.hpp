@@ -101,7 +101,7 @@ namespace kwk::__
       if constexpr(is_fully_dynamic)
       {
         using kwk::extent;
-        static_cast<storage_type&>(*this) = storage_type{extent(vs)...};
+        static_cast<storage_type&>(*this) = storage_type{stored_t<decltype(D)>(extent(vs))...};
       }
       else
       {
