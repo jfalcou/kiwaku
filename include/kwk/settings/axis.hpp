@@ -108,7 +108,7 @@ namespace kwk::__
 
     template <typename T> requires( !concepts::axis<T> )
     KWK_PURE constexpr bool operator ==(T const v) const noexcept
-    requires requires{ { (Content const){} == v } -> std::convertible_to<bool>; } // poorman's std::equality_comparable_with<T, content_type>
+    requires std::equality_comparable_with<T, content_type>
     { return value == v; }
 
     // test whether an axis has an unspecified (runtime) value
