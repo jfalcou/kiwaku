@@ -99,6 +99,8 @@ namespace kwk::sycl
       ::sycl::buffer out_buf(out_vec);
       auto in_proxy = this->in(in);
 
+      // TODO 2024-02-27 : faire avec les reduction variables
+
       parent::submit([&](::sycl::handler &h) {
         ::sycl::accessor in_acc = in_proxy.access(h);
         // ::sycl::accessor in_acc(in_buf, h, ::sycl::read_only);
