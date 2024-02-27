@@ -27,6 +27,10 @@ find_end -> search_last
 namespace kwk
 {
 
+
+  // TODO : faire transfrom_reduce sur GPU ?
+  // À voir avec Joël
+
   // Unused context
   template<typename Context, typename Container, typename Check>
   auto find_if(Context&, Container const& c, Check f)
