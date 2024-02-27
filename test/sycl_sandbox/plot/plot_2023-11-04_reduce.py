@@ -145,21 +145,22 @@ def load_file(path):
 is_heavy = False
 
 if is_heavy:
-  suffix = "_heavy_blop"
-  suffix_title = "transform: [](auto e) { return very_complicated_stuff; }"
+  # suffix = "_heavy_blop"
+  suffix_title = "reduce: [](auto init, auto x) { return very_complicated_stuff; }"
 
-  lcpu        = load_file("heavy/cpu_context" + suffix + ".txt")
-  lcpu_native = load_file("heavy/cpu_native" + suffix + ".txt")
-  lsycl_cpu   = load_file("heavy/sycl_context_cpu" + suffix + ".txt")
-  lsycl_gpu   = load_file("heavy/sycl_context_gpu" + suffix + ".txt")
+  lcpu        = load_file("reduce/blop_heavy_isc20_rp6_al102400000_reduce_cpu_context.txt")
+  lcpu_native = load_file("reduce/blop_heavy_isc20_rp6_al102400000_reduce_cpu_native.txt")
+  lsycl_cpu   = load_file("reduce/blop_heavy_isc20_rp6_al102400000_reduce_sycl_context_cpu.txt")
+  lsycl_gpu   = load_file("reduce/blop_heavy_isc20_rp6_al102400000_reduce_sycl_context_gpu.txt")
 else:
-  suffix = "_copy_blop"
-  suffix_title = "transform: [](auto e) { return e; }"
+  # suffix = "_copy_blop"
+  suffix_title = "reduce: [](auto init, auto x) { return init + x; }"
 
-  lcpu        = load_file("copy/cpu_context" + suffix + ".txt")
-  lcpu_native = load_file("copy/cpu_native" + suffix + ".txt")
-  lsycl_cpu   = load_file("copy/sycl_context_cpu" + suffix + ".txt")
-  lsycl_gpu   = load_file("copy/sycl_context_gpu" + suffix + ".txt")
+  lcpu        = load_file("reduce/blop_copy_isc20_rp6_al102400000_reduce_cpu_context.txt")
+  lcpu_native = load_file("reduce/blop_copy_isc20_rp6_al102400000_reduce_cpu_native.txt")
+  lsycl_cpu   = load_file("reduce/blop_copy_isc20_rp6_al102400000_reduce_sycl_context_cpu.txt")
+  lsycl_gpu   = load_file("reduce/blop_copy_isc20_rp6_al102400000_reduce_sycl_context_gpu.txt")
+
 
 # values1 = [lcpu["med_host_alloc"],      lomp["med_host_alloc"],      lsycl["med_host_alloc"]      ]
 # values2 = [lcpu["med_copy_and_kernel"], lomp["med_copy_and_kernel"], lsycl["med_copy_and_kernel"] ]
@@ -169,7 +170,7 @@ else:
 # for item in lcpu:
 #   array_length_list.append(item["array_length"])
 
-array_length_list = pu.make_1D_list_every_1line_divided(lcpu, "array_length", 1, 1000000)
+array_length_list = pu.make_1D_list_every_1line(lcpu, "array_length", 3)
 
 
 # Data
@@ -259,7 +260,7 @@ else:
 
   plt.xticks(range(1, len(array_length_list)+1), array_length_list)
 
-  plt.xlabel('Array length, 10^6')
+  plt.xlabel('Workitem count')
   plt.ylabel('Elapsed time (ms) (lower is better)')
 
 

@@ -689,206 +689,206 @@ TTS_CASE("Check for context overload - predicates: all_of, any_of, none_of, coun
 // TODO: uncomment "find" tests when kwk::reverse will work again
 // TODO: uncomment "find" tests when kwk::reverse will work again
 
-// namespace test
-// {
-//   struct c_find             : public context_for_each {};
-//   struct c_find_if          : public context_for_each {};
-//   struct c_find_if_not      : public context_for_each {};
-//   struct c_find_first_of    : public context_for_each {};
-//   struct c_find_last        : public context_for_each {};
-//   struct c_find_last_if     : public context_for_each {};
-//   struct c_find_last_if_not : public context_for_each {};
-// }
-// namespace kwk
-// {
-//   template<typename Container, typename Check>
-//   constexpr auto find_if(test::c_find_if& ctx, Container const& c, Check cc)
-//   {
-//     ctx.set_message("find_if used!");
-//     return find_if(cpu, c, cc);
-//   }
+namespace test
+{
+  struct c_find             : public context_for_each {};
+  struct c_find_if          : public context_for_each {};
+  struct c_find_if_not      : public context_for_each {};
+  struct c_find_first_of    : public context_for_each {};
+  struct c_find_last        : public context_for_each {};
+  struct c_find_last_if     : public context_for_each {};
+  struct c_find_last_if_not : public context_for_each {};
+}
+namespace kwk
+{
+  template<typename Container, typename Check>
+  constexpr auto find_if(test::c_find_if& ctx, Container const& c, Check cc)
+  {
+    ctx.set_message("find_if used!");
+    return find_if(cpu, c, cc);
+  }
 
-//   template <concepts::container Out>
-//   constexpr auto find(test::c_find& ctx, Out const& o, auto v)
-//   {
-//     ctx.set_message("find used!");
-//     return find(cpu, o, v);
-//   }
+  template <concepts::container Out>
+  constexpr auto find(test::c_find& ctx, Out const& o, auto v)
+  {
+    ctx.set_message("find used!");
+    return find(cpu, o, v);
+  }
 
-//   template <typename Func, concepts::container Out>
-//   constexpr auto find_if_not(test::c_find_if_not& ctx, Out const& o, Func f)
-//   {
-//     ctx.set_message("find_if_not used!");
-//     return find_if_not(cpu, o, f);
-//   }
+  template <typename Func, concepts::container Out>
+  constexpr auto find_if_not(test::c_find_if_not& ctx, Out const& o, Func f)
+  {
+    ctx.set_message("find_if_not used!");
+    return find_if_not(cpu, o, f);
+  }
 
-//   template <concepts::container Out, concepts::container Values>
-//   constexpr auto find_first_of(test::c_find_first_of& ctx, Out const& o, Values const& v)
-//   {
-//     ctx.set_message("find_first_of used!");
-//     return find_first_of(cpu, o, v);
-//   }
+  template <concepts::container Out, concepts::container Values>
+  constexpr auto find_first_of(test::c_find_first_of& ctx, Out const& o, Values const& v)
+  {
+    ctx.set_message("find_first_of used!");
+    return find_first_of(cpu, o, v);
+  }
 
-//   template <typename Func, concepts::container Out>
-//   constexpr auto find_last_if(test::c_find_last_if& ctx, Out const& o, Func f)
-//   {
-//     ctx.set_message("find_last_if used!");
-//     return find_last_if(cpu, o, f);
-//   }
+  template <typename Func, concepts::container Out>
+  constexpr auto find_last_if(test::c_find_last_if& ctx, Out const& o, Func f)
+  {
+    ctx.set_message("find_last_if used!");
+    return find_last_if(cpu, o, f);
+  }
 
-//   template <concepts::container Out>
-//   constexpr auto find_last(test::c_find_last& ctx, Out const& o, auto v)
-//   {
-//     ctx.set_message("find_last used!");
-//     return find_last(cpu, o, v);
-//   }
+  template <concepts::container Out>
+  constexpr auto find_last(test::c_find_last& ctx, Out const& o, auto v)
+  {
+    ctx.set_message("find_last used!");
+    return find_last(cpu, o, v);
+  }
 
-//   template <typename Func, concepts::container Out>
-//   constexpr auto find_last_if_not(test::c_find_last_if_not& ctx, Out const& o, Func f)
-//   {
-//     ctx.set_message("find_last_if_not used!");
-//     return find_last_if_not(cpu, o, f);
-//   }
+  template <typename Func, concepts::container Out>
+  constexpr auto find_last_if_not(test::c_find_last_if_not& ctx, Out const& o, Func f)
+  {
+    ctx.set_message("find_last_if_not used!");
+    return find_last_if_not(cpu, o, f);
+  }
 
-//   // find_if -> kwk::__::for_until
-//   // find_if_not -> find_if
-//   // find_first_of -> find_if
-//   // find_first_of -> any_of -> reduce -> for_each
-//   // find -> find_if
-//   // find_last_if -> find_if
-//   // find_last -> find_last_if -> find_if
-//   // find_last_if_not -> find_last_if -> find_if
-// };
+  // find_if -> kwk::__::for_until
+  // find_if_not -> find_if
+  // find_first_of -> find_if
+  // find_first_of -> any_of -> reduce -> for_each
+  // find -> find_if
+  // find_last_if -> find_if
+  // find_last -> find_last_if -> find_if
+  // find_last_if_not -> find_last_if -> find_if
+};
 
-// TTS_CASE("Check for context overload - initially from find.hpp")
-// {
-//   auto v  = test::make_view_1();
+TTS_CASE("Check for context overload - initially from find.hpp")
+{
+  auto v  = test::make_view_1();
 
-//   // find_if -> kwk::__::for_until
-//   {
-//     test::c_find_if c1;
-//     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-//     kwk::find_if(c1, v, [&](auto){ return true; });
-//     TTS_EQUAL(c1.get_message(),   std::string{"find_if used!"});
+  // find_if -> kwk::__::for_until
+  {
+    test::c_find_if c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    kwk::find_if(c1, v, [&](auto){ return true; });
+    TTS_EQUAL(c1.get_message(),   std::string{"find_if used!"});
 
-//     // kwk::__::for_until
-//     // test::context_for_until c2;
-//     // TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-//     // kwk::find_if(c2, v, [&](auto e){ return true; });
-//     // TTS_EQUAL(c2.get_message(),   std::string{"for_until used!"});
-//   }
+    // kwk::__::for_until
+    // test::context_for_until c2;
+    // TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    // kwk::find_if(c2, v, [&](auto e){ return true; });
+    // TTS_EQUAL(c2.get_message(),   std::string{"for_until used!"});
+  }
 
-//   // find -> find_if -> kwk::__::for_until
-//   {
-//     test::c_find c1;
-//     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-//     kwk::find(c1, v, 12);
-//     TTS_EQUAL(c1.get_message(),   std::string{"find used!"});
+  // find -> find_if -> kwk::__::for_until
+  {
+    test::c_find c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    kwk::find(c1, v, 12);
+    TTS_EQUAL(c1.get_message(),   std::string{"find used!"});
 
-//     test::c_find_if c2;
-//     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-//     kwk::find(c2, v, 12);
-//     TTS_EQUAL(c2.get_message(),   std::string{"find_if used!"});
-//   }
+    test::c_find_if c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    kwk::find(c2, v, 12);
+    TTS_EQUAL(c2.get_message(),   std::string{"find_if used!"});
+  }
 
-//   // find_if_not -> find_if -> kwk::__::for_until
-//   {
-//     test::c_find_if_not c1;
-//     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-//     kwk::find_if_not(c1, v, [&](auto){ return true; });
-//     TTS_EQUAL(c1.get_message(),   std::string{"find_if_not used!"});
+  // find_if_not -> find_if -> kwk::__::for_until
+  {
+    test::c_find_if_not c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    kwk::find_if_not(c1, v, [&](auto){ return true; });
+    TTS_EQUAL(c1.get_message(),   std::string{"find_if_not used!"});
 
-//     test::c_find_if c2;
-//     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-//     kwk::find_if_not(c2, v, [&](auto){ return true; });
-//     TTS_EQUAL(c2.get_message(),   std::string{"find_if used!"});
-//   }
+    test::c_find_if c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    kwk::find_if_not(c2, v, [&](auto){ return true; });
+    TTS_EQUAL(c2.get_message(),   std::string{"find_if used!"});
+  }
 
-//   auto v2 = test::make_view_2();
+  auto v2 = test::make_view_2();
 
-//   // find_first_of -> find_if
-//   // find_first_of -> any_of -> reduce -> for_each
-//   {
-//     // vvv  find_first_of -> find_if -> kwk::__::for_until  vvv
-//     test::c_find_first_of c1;
-//     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-//     kwk::find_first_of(c1, v, v2);
-//     TTS_EQUAL(c1.get_message(),   std::string{"find_first_of used!"});
+  // find_first_of -> find_if
+  // find_first_of -> any_of -> reduce -> for_each
+  {
+    // vvv  find_first_of -> find_if -> kwk::__::for_until  vvv
+    test::c_find_first_of c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    kwk::find_first_of(c1, v, v2);
+    TTS_EQUAL(c1.get_message(),   std::string{"find_first_of used!"});
 
-//     test::c_find_if c2;
-//     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-//     kwk::find_first_of(c2, v, v2);
-//     TTS_EQUAL(c2.get_message(0),   std::string{"find_if used!"});
-//     TTS_EQUAL(c2.get_message(1),   std::string{"map used!"});
+    test::c_find_if c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    kwk::find_first_of(c2, v, v2);
+    TTS_EQUAL(c2.get_message(0),   std::string{"find_if used!"});
+    TTS_EQUAL(c2.get_message(1),   std::string{"map used!"});
 
-//     // vvv  find_first_of -> any_of -> reduce -> for_each  vvv
-//     test::c_any_of c3;
-//     TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
-//     kwk::find_first_of(c3, v, v2);
-//     TTS_EQUAL(c3.get_message(),   std::string{"any_of used!"});
+    // vvv  find_first_of -> any_of -> reduce -> for_each  vvv
+    test::c_any_of c3;
+    TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
+    kwk::find_first_of(c3, v, v2);
+    TTS_EQUAL(c3.get_message(),   std::string{"any_of used!"});
 
-//     test::c_reduce3 c4;
-//     TTS_EQUAL(c4.get_message(),   test::messaging_context::base_message);
-//     kwk::find_first_of(c4, v, v2);
-//     TTS_EQUAL(c4.get_message(),   std::string{"reduce(ctx, in, f, init) used!"});
+    test::c_reduce3 c4;
+    TTS_EQUAL(c4.get_message(),   test::messaging_context::base_message);
+    kwk::find_first_of(c4, v, v2);
+    TTS_EQUAL(c4.get_message(),   std::string{"reduce(ctx, in, f, init) used!"});
 
-//     test::context_for_each c5;
-//     TTS_EQUAL(c5.get_message(),   test::messaging_context::base_message);
-//     kwk::find_first_of(c5, v, v2);
-//     TTS_EQUAL(c5.get_message(),   std::string{"map used!"});
-//   }
+    test::context_for_each c5;
+    TTS_EQUAL(c5.get_message(),   test::messaging_context::base_message);
+    kwk::find_first_of(c5, v, v2);
+    TTS_EQUAL(c5.get_message(),   std::string{"map used!"});
+  }
 
-//   // TODO: finir cette partie lorsque les predicates seront finis eux aussi
+  // TODO: finir cette partie lorsque les predicates seront finis eux aussi
 
-//   // find_last_if -> find_if -> kwk::__::for_until
-//   {
-//     test::c_find_last_if c1;
-//     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last_if(c1, v, [&](auto){ return true; });
-//     TTS_EQUAL(c1.get_message(),   std::string{"find_last_if used!"});
+  // find_last_if -> find_if -> kwk::__::for_until
+  {
+    test::c_find_last_if c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    kwk::find_last_if(c1, v, [&](auto){ return true; });
+    TTS_EQUAL(c1.get_message(),   std::string{"find_last_if used!"});
 
-//     test::c_find_if c2;
-//     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last_if(c2, v, [&](auto){ return true; });
-//     TTS_EQUAL(c2.get_message(),   std::string{"find_if used!"});
-//   }
+    test::c_find_if c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    kwk::find_last_if(c2, v, [&](auto){ return true; });
+    TTS_EQUAL(c2.get_message(),   std::string{"find_if used!"});
+  }
 
-//   // find_last -> find_last_if -> find_if -> kwk::__::for_until
-//   {
-//     test::c_find_last c1;
-//     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last(c1, v, 4);
-//     TTS_EQUAL(c1.get_message(),   std::string{"find_last used!"});
+  // find_last -> find_last_if -> find_if -> kwk::__::for_until
+  {
+    test::c_find_last c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    kwk::find_last(c1, v, 4);
+    TTS_EQUAL(c1.get_message(),   std::string{"find_last used!"});
 
-//     test::c_find_last_if c2;
-//     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last(c2, v, 4);
-//     TTS_EQUAL(c2.get_message(),   std::string{"find_last_if used!"});
+    test::c_find_last_if c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    kwk::find_last(c2, v, 4);
+    TTS_EQUAL(c2.get_message(),   std::string{"find_last_if used!"});
 
-//     test::c_find_if c3;
-//     TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last(c3, v, 4);
-//     TTS_EQUAL(c3.get_message(),   std::string{"find_if used!"});
-//   }
+    test::c_find_if c3;
+    TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
+    kwk::find_last(c3, v, 4);
+    TTS_EQUAL(c3.get_message(),   std::string{"find_if used!"});
+  }
 
-//   // find_last_if_not -> find_last_if -> find_if -> kwk::__::for_until
-//   {
-//     test::c_find_last_if_not c1;
-//     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last_if_not(c1, v, [](auto e) { return (e == 0); });
-//     TTS_EQUAL(c1.get_message(),   std::string{"find_last_if_not used!"});
+  // find_last_if_not -> find_last_if -> find_if -> kwk::__::for_until
+  {
+    test::c_find_last_if_not c1;
+    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
+    kwk::find_last_if_not(c1, v, [](auto e) { return (e == 0); });
+    TTS_EQUAL(c1.get_message(),   std::string{"find_last_if_not used!"});
 
-//     test::c_find_last_if c2;
-//     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last_if_not(c2, v, [](auto e) { return (e == 0); });
-//     TTS_EQUAL(c2.get_message(),   std::string{"find_last_if used!"});
+    test::c_find_last_if c2;
+    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
+    kwk::find_last_if_not(c2, v, [](auto e) { return (e == 0); });
+    TTS_EQUAL(c2.get_message(),   std::string{"find_last_if used!"});
 
-//     test::c_find_if c3;
-//     TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
-//     kwk::find_last_if_not(c3, v, [](auto e) { return (e == 0); });
-//     TTS_EQUAL(c3.get_message(),   std::string{"find_if used!"});
-//   }
-// };
+    test::c_find_if c3;
+    TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
+    kwk::find_last_if_not(c3, v, [](auto e) { return (e == 0); });
+    TTS_EQUAL(c3.get_message(),   std::string{"find_if used!"});
+  }
+};
 
 
 

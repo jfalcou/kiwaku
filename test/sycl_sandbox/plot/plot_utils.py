@@ -114,6 +114,14 @@ def make_absolute_list(l1, keyword = None):
     res.append(l1[i][keyword])
   return res
 
+def make_absolute_list_divided(l1, keyword, divide_by):
+  if keyword == None:
+    keyword = "elapsed_time"
+  res  = []
+  for i in range(0, len(l1)):
+    res.append(float(l1[i][keyword]) / divide_by)
+  return res
+
 # def make_absolute_list(l1):
 #   return make_absolute_list(l1, "elapsed_time")
 
