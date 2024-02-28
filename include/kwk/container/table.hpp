@@ -101,19 +101,6 @@ namespace kwk
     //! @}
     //==============================================================================================
     using parent::operator();
-
-    template<concepts::slicer... Slicers>
-    requires( (sizeof...(Slicers) <= static_order) && !(std::integral<Slicers> && ...) )
-    auto operator()(Slicers... slice) const noexcept
-    {
-      auto shp = this->shape();
-      auto str = compress<sizeof...(slice)>(this->stride());
-
-      if constexpr(preserve_reachability<Slicers...>)
-        return make_view(source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...));
-      else
-        return make_view(source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...), unreachable);
-    }
   };
 
   //================================================================================================
