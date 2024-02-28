@@ -48,3 +48,11 @@ doc/conf.py
 .vscode/*
 .cache/*
 .ideas/*
+
+
+test/sycl_sandbox/obsolete
+test/sycl_sandbox/test_templates_include.hpp
+test/sycl_sandbox/test_templates.cpp
+exec.sh
+*.save
+*.txt

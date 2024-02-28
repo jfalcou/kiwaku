@@ -15,18 +15,29 @@
 #include <utility>
 #include <optional>
 
+// faire répertoiire POC dans la racide de Kiwaku
+// avec le in.out 
+
 // ALGO:
 /*
 equal_range // view entre les deux boundss  
 */
 
+
+
 // trouver un moyen malin de calculer la position
 // échanger de place func et non func et appeler func
 namespace kwk
 {
-  template <typename Func, concepts::container Out>
-  constexpr auto lower_bound(Out const& out, auto value, Func func)
+
+  // Unused context
+  // Function overloaded, even if Context is not used: for overloading with other contexts.
+  // eg.:
+  // constexpr auto lower_bound(sycl::context& c, Out const& out, auto value, Func func)
+  template <typename Context, typename Func, concepts::container Out>
+  constexpr auto lower_bound(Context&, Out const& out, auto value, Func func)
   {
+    // std::cout << "lower_bound(Context&, Out const& out, auto value, Func func)" << std::endl;
     auto count = out.numel();
     auto first = 0;
     auto it = 0; 
@@ -51,15 +62,30 @@ namespace kwk
     return (first < out.numel()) ?  std::optional<std::array<int,Out::static_order>>{kwk::coordinates(it, out.shape())} 
                                   :  std::nullopt;
   }
+  template <typename Func, concepts::container Out>
+  constexpr auto lower_bound(Out const& out, auto value, Func func)
+  {
+    // std::cout << "lower_bound(Context&, Out const& out, auto value, Func func)" << std::endl;
+    return lower_bound(cpu, out, value, func); // Unused context
+  }
 
+  template <typename Context, concepts::container Out>
+  constexpr auto lower_bound(Context& ctx, Out const& out, auto value)
+  {
+    // std::cout << "lower_bound(Context&, Out const& out, auto value)" << std::endl;
+    return lower_bound(ctx, out, value, [](auto e, auto i){return e<i;});
+  }
   template <concepts::container Out>
   constexpr auto lower_bound(Out const& out, auto value)
   {
-    return lower_bound(out, value, [](auto e, auto i){return e<i;});
+    // std::cout << "lower_bound(Out const& out, auto value)" << std::endl;
+    return lower_bound(cpu, out, value);
   }
 
-  template <typename Func, concepts::container Out>
-  constexpr auto upper_bound(Out const& out, auto value, Func func)
+
+  // Unused context
+  template <typename Context, typename Func, concepts::container Out>
+  constexpr auto upper_bound(Context&, Out const& out, auto value, Func func)
   {
     auto count = out.numel();
     auto first = 0;
@@ -85,22 +111,35 @@ namespace kwk
     return (first < out.numel()) ?  std::optional<std::array<int,Out::static_order>>{kwk::coordinates(it, out.shape())} 
                                   :  std::nullopt;
   }
+  template <typename Func, concepts::container Out>
+  constexpr auto upper_bound(Out const& out, auto value, Func func)
+  {
+    return upper_bound(cpu, out, value, func);
+  }
 
+
+  template <typename Context, concepts::container Out>
+  constexpr auto upper_bound(Context& ctx, Out const& out, auto value)
+  {
+    return upper_bound(ctx, out, value, [](auto e, auto i){return e<i;});
+  }
   template <concepts::container Out>
   constexpr auto upper_bound(Out const& out, auto value)
   {
-    return upper_bound( out, value, [](auto e, auto i){return e<i;});
+    return upper_bound(cpu, out, value);
   }
 
-  template <typename Func, concepts::container Out>
-  constexpr bool binary_search(Out const& out, auto value, Func func)
+
+  template <typename Context, typename Func, concepts::container Out>
+  constexpr bool binary_search(Context& ctx, Out const& out, auto value, Func func)
   {
+    // std::cout << "binary_search(Context&, Out const& out, auto value, Func func)" << std::endl;
     auto first = kwk::coordinates(0, out.shape());
     auto f = std::apply([](auto... i) { return kumi::tuple{i...}; }, first);
 
     if (func(value, out(f))) return false;
 
-    auto p = kwk::lower_bound(out, value, func);
+    auto p = lower_bound(ctx, out, value, func);
     bool outbound;
 
     if(p)
@@ -110,10 +149,24 @@ namespace kwk
 
     return (!outbound);
   }
+  template <typename Func, concepts::container Out>
+  constexpr bool binary_search(Out const& out, auto value, Func func)
+  {
+    // std::cout << "binary_search(Out const& out, auto value, Func func)" << std::endl;
+    return binary_search(cpu, out, value, func);
+  }
 
+  template <typename Context, concepts::container Out>
+  constexpr bool binary_search(Context& ctx, Out const& out, auto value)
+  {
+    // std::cout << "binary_search(Context&, Out const& out, auto value)" << std::endl;
+    return binary_search(ctx, out, value, [](auto e, auto i){return e<i;});
+  }
   template <concepts::container Out>
   constexpr bool binary_search(Out const& out, auto value)
   {
-    return binary_search(out, value, [](auto e, auto i){return e<i;});
+    // std::cout << "binary_search(Out const& out, auto value)" << std::endl;
+    return binary_search(cpu, out, value);
   }
 }
+
