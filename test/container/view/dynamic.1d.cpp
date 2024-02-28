@@ -17,11 +17,11 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from a C array" )
 
   float ref[7] = {1,2,3,4,5,6,7};
 
-  std::size_t sz = 7;
+  auto sz = 7;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(v), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( v.size() , 7ULL                              );
+  TTS_EQUAL ( v.size() , 7                                 );
   TTS_EQUAL ( v.shape(), kwk::of_size(sz)                  );
   TTS_EXPECT_NOT( v.shape().is_fully_static                );
 
@@ -31,7 +31,7 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from a C array" )
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(w), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( w.size() , 4ULL                                 );
+  TTS_EQUAL ( w.size() , 4                                    );
   TTS_EQUAL ( w.shape(), kwk::of_size(sz)                     );
   TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 
@@ -44,11 +44,11 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from std::array" )
 
   std::array<float,7> ref = {1,2,3,4,5,6,7};
 
-  std::size_t sz = 7;
+  auto sz = 7;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(v), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( v.size() , 7ULL                                 );
+  TTS_EQUAL ( v.size() , 7                                    );
   TTS_EQUAL ( v.shape(), kwk::of_size(sz)                     );
   TTS_EXPECT_NOT( v.shape().is_fully_static                   );
 
@@ -58,7 +58,7 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from std::array" )
   auto w = kwk::view{ kwk::source = ref, kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(w), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( w.size() , 4ULL                                 );
+  TTS_EQUAL ( w.size() , 4                                    );
   TTS_EQUAL ( w.shape(), kwk::of_size(sz)                     );
   TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 
@@ -71,11 +71,11 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from a ContiguousRange" )
 
   std::vector<float> ref = {1,2,3,4,5,6,7};
 
-  std::size_t sz = 7;
+  auto sz = 7;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(v), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( v.size() , 7ULL                              );
+  TTS_EQUAL ( v.size() , 7                                 );
   TTS_EQUAL ( v.shape(), kwk::of_size(sz)                  );
   TTS_EXPECT_NOT( v.shape().is_fully_static                );
 
@@ -87,7 +87,7 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from a ContiguousRange" )
   auto w = kwk::view{ kwk::source = cref, kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(w), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( w.size() , 5ULL                              );
+  TTS_EQUAL ( w.size() , 5                                 );
   TTS_EQUAL ( w.shape(), kwk::of_size(sz)                  );
   TTS_EXPECT_NOT( w.shape().is_fully_static                );
 
@@ -100,11 +100,11 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from a pointer" )
 
   std::vector<float> ref = {1,2,3,4,5,6,7};
 
-  std::size_t sz = 7;
+  auto sz = 7;
   auto v = kwk::view{ kwk::source = ref.data(), kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(v), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( v.size() , 7ULL                              );
+  TTS_EQUAL ( v.size() , 7                                 );
   TTS_EQUAL ( v.shape(), kwk::of_size(sz)                  );
   TTS_EXPECT_NOT( v.shape().is_fully_static                );
 
@@ -116,7 +116,7 @@ TTS_CASE( "Build a 1D view with dynamic shape settings from a pointer" )
   auto w = kwk::view{ kwk::source = cref.data(), kwk::of_size(sz) };
 
   TTS_EQUAL ( sizeof(w), sizeof(void*)+sizeof(std::size_t) );
-  TTS_EQUAL ( w.size() , 5ULL                              );
+  TTS_EQUAL ( w.size() , 5                                 );
   TTS_EQUAL ( w.shape(), kwk::of_size(sz)                  );
   TTS_EXPECT_NOT( w.shape().is_fully_static                );
 
