@@ -10,7 +10,6 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 
-#include <kwk/context/sycl/context.hpp>
 #include "../generic/copy.hpp"
 
 TTS_CASE("Check for kwk::copy(out, in) 1D")
