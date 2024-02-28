@@ -21,7 +21,7 @@ namespace kwk
   constexpr auto copy(Context& ctx, Out& out, In const& in)
   {
     // TODO: remettre kwk:: devant
-    transform(ctx, [](auto in) { return in; }, out, KWK_FWD(in) );
+    kwk::transform(ctx, [](auto in) { return in; }, out, KWK_FWD(in) );
   }
 
   template<concepts::container Out, concepts::container In>
