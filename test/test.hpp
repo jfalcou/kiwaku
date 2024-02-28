@@ -23,7 +23,8 @@ template<typename T, typename S>
 void fill_data(T* data, S shp, bool fill)
 requires(S::static_order == 1)
 {
-  for(int i1 = 0; i1<get<0>(shp); i1++)
+  std::cout << get<0>(shp) << "\n";
+  for(int i1 = 0; i1 < get<0>(shp); i1++)
   {
     if(!fill) data[i1] = 0;
     else data[i1] = T(i1);

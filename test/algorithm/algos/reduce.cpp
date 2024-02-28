@@ -12,13 +12,10 @@
 
 TTS_CASE("Check for kwk::reduce(in) 1D")
 {
-  int data[2];
-  int vdata = 1;
+  int data[2] = {1,2};
+  int vdata = 3;
 
-  fill_data(data, kwk::of_size(2), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
+  auto d = kwk::view{kwk::source = data};
   auto res = kwk::reduce(d);
 
   TTS_EQUAL(res, vdata);
@@ -111,7 +108,7 @@ TTS_CASE("Check for kwk::reduce(in, func) 1D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+10*e);
   });
@@ -132,7 +129,7 @@ TTS_CASE("Check for kwk::reduce(in, func) 2D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+10*e);
   });
@@ -153,7 +150,7 @@ TTS_CASE("Check for kwk::reduce(in, func) 2D - with CPU context")
   int count = 0;
   auto res = reduce(kwk::cpu, d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+10*e);
   });
@@ -174,7 +171,7 @@ TTS_CASE("Check for kwk::reduce(in, func) 3D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+10*e);
   });
@@ -195,7 +192,7 @@ TTS_CASE("Check for kwk::reduce(in, func) 4D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+10*e);
   });
@@ -214,11 +211,11 @@ TTS_CASE("Check for float kwk::reduce(in, func)")
 
   auto d = kwk::view{kwk::source = data, kwk::of_size(2,2)};
 
-  
+
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+e);
   });
@@ -238,11 +235,11 @@ TTS_CASE("Check for float kwk::reduce(in, func) - with CPU context")
 
   auto d = kwk::view{kwk::source = data, kwk::of_size(2,2)};
 
-  
+
   int count = 0;
   auto res = reduce(kwk::cpu, d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+e);
   });
@@ -264,7 +261,7 @@ TTS_CASE("Check for kwk::reduce(in, func, init) 1D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+e);
   }, 10);
@@ -285,7 +282,7 @@ TTS_CASE("Check for kwk::reduce(in, func, init) 2D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+e);
   }, 100);
@@ -306,7 +303,7 @@ TTS_CASE("Check for kwk::reduce(in, func, init) 3D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+e);
   }, 1000);
@@ -327,7 +324,7 @@ TTS_CASE("Check for kwk::reduce(in, func, init) 3D - with CPU context")
   int count = 0;
   auto res = reduce(kwk::cpu, d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+e);
   }, 1000);
@@ -348,7 +345,7 @@ TTS_CASE("Check for kwk::reduce(in, func, init) 4D")
   int count = 0;
   auto res = reduce(d,
   [&count](auto a, auto e)
-  { 
+  {
     count++;
     return (a+e);
   }, 10000);
