@@ -144,17 +144,17 @@ namespace test
 namespace kwk
 {
   template<typename Func, auto... S>
-  constexpr auto for_each(test::c_for_each2& ctx, Func f, shape<S...> const& shp)
+  constexpr auto for_each(test::c_for_each2& ctx, Func&& f, shape<S...> const& shp)
   {
     ctx.set_message("for_each(ctx, f, shp) used!");
-    for_each(cpu, f, shp);
+    kwk::for_each(cpu, KWK_FWD(f), shp);
   }
 
   template<typename Func, concepts::container C0, concepts::container... Cs>
   constexpr auto for_each(test::c_for_each1& ctx, Func f, C0&& c0, Cs&&... cs)
   {
     ctx.set_message("for_each(ctx, f, c0, cs...) used!");
-    return for_each(cpu, f, KWK_FWD(c0), KWK_FWD(cs)...);
+    return kwk::for_each(cpu, f, KWK_FWD(c0), KWK_FWD(cs)...);
   }
 }
 TTS_CASE("Check for context overload - for_each")
@@ -201,7 +201,7 @@ namespace test
   //           >
   //   constexpr auto transform(Func f, Out& out, C0&& c0, Cs&&... cs) const
   //   {
-  //     set_message("transform used!"); 
+  //     set_message("transform used!");
   //     kwk::for_each(kwk::cpu, [&](auto... is) { out(is...) = f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, out.shape() );
   //   }
   // };
@@ -289,7 +289,7 @@ namespace kwk
   {
     ctx.set_message("reduce(ctx, in) used!");
     return reduce(in);
-  }  
+  }
 }
 TTS_CASE("Check for context overload - reduce")
 {
@@ -651,7 +651,7 @@ TTS_CASE("Check for context overload - predicates: all_of, any_of, none_of, coun
     TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
     kwk::none_of(c2, v, [](auto e) { return (e == 0); });
     TTS_EQUAL(c2.get_message(),   std::string{"any_of used!"});
-    
+
     test::c_reduce3 c3;
     TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
     kwk::none_of(c3, v, [](auto e) { return (e == 0); });
@@ -1120,7 +1120,7 @@ TTS_CASE("Check for context overload - numeric: transform_reduce, inner_product"
   auto v2  = test::make_view_2();
 
   // transform_reduce overloads
-  {            
+  {
     test::c_transform_reduce1 c1;
     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
     kwk::transform_reduce(c1, v, v2);
@@ -1148,7 +1148,7 @@ TTS_CASE("Check for context overload - numeric: transform_reduce, inner_product"
   }
 
   // inner_product overloads
-  {            
+  {
     test::c_inner_product1 c1;
     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
     kwk::inner_product(c1, v, v2);
@@ -1275,7 +1275,7 @@ TTS_CASE("Check for context overload - replace: replace, replace_if")
 {
   auto v   = test::make_view_1();
 
-  {            
+  {
     test::c_replace c1;
     TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
     kwk::replace(c1, v, 2, 3);

@@ -43,28 +43,28 @@ namespace kwk
   template<typename Func, concepts::container In>
   constexpr auto reduce(In const& in, Func f, auto init)
   {
-    return reduce(cpu, in, f, init);
+    return kwk::reduce(cpu, in, f, init);
   }
 
   template<typename Context, typename Func, concepts::container In>
   constexpr auto reduce(Context& ctx, In const& in, Func f)
   {
-    return reduce(ctx, in, f, typename In::value_type{});
+    return kwk::reduce(ctx, in, f, typename In::value_type{});
   }
   template<typename Func, concepts::container In>
   constexpr auto reduce(In const& in, Func f)
   {
-    return reduce(cpu, in, f);
+    return kwk::reduce(cpu, in, f);
   }
 
   template<typename Context, concepts::container In>
   constexpr auto reduce(Context& ctx, In const& in)
   {
-    return reduce(ctx, in, [](auto a, auto e) { return a+e; });
+    return kwk::reduce(ctx, in, [](auto a, auto e) { return a+e; });
   }
   template<concepts::container In>
   constexpr auto reduce(In const& in)
   {
-    return reduce(cpu, in);
+    return kwk::reduce(cpu, in);
   }
 }
