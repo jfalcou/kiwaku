@@ -176,25 +176,52 @@ namespace kwk
   template<typename B, typename S, typename E, typename L> slicer(B,S,E,L)  -> slicer<B,S,E,L>;
 
   //================================================================================================
-  // Slicing helper
+  // Computes how much we should shift the beginning of the data along this dimension
   //================================================================================================
+  template<auto... D, std::size_t N>
+  constexpr auto reindex(shape<D...> const&, joker const&, kumi::index_t<N> const&) noexcept
+  {
+    return 0;
+  }
+
+  template<auto... D, concepts::extremum S, std::size_t N>
+  constexpr auto reindex(shape<D...> const& sh, S const& s, kumi::index_t<N> const&) noexcept
+  {
+    return s.size(get<N>(sh));
+  }
+
   template<auto... D, typename S, std::size_t N>
   constexpr auto reindex(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
+  requires( requires{ s.reindex(sh,idx); } )
   {
-    if      constexpr(std::same_as<S,joker>)            return 0;
-    else if constexpr(concepts::extremum<S>)            return s.size(get<N>(sh));
-    else if constexpr( requires{ s.reindex(sh,idx); } ) return s.reindex(sh,idx);
-    else                                                return s;
+    return s.reindex(sh,idx);
+  }
+
+  template<auto... D, std::convertible_to<std::ptrdiff_t> S, std::size_t N>
+  constexpr auto reindex(shape<D...> const&, S const& s, kumi::index_t<N> const&) noexcept
+  {
+    return s;
+  }
+
+  //================================================================================================
+  // Computes the number of new elements along this dimension
+  //================================================================================================
+  template<auto... D, std::size_t N>
+  constexpr auto reshape(shape<D...> const& sh, joker const&, kumi::index_t<N> const&) noexcept
+  {
+    return get<N>(sh);
   }
 
   template<auto... D, typename S, std::size_t N>
   constexpr auto reshape(shape<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
   {
-    if      constexpr(std::same_as<S,joker>)            return get<N>(sh);
-    else if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);
-    else                                                return fixed<1>;
+    if constexpr( requires{ s.reshape(sh,idx); } ) return s.reshape(sh,idx);
+    else                                           return fixed<1>;
   }
 
+  //================================================================================================
+  // Computes the new stride along this dimension
+  //================================================================================================
   template<auto... D, typename S, std::size_t N>
   constexpr auto restride(stride<D...> const& sh, S const& s, kumi::index_t<N> const& idx) noexcept
   {
@@ -202,8 +229,13 @@ namespace kwk
     else                                            return get<N>(sh);
   }
 
+
+  //================================================================================================
+  // Computes the shift in element to apply to the original pointer
+  //================================================================================================
   template<auto... DS, typename... Slicers>
   auto origin(shape<DS...> const& shp, Slicers... slice) noexcept
+  requires( requires{ reindex(shp,slice,kumi::index<0>);} && ... )
   {
     auto c = compress<sizeof...(slice)>(shp);
     return  linear_index( c
@@ -232,6 +264,7 @@ namespace kwk
   requires( concepts::extremum<E> || std::integral<E> )
   constexpr auto between(std::integral auto b, E e) noexcept { return slicer{b,_,e,_}; }
 
+  constexpr auto at         (std::integral auto i) noexcept { return slicer{i    ,_,i    ,_}; }
   constexpr auto every      (std::integral auto s) noexcept { return slicer{_    ,s,_    ,_}; }
   constexpr auto first      (std::integral auto n) noexcept { return slicer{_    ,_,_    ,n}; }
   constexpr auto drop_first (std::integral auto n) noexcept { return slicer{n    ,_,_    ,_}; }
