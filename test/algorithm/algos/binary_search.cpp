@@ -147,32 +147,32 @@ TTS_CASE("Check for kwk::lower_bound(In, value, func) 1D with function")
   // std::cout << (*kwk::lower_bound(view, 21))[0] << std::endl;
 };
 
-// TTS_CASE("Check for kwk::lower_bound 1D: size 0")
-// {
-//   const std::size_t input_size = 0;
-//   std::array<int, input_size> input;
-//   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-//   auto func = [](auto const& input_, auto const& element_) { return input_ < (element_ - 10) * 2; };
+TTS_CASE("Check for kwk::lower_bound 1D: size 0")
+{
+  const std::size_t input_size = 0;
+  std::array<int, input_size> input;
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  auto func = [](auto const& input_, auto const& element_) { return input_ < (element_ - 10) * 2; };
 
-//   LB_ERROR(input, view, -2984612);
-//   LB_ERROR(input, view, -2);
-//   LB_ERROR(input, view, 0);
-//   LB_ERROR(input, view, 5);
-//   LB_ERROR(input, view, 19);
-//   LB_ERROR(input, view, 20);
-//   LB_ERROR(input, view, 21);
-//   LB_ERROR(input, view, 78456465);
+  LB_ERROR(input, view, -2984612);
+  // LB_ERROR(input, view, -2);
+  // LB_ERROR(input, view, 0);
+  // LB_ERROR(input, view, 5);
+  // LB_ERROR(input, view, 19);
+  // LB_ERROR(input, view, 20);
+  // LB_ERROR(input, view, 21);
+  // LB_ERROR(input, view, 78456465);
 
-//   LB_ERROR_FUNC(input, view, func, -2984612);
-//   LB_ERROR_FUNC(input, view, func, -2);
-//   LB_ERROR_FUNC(input, view, func, 0);
-//   LB_ERROR_FUNC(input, view, func, 5);
-//   LB_ERROR_FUNC(input, view, func, 9);
-//   LB_ERROR_FUNC(input, view, func, 19);
-//   LB_ERROR_FUNC(input, view, func, 20);
-//   LB_ERROR_FUNC(input, view, func, 21);
-//   LB_ERROR_FUNC(input, view, func, 78456465);
-// };
+  // LB_ERROR_FUNC(input, view, func, -2984612);
+  // LB_ERROR_FUNC(input, view, func, -2);
+  // LB_ERROR_FUNC(input, view, func, 0);
+  // LB_ERROR_FUNC(input, view, func, 5);
+  // LB_ERROR_FUNC(input, view, func, 9);
+  // LB_ERROR_FUNC(input, view, func, 19);
+  // LB_ERROR_FUNC(input, view, func, 20);
+  // LB_ERROR_FUNC(input, view, func, 21);
+  // LB_ERROR_FUNC(input, view, func, 78456465);
+};
 
 
 TTS_CASE("Check for kwk::upper_bound(In, value) 1D ---------")
