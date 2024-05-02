@@ -63,7 +63,7 @@ namespace
     }
   };
 
-// LOWER BOUND
+// ========== LOWER BOUND ==========
 #define LB_VALID(view, search, expected)                                                          \
   {                                                                                               \
     auto r = std::array<std::size_t, 1>{expected};                                                \
@@ -85,10 +85,11 @@ namespace
 #define LB_ERROR_std(input, view, search)                                                         \
   {                                                                                               \
     TTS_EQUAL(kwk::lower_bound(view, search), std::nullopt);                                      \
-    TTS_EQUAL ( std::lower_bound(input.begin(), input.end(), search), input.end());               \
+    TTS_EQUAL(std::lower_bound(input.begin(), input.end(), search), input.end());                 \
   }
 
-// LOWER BOUND with function
+
+// ========== LOWER BOUND with function ==========
 #define LB_VALID_FUNC(view, func, search, expected)                                               \
   {                                                                                               \
     auto r = std::array<std::size_t, 1>{expected};                                                \
@@ -115,8 +116,63 @@ namespace
   }
 
 
+// ========== UPPER BOUND ==========
+#define UB_VALID(view, search, expected)                                                          \
+  {                                                                                               \
+    auto r = std::array<std::size_t, 1>{expected};                                                \
+    TTS_ALL_EQUAL(*kwk::upper_bound(view, search), r);                                            \
+  }
 
-// BINARY SEARCH
+#define UB_VALID_std(input, view, search)                                                         \
+  {                                                                                               \
+    TTS_EQUAL ( (*kwk::upper_bound(view, search))[0]                                              \
+              , (std::upper_bound(input.begin(), input.end(), search) - input.begin())            \
+              );                                                                                  \
+  }
+
+#define UB_ERROR(view, search)                                                                    \
+  {                                                                                               \
+    TTS_EQUAL(kwk::upper_bound(view, search), std::nullopt);                                      \
+  }
+
+#define UB_ERROR_std(input, view, search)                                                         \
+  {                                                                                               \
+    TTS_EQUAL(kwk::upper_bound(view, search), std::nullopt);                                      \
+    TTS_EQUAL(std::upper_bound(input.begin(), input.end(), search), input.end());                 \
+  }
+
+
+// ========== UPPER BOUND with function ==========
+#define UB_VALID_FUNC(view, func, search, expected)                                               \
+  {                                                                                               \
+    auto r = std::array<std::size_t, 1>{expected};                                                \
+    TTS_ALL_EQUAL(*kwk::upper_bound(view, search, func), r);                                      \
+  }
+
+#define UB_VALID_FUNC_std(input, view, func, search)                                              \
+  {                                                                                               \
+    /*Compare found indexes*/                                                                     \
+    TTS_EQUAL ( (*kwk::upper_bound(view, search, func))[0] \
+              , (std::upper_bound(input.begin(), input.end(), search, func) - input.begin())      \
+              );                                                                                  \
+  }
+
+#define UB_ERROR_FUNC(view, func, search)                                                         \
+  {                                                                                               \
+    TTS_EQUAL(kwk::upper_bound(view, search, func), std::nullopt);                                \
+  }
+
+#define UB_ERROR_FUNC_std(input, view, func, search)                                              \
+  {                                                                                               \
+    TTS_EQUAL(kwk::upper_bound(view, search, func), std::nullopt);                                \
+    TTS_EQUAL(std::upper_bound(input.begin(), input.end(), search, func), input.end());           \
+  }
+
+
+
+
+
+// ========== BINARY SEARCH ==========
 #define BS(view, search, expected)                                                                \
   {                                                                                               \
     bool result = kwk::binary_search(view, search);                                               \
@@ -142,26 +198,6 @@ namespace
     bool res_std = std::binary_search(input.begin(), input.end(), search, func);                  \
     TTS_EQUAL(res, res_std);                                                                      \
   }
-
-
-  struct check_binary_search
-  {
-    /// @brief Checks that binary_search returns the expected value, for the input value "search"
-    /// @param view kiwaku view
-    /// @param search value to search in the view
-    /// @param expected expected returned value by binary_search
-    static void check(auto& view, int search, bool expected)
-    {
-      bool result = kwk::binary_search(view, search);
-      TTS_EQUAL(result, expected);
-    }
-
-    static void check(auto& view, int search, bool expected, auto& func)
-    {
-      bool result = kwk::binary_search(view, search, func);
-      TTS_EQUAL(result, expected);
-    }
-  };
 }
 
 TTS_CASE("Check for kwk::lower_bound(In, value) 1D ---------")
@@ -184,7 +220,7 @@ TTS_CASE("Check for kwk::lower_bound(In, value) 1D ---------")
   // lower_bound returns the index of the first element above the specified value
   LB_VALID(view, -2984612, 0);
   LB_VALID(view, -2, 0);
-  LB_VALID(view, 0, 0);
+  LB_VALID(view, 0, 1);
   LB_VALID(view, 5, 5);
   LB_VALID(view, 19, 19);
   LB_ERROR(view, 20);
@@ -210,17 +246,6 @@ TTS_CASE("Check for kwk::lower_bound(In, value, func) 1D with function")
   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
   auto func = [](auto const& input_, auto const& element_) { return input_ < (element_ - 10) * 2; };
-
-  check_bound::valid  (algo_type::lower_bound, view, -2984612, 0, func);
-  check_bound::valid  (algo_type::lower_bound, view, -2, 0, func);
-  check_bound::valid  (algo_type::lower_bound, view, 0, 0, func);
-  check_bound::valid  (algo_type::lower_bound, view, 5, 5, func);
-  check_bound::valid  (algo_type::lower_bound, view, 0, 0, func);
-  check_bound::valid  (algo_type::lower_bound, view, 9, 9, func);
-  check_bound::valid  (algo_type::lower_bound, view, 19, 19, func);
-  check_bound::invalid(algo_type::lower_bound, view, 20, func);
-  check_bound::invalid(algo_type::lower_bound, view, 21, func);
-  check_bound::invalid(algo_type::lower_bound, view, 78456465, func);
 
   LB_VALID_FUNC(view, func, -2984612, 0);
   LB_VALID_FUNC(view, func, -2, 0);
@@ -254,15 +279,27 @@ TTS_CASE("Check for kwk::upper_bound(In, value) 1D ---------")
   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
   // upper_bound returns the index of the first element above the specified value
-  check_bound::valid  (algo_type::upper_bound, view, -895, 0);
-  check_bound::valid  (algo_type::upper_bound, view, -78495, 0);
-  check_bound::valid  (algo_type::upper_bound, view, -1, 0);
-  check_bound::valid  (algo_type::upper_bound, view, 0, 1);
-  check_bound::valid  (algo_type::upper_bound, view, 5, 6);
-  check_bound::valid  (algo_type::upper_bound, view, 18, 19);
-  check_bound::invalid(algo_type::upper_bound, view, 19);
-  check_bound::invalid(algo_type::upper_bound, view, 2000);
-  check_bound::invalid(algo_type::upper_bound, view, 78456465);
+  UB_VALID(view, -895, 0);
+  UB_VALID(view, -78495, 0);
+  UB_VALID(view, -1, 0);
+  UB_VALID(view, 0, 1);
+  UB_VALID(view, 5, 6);
+  UB_VALID(view, 18, 19);
+  UB_ERROR(view, 19);
+  UB_ERROR(view, 21);
+  UB_ERROR(view, 2000);
+  UB_ERROR(view, 78456465);
+
+  UB_VALID_std(input, view, -895);
+  UB_VALID_std(input, view, -78495);
+  UB_VALID_std(input, view, -1);
+  UB_VALID_std(input, view, 0);
+  UB_VALID_std(input, view, 5);
+  UB_VALID_std(input, view, 18);
+  UB_ERROR_std(input, view, 19);
+  UB_ERROR_std(input, view, 21);
+  UB_ERROR_std(input, view, 2000);
+  UB_ERROR_std(input, view, 78456465);
 };
 
 
