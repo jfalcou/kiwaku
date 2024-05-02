@@ -37,6 +37,8 @@ namespace kwk
   template <typename Context, typename Func, concepts::container Out>
   constexpr auto lower_bound(Context&, Out const& out, auto value, Func func)
   {
+    if (out.numel() == 0) return std::nullopt;
+
     // std::cout << "lower_bound(Context&, Out const& out, auto value, Func func)" << std::endl;
     auto count = out.numel();
     auto first = 0;
@@ -59,6 +61,8 @@ namespace kwk
         else
             count = step;
     }
+    // std::cout << "lower_bound: numel = " << out.numel() << "\n";
+
     return (first < out.numel()) ?  std::optional<std::array<int,Out::static_order>>{kwk::coordinates(it, out.shape())} 
                                   :  std::nullopt;
   }
