@@ -133,21 +133,23 @@ namespace kwk
   template <typename Context, typename Func, concepts::container Out>
   constexpr bool binary_search(Context& ctx, Out const& out, auto value, Func func)
   {
-    // std::cout << "binary_search(Context&, Out const& out, auto value, Func func)" << std::endl;
-    auto first = kwk::coordinates(0, out.shape());
-    auto f = std::apply([](auto... i) { return kumi::tuple{i...}; }, first);
+    // Finds the index of the first element before (or equal to) value
+    //    returns an std::array<int, dimensions>
+    auto first = lower_bound(ctx, out, value, func);
 
-    if (func(value, out(f))) return false;
+    // Element not found
+    if (first == std::nullopt) return false;
 
-    auto p = lower_bound(ctx, out, value, func);
-    bool outbound;
+    // std::cout << "first: ";
+    // std::apply([](auto... i) { ((std::cout << i << ", "), ...); }, *first);
+    // std::cout << "\n";
 
-    if(p)
-      outbound = false;
-    else
-      outbound = true;
+    // transforms the array into a kumi::tuple
+    auto kumi_findex = std::apply([](auto... i) { return kumi::tuple{i...}; }, *first);
 
-    return (!outbound);
+    // return (out(kumi_findex) == value);
+    return !(func(value, out(kumi_findex)));
+
   }
   template <typename Func, concepts::container Out>
   constexpr bool binary_search(Out const& out, auto value, Func func)
