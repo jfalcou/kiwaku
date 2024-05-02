@@ -152,7 +152,7 @@ TTS_CASE("Check for kwk::lower_bound 1D: size 0")
   const std::size_t input_size = 0;
   std::array<int, input_size> input;
   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-  auto func = [](auto const& input_, auto const& element_) { return input_ < (element_ - 10) * 2; };
+  // auto func = [](auto const& input_, auto const& element_) { return input_ < (element_ - 10) * 2; };
 
   LB_ERROR(input, view, -2984612);
   // LB_ERROR(input, view, -2);
