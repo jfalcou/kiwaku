@@ -35,7 +35,8 @@ namespace kwk
   // eg.:
   // constexpr auto lower_bound(sycl::context& c, Out const& out, auto value, Func func)
   template <typename Context, typename Func, concepts::container Out>
-  constexpr auto lower_bound(Context&, Out const& out, auto value, Func func)
+  constexpr std::optional<std::array<int,Out::static_order>>
+  lower_bound(Context&, Out const& out, auto value, Func func)
   {
     if (out.numel() == 0) return std::nullopt;
 
