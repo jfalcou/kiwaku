@@ -15,7 +15,7 @@ TTS_CASE( "Size 0: Build a 1D view with dynamic shape settings from std::array" 
 {
   using namespace kwk::literals;
 
-  std::array<float, 0> ref = {};
+  std::array<float, 1> ref = {5};
   std::size_t sz = 0;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz) };
   TTS_EQUAL ( sizeof(v), sizeof(void*)+sizeof(std::size_t) );
