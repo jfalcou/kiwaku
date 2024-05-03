@@ -51,6 +51,22 @@ TTS_CASE("Check for kwk::for_each(func, container) 2D")
   TTS_EQUAL(count, d.numel());
 };
 
+TTS_CASE("Check for kwk::for_each(func, container) 2D - with CPU context")
+{
+  float data[2*3];
+
+  fill_data(data, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+
+  float sum = 0.f;
+  int count = 0;
+  kwk::for_each(kwk::cpu, [&](auto e) { count++; sum +=e; }, d);
+
+  TTS_EQUAL(sum, 36.f);
+  TTS_EQUAL(count, d.numel());
+};
+
 TTS_CASE("Check for kwk::for_each(func, container) 3D")
 {
   float data[2*3*4];

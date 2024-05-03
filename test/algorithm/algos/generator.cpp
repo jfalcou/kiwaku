@@ -40,6 +40,23 @@ TTS_CASE("Check for kwk::fill(out, value) 2D")
   TTS_ALL_EQUAL(data, vdata);
 };
 
+TTS_CASE("Check for kwk::fill(out, value) 2D - with CPU context")
+{
+  int data[2*3];
+
+  int vdata[2*3];
+
+  for(int i = 0; i<2; i++)
+    for(int j = 0; j<3; j++)
+      vdata[i*3+j] = 2;
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  
+  kwk::fill(kwk::cpu, d, 2);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
 TTS_CASE("Check for kwk::fill(out, value) 3D")
 {
   int data[2*3*4];
@@ -109,6 +126,27 @@ TTS_CASE("Check for kwk::generate(out, func) 2D")
   
   int count = 0;
   kwk::generate([&](auto p1, auto p2)
+  { 
+    count++;
+    return 10*p1+p2; 
+  }
+  , d);
+
+  TTS_ALL_EQUAL(data, vdata);
+  TTS_EQUAL(count, d.numel());
+};
+
+TTS_CASE("Check for kwk::generate(out, func) 2D - with CPU context")
+{
+  int data[2*3];
+  int vdata[2*3];
+
+  fill_data(vdata, kwk::of_size(2,3), true);
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  
+  int count = 0;
+  kwk::generate(kwk::cpu, [&](auto p1, auto p2)
   { 
     count++;
     return 10*p1+p2; 
@@ -214,6 +252,27 @@ TTS_CASE("Check for kwk::iota(out) 3D")
   TTS_ALL_EQUAL(data, vdata);
 };
 
+TTS_CASE("Check for kwk::iota(out) 3D - with CPU context")
+{
+  int data[2*3*4];
+  int vdata[2*3*4];
+
+  int iot = 0;
+  for(int i = 0; i<2; i++)
+    for(int j = 0; j<3; j++)
+      for(int k = 0; k<4; k++)
+      {
+        vdata[i*4*3+j*4+k] = iot;
+        iot++;
+      }
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+  
+  kwk::iota(kwk::cpu, d);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
 TTS_CASE("Check for kwk::iota(out) 4D")
 {
   int data[2*3*4*5];
@@ -312,6 +371,28 @@ TTS_CASE("Check for kwk::iota(out, value) 4D")
   TTS_ALL_EQUAL(data, vdata);
 };
 
+TTS_CASE("Check for kwk::iota(out, value) 4D - with CPU context")
+{
+  int data[2*3*4*5];
+  int vdata[2*3*4*5];
+
+  int iot = 4;
+  for(int i = 0; i<2; i++)
+    for(int j = 0; j<3; j++)
+      for(int k = 0; k<4; k++)
+        for(int l = 0; l<5; l++)
+        {
+          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
+          iot++;
+        }
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
+  
+  kwk::iota(kwk::cpu, d,4);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
 TTS_CASE("Check for kwk::iota(out, value, step) 1D")
 {
   int data[2];
@@ -366,6 +447,27 @@ TTS_CASE("Check for kwk::iota(out, value, step) 3D")
   TTS_ALL_EQUAL(data, vdata);
 };
 
+TTS_CASE("Check for kwk::iota(out, value, step) 3D - with CPU context")
+{
+  int data[2*3*4];
+  int vdata[2*3*4];
+
+  int iot = 0;
+  for(int i = 0; i<2; i++)
+    for(int j = 0; j<3; j++)
+      for(int k = 0; k<4; k++)
+      {
+        vdata[i*4*3+j*4+k] = iot;
+        iot+=30;
+      }
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+  
+  kwk::iota(kwk::cpu, d, 0, 30);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
 TTS_CASE("Check for kwk::iota(out, value, step) 4D")
 {
   int data[2*3*4*5];
@@ -406,6 +508,28 @@ TTS_CASE("Check for float kwk::iota(out, value, step) 4D")
   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
   
   kwk::iota(d,0.f,40.5f);
+
+  TTS_ALL_EQUAL(data, vdata);
+};
+
+TTS_CASE("Check for float kwk::iota(out, value, step) 4D - with CPU context")
+{
+  float data[2*3*4*5];
+  float vdata[2*3*4*5];
+
+  float iot = 0.f;
+  for(int i = 0; i<2; i++)
+    for(int j = 0; j<3; j++)
+      for(int k = 0; k<4; k++)
+        for(int l = 0; l<5; l++)
+        {
+          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
+          iot+=40.5f;
+        }
+
+  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
+  
+  kwk::iota(kwk::cpu, d,0.f,40.5f);
 
   TTS_ALL_EQUAL(data, vdata);
 };
