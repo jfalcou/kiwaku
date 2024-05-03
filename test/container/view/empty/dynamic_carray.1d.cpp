@@ -16,7 +16,7 @@ TTS_CASE( "Size 0: Build a 1D view with dynamic shape settings from a C array" )
 {
   using namespace kwk::literals;
 
-  // TODO: does not compile if the size of ref is zero.
+  // Does not compile if the size of ref is zero.
   float ref[1] = {5};
   std::size_t sz = 0;
   auto v = kwk::view{ kwk::source = ref, kwk::of_size(sz) };
