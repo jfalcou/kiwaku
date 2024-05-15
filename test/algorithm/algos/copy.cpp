@@ -12,192 +12,125 @@
 
 TTS_CASE("Check for kwk::copy(out, in) 1D")
 {
-  int data[2];
+  const std::size_t input_size = 200;
+  const std::size_t output_size = input_size;
+  std::array<int, input_size> input;
+  std::array<int, output_size> output;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i; };
 
-  fill_data(data, kwk::of_size(2), true);
-
-  int vdata[2];
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2)};
+  auto view_input = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  auto view_output = kwk::view{kwk::source = output, kwk::of_size(output_size)};
   
-  kwk::copy(v, d);
+  kwk::copy(view_output, view_input);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, output);
 };
 
-TTS_CASE("Check for kwk::copy(out, in) 2D")
+TTS_CASE("Check for kwk::copy(out, in) 1D with double")
 {
-  int data[2*3];
+  const std::size_t input_size = 200;
+  const std::size_t output_size = input_size;
+  std::array<double, input_size> input;
+  std::array<double, output_size> output;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i; };
 
-  fill_data(data, kwk::of_size(2,3), true);
-
-  int vdata[2*3];
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2,3)};
+  auto view_input = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  auto view_output = kwk::view{kwk::source = output, kwk::of_size(output_size)};
   
-  kwk::copy(v, d);
+  kwk::copy(view_output, view_input);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, output);
 };
 
-TTS_CASE("Check for kwk::copy(out, in) 3D")
+TTS_CASE("Check for kwk::copy(out, in) 1D size 1000000")
 {
-  int data[2*3*4];
+  const std::size_t input_size = 1000000;
+  const std::size_t output_size = input_size;
+  std::array<int, input_size> input;
+  std::array<int, output_size> output;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i; };
 
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  int vdata[2*3*4];
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2,3,4)};
+  auto view_input = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  auto view_output = kwk::view{kwk::source = output, kwk::of_size(output_size)};
   
-  kwk::copy(v, d);
+  kwk::copy(view_output, view_input);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, output);
 };
 
-TTS_CASE("Check for kwk::copy(out, in) 4D")
+TTS_CASE("Check for kwk::copy(out, in) 1D size 1")
 {
-  int data[2*3*4*5];
+  const std::size_t input_size = 1;
+  const std::size_t output_size = input_size;
+  std::array<int, input_size> input;
+  std::array<int, output_size> output;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i; };
 
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  int vdata[2*3*4*5];
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2,3,4,5)};
+  auto view_input = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  auto view_output = kwk::view{kwk::source = output, kwk::of_size(output_size)};
   
-  kwk::copy(v, d);
+  kwk::copy(view_output, view_input);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, output);
 };
 
-TTS_CASE("Check for double kwk::copy(out, in) 2D")
+TTS_CASE("Check for kwk::copy(out, in) 1D size 0")
 {
-  double data[2*3];
+  std::vector<int> input;
+  std::vector<int> output;
 
-  fill_data(data, kwk::of_size(2,3), true);
-
-  double vdata[2*3];
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2,3)};
+  auto view_input = kwk::view{kwk::source = input, kwk::of_size(0)};
+  auto view_output = kwk::view{kwk::source = output, kwk::of_size(0)};
   
-  kwk::copy(v, d);
+  kwk::copy(view_output, view_input);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_EQUAL(output.size(), 0UL);
 };
+
 
 TTS_CASE("Check for kwk::copy_if(func, out, in) 1D")
 {
-  int data[2];
+  const std::size_t input_size = 200;
+  const std::size_t output_size = input_size;
+  std::array<double, input_size> input;
+  std::array<double, output_size> output;
+  std::array<double, output_size> expected;
+  input.fill(0);
+  output.fill(0);
+  expected.fill(0);
 
-  fill_data(data, kwk::of_size(2), true);
+  auto view_input = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  auto view_output = kwk::view{kwk::source = output, kwk::of_size(output_size)};
 
-  int rdata[2];
-  
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  auto r = kwk::view{kwk::source = rdata, kwk::of_size(2)};
-  
-  int count = 0;
-  kwk::copy_if([&](auto e)
-  {
-    count++;
-    return (e<1);
-  }
-  ,r, d);
+  std::size_t count = 0; // Only compatible with sequential CPU code...
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i; };
+  auto func = [&](auto e) { ++count; return (e < 101); };
 
-  TTS_EQUAL(rdata[0], 0);
-  TTS_EQUAL(count, d.numel());
-};
+  for (std::size_t i = 0; i < output_size; ++i)
+  { 
+    expected[i] = func(input[i]) ? input[i] : 0;
+  };
+  TTS_EQUAL(count, output_size);
 
-TTS_CASE("Check for kwk::copy_if(func, out, in) 2D")
-{
-  int data[2*3];
-  fill_data(data, kwk::of_size(2,3), true);
+  count = 0;
+  kwk::copy_if(func, view_output, view_input);
+  TTS_EQUAL(count, output_size);
 
-  int rdata[2*3];
-  fill_data(rdata, kwk::of_size(2,3), false);
-
-  int vdata[2*3];
-  fill_data(vdata, kwk::of_size(2,3), false);
-
-  vdata[1*3+0] = 10;
-  
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  auto r = kwk::view{kwk::source = rdata, kwk::of_size(2,3)};
-  
-  int count = 0;
-  kwk::copy_if([&](auto e)
-  {
-    count++;
-    return (e==10);
-  }
-  ,r, d);
-
-  TTS_ALL_EQUAL(rdata, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::copy_if(func, out, in) 3D")
-{
-  int data[2*3*4];
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  int rdata[2*3*4];
-  fill_data(rdata, kwk::of_size(2,3,4), false);
-
-  int vdata[2*3*4];
-  fill_data(vdata, kwk::of_size(2,3,4), false);
-
-  vdata[1*4*3+0+3] = 103;
-  vdata[0+1*4+3] = 13;
-  
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  auto r = kwk::view{kwk::source = rdata, kwk::of_size(2,3,4)};
-  
-  int count = 0;
-  kwk::copy_if([&](auto e)
-  {
-    count++;
-    return (e==103 || e==13);
-  }
-  ,r, d);
-
-  TTS_ALL_EQUAL(rdata, vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_ALL_EQUAL(output, expected);
 };
 
 
-TTS_CASE("Check for kwk::copy_if(func, out, in) 4D")
+
+TTS_CASE("Check for kwk::copy(out, in, func) 1D size 0")
 {
-  int data[2*3*4*5];
-  fill_data(data, kwk::of_size(2,3,4,5), true);
+  std::vector<int> input;
+  std::vector<int> output;
 
-  int rdata[2*3*4*5];
-  fill_data(rdata, kwk::of_size(2,3,4,5), false);
-
-  int vdata[2*3*4*5];
-  fill_data(vdata, kwk::of_size(2,3,4,5), false);
-
-  vdata[0+0+0+1] = 1;
-  vdata[0+0+0+2] = 2;
-  vdata[0+0+0+3] = 3;
-  vdata[0+0+0+4] = 4;
+  auto view_input = kwk::view{kwk::source = input, kwk::of_size(0)};
+  auto view_output = kwk::view{kwk::source = output, kwk::of_size(0)};
+  auto func = [&](auto e) { return (e < 101); };
   
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  auto r = kwk::view{kwk::source = rdata, kwk::of_size(2,3,4,5)};
-  
-  int count = 0;
-  kwk::copy_if([&](auto e)
-  {
-    count++;
-    return (e<10);
-  }
-  ,r, d);
+  kwk::copy_if(func, view_output, view_input);
 
-  TTS_ALL_EQUAL(rdata, vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(output.size(), 0UL);
 };
