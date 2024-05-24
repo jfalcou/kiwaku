@@ -100,6 +100,8 @@ namespace kwk
     return kwk::find_first_of(cpu, out, in);
   }
 
+  // TODO?: add find_first_of(Out const& out, Values const& in, Func f)?
+
 
   template <typename Context, typename Func, concepts::container Out>
   constexpr auto find_last_if(Context& ctx, Out const& out, Func f)

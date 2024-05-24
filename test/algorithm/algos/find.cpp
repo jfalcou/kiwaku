@@ -12,605 +12,409 @@
 
 TTS_CASE("Check for kwk::find(In, value) 1D")
 {
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
+  const std::size_t input_size = 20;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-  fill_data(data, kwk::of_size(2), true);
+  // std::cout << "find -1: " << kwk::find(view, -1) << "\n";
+  // std::cout << "find -10: " << kwk::find(view, -10) << "\n";
+  // std::cout << "find 0: " << kwk::find(view, 0) << "\n";
+  // std::cout << "find 10: " << kwk::find(view, 10) << "\n";
+  // std::cout << "find 100: " << kwk::find(view, 100) << "\n";
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  auto res = kwk::find(d, 1);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find(In, value) 2D")
-{
-  int data[2*3];
-  auto vdata = kumi::iota<2>(1);
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  auto res = kwk::find(d, 12);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find(In, value) 2D - with CPU context")
-{
-  int data[2*3];
-  auto vdata = kumi::iota<2>(1);
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  auto res = kwk::find(kwk::cpu, d, 12);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find(In, value) 3D")
-{
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  auto res = kwk::find(d, 123);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find(In, value) 4D")
-{
-  int data[2*3*4*5];
-  auto vdata = kumi::iota<4>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  auto res = kwk::find(d, 1234);
-
-  TTS_EQUAL(res, vdata);
+  {
+    int search = -10;
+    kumi::tuple<int> expected{-1};
+    // kumi::tuple<int> expected = kumi::make_tuple<int>(-1);
+    TTS_EQUAL(kwk::find(view, search), expected);
+  }
+  {
+    int search = -1;
+    kumi::tuple<int> expected{-1};
+    TTS_EQUAL(kwk::find(view, search), expected);
+  }
+  {
+    int search = 0;
+    kumi::tuple<int> expected{0};
+    TTS_EQUAL(kwk::find(view, search), expected);
+  }
+  {
+    int search = 10;
+    kumi::tuple<int> expected{5};
+    TTS_EQUAL(kwk::find(view, search), expected);
+  }
+  {
+    int search = 11;
+    kumi::tuple<int> expected{-1};
+    TTS_EQUAL(kwk::find(view, search), expected);
+  }
+  {
+    int search = (input_size-1)*2;
+    kumi::tuple<int> expected{input_size-1};
+    TTS_EQUAL(kwk::find(view, search), expected);
+  }
+  {
+    int search = input_size*2;
+    kumi::tuple<int> expected{-1};
+    TTS_EQUAL(kwk::find(view, search), expected);
+  }
 };
 
 TTS_CASE("Check for kwk::find_if(In, func) 1D")
 {
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
+  const std::size_t input_size = 20;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-  fill_data(data, kwk::of_size(2), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  int count = 0;
-  auto res = kwk::find_if(d, [&](auto e){ count++; return (e==1); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
+  {
+    int search = -10;
+    kumi::tuple<int> expected{-1};
+    std::size_t count = 0;
+    auto func = [&](auto item){ ++count; return (item/2 == search); };
+    TTS_EQUAL(kwk::find_if(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
+  {
+    int search = -1;
+    kumi::tuple<int> expected{-1};
+    std::size_t count = 0;
+    auto func = [&](auto item){ ++count; return (item/2 == search); };
+    TTS_EQUAL(kwk::find_if(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
+  {
+    int search = 0;
+    kumi::tuple<int> expected{0};
+    std::size_t count = 0;
+    auto func = [&](auto item){ ++count; return (item/2 == search); };
+    TTS_EQUAL(kwk::find_if(view, func), expected);
+    TTS_EQUAL(count, 1UL);
+  }
+  {
+    int search = 1;
+    kumi::tuple<int> expected{1};
+    std::size_t count = 0;
+    auto func = [&](auto item){ ++count; return (item/2 == search); };
+    TTS_EQUAL(kwk::find_if(view, func), expected);
+    TTS_EQUAL(count, 2U);
+  }
+  {
+    int search = input_size-1;
+    kumi::tuple<int> expected{input_size-1};
+    std::size_t count = 0;
+    auto func = [&](auto item){ ++count; return (item/2 == search); };
+    TTS_EQUAL(kwk::find_if(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
+  {
+    int search = input_size;
+    kumi::tuple<int> expected{-1};
+    std::size_t count = 0;
+    auto func = [&](auto item){ ++count; return (item/2 == search); };
+    TTS_EQUAL(kwk::find_if(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
+  {
+    int search = 478123;
+    kumi::tuple<int> expected{-1};
+    std::size_t count = 0;
+    auto func = [&](auto item){ ++count; return (item/2 == search); };
+    TTS_EQUAL(kwk::find_if(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
 };
-
-TTS_CASE("Check for kwk::find_if(In, func) 2D")
-{
-  int data[2*3];
-  auto vdata = kumi::iota<2>(1);
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::find_if(d, [&](auto e){ count++; return (e==12); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::find_if(In, func) 2D - with CPU context")
-{
-  int data[2*3];
-  auto vdata = kumi::iota<2>(1);
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::find_if(kwk::cpu, d, [&](auto e){ count++; return (e==12); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::find_if(In, func) 3D")
-{
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  int count = 0;
-  auto res = kwk::find_if(d, [&](auto e){ count++; return (e==123); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::find_if(In, func) 4D")
-{
-  int data[2*3*4*5];
-  auto vdata = kumi::iota<4>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  int count = 0;
-  auto res = kwk::find_if(d, [&](auto e){ count++; return (e==1234); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
 
 TTS_CASE("Check for kwk::find_if_not(In, func) 1D")
 {
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
+  const std::size_t input_size = 20;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 3; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-  fill_data(data, kwk::of_size(2), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  int count = 0;
-  auto res = kwk::find_if_not(d, [&](auto e){ count++; return (e<1); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
+  {
+    int search = -10;
+    kumi::tuple<int> expected{0};
+    std::size_t count = 0;
+    // First element that has (item/3 >= search) i.e. index >= search
+    auto func = [&](auto item){ ++count; return (item/3 < search); };
+    TTS_EQUAL(kwk::find_if_not(view, func), expected);
+    TTS_EQUAL(count, 1UL); // 0, 1, 2
+  }
+  {
+    int search = -1;
+    kumi::tuple<int> expected{0};
+    std::size_t count = 0;
+    // First element that has (item/3 >= search) i.e. index >= search
+    auto func = [&](auto item){ ++count; return (item/3 < search); };
+    TTS_EQUAL(kwk::find_if_not(view, func), expected);
+    TTS_EQUAL(count, 1UL); // 0, 1, 2
+  }
+  {
+    int search = 0;
+    kumi::tuple<int> expected{0};
+    std::size_t count = 0;
+    // First element that has (item/3 >= search) i.e. index >= search
+    auto func = [&](auto item){ ++count; return (item/3 < search); };
+    TTS_EQUAL(kwk::find_if_not(view, func), expected);
+    TTS_EQUAL(count, 1UL); // 0, 1, 2
+  }
+  {
+    int search = 1;
+    kumi::tuple<int> expected{1};
+    std::size_t count = 0;
+    // First element that has (item/3 >= search) i.e. index >= search
+    auto func = [&](auto item){ ++count; return (item/3 < search); };
+    TTS_EQUAL(kwk::find_if_not(view, func), expected);
+    TTS_EQUAL(count, 2UL);
+  }
+  {
+    int search = input_size-1;
+    kumi::tuple<int> expected{input_size-1};
+    std::size_t count = 0;
+    // First element that has (item/3 >= search) i.e. index >= search
+    auto func = [&](auto item){ ++count; return (item/3 < search); };
+    TTS_EQUAL(kwk::find_if_not(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
+  {
+    int search = input_size;
+    kumi::tuple<int> expected{-1};
+    std::size_t count = 0;
+    // First element that has (item/3 >= search) i.e. index >= search
+    auto func = [&](auto item){ ++count; return (item/3 < search); };
+    TTS_EQUAL(kwk::find_if_not(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
+  {
+    int search = input_size + 20000;
+    kumi::tuple<int> expected{-1};
+    std::size_t count = 0;
+    // First element that has (item/3 >= search) i.e. index >= search
+    auto func = [&](auto item){ ++count; return (item/3 < search); };
+    TTS_EQUAL(kwk::find_if_not(view, func), expected);
+    TTS_EQUAL(count, input_size);
+  }
 };
 
-TTS_CASE("Check for kwk::find_if_not(In, func) 2D")
+// TODO?: Implement find_last_of?
+TTS_CASE("Check for kwk::find_first_of(In, In) 1D")
 {
-  int data[2*3];
-  auto vdata = kumi::iota<2>(1);
+  const std::size_t input_size = 40;
+  std::array<int, input_size> input;
+  // for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 3; }
 
-  fill_data(data, kwk::of_size(2,3), true);
+  for (std::size_t i = 0; i < input_size/2; ++i) { input[i] = i * 3; }
+  for (std::size_t i = 0; i < input_size/2; ++i)
+  {
+    input[i + input_size/2] = (input_size/2 - i - 1) * 3;
+  }
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-  int count = 0;
-  auto res = kwk::find_if_not(d, [&](auto e){ count++; return (e<12); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
+  {
+    std::vector<int> search{-10};
+    kumi::tuple<int> expected{-1};
+    auto sv = kwk::view{kwk::source = search, kwk::of_size(search.size())};
+    TTS_EQUAL(kwk::find_first_of(view, sv), expected);
+  }
+  {
+    std::vector<int> search{-10, -5, 2, 8, 11};
+    kumi::tuple<int> expected{-1};
+    auto sv = kwk::view{kwk::source = search, kwk::of_size(search.size())};
+    TTS_EQUAL(kwk::find_first_of(view, sv), expected);
+  }
+  {
+    std::vector<int> search{-10, -5, 0, 8, 11};
+    kumi::tuple<int> expected{0};
+    auto sv = kwk::view{kwk::source = search, kwk::of_size(search.size())};
+    TTS_EQUAL(kwk::find_first_of(view, sv), expected);
+  }
+  {
+    std::vector<int> search{-10, -5, (input_size/2 - 1)*3, 8, 11};
+    kumi::tuple<int> expected{input_size/2 - 1};
+    auto sv = kwk::view{kwk::source = search, kwk::of_size(search.size())};
+    TTS_EQUAL(kwk::find_first_of(view, sv), expected);
+  }
+  {
+    std::vector<int> search{-10, (input_size/2)*3, -5, 8, 11};
+    kumi::tuple<int> expected{-1};
+    auto sv = kwk::view{kwk::source = search, kwk::of_size(search.size())};
+    TTS_EQUAL(kwk::find_first_of(view, sv), expected);
+  }
+  {
+    std::vector<int> search{-10, -5, (input_size+87845)*3, 8, 11};
+    kumi::tuple<int> expected{-1};
+    auto sv = kwk::view{kwk::source = search, kwk::of_size(search.size())};
+    TTS_EQUAL(kwk::find_first_of(view, sv), expected);
+  }
 };
 
-TTS_CASE("Check for kwk::find_if_not(In, func) 2D - with CPU context")
-{
-  int data[2*3];
-  auto vdata = kumi::iota<2>(1);
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::find_if_not(kwk::cpu, d, [&](auto e){ count++; return (e<12); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::find_if_not(In, func) 3D")
-{
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  int count = 0;
-  auto res = kwk::find_if_not(d, [&](auto e){ count++; return (e<123); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::find_if_not(In, func) 4D")
-{
-  int data[2*3*4*5];
-  auto vdata = kumi::iota<4>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  int count = 0;
-  auto res = kwk::find_if_not(d, [&](auto e){ count++; return (e<1234); });
-
-  TTS_EQUAL(res, vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-
-TTS_CASE("Check for kwk::find_first_of(In, func) 1D")
-{
-  int data[2];
-  int value[] = {1111, 11111, 30, 1, 12};
-  auto vdata = kumi::generate<1,int>(1);
-
-  fill_data(data, kwk::of_size(2), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  auto v = kwk::view{kwk::source = value};
-
-  auto res = kwk::find_first_of(d, v);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_first_of(In, func) 2D")
-{
-  int data[2*3];
-  int value[] = {11, 12};
-  auto vdata = kumi::generate<2, int>(1);
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  auto v = kwk::view{kwk::source = value};
-
-  auto res = kwk::find_first_of(d, v);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_first_of(In, func) 2D - with CPU context")
-{
-  int data[2*3];
-  int value[] = {11, 12};
-  auto vdata = kumi::generate<2, int>(1);
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  auto v = kwk::view{kwk::source = value};
-
-  auto res = kwk::find_first_of(kwk::cpu, d, v);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_first_of(In, func) 3D")
-{
-  int data[2*3*4];
-  int value[] = {111, 122};
-  auto vdata = kumi::generate<3, int>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  auto v = kwk::view{kwk::source = value};
-
-  auto res = kwk::find_first_of(d, v);
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_first_of(In, func) 4D")
-{
-  int data[2*3*4*5];
-  int value[] = {1111, 1222};
-  auto vdata = kumi::generate<4, int>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  auto v = kwk::view{kwk::source = value};
-
-  auto res = kwk::find_first_of(d, v);
-
-  TTS_EQUAL(res, vdata);
-};
 
 TTS_CASE("Check for kwk::find_last(In, value) 1D")
 {
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
+  const std::size_t input_size = 40;
+  // e.g.: 0 3 6 9 12 12 9 6 3 0 
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size/2; ++i) { input[i] = i * 3; }
+  for (std::size_t i = 0; i < input_size/2; ++i)
+  {
+    input[i + input_size/2] = (input_size/2 - i - 1) * 3;
+  }
 
-  fill_data(data, kwk::of_size(2), false);
+  // for (std::size_t i = 0; i < input_size; ++i)
+  // {
+  //   std::cout << input[i] << " ";
+  // }
+  // std::cout << "\n";
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-  auto res = kwk::find_last(d, 0);
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
+  {
+    int search{-10};
+    kumi::tuple<int> expected{input_size};
+    TTS_EQUAL(kwk::find_last(view, search), expected);
+    // TTS_EQUAL(kwk::find_last_if(view, [&](auto e){return e == search;}), expected);
+  }
+  {
+    int search{-1};
+    kumi::tuple<int> expected{input_size};
+    TTS_EQUAL(kwk::find_last(view, search), expected);
+  }
+  {
+    int search{0};
+    kumi::tuple<int> expected{input_size - 1};
+    TTS_EQUAL(kwk::find_last(view, search), expected);
+  }
+  {
+    int search{1};
+    kumi::tuple<int> expected{input_size};
+    TTS_EQUAL(kwk::find_last(view, search), expected);
+  }
+  {
+    int search{3};
+    kumi::tuple<int> expected{input_size - 2};
+    TTS_EQUAL(kwk::find_last(view, search), expected);
+  }
+  {
+    int search{(input_size/2 - 1) * 3};
+    kumi::tuple<int> expected{input_size/2};
+    TTS_EQUAL(kwk::find_last(view, search), expected);
+  }
+  {
+    int search{input_size + 1000};
+    kumi::tuple<int> expected{input_size};
+    TTS_EQUAL(kwk::find_last(view, search), expected);
+  }
 };
 
-TTS_CASE("Check for kwk::find_last(In, value) 1D - with CPU context")
+TTS_CASE("Check for kwk::find_last_if(In, func) 1D")
 {
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
+  const std::size_t input_size = 40;
+  // e.g.: 0 3 6 9 12 12 9 6 3 0 
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size/2; ++i) { input[i] = i * 3; }
+  for (std::size_t i = 0; i < input_size/2; ++i)
+  {
+    input[i + input_size/2] = (input_size/2 - i - 1) * 3;
+  }
 
-  fill_data(data, kwk::of_size(2), false);
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+  kumi::tuple<int> expect_not_found{input_size};
 
-  auto res = kwk::find_last(kwk::cpu, d, 0);
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
+  {
+    int search{-10};
+    auto func = [=](auto const& e){ return e == search; };
+    TTS_EQUAL(kwk::find_last_if(view, func), expect_not_found);
+  }
+  {
+    int search{-1};
+    auto func = [&](auto e){ return e == search; };
+    TTS_EQUAL(kwk::find_last_if(view, func), expect_not_found);
+  }
+  {
+    int search{0};
+    kumi::tuple<int> expected{input_size - 1};
+    auto func = [&](auto e){ return e == search; };
+    TTS_EQUAL(kwk::find_last_if(view, func), expected);
+  }
+  {
+    int search{1};
+    auto func = [&](auto e){ return e == search; };
+    TTS_EQUAL(kwk::find_last_if(view, func), expect_not_found);
+  }
+  {
+    int search{3};
+    kumi::tuple<int> expected{input_size - 2};
+    auto func = [&](auto e){ return e == search; };
+    TTS_EQUAL(kwk::find_last_if(view, func), expected);
+  }
+  {
+    int search{(input_size/2 - 1) * 3};
+    kumi::tuple<int> expected{input_size/2};
+    auto func = [&](auto e){ return e == search; };
+    TTS_EQUAL(kwk::find_last_if(view, func), expected);
+  }
+  {
+    int search{input_size + 1000};
+    auto func = [&](auto e){ return e == search; };
+    TTS_EQUAL(kwk::find_last_if(view, func), expect_not_found);
+  }
 };
 
-
-// TODO : intégrer le contexte lorsque ça sera possible
-
-// Wait for merge V2
-// TTS_CASE("Check for kwk::find_last(In, value) 2D")
-// {
-//   int data[2*3];
-//   auto vdata = kumi::iota<2>(1);
-
-//   fill_data(data, kwk::of_size(2,3), false);
-
-//   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-//   auto res = kwk::find_last(d, 0);
-
-//   std::cout << res << std::endl;
-
-//   TTS_EQUAL(res, vdata);
-// };
-
-TTS_CASE("Check for kwk::find_last(In, value) 3D")
+TTS_CASE("Check for kwk::find_last_if_not(In, func) 1D")
 {
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  auto res = kwk::find_last(d, 0);
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last(In, value) 3D - with CPU context")
-{
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  auto res = kwk::find_last(kwk::cpu, d, 0);
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last(In, value) 4D")
-{
-  int data[2*3*4*5];
-  auto vdata = kumi::iota<4>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  auto res = kwk::find_last(d, 0);
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if(In, value) 1D")
-{
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
-
-  fill_data(data, kwk::of_size(2), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  auto res = kwk::find_last_if(d, [](auto e){return e==0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if(In, value) 1D - with CPU context")
-{
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
-
-  fill_data(data, kwk::of_size(2), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  auto res = kwk::find_last_if(kwk::cpu, d, [](auto e){return e==0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-// Wait merge shape V2
-// TTS_CASE("Check for kwk::find_last_if(In, value) 2D")
-// {
-//   int data[2*3];
-//   auto vdata = kumi::iota<2>(1);
-
-//   fill_data(data, kwk::of_size(2,3), false);
-
-//   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-//   auto res = kwk::find_last_if(d, [](auto e){return e==0;});
-
-//   std::cout << res << std::endl;
-
-//   TTS_EQUAL(res, vdata);
-// };
-
-TTS_CASE("Check for kwk::find_last_if(In, value) 3D")
-{
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  auto res = kwk::find_last_if(d, [](auto e){return e==0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if(In, value) 3D - with CPU context")
-{
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  auto res = kwk::find_last_if(kwk::cpu, d, [](auto e){return e==0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if(In, value) 4D")
-{
-  int data[2*3*4*5];
-  auto vdata = kumi::iota<4>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  auto res = kwk::find_last_if(d, [](auto e){return e==0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if_not(In, value) 1D")
-{
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
-
-  fill_data(data, kwk::of_size(2), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  auto res = kwk::find_last_if_not(d, [](auto e){return e!=0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if_not(In, value) 1D - with CPU context")
-{
-  int data[2];
-  auto vdata = kumi::iota<1>(1);
-
-  fill_data(data, kwk::of_size(2), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  auto res = kwk::find_last_if_not(kwk::cpu, d, [](auto e){return e!=0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-// TTS_CASE("Check for kwk::find_last_if_not(In, value) 2D")
-// {
-//   int data[2*3];
-//   auto vdata = kumi::iota<2>(1);
-
-//   fill_data(data, kwk::of_size(2,3), false);
-
-//   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-//   auto res = kwk::find_last_if_not(d, [](auto e){return e!=0;});
-
-//   std::cout << res << std::endl;
-
-//   TTS_EQUAL(res, vdata);
-// };
-
-TTS_CASE("Check for kwk::find_last_if_not(In, value) 3D")
-{
-  int data[2*3*4];
-  auto vdata = kumi::iota<3>(1);
-
-  fill_data(data, kwk::of_size(2,3,4), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  auto res = kwk::find_last_if_not(d, [](auto e){return e!=0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if_not(In, value) 4D")
-{
-  int data[2*3*4*5];
-  auto vdata = kumi::iota<4>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  auto res = kwk::find_last_if_not(d, [](auto e){return e!=0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
-};
-
-TTS_CASE("Check for kwk::find_last_if_not(In, value) 4D - with CPU context")
-{
-  int data[2*3*4*5];
-  auto vdata = kumi::iota<4>(1);
-
-  fill_data(data, kwk::of_size(2,3,4,5), false);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  auto res = kwk::find_last_if_not(kwk::cpu, d, [](auto e){return e!=0;});
-
-  std::cout << res << std::endl;
-
-  TTS_EQUAL(res, vdata);
+  const std::size_t input_size = 40;
+  // e.g.: 0 3 6 9 12 12 9 6 3 0 
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size/2; ++i) { input[i] = i * 3; }
+  for (std::size_t i = 0; i < input_size/2; ++i)
+  {
+    input[i + input_size/2] = (input_size/2 - i - 1) * 3;
+  }
+
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+
+  kumi::tuple<int> expect_not_found{input_size};
+
+  {
+    int search{-10};
+    auto func = [=](auto const& e){ return e != search; };
+    TTS_EQUAL(kwk::find_last_if_not(view, func), expect_not_found);
+  }
+  {
+    int search{-1};
+    auto func = [&](auto e){ return e != search; };
+    TTS_EQUAL(kwk::find_last_if_not(view, func), expect_not_found);
+  }
+  {
+    int search{0};
+    kumi::tuple<int> expected{input_size - 1};
+    auto func = [&](auto e){ return e != search; };
+    TTS_EQUAL(kwk::find_last_if_not(view, func), expected);
+  }
+  {
+    int search{1};
+    auto func = [&](auto e){ return e != search; };
+    TTS_EQUAL(kwk::find_last_if_not(view, func), expect_not_found);
+  }
+  {
+    int search{3};
+    kumi::tuple<int> expected{input_size - 2};
+    auto func = [&](auto e){ return e != search; };
+    TTS_EQUAL(kwk::find_last_if_not(view, func), expected);
+  }
+  {
+    int search{(input_size/2 - 1) * 3};
+    kumi::tuple<int> expected{input_size/2};
+    auto func = [&](auto e){ return e != search; };
+    TTS_EQUAL(kwk::find_last_if_not(view, func), expected);
+  }
+  {
+    int search{input_size + 1000};
+    auto func = [&](auto e){ return e != search; };
+    TTS_EQUAL(kwk::find_last_if_not(view, func), expect_not_found);
+  }
 };
