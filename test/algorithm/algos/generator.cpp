@@ -10,526 +10,527 @@
 #include "test.hpp"
 
 
-TTS_CASE("Check for kwk::fill(out, value) 1D")
+TTS_CASE("Check for kwk::fill(container, value) 1D")
 {
-  int data[2];
+  const std::size_t input_size = 20;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  // std::fill(input.begin(), input.end(), 0);
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-  int vdata[2]  =  { 1, 1 };
+  kwk::fill(view, 8);
+  std::array<int, input_size> expected;
+  std::fill(expected.begin(), expected.end(), 8);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  
-  kwk::fill(d, 1);
-
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::fill(out, value) 2D")
+TTS_CASE("Check for kwk::fill(container, value) 2D")
 {
-  int data[2*3];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 10;
+  const std::size_t input_size = d0 * d1;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
 
-  int vdata[2*3];
+  kwk::fill(view, 8);
+  std::array<int, input_size> expected;
+  std::fill(expected.begin(), expected.end(), 8);
 
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      vdata[i*3+j] = 2;
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  
-  kwk::fill(d, 2);
-
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::fill(out, value) 2D - with CPU context")
+TTS_CASE("Check for kwk::fill(container, value) 3D")
 {
-  int data[2*3];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 10;
+  const std::size_t d2 = 4;
+  const std::size_t input_size = d0 * d1 * d2;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2)};
 
-  int vdata[2*3];
+  kwk::fill(view, 8);
+  std::array<int, input_size> expected;
+  std::fill(expected.begin(), expected.end(), 8);
 
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      vdata[i*3+j] = 2;
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  
-  kwk::fill(kwk::cpu, d, 2);
-
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::fill(out, value) 3D")
+TTS_CASE("Check for kwk::fill(container, value) 4D")
 {
-  int data[2*3*4];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 10;
+  const std::size_t d2 = 4;
+  const std::size_t d3 = 12;
+  const std::size_t input_size = d0 * d1 * d2 * d3;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
-  int vdata[2*3*4];
+  kwk::fill(view, 8);
+  std::array<int, input_size> expected;
+  std::fill(expected.begin(), expected.end(), 8);
 
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        vdata[i*4*3+j*4+k] = 3;
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  
-  kwk::fill(d, 3);
-
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::fill(out, value) 4D")
+TTS_CASE("Check for kwk::generate(func, container) 1D")
 {
-  int data[2*3*4*5];
+  const std::size_t d0 = 6;
+  const std::size_t input_size = d0;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0)};
 
-  int vdata[2*3*4*5];
+  std::size_t count = 0;
+  kwk::generate ([&](auto i0) { 
+                    count++;
+                    return i0 * 3; 
+                  }
+                , view
+                );
 
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        for(int l = 0; l<5; l++)
-          vdata[i*5*4*3+j*5*4+k*5+l] = 4;
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  kwk::fill(d, 4);
-
-  TTS_ALL_EQUAL(data, vdata);
-};
-
-TTS_CASE("Check for kwk::generate(out, func) 1D")
-{
-  int data[2];
-  int vdata[2];
-
-  fill_data(vdata, kwk::of_size(2), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  
-  int count = 0;
-  kwk::generate([&](auto p1)
-  { 
-    count++;
-    return p1; 
+  std::array<int, input_size> expected;
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+  {
+    expected[i0] = i0 * 3;
   }
-  , d);
 
-  TTS_ALL_EQUAL(data, vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_ALL_EQUAL(input, expected);
+  TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::generate(out, func) 2D")
+TTS_CASE("Check for kwk::generate(func, container) 2D")
 {
-  int data[2*3];
-  int vdata[2*3];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 7;
+  const std::size_t input_size = d0 * d1;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
 
-  fill_data(vdata, kwk::of_size(2,3), true);
+  std::size_t count = 0;
+  kwk::generate ([&](auto i0, auto i1) { 
+                    count++;
+                    return i0 * 100 + i1; 
+                  }
+                , view
+                );
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  
-  int count = 0;
-  kwk::generate([&](auto p1, auto p2)
-  { 
-    count++;
-    return 10*p1+p2; 
-  }
-  , d);
+  std::array<int, input_size> expected;
+  std::size_t cpt{0};
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+    for (std::size_t i1 = 0; i1 < d1; ++i1)
+    {
+      expected[cpt++] = i0 * 100 + i1;
+    }
 
-  TTS_ALL_EQUAL(data, vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_ALL_EQUAL(input, expected);
+  TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::generate(out, func) 2D - with CPU context")
+TTS_CASE("Check for kwk::generate(func, container) 3D")
 {
-  int data[2*3];
-  int vdata[2*3];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 7;
+  const std::size_t d2 = 9;
+  const std::size_t input_size = d0 * d1 * d2;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2)};
 
-  fill_data(vdata, kwk::of_size(2,3), true);
+  std::size_t count = 0;
+  kwk::generate ([&](auto i0, auto i1, auto i2) { 
+                    count++;
+                    return i0 * 10000 + i1 * 100 + i2; 
+                  }
+                , view
+                );
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  
-  int count = 0;
-  kwk::generate(kwk::cpu, [&](auto p1, auto p2)
-  { 
-    count++;
-    return 10*p1+p2; 
-  }
-  , d);
+  std::array<int, input_size> expected;
+  std::size_t cpt{0};
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+    for (std::size_t i1 = 0; i1 < d1; ++i1)
+      for (std::size_t i2 = 0; i2 < d2; ++i2)
+      {
+        expected[cpt++] = i0 * 10000 + i1 * 100 + i2;
+      }
 
-  TTS_ALL_EQUAL(data, vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_ALL_EQUAL(input, expected);
+  TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::generate(out, func) 3D")
+TTS_CASE("Check for kwk::generate(func, container) 4D")
 {
-  int data[2*3*4];
-  int vdata[2*3*4];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 7;
+  const std::size_t d2 = 9;
+  const std::size_t d3 = 4;
+  const std::size_t input_size = d0 * d1 * d2 * d3;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
-  fill_data(vdata, kwk::of_size(2,3,4), true);
+  std::size_t count = 0;
+  kwk::generate ([&](auto i0, auto i1, auto i2, auto i3) { 
+                    count++;
+                    return i0 * 1000000 + i1 * 10000 + i2 * 100 + i3; 
+                  }
+                , view
+                );
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  
-  int count = 0;
-  kwk::generate([&](auto p1, auto p2, auto p3)
-  { 
-    count++;
-    return 100*p1+10*p2+p3; 
-  }
-  , d);
+  std::array<int, input_size> expected;
+  std::size_t cpt{0};
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+    for (std::size_t i1 = 0; i1 < d1; ++i1)
+      for (std::size_t i2 = 0; i2 < d2; ++i2)
+        for (std::size_t i3 = 0; i3 < d3; ++i3)
+        {
+          expected[cpt++] = i0 * 1000000 + i1 * 10000 + i2 * 100 + i3;
+        }
 
-  TTS_ALL_EQUAL(data, vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_ALL_EQUAL(input, expected);
+  TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::generate(out, func) 4D")
-{
-  int data[2*3*4*5];
-  int vdata[2*3*4*5];
-
-  fill_data(vdata, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  int count = 0;
-  kwk::generate([&](auto p1, auto p2, auto p3, auto p4)
-  { 
-    count++;
-    return 1000*p1+100*p2+10*p3+p4; 
-  }
-  , d);
-
-  TTS_ALL_EQUAL(data, vdata);
-  TTS_EQUAL(count, d.numel());
-};
 
 TTS_CASE("Check for kwk::iota(out) 1D")
 {
-  int data[2];
-  int vdata[2]  =  { 0, 1};
+  const std::size_t d0 = 6;
+  const std::size_t input_size = d0;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0)};
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  
-  kwk::iota(d);
+  kwk::iota(view);
 
-  TTS_ALL_EQUAL(data, vdata);
+  std::array<int, input_size> expected;
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+  {
+    expected[i0] = i0;
+  }
+
+  TTS_ALL_EQUAL(input, expected);
 };
 
 TTS_CASE("Check for kwk::iota(out) 2D")
 {
-  int data[2*3];
-  int vdata[2*3];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t input_size = d0 * d1;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
 
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-    {
-      vdata[i*3+j] = iot;
-      iot++;
-    }
+  kwk::iota(view);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  
-  kwk::iota(d);
+  std::array<int, input_size> expected;
+  std::iota(expected.begin(), expected.end(), 0);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
 TTS_CASE("Check for kwk::iota(out) 3D")
 {
-  int data[2*3*4];
-  int vdata[2*3*4];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  const std::size_t input_size = d0 * d1 * d2;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2)};
 
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-      {
-        vdata[i*4*3+j*4+k] = iot;
-        iot++;
-      }
+  kwk::iota(view);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  
-  kwk::iota(d);
+  std::array<int, input_size> expected;
+  std::iota(expected.begin(), expected.end(), 0);
 
-  TTS_ALL_EQUAL(data, vdata);
-};
-
-TTS_CASE("Check for kwk::iota(out) 3D - with CPU context")
-{
-  int data[2*3*4];
-  int vdata[2*3*4];
-
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-      {
-        vdata[i*4*3+j*4+k] = iot;
-        iot++;
-      }
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  
-  kwk::iota(kwk::cpu, d);
-
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
 TTS_CASE("Check for kwk::iota(out) 4D")
 {
-  int data[2*3*4*5];
-  int vdata[2*3*4*5];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  const std::size_t d3 = 3;
+  const std::size_t input_size = d0 * d1 * d2 * d3;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        for(int l = 0; l<5; l++)
-        {
-          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
-          iot++;
-        }
+  kwk::iota(view);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  kwk::iota(d);
+  std::array<int, input_size> expected;
+  std::iota(expected.begin(), expected.end(), 0);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
+
 
 TTS_CASE("Check for kwk::iota(out, value) 1D")
 {
-  int data[2];
-  int vdata[2] = {1,2};
+  const std::size_t d0 = 6;
+  const std::size_t input_size = d0;
+  int initial_value = 87;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0)};
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  
-  kwk::iota(d, 1);
+  kwk::iota(view, initial_value);
 
-  TTS_ALL_EQUAL(data, vdata);
+  std::array<int, input_size> expected;
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+  {
+    expected[i0] = i0 + initial_value;
+  }
+
+  TTS_ALL_EQUAL(input, expected);
 };
-
 
 TTS_CASE("Check for kwk::iota(out, value) 2D")
 {
-  int data[2*3];
-  int vdata[2*3];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  int initial_value = 87;
+  const std::size_t input_size = d0 * d1;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
 
-  int iot = 2;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-    {
-      vdata[i*3+j] = iot;
-      iot++;
-    }
+  kwk::iota(view, initial_value);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  
-  kwk::iota(d,2);
+  std::array<int, input_size> expected;
+  std::iota(expected.begin(), expected.end(), initial_value);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
 TTS_CASE("Check for kwk::iota(out, value) 3D")
 {
-  int data[2*3*4];
-  int vdata[2*3*4];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  int initial_value = 87;
+  const std::size_t input_size = d0 * d1 * d2;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2)};
 
-  int iot = 3;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-      {
-        vdata[i*4*3+j*4+k] = iot;
-        iot++;
-      }
+  kwk::iota(view, initial_value);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  
-  kwk::iota(d,3);
+  std::array<int, input_size> expected;
+  std::iota(expected.begin(), expected.end(), initial_value);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
 TTS_CASE("Check for kwk::iota(out, value) 4D")
 {
-  int data[2*3*4*5];
-  int vdata[2*3*4*5];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  const std::size_t d3 = 3;
+  int initial_value = 87;
+  const std::size_t input_size = d0 * d1 * d2 * d3;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
-  int iot = 4;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        for(int l = 0; l<5; l++)
-        {
-          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
-          iot++;
-        }
+  kwk::iota(view, initial_value);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  kwk::iota(d,4);
+  std::array<int, input_size> expected;
+  std::iota(expected.begin(), expected.end(), initial_value);
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::iota(out, value) 4D - with CPU context")
-{
-  int data[2*3*4*5];
-  int vdata[2*3*4*5];
-
-  int iot = 4;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        for(int l = 0; l<5; l++)
-        {
-          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
-          iot++;
-        }
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  kwk::iota(kwk::cpu, d,4);
-
-  TTS_ALL_EQUAL(data, vdata);
-};
 
 TTS_CASE("Check for kwk::iota(out, value, step) 1D")
 {
-  int data[2];
-  int vdata[2] = {0,10};
+  const std::size_t d0 = 6;
+  const std::size_t input_size = d0;
+  int initial_value = 87;
+  std::size_t step = 5;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0)};
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-  
-  kwk::iota(d, 0, 10);
+  kwk::iota(view, initial_value, step);
 
-  TTS_ALL_EQUAL(data, vdata);
+  std::array<int, input_size> expected;
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+  {
+    expected[i0] = i0 * step + initial_value;
+  }
+
+  TTS_ALL_EQUAL(input, expected);
 };
-
 
 TTS_CASE("Check for kwk::iota(out, value, step) 2D")
 {
-  int data[2*3];
-  int vdata[2*3];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  int initial_value = 87;
+  std::size_t step = 5;
+  const std::size_t input_size = d0 * d1;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
 
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-    {
-      vdata[i*3+j] = iot;
-      iot+=20;
-    }
+  kwk::iota(view, initial_value, step);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-  
-  kwk::iota(d,0,20);
+  std::array<int, input_size> expected;
+  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    expected[i] = i * step + initial_value;
+  }
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
 TTS_CASE("Check for kwk::iota(out, value, step) 3D")
 {
-  int data[2*3*4];
-  int vdata[2*3*4];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  int initial_value = 87;
+  std::size_t step = 5;
+  const std::size_t input_size = d0 * d1 * d2;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2)};
 
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-      {
-        vdata[i*4*3+j*4+k] = iot;
-        iot+=30;
-      }
+  kwk::iota(view, initial_value, step);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  
-  kwk::iota(d,0,30);
+  std::array<int, input_size> expected;
+  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    expected[i] = i * step + initial_value;
+  }
 
-  TTS_ALL_EQUAL(data, vdata);
-};
-
-TTS_CASE("Check for kwk::iota(out, value, step) 3D - with CPU context")
-{
-  int data[2*3*4];
-  int vdata[2*3*4];
-
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-      {
-        vdata[i*4*3+j*4+k] = iot;
-        iot+=30;
-      }
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-  
-  kwk::iota(kwk::cpu, d, 0, 30);
-
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
 TTS_CASE("Check for kwk::iota(out, value, step) 4D")
 {
-  int data[2*3*4*5];
-  int vdata[2*3*4*5];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  const std::size_t d3 = 3;
+  int initial_value = 87;
+  std::size_t step = 5;
+  const std::size_t input_size = d0 * d1 * d2 * d3;
+  std::array<int, input_size> input;
+  for (int& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
-  int iot = 0;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        for(int l = 0; l<5; l++)
-        {
-          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
-          iot+=40;
-        }
+  kwk::iota(view, initial_value, step);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  kwk::iota(d,0,40);
+  std::array<int, input_size> expected;
+  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    expected[i] = i * step + initial_value;
+  }
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for float kwk::iota(out, value, step) 4D")
+
+TTS_CASE("Check for kwk::iota(out, value, step) with float 1D")
 {
-  float data[2*3*4*5];
-  float vdata[2*3*4*5];
+  const std::size_t d0 = 6;
+  const std::size_t input_size = d0;
+  float initial_value = 87;
+  std::size_t step = 5;
+  std::array<float, input_size> input;
+  for (float& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0)};
 
-  float iot = 0.f;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        for(int l = 0; l<5; l++)
-        {
-          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
-          iot+=40.5f;
-        }
+  kwk::iota(view, initial_value, step);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  kwk::iota(d,0.f,40.5f);
+  std::array<float, input_size> expected;
+  for (std::size_t i0 = 0; i0 < d0; ++i0)
+  {
+    expected[i0] = i0 * step + initial_value;
+  }
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for float kwk::iota(out, value, step) 4D - with CPU context")
+TTS_CASE("Check for kwk::iota(out, value, step), with float 2D")
 {
-  float data[2*3*4*5];
-  float vdata[2*3*4*5];
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  float initial_value = 87;
+  std::size_t step = 5;
+  const std::size_t input_size = d0 * d1;
+  std::array<float, input_size> input;
+  for (float& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
 
-  float iot = 0.f;
-  for(int i = 0; i<2; i++)
-    for(int j = 0; j<3; j++)
-      for(int k = 0; k<4; k++)
-        for(int l = 0; l<5; l++)
-        {
-          vdata[i*5*4*3+j*5*4+k*5+l] = iot;
-          iot+=40.5f;
-        }
+  kwk::iota(view, initial_value, step);
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-  
-  kwk::iota(kwk::cpu, d,0.f,40.5f);
+  std::array<float, input_size> expected;
+  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    expected[i] = i * step + initial_value;
+  }
 
-  TTS_ALL_EQUAL(data, vdata);
+  TTS_ALL_EQUAL(input, expected);
+};
+
+TTS_CASE("Check for kwk::iota(out, value, step), with float 3D")
+{
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  float initial_value = 87;
+  std::size_t step = 5;
+  const std::size_t input_size = d0 * d1 * d2;
+  std::array<float, input_size> input;
+  for (float& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2)};
+
+  kwk::iota(view, initial_value, step);
+
+  std::array<float, input_size> expected;
+  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    expected[i] = i * step + initial_value;
+  }
+
+  TTS_ALL_EQUAL(input, expected);
+};
+
+TTS_CASE("Check for kwk::iota(out, value, step), with float 4D")
+{
+  const std::size_t d0 = 6;
+  const std::size_t d1 = 8;
+  const std::size_t d2 = 11;
+  const std::size_t d3 = 3;
+  float initial_value = 87;
+  std::size_t step = 5;
+  const std::size_t input_size = d0 * d1 * d2 * d3;
+  std::array<float, input_size> input;
+  for (float& e : input) { e = 0; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
+
+  kwk::iota(view, initial_value, step);
+
+  std::array<float, input_size> expected;
+  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    expected[i] = i * step + initial_value;
+  }
+
+  TTS_ALL_EQUAL(input, expected);
 };
