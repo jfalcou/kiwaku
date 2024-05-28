@@ -12,526 +12,167 @@
 
 TTS_CASE("Check for kwk::all_of(in, func) 1D")
 {
-  int data[2];
-  bool vdata = true;
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  fill_data(data, kwk::of_size(2), false);
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 3; }
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  int count = 0;
-  auto res = kwk::all_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 0);
-  });
+  std::size_t count = 0;
+  auto res = kwk::all_of( view_in
+                        , [&](auto e) { ++count; return (e % 3 == 0); }
+                        );
 
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(res,   true);
+  TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::all_of(in, func) 2D")
+TTS_CASE("Check for kwk::all_of(in, func) 1D false")
 {
-  int data[2*3];
-  bool vdata = true;
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  fill_data(data, kwk::of_size(2,3), false);
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 3; }
+  input[200] = 8;
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  int count = 0;
-  auto res = kwk::all_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 0);
-  });
+  std::size_t count = 0;
+  auto res = kwk::all_of( view_in
+                        , [&](auto e) { ++count; return (e % 3 == 0); }
+                        );
 
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(res,   false);
+  TTS_EQUAL(count, 201UL);
 };
 
-TTS_CASE("Check for kwk::all_of(in, func) 2D - with CPU context")
+
+TTS_CASE("Check for kwk::any_of(in, func) 1D true")
 {
-  int data[2*3];
-  bool vdata = true;
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  fill_data(data, kwk::of_size(2,3), false);
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2 + 1; }
+  input[200] = 222;
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  int count = 0;
-  auto res = kwk::all_of(kwk::cpu, d, [&](auto e)
-  {
-    count++;
-    return (e == 0);
-  });
+  std::size_t count = 0;
+  auto res = kwk::any_of( view_in
+                        , [&](auto e) { ++count; return (e % 2 == 0); }
+                        );
 
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(res,   true);
+  TTS_EQUAL(count, 201UL);
 };
 
-
-TTS_CASE("Check for kwk::all_of(in, func) 3D")
+TTS_CASE("Check for kwk::any_of(in, func) 1D false")
 {
-  int data[2*3*4];
-  bool vdata = true;
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  fill_data(data, kwk::of_size(2,3,4), false);
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2 + 1; }
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  int count = 0;
-  auto res = kwk::all_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 0);
-  });
+  std::size_t count = 0;
+  auto res = kwk::any_of( view_in
+                        , [&](auto e) { ++count; return (e % 2 == 0); }
+                        );
 
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(res,   false);
+  TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::all_of(in, func) 4D")
+
+TTS_CASE("Check for kwk::none_of(in, func) 1D true")
 {
-  int data[2*3*4*5];
-  bool vdata = true;
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  fill_data(data, kwk::of_size(2,3,4,5), false);
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2 + 1; }
+  // input[200] = 222;
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  int count = 0;
-  auto res = kwk::all_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 0);
-  });
+  std::size_t count = 0;
+  auto res = kwk::none_of( view_in
+                        , [&](auto e) { ++count; return (e % 2 == 0); }
+                        );
 
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(res,   true);
+  TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::all_of(in, func) False")
+TTS_CASE("Check for kwk::none_of(in, func) 1D false")
 {
-  int data[2*2]      = { 2,2
-                        , 2,3
-                        };
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  bool vdata        =  false;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2 + 1; }
+  input[200] = 222;
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,2)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  int count = 0;
-  auto res = kwk::all_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 2);
-  });
+  std::size_t count = 0;
+  auto res = kwk::none_of( view_in
+                        , [&](auto e) { ++count; return (e % 2 == 0); }
+                        );
 
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(res,   false);
+  TTS_EQUAL(count, 201UL);
 };
 
-
-TTS_CASE("Check for kwk::any_of(in, func) 1D")
-{
-  int data[2];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  int count = 0;
-  auto res = kwk::any_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 1);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::any_of(in, func) 2D")
-{
-  int data[2*3];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::any_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 12);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::any_of(in, func) 2D - with CPU context")
-{
-  int data[2*3];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::any_of(kwk::cpu, d, [&](auto e)
-  {
-    count++;
-    return (e == 12);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::any_of(in, func) 3D")
-{
-  int data[2*3*4];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  int count = 0;
-  auto res = kwk::any_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 123);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::any_of(in, func) 4D")
-{
-  int data[2*3*4*5];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  int count = 0;
-  auto res = kwk::any_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 1234);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::any_of(in, func) False")
-{
-  int data[2*2]      = { 2,2
-                        , 2,2
-                        };
-
-  bool vdata        =  false;
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,2)};
-
-  int count = 0;
-  auto res = kwk::any_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 3);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::none_of(in, func) 1D")
-{
-  int data[2];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
-
-  int count = 0;
-  auto res = kwk::none_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 2);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::none_of(in, func) 2D")
-{
-  int data[2*3];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::none_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 23);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::none_of(in, func) 2D - with CPU context")
-{
-  int data[2*3];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::none_of(kwk::cpu, d, [&](auto e)
-  {
-    count++;
-    return (e == 23);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-
-TTS_CASE("Check for kwk::none_of(in, func) 3D")
-{
-  int data[2*3*4];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  int count = 0;
-  auto res = kwk::none_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 234);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::none_of(in, func) 4D")
-{
-  int data[2*3*4*5];
-  bool vdata = true;
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  int count = 0;
-  auto res = kwk::none_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 2345);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::none_of(in, func) False")
-{
-  int data[2*2]      = { 3,2
-                        , 2,2
-                        };
-
-  bool vdata        =  false;
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,2)};
-
-  int count = 0;
-  auto res = kwk::none_of(d, [&](auto e)
-  {
-    count++;
-    return (e == 3);
-  });
-
-  TTS_EQUAL(res,   vdata);
-  TTS_EQUAL(count, 1);
-};
 
 TTS_CASE("Check for kwk::count(in, value) 1D")
 {
-  int data[2];
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  fill_data(data, kwk::of_size(2), true);
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  input[100] = 8;
+  input[234] = 8;
+  input[311] = 8;
+  input[312] = 8;
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  auto res = kwk::count(d, 1);
+  auto res = kwk::count(view_in, 8);
 
-  TTS_EQUAL(res,   1UL);
-};
-
-TTS_CASE("Check for kwk::count(in, value) 2D")
-{
-  int data[2*3];
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  auto res = kwk::count(d, 12);
-
-  TTS_EQUAL(res,   1UL);
-};
-
-TTS_CASE("Check for kwk::count(in, value) 2D  - with CPU context")
-{
-  int data[2*3];
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  auto res = kwk::count(kwk::cpu, d, 12);
-
-  TTS_EQUAL(res,   1UL);
-};
-
-TTS_CASE("Check for kwk::count(in, value) 3D")
-{
-  int data[2*3*4];
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  auto res = kwk::count(d, 123);
-
-  TTS_EQUAL(res,   1UL);
-};
-
-TTS_CASE("Check for kwk::count(in, value) 4D")
-{
-  int data[2*3*4*5];
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  auto res = kwk::count(d, 1234);
-
-  TTS_EQUAL(res,   1UL);
+  TTS_EQUAL(res,   5UL);
 };
 
 TTS_CASE("Check for kwk::count_if(in, func) 1D")
 {
-  int data[2];
+  using data_type = int;
+  const std::size_t d0 = 471;
+  const std::size_t input_size = d0;
+  std::array<data_type, input_size> input;
 
-  fill_data(data, kwk::of_size(2), true);
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  input[234] = 8;
+  input[311] = 8;
+  input[312] = 8;
 
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  int count = 0;
-  auto res = kwk::count_if(d, [&](auto e)
-  {
-    count++;
-    return (e >= 0);
-  });
+  auto res = kwk::count_if(view_in, [](auto e) { return e <= 100; });
 
-  TTS_EQUAL(res,   2UL);
-  TTS_EQUAL(count, d.numel());
+  TTS_EQUAL(res,   54UL);
 };
 
-TTS_CASE("Check for kwk::count_if(in, func) 2D")
-{
-  int data[2*3];
-
-  fill_data(data, kwk::of_size(2,3), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
-
-  int count = 0;
-  auto res = kwk::count_if(d, [&](auto e)
-  {
-    count++;
-    return (e >= 10);
-  });
-
-  TTS_EQUAL(res,   3UL);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::count_if(in, func) 3D")
-{
-  int data[2*3*4];
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  int count = 0;
-  auto res = kwk::count_if(d, [&](auto e)
-  {
-    count++;
-    return (e >= 120);
-  });
-
-  TTS_EQUAL(res,   4UL);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::count_if(in, func) 3D - with CPU context")
-{
-  int data[2*3*4];
-
-  fill_data(data, kwk::of_size(2,3,4), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4)};
-
-  int count = 0;
-  auto res = kwk::count_if(kwk::cpu, d, [&](auto e)
-  {
-    count++;
-    return (e >= 120);
-  });
-
-  TTS_EQUAL(res,   4UL);
-  TTS_EQUAL(count, d.numel());
-};
-
-TTS_CASE("Check for kwk::count_if(in, func) 4D")
-{
-  int data[2*3*4*5];
-
-  fill_data(data, kwk::of_size(2,3,4,5), true);
-
-  auto d = kwk::view{kwk::source = data, kwk::of_size(2,3,4,5)};
-
-  int count = 0;
-  auto res = kwk::count_if(d, [&](auto e)
-  {
-    count++;
-    return (e >= 1230);
-  });
-
-  TTS_EQUAL(res,   5UL);
-  TTS_EQUAL(count, d.numel());
-};
