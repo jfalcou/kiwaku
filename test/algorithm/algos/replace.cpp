@@ -44,8 +44,8 @@ TTS_CASE("Check for kwk::replace_if(container, func, new_value) 1D")
 
   auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  kwk::replace_if(view_in, [](auto const e){ return (e < 50) && (e == 123); }, 3);
-  std::replace_if(check.begin(), check.end(), [](auto const e){ return (e < 50) && (e == 123); }, 3);
+  kwk::replace_if(view_in, [](auto const e){ return (e < 50) || (e == 123); }, 3);
+  std::replace_if(check.begin(), check.end(), [](auto const e){ return (e < 50) || (e == 123); }, 3);
 
   TTS_ALL_EQUAL(input, check);
 };
