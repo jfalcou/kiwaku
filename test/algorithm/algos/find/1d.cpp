@@ -10,18 +10,15 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 
+// TODO: if no element were found, return a kumi tuple containing the size of each dimension
+// and NOT -1 for each dimension.
+
 TTS_CASE("Check for kwk::find(In, value) 1D")
 {
   const std::size_t input_size = 20;
   std::array<int, input_size> input;
   for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-
-  // std::cout << "find -1: " << kwk::find(view, -1) << "\n";
-  // std::cout << "find -10: " << kwk::find(view, -10) << "\n";
-  // std::cout << "find 0: " << kwk::find(view, 0) << "\n";
-  // std::cout << "find 10: " << kwk::find(view, 10) << "\n";
-  // std::cout << "find 100: " << kwk::find(view, 100) << "\n";
 
   {
     int search = -10;

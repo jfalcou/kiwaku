@@ -27,14 +27,12 @@ find_end -> search_last
 namespace kwk
 {
 
-
-  // TODO : faire transfrom_reduce sur GPU ?
-  // À voir avec Joël
-
   // Unused context
   template<typename Context, typename Container, typename Check>
   auto find_if(Context&, Container const& c, Check f)
   {
+    // TODO: if no element found, return a kumi tuple containing the size of each dimension
+    // and NOT -1 for each dimension.
     auto pos = kumi::generate<Container::static_order>(-1);
 
     // TODO: replace kwk::__::for_until with kwk::for_until?
