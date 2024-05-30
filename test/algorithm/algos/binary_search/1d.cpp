@@ -12,10 +12,12 @@
 #include <algorithm>
 #include <array>
 
+// binary_search
+
 // Only tests 1D tables/views
 // TODO: at some point, make algorithms work for nD
 
-TTS_CASE("Check for kwk::lower_bound(In, value) 1D ---------")
+TTS_CASE("Check for kwk::lower_bound(In, value) 1D")
 {
   const std::size_t input_size = 20;
   std::array<int, input_size> input;
@@ -229,7 +231,7 @@ TTS_CASE("Check for kwk::lower_bound 1D: size 0")
 };
 
 
-TTS_CASE("Check for kwk::upper_bound(In, value) 1D ---------")
+TTS_CASE("Check for kwk::upper_bound(In, value) 1D")
 {
   const std::size_t input_size = 20;
   std::array<int, input_size> input;
@@ -456,7 +458,7 @@ TTS_CASE("Check for kwk::upper_bound 1D: size = 0")
   }
 };
 
-TTS_CASE("Check for kwk::binary_search(In, value) 1D ---------")
+TTS_CASE("Check for kwk::binary_search(In, value) 1D")
 {
   const std::size_t input_size = 20;
   std::array<int, input_size> input;

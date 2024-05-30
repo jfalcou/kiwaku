@@ -263,12 +263,6 @@ TTS_CASE("Check for kwk::find_last(In, value) 1D")
     input[i + input_size/2] = (input_size/2 - i - 1) * 3;
   }
 
-  // for (std::size_t i = 0; i < input_size; ++i)
-  // {
-  //   std::cout << input[i] << " ";
-  // }
-  // std::cout << "\n";
-
   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
   {
