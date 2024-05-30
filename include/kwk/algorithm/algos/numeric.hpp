@@ -91,7 +91,12 @@ namespace kwk
   template<typename Context, typename Func_1, typename Func_2, concepts::container In>
   constexpr auto inner_product(Context& ctx, In const& in1, In const& in2, auto init, Func_1 f1, Func_2 f2)
   {
-    if(in1.shape() != in2.shape()) return decltype(init){-1};
+    // if(in1.shape() != in2.shape()) return decltype(init){-1};
+    KIWAKU_ASSERT(  in1.shape() == in2.shape()
+                  , "[KWK] - Inner product dimensions do not match, container one dimensions are "
+                    << in1.shape() << ",  container two dimensions are "
+                    << in2.shape() << "."
+                  );
     // same as "for each element in in1, in2" ?
     // for_each(ctx, [&](auto... is) { init = f1(init, f2(in1(is...), in2(is...))); }, in1.shape() );
     ctx.map([&](auto const& i1, auto const& i2) { init = f1(init, f2(i1, i2)); }, ctx.in(in1), ctx.in(in2));
