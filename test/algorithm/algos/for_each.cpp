@@ -9,6 +9,8 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 
+// for_each 1D - 4D
+
 TTS_CASE("Check for kwk::for_each(func, shape)")
 {
   auto shp = kwk::of_size(4,kwk::fixed<6>,3ULL);
@@ -39,6 +41,88 @@ TTS_CASE("Check for kwk::for_each(func, container) 1D")
   TTS_EQUAL(total, chk_total);
 };
 
+TTS_CASE("Check for kwk::for_each(func, container) 1D size 0")
+{
+  std::vector<int> input;
+  input.resize(0);
+
+  auto view = kwk::view{kwk::source = input, kwk::of_size(0)};
+
+  std::size_t count{0};
+  int total{0};
+
+  kwk::for_each( [&](auto e) { ++count; total += e; }, view);
+
+  TTS_EQUAL(count, 0UL);
+  TTS_EQUAL(total, 0);
+};
+
+TTS_CASE("Check for kwk::for_each(func, container) 2D")
+{
+  const std::size_t d0 = 20;
+  const std::size_t d1 = 41;
+  const std::size_t input_size = d0 * d1;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
+
+  int chk_total = 0;
+  for (int e : input) { chk_total += e; }
+
+  std::size_t count = 0;
+  int total = 0;
+
+  kwk::for_each( [&](auto e) { ++count; total += e; }, view);
+
+  TTS_EQUAL(count, input_size);
+  TTS_EQUAL(total, chk_total);
+};
+
+TTS_CASE("Check for kwk::for_each(func, container) 3D")
+{
+  const std::size_t d0 = 20;
+  const std::size_t d1 = 41;
+  const std::size_t d2 = 14;
+  const std::size_t input_size = d0 * d1 * d2;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2)};
+
+  int chk_total = 0;
+  for (int e : input) { chk_total += e; }
+
+  std::size_t count = 0;
+  int total = 0;
+
+  kwk::for_each( [&](auto e) { ++count; total += e; }, view);
+
+  TTS_EQUAL(count, input_size);
+  TTS_EQUAL(total, chk_total);
+};
+
+TTS_CASE("Check for kwk::for_each(func, container) 4D")
+{
+  const std::size_t d0 = 20;
+  const std::size_t d1 = 41;
+  const std::size_t d2 = 14;
+  const std::size_t d3 = 11;
+  const std::size_t input_size = d0 * d1 * d2 * d3;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
+
+  int chk_total = 0;
+  for (int e : input) { chk_total += e; }
+
+  std::size_t count = 0;
+  int total = 0;
+
+  kwk::for_each( [&](auto e) { ++count; total += e; }, view);
+
+  TTS_EQUAL(count, input_size);
+  TTS_EQUAL(total, chk_total);
+};
+
 
 TTS_CASE("Check for kwk::for_each_index(func, container) 1D")
 {
@@ -62,6 +146,22 @@ TTS_CASE("Check for kwk::for_each_index(func, container) 1D")
   for (std::size_t i = 0; i < input_size; ++i) { expected_result[i] = i + 1; }
 
   TTS_ALL_EQUAL(input, expected_result);
+};
+
+TTS_CASE("Check for kwk::for_each_index(func, container) 1D size 0")
+{
+  std::vector<int> input;
+  input.resize(0);
+
+  auto view = kwk::view{kwk::source = input, kwk::of_size(0)};
+
+  std::size_t count = 0;
+  int total = 0;
+
+  kwk::for_each_index( [&](auto& e, auto i0) { ++count; total += e; e = i0 + 1; }, view);
+
+  TTS_EQUAL(count, 0UL);
+  TTS_EQUAL(total, 0);
 };
 
 
