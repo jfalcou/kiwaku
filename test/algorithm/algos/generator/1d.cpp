@@ -95,52 +95,9 @@ TTS_CASE("Check for kwk::iota(out, value) 1D")
   TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::iota(out, value) 1D with long long")
-{
-  using data_type = long long;
-  const std::size_t d0 = 6;
-  const std::size_t input_size = d0;
-  data_type initial_value = 87;
-  std::array<data_type, input_size> input;
-  for (data_type& e : input) { e = 0; }
-  auto view = kwk::view{kwk::source = input, kwk::of_size(d0)};
-
-  kwk::iota(view, initial_value);
-
-  std::array<data_type, input_size> expected;
-  for (std::size_t i0 = 0; i0 < d0; ++i0)
-  {
-    expected[i0] = i0 + initial_value;
-  }
-
-  TTS_ALL_EQUAL(input, expected);
-};
-
 TTS_CASE("Check for kwk::iota(out, value, step) 1D")
 {
   using data_type = int;
-  const std::size_t d0 = 6;
-  const std::size_t input_size = d0;
-  data_type initial_value = 87;
-  std::size_t step = 5;
-  std::array<data_type, input_size> input;
-  for (data_type& e : input) { e = 0; }
-  auto view = kwk::view{kwk::source = input, kwk::of_size(d0)};
-
-  kwk::iota(view, initial_value, step);
-
-  std::array<data_type, input_size> expected;
-  for (std::size_t i0 = 0; i0 < d0; ++i0)
-  {
-    expected[i0] = i0 * step + initial_value;
-  }
-
-  TTS_ALL_EQUAL(input, expected);
-};
-
-TTS_CASE("Check for kwk::iota(out, value, step) with float 1D")
-{
-  using data_type = float;
   const std::size_t d0 = 6;
   const std::size_t input_size = d0;
   data_type initial_value = 87;

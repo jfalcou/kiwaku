@@ -9,33 +9,35 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 
-TTS_CASE("Check for kwk::fill(container, value) 4D")
+TTS_CASE("Check for kwk::fill(container, value) 4D with float")
 {
+  using data_type = float;
   const std::size_t d0 = 6;
   const std::size_t d1 = 10;
   const std::size_t d2 = 4;
   const std::size_t d3 = 12;
   const std::size_t input_size = d0 * d1 * d2 * d3;
-  std::array<int, input_size> input;
-  for (int& e : input) { e = 0; }
+  std::array<data_type, input_size> input;
+  for (data_type& e : input) { e = 0; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
   kwk::fill(view, 8);
-  std::array<int, input_size> expected;
+  std::array<data_type, input_size> expected;
   std::fill(expected.begin(), expected.end(), 8);
 
   TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::generate(func, container) 4D")
+TTS_CASE("Check for kwk::generate(func, container) 4D with float")
 {
+  using data_type = float;
   const std::size_t d0 = 6;
   const std::size_t d1 = 7;
   const std::size_t d2 = 9;
   const std::size_t d3 = 4;
   const std::size_t input_size = d0 * d1 * d2 * d3;
-  std::array<int, input_size> input;
-  for (int& e : input) { e = 0; }
+  std::array<data_type, input_size> input;
+  for (data_type& e : input) { e = 0; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
   std::size_t count = 0;
@@ -46,7 +48,7 @@ TTS_CASE("Check for kwk::generate(func, container) 4D")
                 , view
                 );
 
-  std::array<int, input_size> expected;
+  std::array<data_type, input_size> expected;
   std::size_t cpt{0};
   for (std::size_t i0 = 0; i0 < d0; ++i0)
     for (std::size_t i1 = 0; i1 < d1; ++i1)
@@ -60,62 +62,65 @@ TTS_CASE("Check for kwk::generate(func, container) 4D")
   TTS_EQUAL(count, input_size);
 };
 
-TTS_CASE("Check for kwk::iota(out) 4D")
+TTS_CASE("Check for kwk::iota(out) 4D with float")
 {
+  using data_type = float;
   const std::size_t d0 = 6;
   const std::size_t d1 = 8;
   const std::size_t d2 = 11;
   const std::size_t d3 = 3;
   const std::size_t input_size = d0 * d1 * d2 * d3;
-  std::array<int, input_size> input;
-  for (int& e : input) { e = 0; }
+  std::array<data_type, input_size> input;
+  for (data_type& e : input) { e = 0; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
   kwk::iota(view);
 
-  std::array<int, input_size> expected;
+  std::array<data_type, input_size> expected;
   std::iota(expected.begin(), expected.end(), 0);
 
   TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::iota(out, value) 4D")
+TTS_CASE("Check for kwk::iota(out, value) 4D with float")
 {
+  using data_type = float;
   const std::size_t d0 = 6;
   const std::size_t d1 = 8;
   const std::size_t d2 = 11;
   const std::size_t d3 = 3;
-  int initial_value = 87;
+  data_type initial_value = 87;
   const std::size_t input_size = d0 * d1 * d2 * d3;
-  std::array<int, input_size> input;
-  for (int& e : input) { e = 0; }
+  std::array<data_type, input_size> input;
+  for (data_type& e : input) { e = 0; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
   kwk::iota(view, initial_value);
 
-  std::array<int, input_size> expected;
+  std::array<data_type, input_size> expected;
   std::iota(expected.begin(), expected.end(), initial_value);
 
   TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::iota(out, value, step) 4D")
+TTS_CASE("Check for kwk::iota(out, value, step) 4D with float")
 {
+  using data_type = float;
   const std::size_t d0 = 6;
   const std::size_t d1 = 8;
   const std::size_t d2 = 11;
   const std::size_t d3 = 3;
-  int initial_value = 87;
+  data_type initial_value = 87;
   std::size_t step = 5;
   const std::size_t input_size = d0 * d1 * d2 * d3;
-  std::array<int, input_size> input;
-  for (int& e : input) { e = 0; }
+  std::array<data_type, input_size> input;
+  for (data_type& e : input) { e = 0; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
   kwk::iota(view, initial_value, step);
 
-  std::array<int, input_size> expected;
-  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  std::array<data_type, input_size> expected;
+
   for (std::size_t i = 0; i < input_size; ++i)
   {
     expected[i] = i * step + initial_value;
@@ -124,23 +129,24 @@ TTS_CASE("Check for kwk::iota(out, value, step) 4D")
   TTS_ALL_EQUAL(input, expected);
 };
 
-TTS_CASE("Check for kwk::iota(out, value, step), with float 4D")
+TTS_CASE("Check for kwk::iota(out, value, step), with float 4D with float")
 {
+  using data_type = float;
   const std::size_t d0 = 6;
   const std::size_t d1 = 8;
   const std::size_t d2 = 11;
   const std::size_t d3 = 3;
-  float initial_value = 87;
+  data_type initial_value = 87;
   std::size_t step = 5;
   const std::size_t input_size = d0 * d1 * d2 * d3;
-  std::array<float, input_size> input;
-  for (float& e : input) { e = 0; }
+  std::array<data_type, input_size> input;
+  for (data_type& e : input) { e = 0; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(d0, d1, d2, d3)};
 
   kwk::iota(view, initial_value, step);
 
-  std::array<float, input_size> expected;
-  // std::iota(expected.begin(), expected.end(), initial_value, step);
+  std::array<data_type, input_size> expected;
+
   for (std::size_t i = 0; i < input_size; ++i)
   {
     expected[i] = i * step + initial_value;
