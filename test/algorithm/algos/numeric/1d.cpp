@@ -21,7 +21,7 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Reduce, Transform) 1D"
   for (std::size_t i = 0; i < input_size; ++i)
   {
     input1[i] = i;
-    input2[i] = i * 0.3 + 10.875;
+    input2[i] = i * 0.3f + 10.875f;
   }
 
   auto view1 = kwk::view{kwk::source = input1, kwk::of_size(input_size)};
@@ -114,7 +114,7 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, value, sum, product) 1D")
   for (std::size_t i = 0; i < input_size; ++i)
   {
     input1[i] = i;
-    input2[i] = i * 0.3 + 10.875;
+    input2[i] = i * 0.3f + 10.875f;
   }
 
   auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0)};
@@ -137,7 +137,7 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, value, sum, product) 1D")
 
 TTS_CASE("Check for kwk::inner_product(In1, In2, init) 1D")
 {
-  float init_value = 87.7;
+  float init_value = 87.7f;
   const std::size_t d0 = 2784;
   const std::size_t input_size = d0;
   std::array<int, input_size> input1;
@@ -146,7 +146,7 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, init) 1D")
   for (std::size_t i = 0; i < input_size; ++i)
   {
     input1[i] = i;
-    input2[i] = i * 0.3 + 10.875;
+    input2[i] = i * 0.3f + 10.875f;
   }
 
   auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0)};
@@ -171,7 +171,7 @@ TTS_CASE("Check for kwk::inner_product(In1, In2) 1D")
   for (std::size_t i = 0; i < input_size; ++i)
   {
     input1[i] = i;
-    input2[i] = i * 0.3 + 10.875;
+    input2[i] = i * 0.3f + 10.875f;
   }
 
   auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0)};
@@ -262,7 +262,7 @@ TTS_CASE("Check for kwk::exclusive_scan(In, Out, init, func) 1D")
   const std::size_t d0 = 8716;
   const std::size_t input_size = d0;
   std::array<int, input_size> input;
-  std::array<double, input_size> output, output_std;
+  std::array<float, input_size> output, output_std;
 
   for (std::size_t i = 0; i < input_size; ++i)
   {
@@ -295,7 +295,7 @@ TTS_CASE("Check for kwk::exclusive_scan(In, Out, init) 1D")
   const std::size_t d0 = 471;
   const std::size_t input_size = d0;
   std::array<int, input_size> input;
-  std::array<double, input_size> output, output_std;
+  std::array<float, input_size> output, output_std;
 
   for (std::size_t i = 0; i < input_size; ++i)
   {
@@ -320,7 +320,7 @@ TTS_CASE("Check for kwk::inclusive_scan(In, Out, init, func) 1D")
   const std::size_t d0 = 485;
   const std::size_t input_size = d0;
   std::array<int, input_size> input;
-  std::array<double, input_size> output, output_std;
+  std::array<float, input_size> output, output_std;
 
   for (std::size_t i = 0; i < input_size; ++i)
   {
@@ -332,13 +332,13 @@ TTS_CASE("Check for kwk::inclusive_scan(In, Out, init, func) 1D")
   auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
   auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0)};
 
-  kwk::inclusive_scan(view_in, view_out, double{0}, [](auto r, auto d){ return r + d * 0.2452; });
+  kwk::inclusive_scan(view_in, view_out, float{0}, [](auto r, auto d){ return r + d * 0.2452f; });
 
   // for (int i = 0; i < 10; ++i) { std::cout << output[i] << " "; } std::cout << "\n";
 
   std::inclusive_scan ( input.begin(), input.end(), output_std.begin()
-                      , [](auto r, auto d){ return r + d * 0.2452; }
-                      , double{0}
+                      , [](auto r, auto d){ return r + d * 0.2452f; }
+                      , float{0}
                       );
 
   TTS_ALL_EQUAL(output, output_std);
