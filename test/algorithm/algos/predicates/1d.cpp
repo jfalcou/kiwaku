@@ -26,7 +26,7 @@ TTS_CASE("Check for kwk::all_of(in, func) 1D")
                         , [&](auto e) { ++count; return (e % 3 == 0); }
                         );
 
-  TTS_EQUAL(res,   true);
+  TTS_EQUAL(res, true);
   TTS_EQUAL(count, input_size);
 };
 
@@ -47,7 +47,7 @@ TTS_CASE("Check for kwk::all_of(in, func) 1D false")
                         , [&](auto e) { ++count; return (e % 3 == 0); }
                         );
 
-  TTS_EQUAL(res,   false);
+  TTS_EQUAL(res, false);
   TTS_EQUAL(count, 201UL);
 };
 
@@ -69,7 +69,7 @@ TTS_CASE("Check for kwk::any_of(in, func) 1D true")
                         , [&](auto e) { ++count; return (e % 2 == 0); }
                         );
 
-  TTS_EQUAL(res,   true);
+  TTS_EQUAL(res, true);
   TTS_EQUAL(count, 201UL);
 };
 
@@ -89,7 +89,7 @@ TTS_CASE("Check for kwk::any_of(in, func) 1D false")
                         , [&](auto e) { ++count; return (e % 2 == 0); }
                         );
 
-  TTS_EQUAL(res,   false);
+  TTS_EQUAL(res, false);
   TTS_EQUAL(count, input_size);
 };
 
@@ -111,7 +111,7 @@ TTS_CASE("Check for kwk::none_of(in, func) 1D true")
                         , [&](auto e) { ++count; return (e % 2 == 0); }
                         );
 
-  TTS_EQUAL(res,   true);
+  TTS_EQUAL(res, true);
   TTS_EQUAL(count, input_size);
 };
 
@@ -132,7 +132,7 @@ TTS_CASE("Check for kwk::none_of(in, func) 1D false")
                         , [&](auto e) { ++count; return (e % 2 == 0); }
                         );
 
-  TTS_EQUAL(res,   false);
+  TTS_EQUAL(res, false);
   TTS_EQUAL(count, 201UL);
 };
 
@@ -154,7 +154,7 @@ TTS_CASE("Check for kwk::count(in, value) 1D")
 
   auto res = kwk::count(view_in, 8);
 
-  TTS_EQUAL(res,   5UL);
+  TTS_EQUAL(res, 5UL);
 };
 
 TTS_CASE("Check for kwk::count_if(in, func) 1D")
@@ -173,6 +173,6 @@ TTS_CASE("Check for kwk::count_if(in, func) 1D")
 
   auto res = kwk::count_if(view_in, [](auto e) { return e <= 100; });
 
-  TTS_EQUAL(res,   54UL);
+  TTS_EQUAL(res, 54UL);
 };
 
