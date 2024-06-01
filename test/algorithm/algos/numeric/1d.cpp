@@ -44,7 +44,8 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Reduce, Transform) 1D"
                                     , [](auto i1, auto i2) { return (i1 * i2); });
 
   TTS_EQUAL(typeid(res), typeid(float));
-  TTS_EXPECT(floats_are_same(res, chk));
+  TTS_RELATIVE_EQUAL(res, chk, FLOAT_TOLERANCE_PERCENT);
+  // TTS_EXPECT(floats_are_same(res, chk));
   TTS_EQUAL(reduce_count, input_size);
   TTS_EQUAL(transform_count, input_size);
 };
@@ -75,7 +76,7 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Transform) 1D")
   auto chk = std::transform_reduce(input1.begin(), input1.end(), input2.begin(), init_value);
 
   TTS_EQUAL(typeid(res), typeid(double));
-  TTS_EXPECT(floats_are_same(res, chk));
+  TTS_RELATIVE_EQUAL(res, chk, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(transform_count, input_size);
 };
 
@@ -99,7 +100,7 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2) 1D")
   auto chk = std::transform_reduce(input1.begin(), input1.end(), input2.begin(), init_value);
 
   TTS_EQUAL(typeid(res), typeid(double));
-  TTS_EXPECT(floats_are_same(res, chk));
+  TTS_RELATIVE_EQUAL(res, chk, FLOAT_TOLERANCE_PERCENT);
 };
 
 
@@ -130,7 +131,7 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, value, sum, product) 1D")
                                     , [](auto i1, auto i2) { return (i1 * i2); }
                                     );
 
-  TTS_EXPECT(floats_are_same(res, res_std));
+  TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(typeid(res), typeid(float));
 };
 
@@ -155,7 +156,7 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, init) 1D")
   auto res = kwk::inner_product(view1, view2, init_value);
   auto res_std = std::inner_product (input1.begin(), input1.end(), input2.begin(), init_value);
 
-  TTS_EXPECT(floats_are_same(res, res_std));
+  TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(typeid(res), typeid(float));
   TTS_EQUAL(typeid(res_std), typeid(float));
 };
@@ -180,7 +181,7 @@ TTS_CASE("Check for kwk::inner_product(In1, In2) 1D")
   auto res = kwk::inner_product(view1, view2);
   auto res_std = std::inner_product(input1.begin(), input1.end(), input2.begin(), float{});
 
-  TTS_EXPECT(floats_are_same(res, res_std));
+  TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(typeid(res), typeid(float));
   TTS_EQUAL(typeid(res_std), typeid(float));
 };

@@ -25,7 +25,7 @@ TTS_CASE("Check for kwk::reduce(in) 1D")
   auto res = kwk::reduce(view_in);
   auto res_std = std::reduce(input.begin(), input.end());
 
-  TTS_EXPECT(floats_are_same(res, res_std));
+  TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
 };
 
 
@@ -45,7 +45,7 @@ TTS_CASE("Check for kwk::reduce(in, func) and kwk::reduce(in, func, init) 1D")
   auto res2 = kwk::reduce(view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; }, 87);
   auto res_std = std::reduce(input.begin(), input.end(), 0, [&](auto e1, auto e2) { return e1 + e2 + 1; });
 
-  TTS_EXPECT(floats_are_same(res, res_std));
+  TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(static_cast<decltype(view_in)::value_type>(res2), res_std + 87);
   TTS_EQUAL(count, input_size);
 };

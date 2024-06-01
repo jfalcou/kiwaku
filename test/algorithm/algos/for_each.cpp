@@ -98,7 +98,7 @@ TTS_CASE("Check for kwk::for_each(func, container) 3D with float")
   kwk::for_each( [&](auto e) { ++count; total += e; }, view);
 
   TTS_EQUAL(count, input_size);
-  TTS_EXPECT(floats_are_same(total, chk_total));
+  TTS_RELATIVE_EQUAL(total, chk_total, FLOAT_TOLERANCE_PERCENT);
 };
 
 TTS_CASE("Check for kwk::for_each(func, container) 4D")
@@ -121,7 +121,7 @@ TTS_CASE("Check for kwk::for_each(func, container) 4D")
   kwk::for_each( [&](auto e) { ++count; total += e; }, view);
 
   TTS_EQUAL(count, input_size);
-  TTS_EXPECT(floats_are_same(total, chk_total));
+  TTS_RELATIVE_EQUAL(total, chk_total, FLOAT_TOLERANCE_PERCENT);
 };
 
 
@@ -141,7 +141,7 @@ TTS_CASE("Check for kwk::for_each_index(func, container) 1D")
   kwk::for_each_index( [&](auto& e, auto i0) { ++count; total += e; e = i0 + 1; }, view);
 
   TTS_EQUAL(count, input_size);
-  TTS_EXPECT(floats_are_same(total, chk_total));
+  TTS_RELATIVE_EQUAL(total, chk_total, FLOAT_TOLERANCE_PERCENT);
 
   std::array<int, input_size> expected_result;
   for (std::size_t i = 0; i < input_size; ++i) { expected_result[i] = i + 1; }
@@ -185,7 +185,7 @@ TTS_CASE("Check for kwk::for_each_index(func, container) 2D")
   kwk::for_each_index( [&](auto& e, auto i0, auto i1) { ++count; total += e; e = pos_to_value(i0, i1); }, view);
 
   TTS_EQUAL(count, input_size);
-  TTS_EXPECT(floats_are_same(total, chk_total));
+  TTS_RELATIVE_EQUAL(total, chk_total, FLOAT_TOLERANCE_PERCENT);
 
   std::array<int, input_size> expected_result;
   std::size_t cpt{0};
@@ -226,7 +226,7 @@ TTS_CASE("Check for kwk::for_each_index(func, container) 3D with float")
                       , view);
 
   TTS_EQUAL(count, input_size);
-  TTS_EXPECT(floats_are_same(total, chk_total));
+  TTS_RELATIVE_EQUAL(total, chk_total, FLOAT_TOLERANCE_PERCENT);
 
   std::array<data_type, input_size> expected_result;
   std::size_t cpt{0};
@@ -268,7 +268,7 @@ TTS_CASE("Check for kwk::for_each_index(func, container) 4D")
                       , view);
 
   TTS_EQUAL(count, input_size);
-  TTS_EXPECT(floats_are_same(total, chk_total));
+  TTS_RELATIVE_EQUAL(total, chk_total, FLOAT_TOLERANCE_PERCENT);
 
   std::array<int, input_size> expected_result;
   std::size_t cpt{0};

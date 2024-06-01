@@ -20,17 +20,19 @@ template<typename N> using up_to = std::make_index_sequence<N::value>;
 #define TTS_CUSTOM_DRIVER_FUNCTION kwk_entry_point
 #include "tts.hpp"
 
-bool floats_are_same(double a, double b)
-{
-  // If the distance between a and b is negligible compared to a and b, 
-  // (i.e. if a and b only differs from at most max_ratio):
-  //     abs(a-b) < abs(a) * max_ratio
-  // &&  abs(a-b) < abs(b) * max_ratio
-  double max_ratio = 0.0001;
-  double diff = std::fabs(a - b);
+#define FLOAT_TOLERANCE_PERCENT 0.01
 
-  return (diff <= std::fabs(a) * max_ratio) && (diff <= fabs(b) * max_ratio);
-}
+// bool floats_are_same(double a, double b)
+// {
+//   // If the distance between a and b is negligible compared to a and b, 
+//   // (i.e. if a and b only differs from at most max_ratio):
+//   //     abs(a-b) < abs(a) * max_ratio
+//   // &&  abs(a-b) < abs(b) * max_ratio
+//   double max_ratio = 0.0001;
+//   double diff = std::fabs(a - b);
+
+//   return (diff <= std::fabs(a) * max_ratio) && (diff <= fabs(b) * max_ratio);
+// }
 
 
 template<typename T, typename S>
