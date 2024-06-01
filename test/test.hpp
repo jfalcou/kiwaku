@@ -58,6 +58,39 @@ kumi::tuple<int, int> lindex_to_pos ( std::size_t const d1
   return kumi::tuple<int, int>{p[0], p[1]};
 }
 
+std::array<std::size_t, 4> lindex_to_pos_arr( std::size_t const d1
+                                    , std::size_t const d2
+                                    , std::size_t const d3
+                                    , int const lindex
+                                    )
+{
+  int remains = lindex;
+  std::array<std::size_t, 4> p;
+  std::fill(p.begin(), p.end(), 0);
+  p[0] = remains / (d1 * d2 * d3);
+  remains -= p[0] * (d1 * d2 * d3);
+  p[1] = remains / (d2 * d3);
+  remains -= p[1] * (d2 * d3);
+  p[2] = remains / d3;
+  remains -= p[2] * d3;
+  p[3] = remains;
+  // std::cout << "pos: ";
+  // for (auto const e : p) { std::cout << e << " "; }
+  // std::cout << "\n";
+  return p;
+}
+
+std::array<std::size_t, 4> std_res_to_pos4D ( int* res
+                                            , int* begin
+                                            , std::size_t const d1
+                                            , std::size_t const d2
+                                            , std::size_t const d3
+                                            )
+{
+  auto dist = static_cast<std::size_t>(std::distance(begin, res));
+  return lindex_to_pos_arr(d1, d2, d3, dist);
+}
+
 
 template<typename T, typename S>
 void fill_data(T* data, S shp, bool fill)
