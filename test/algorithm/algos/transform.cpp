@@ -50,7 +50,11 @@ TTS_CASE("Check for kwk::transform(value, new_value) 1D with float")
   const std::size_t input_size = d0;
   std::array<data_type, input_size> input1, input2, output, check;
 
-  for (std::size_t i = 0; i < input_size; ++i) { input1[i] = i * 3.88; input2[i] = i * 2.87; }
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    input1[i] = i * static_cast<data_type>(3.88);
+    input2[i] = i * static_cast<data_type>(2.87);
+  }
 
   auto view_in1  = kwk::view{kwk::source = input1 , kwk::of_size(d0)};
   auto view_in2  = kwk::view{kwk::source = input2 , kwk::of_size(d0)};
