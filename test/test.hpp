@@ -22,17 +22,41 @@ template<typename N> using up_to = std::make_index_sequence<N::value>;
 
 #define FLOAT_TOLERANCE_PERCENT 0.01
 
-// bool floats_are_same(double a, double b)
-// {
-//   // If the distance between a and b is negligible compared to a and b, 
-//   // (i.e. if a and b only differs from at most max_ratio):
-//   //     abs(a-b) < abs(a) * max_ratio
-//   // &&  abs(a-b) < abs(b) * max_ratio
-//   double max_ratio = 0.0001;
-//   double diff = std::fabs(a - b);
 
-//   return (diff <= std::fabs(a) * max_ratio) && (diff <= fabs(b) * max_ratio);
-// }
+kumi::tuple<int, int, int, int> lindex_to_pos ( std::size_t const d1
+                                                    , std::size_t const d2
+                                                    , std::size_t const d3
+                                                    , int const lindex
+                                                    )
+{
+  int remains = lindex;
+  std::array<int, 4> p;
+  std::fill(p.begin(), p.end(), 0);
+  p[0] = remains / (d1 * d2 * d3);
+  remains -= p[0] * (d1 * d2 * d3);
+  p[1] = remains / (d2 * d3);
+  remains -= p[1] * (d2 * d3);
+  p[2] = remains / d3;
+  remains -= p[2] * d3;
+  p[3] = remains;
+  // std::cout << "pos: ";
+  // for (auto const e : p) { std::cout << e << " "; }
+  // std::cout << "\n";
+  return kumi::tuple<int, int, int, int>{p[0], p[1], p[2], p[3]};
+}
+
+kumi::tuple<int, int> lindex_to_pos ( std::size_t const d1
+                                    , int const lindex
+                                    )
+{
+  int remains = lindex;
+  std::array<int, 2> p;
+  std::fill(p.begin(), p.end(), 0);
+  p[0] = remains / (d1);
+  remains -= p[0] * (d1);
+  p[1] = remains;
+  return kumi::tuple<int, int>{p[0], p[1]};
+}
 
 
 template<typename T, typename S>
