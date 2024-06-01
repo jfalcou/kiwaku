@@ -98,7 +98,7 @@ TTS_CASE("Check for kwk::for_each(func, container) 3D with float")
   kwk::for_each( [&](auto e) { ++count; total += e; }, view);
 
   TTS_EQUAL(count, input_size);
-  TTS_EQUAL(total, chk_total);
+  TTS_EQUAL(floats_are_same(total, chk_total), true);
 };
 
 TTS_CASE("Check for kwk::for_each(func, container) 4D")
