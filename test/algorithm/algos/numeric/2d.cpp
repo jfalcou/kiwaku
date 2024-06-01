@@ -12,10 +12,12 @@
 #include <numeric>
 
 
-TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Reduce, Transform) 1D")
+TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Reduce, Transform) 2D")
 {
   float init_value = 11;
-  const std::size_t input_size = 200;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input1;
   std::array<float, input_size> input2;
   for (std::size_t i = 0; i < input_size; ++i)
@@ -24,8 +26,8 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Reduce, Transform) 1D"
     input2[i] = i * 0.3f + 10.875f;
   }
 
-  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(input_size)};
-  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(input_size)};
+  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0, d1)};
+  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0, d1)};
 
   std::size_t reduce_count = 0;
   std::size_t transform_count = 0;
@@ -51,10 +53,12 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Reduce, Transform) 1D"
 };
 
 
-TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Transform) 1D")
+TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Transform) 2D")
 {
   double init_value = 11;
-  const std::size_t input_size = 200;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input1;
   std::array<double, input_size> input2;
   for (std::size_t i = 0; i < input_size; ++i)
@@ -63,8 +67,8 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Transform) 1D")
     input2[i] = i * 0.3 + 10.875;
   }
 
-  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(input_size)};
-  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(input_size)};
+  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0, d1)};
+  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0, d1)};
 
   std::size_t transform_count = 0;
 
@@ -81,10 +85,12 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2, init, Transform) 1D")
 };
 
 
-TTS_CASE("Check for kwk::transform_reduce(In1, In2) 1D")
+TTS_CASE("Check for kwk::transform_reduce(In1, In2) 2D")
 {
   double init_value = 11;
-  const std::size_t input_size = 84521;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input1;
   std::array<double, input_size> input2;
   for (std::size_t i = 0; i < input_size; ++i)
@@ -93,8 +99,8 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2) 1D")
     input2[i] = i * 0.3 + 10.875;
   }
 
-  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(input_size)};
-  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(input_size)};
+  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0, d1)};
+  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0, d1)};
 
   auto res = kwk::transform_reduce(view1, view2, init_value);
   auto chk = std::transform_reduce(input1.begin(), input1.end(), input2.begin(), init_value);
@@ -104,11 +110,12 @@ TTS_CASE("Check for kwk::transform_reduce(In1, In2) 1D")
 };
 
 
-TTS_CASE("Check for kwk::inner_product(In1, In2, value, sum, product) 1D")
+TTS_CASE("Check for kwk::inner_product(In1, In2, value, sum, product) 2D")
 {
   float init_value = 87;
-  const std::size_t d0 = 2784;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input1;
   std::array<float, input_size> input2;
 
@@ -118,8 +125,8 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, value, sum, product) 1D")
     input2[i] = i * 0.3f + 10.875f;
   }
 
-  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0)};
-  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0)};
+  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0, d1)};
+  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0, d1)};
 
   auto res = kwk::inner_product(view1, view2, init_value,
             [](auto r, auto d) { return (r + d); },
@@ -136,11 +143,12 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, value, sum, product) 1D")
 };
 
 
-TTS_CASE("Check for kwk::inner_product(In1, In2, init) 1D")
+TTS_CASE("Check for kwk::inner_product(In1, In2, init) 2D")
 {
   float init_value = 87.7f;
-  const std::size_t d0 = 2784;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input1;
   std::array<float, input_size> input2;
 
@@ -150,8 +158,8 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, init) 1D")
     input2[i] = i * 0.3f + 10.875f;
   }
 
-  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0)};
-  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0)};
+  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0, d1)};
+  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0, d1)};
 
   auto res = kwk::inner_product(view1, view2, init_value);
   auto res_std = std::inner_product (input1.begin(), input1.end(), input2.begin(), init_value);
@@ -162,10 +170,11 @@ TTS_CASE("Check for kwk::inner_product(In1, In2, init) 1D")
 };
 
 
-TTS_CASE("Check for kwk::inner_product(In1, In2) 1D")
+TTS_CASE("Check for kwk::inner_product(In1, In2) 2D")
 {
-  const std::size_t d0 = 2784;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input1;
   std::array<float, input_size> input2;
 
@@ -175,8 +184,8 @@ TTS_CASE("Check for kwk::inner_product(In1, In2) 1D")
     input2[i] = i * 0.3f + 10.875f;
   }
 
-  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0)};
-  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0)};
+  auto view1 = kwk::view{kwk::source = input1, kwk::of_size(d0, d1)};
+  auto view2 = kwk::view{kwk::source = input2, kwk::of_size(d0, d1)};
 
   auto res = kwk::inner_product(view1, view2);
   auto res_std = std::inner_product(input1.begin(), input1.end(), input2.begin(), float{});
@@ -187,11 +196,12 @@ TTS_CASE("Check for kwk::inner_product(In1, In2) 1D")
 };
 
 
-TTS_CASE("Check for kwk::transform_exclusive_scan(In, Out, init, f1, f2) 1D")
+TTS_CASE("Check for kwk::transform_exclusive_scan(In, Out, init, f1, f2) 2D")
 {
   double init_value = 87;
-  const std::size_t d0 = 4651;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input;
   std::array<double, input_size> output, output_std;
 
@@ -202,8 +212,8 @@ TTS_CASE("Check for kwk::transform_exclusive_scan(In, Out, init, f1, f2) 1D")
     output_std[i] = 0;
   }
 
-  auto view_in  = kwk::view{kwk::source = input, kwk::of_size(d0)};
-  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0)};
+  auto view_in  = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
+  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0, d1)};
 
   kwk::transform_exclusive_scan ( view_in, view_out
                                 , init_value
@@ -222,11 +232,12 @@ TTS_CASE("Check for kwk::transform_exclusive_scan(In, Out, init, f1, f2) 1D")
 };
 
 
-TTS_CASE("Check for kwk::transform_inclusive_scan(In, Out, init, f1, f2) 1D")
+TTS_CASE("Check for kwk::transform_inclusive_scan(In, Out, init, f1, f2) 2D")
 {
   double init_value = 0;
-  const std::size_t d0 = 4816;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input;
   std::array<double, input_size> output, output_std;
 
@@ -237,8 +248,8 @@ TTS_CASE("Check for kwk::transform_inclusive_scan(In, Out, init, f1, f2) 1D")
     output_std[i] = 0;
   }
 
-  auto view_in  = kwk::view{kwk::source = input, kwk::of_size(d0)};
-  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0)};
+  auto view_in  = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
+  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0, d1)};
 
   kwk::transform_inclusive_scan ( view_in, view_out
                                 , init_value
@@ -257,11 +268,12 @@ TTS_CASE("Check for kwk::transform_inclusive_scan(In, Out, init, f1, f2) 1D")
 };
 
 
-TTS_CASE("Check for kwk::exclusive_scan(In, Out, init, func) 1D")
+TTS_CASE("Check for kwk::exclusive_scan(In, Out, init, func) 2D")
 {
   float initial_value = 0;
-  const std::size_t d0 = 8716;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input;
   std::array<float, input_size> output, output_std;
 
@@ -272,8 +284,8 @@ TTS_CASE("Check for kwk::exclusive_scan(In, Out, init, func) 1D")
     output_std[i] = 0;
   }
 
-  auto view_in  = kwk::view{kwk::source = input, kwk::of_size(d0)};
-  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0)};
+  auto view_in  = kwk::view{kwk::source = input, kwk::of_size(d0, d1)};
+  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0, d1)};
 
   kwk::exclusive_scan ( view_in, view_out
                       , initial_value
@@ -290,11 +302,12 @@ TTS_CASE("Check for kwk::exclusive_scan(In, Out, init, func) 1D")
 };
 
 
-TTS_CASE("Check for kwk::exclusive_scan(In, Out, init) 1D")
+TTS_CASE("Check for kwk::exclusive_scan(In, Out, init) 2D")
 {
   int initial_value = 0;
-  const std::size_t d0 = 471;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input;
   std::array<float, input_size> output, output_std;
 
@@ -305,8 +318,8 @@ TTS_CASE("Check for kwk::exclusive_scan(In, Out, init) 1D")
     output_std[i] = 0;
   }
 
-  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
-  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0, d1)};
+  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0, d1)};
 
   kwk::exclusive_scan(view_in, view_out, initial_value);
   std::exclusive_scan(input.begin(), input.end(), output_std.begin(), initial_value);
@@ -315,10 +328,11 @@ TTS_CASE("Check for kwk::exclusive_scan(In, Out, init) 1D")
 };
 
 
-TTS_CASE("Check for kwk::inclusive_scan(In, Out, init, func) 1D")
+TTS_CASE("Check for kwk::inclusive_scan(In, Out, init, func) 2D")
 {
-  const std::size_t d0 = 485;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input;
   std::array<float, input_size> output, output_std;
 
@@ -329,8 +343,8 @@ TTS_CASE("Check for kwk::inclusive_scan(In, Out, init, func) 1D")
     output_std[i] = 0;
   }
 
-  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
-  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0, d1)};
+  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0, d1)};
 
   kwk::inclusive_scan(view_in, view_out, float{0}, [](auto r, auto d){ return r + d * 0.2452f; });
   std::inclusive_scan ( input.begin(), input.end(), output_std.begin()
@@ -342,10 +356,11 @@ TTS_CASE("Check for kwk::inclusive_scan(In, Out, init, func) 1D")
 };
 
 
-TTS_CASE("Check for kwk::inclusive_scan(In, Out, init) 1D")
+TTS_CASE("Check for kwk::inclusive_scan(In, Out, init) 2D")
 {
-  const std::size_t d0 = 471;
-  const std::size_t input_size = d0;
+  const std::size_t d0 = 50;
+  const std::size_t d1 = 12;
+  const std::size_t input_size = d0 * d1;
   std::array<int, input_size> input, output, output_std;
 
   for (std::size_t i = 0; i < input_size; ++i)
@@ -355,8 +370,8 @@ TTS_CASE("Check for kwk::inclusive_scan(In, Out, init) 1D")
     output_std[i] = 0;
   }
 
-  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
-  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0)};
+  auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0, d1)};
+  auto view_out = kwk::view{kwk::source = output, kwk::of_size(d0, d1)};
 
   kwk::inclusive_scan(view_in, view_out, int{0});
   std::inclusive_scan(input.begin(), input.end(), output_std.begin());
