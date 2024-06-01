@@ -29,7 +29,7 @@ bool floats_are_same(double a, double b)
   double max_ratio = 0.0001;
   double diff = std::fabs(a - b);
 
-  return (diff < std::fabs(a) * max_ratio) && (diff < fabs(b) * max_ratio);
+  return (diff <= std::fabs(a) * max_ratio) && (diff <= fabs(b) * max_ratio);
 }
 
 
