@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/container/container.hpp>
+#include <kwk/concepts/slicer.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <type_traits>
 
@@ -54,7 +55,8 @@ namespace kwk
     KWK_TRIVIAL constexpr table() : parent{kwk::table_} {}
 
     /// Construct a table from a list of options
-    KWK_TRIVIAL constexpr table(rbr::concepts::option auto const&... opts) : table{rbr::settings{opts...}} {}
+    KWK_TRIVIAL constexpr table(rbr::concepts::option auto const&... opts)
+              : parent{rbr::settings{kwk::table_,opts...}} {}
 
     /// Construct a table from a settings descriptor
     KWK_TRIVIAL constexpr table(rbr::concepts::settings auto const& opts)
@@ -98,6 +100,7 @@ namespace kwk
     //==============================================================================================
     //! @}
     //==============================================================================================
+    using parent::operator();
   };
 
   //================================================================================================
@@ -121,12 +124,9 @@ namespace kwk
   //! @}
   //================================================================================================
 
-  /// Type helper
-  template<typename... Settings> struct make_table
-  {
-    using type = table<__::builder<rbr::settings(table_,Settings{}...)>>;
-  };
+  template<rbr::concepts::option... Os> auto make_table(Os const&... os) { return table{os...}; };
 
+  /// Type helper
   template<typename... Settings>
-  using make_table_t = typename make_table<Settings...>::type;
+  using make_table_t = table<__::builder<rbr::settings(table_,Settings{}...)>>;
 }

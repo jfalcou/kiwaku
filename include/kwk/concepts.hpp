@@ -13,4 +13,4 @@
 #include <kwk/concepts/range.hpp>
 #include <kwk/concepts/axis.hpp>
 #include <kwk/concepts/values.hpp>
-// #include <kwk/concept/slicer.hpp>
+#include <kwk/concepts/slicer.hpp>

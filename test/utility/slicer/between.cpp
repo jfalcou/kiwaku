@@ -11,7 +11,7 @@
 TTS_CASE("Check dynamic slicing for kwk::from/kwk::to combo")
 {
   using namespace kwk::literals;
-  using kwk::range;
+  using kwk::slice;
   using kwk::from;
   using kwk::to;
   using kwk::fixed;
@@ -22,10 +22,10 @@ TTS_CASE("Check dynamic slicing for kwk::from/kwk::to combo")
 
   constexpr unsigned int v0 = 1, v1 = 4, v2 = 8, v3 = 9, v4 = 11;
 
-  auto b0 = range(from = v0, to = v1); auto c0 = range(from = fixed<v0>, to = fixed<v1>);
-  auto b1 = range(from = v1, to = v2); auto c1 = range(from = fixed<v1>, to = fixed<v2>);
-  auto b2 = range(from = v2, to = v3); auto c2 = range(from = fixed<v2>, to = fixed<v3>);
-  auto b3 = range(from = v3, to = v4); auto c3 = range(from = fixed<v3>, to = fixed<v4>);
+  auto b0 = slice(from = v0, to = v1); auto c0 = slice(from = fixed<v0>, to = fixed<v1>);
+  auto b1 = slice(from = v1, to = v2); auto c1 = slice(from = fixed<v1>, to = fixed<v2>);
+  auto b2 = slice(from = v2, to = v3); auto c2 = slice(from = fixed<v2>, to = fixed<v3>);
+  auto b3 = slice(from = v3, to = v4); auto c3 = slice(from = fixed<v3>, to = fixed<v4>);
 
   TTS_EQUAL ( shp(b0)             , of_size(v1 - v0));
   TTS_EQUAL ( shp(b0, b1)         , of_size(v1 - v0, v2 - v1));
@@ -54,7 +54,7 @@ TTS_CASE("Check dynamic slicing for kwk::from/kwk::to combo")
 TTS_CASE("Check static slicing for kwk::from/kwk::to combo")
 {
   using namespace kwk::literals;
-  using kwk::range;
+  using kwk::slice;
   using kwk::from;
   using kwk::to;
   using kwk::fixed;
@@ -69,10 +69,10 @@ TTS_CASE("Check static slicing for kwk::from/kwk::to combo")
 
   constexpr unsigned int v0 = 1, v1 = 4, v2 = 8, v3 = 9, v4 = 11;
 
-  auto b0 = range(from = v0, to = v1); auto c0 = range(from = fixed<v0>, to = fixed<v1>);
-  auto b1 = range(from = v1, to = v2); auto c1 = range(from = fixed<v1>, to = fixed<v2>);
-  auto b2 = range(from = v2, to = v3); auto c2 = range(from = fixed<v2>, to = fixed<v3>);
-  auto b3 = range(from = v3, to = v4); auto c3 = range(from = fixed<v3>, to = fixed<v4>);
+  auto b0 = slice(from = v0, to = v1); auto c0 = slice(from = fixed<v0>, to = fixed<v1>);
+  auto b1 = slice(from = v1, to = v2); auto c1 = slice(from = fixed<v1>, to = fixed<v2>);
+  auto b2 = slice(from = v2, to = v3); auto c2 = slice(from = fixed<v2>, to = fixed<v3>);
+  auto b3 = slice(from = v3, to = v4); auto c3 = slice(from = fixed<v3>, to = fixed<v4>);
 
   TTS_EQUAL ( shp(b0)             , of_size(v1 - v0));
   TTS_EQUAL ( shp(b0, b1)         , of_size(v1 - v0, v2 - v1));

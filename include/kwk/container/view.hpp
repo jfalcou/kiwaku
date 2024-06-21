@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/container/container.hpp>
+#include <kwk/concepts/slicer.hpp>
 #include <kwk/detail/raberu.hpp>
 #include <type_traits>
 
@@ -54,7 +55,8 @@ namespace kwk
     KWK_TRIVIAL constexpr view() : parent{kwk::view_} {}
 
     /// Construct a view from a list of options
-    KWK_TRIVIAL constexpr view(rbr::concepts::option auto const&... opts) : view{rbr::settings{opts...}} {}
+    KWK_TRIVIAL constexpr view(rbr::concepts::option auto const&... opts)
+              : parent{rbr::settings{kwk::view_,opts...}} {}
 
     /// Construct a view from a settings descriptor
     KWK_TRIVIAL constexpr view(rbr::concepts::settings auto const& opts)
@@ -79,6 +81,7 @@ namespace kwk
     //==============================================================================================
     //! @}
     //==============================================================================================
+    using parent::operator();
   };
 
   //================================================================================================
@@ -103,13 +106,9 @@ namespace kwk
   //================================================================================================
   //! @}
   //================================================================================================
+  template<rbr::concepts::option... Os> auto make_view(Os const&... os) { return view{os...}; };
 
   /// Type helper
-  template<typename... Settings> struct make_view
-  {
-    using type = view<__::builder<rbr::settings(view_,Settings{}...)>>;
-  };
-
   template<typename... Settings>
-  using make_view_t = typename make_view<Settings...>::type;
+  using make_view_t = view<__::builder<rbr::settings(view_,Settings{}...)>>;
 }

@@ -9,6 +9,7 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/kumi.hpp>
+#include <kwk/utility/fixed.hpp>
 #include <cstddef>
 #include <utility>
 

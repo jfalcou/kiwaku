@@ -24,10 +24,49 @@ namespace kwk::__
 
 namespace kwk
 {
-  template<auto... S>
-  struct stride  : __::prefilled_t<S...>::type
+  template<concepts::extent... D>
+  constexpr auto with_strides(D... d) noexcept;
+
+  //================================================================================================
+  //! @ingroup containers
+  //! @brief  Fixed order stride with mixed size capability
+  //!
+  //! <hr/>
+  //! **Required header**:
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!  #include<kwk/utility/container/stride.hpp>
+  //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //! <hr/>
+  //!
+  //! kwk::stride defines and optimally stores a set of integral values representing the strides
+  //! used to walk through a given multi-dimensional container or view.
+  //!
+  //! kwk::stride can be defined in two ways:
+  //!
+  //! - using the kwk::with_strides function.
+  //!
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!   kwk::stride s1 = kwk::with_strides(kwk::fixed<5>);                   // Order 1 stride with static size
+  //!   kwk::stride s2 = kwk::with_strides(n, m);                            // Order 2 stride with dynamic sizes
+  //!   kwk::stride s3 = kwk::with_strides(kwk::fixed<2>,kwk::fixed<2>, n);  // Order 3 stride with mixed sizes
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //!   <br/>
+  //!
+  //! - defining the layout of the kwk::stride and manually initializing it. The description of the
+  //!   kwk::stride layout is done with the kwk::extent object or one of the pre-defined layouts.
+  //!
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
+  //!   kwk::stride< kwk::extent[5] >      s1;             // Order 1 stride with static size
+  //!   kwk::stride< kwk::_2D >            s2(n, m);       // Order 2 stride with dynamic sizes
+  //!   kwk::stride< kwk::extent[1]( )[3]> s4( _, n, _);   // Order 3 stride with mixed sizes
+  //!   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //!
+  //! @tparam Strides An instance of a stride descriptor
+  //================================================================================================
+  template<auto... Strides>
+  struct stride  : __::prefilled_t<Strides...>::type
   {
-    using parent = typename __::prefilled_t<S...>::type;
+    using parent = typename __::prefilled_t<Strides...>::type;
 
     /// Compile-time value for @ref glossary-order
     static constexpr std::int32_t static_order = parent::static_size;
@@ -42,7 +81,7 @@ namespace kwk
     //==============================================================================================
     // stride is its self option keyword
     //==============================================================================================
-    using stored_value_type = stride<S...>;
+    using stored_value_type = stride<Strides...>;
     using keyword_type      = __::strides_;
 
     constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
@@ -94,6 +133,17 @@ namespace kwk
           return (0 + ... + (get<i>(*this) * is));
       }(std::make_integer_sequence<int, static_order>{});
     }
+
+    template<typename... Slicers>
+    constexpr auto operator()(Slicers const&... s ) const noexcept
+    requires( sizeof...(Slicers) == static_order )
+    {
+      auto  sliced  = kumi::map_index ( [&](auto i, auto m) { return restride(*this,m,i); }
+                                      , kumi::tie(s...)
+                                      );
+
+      return kumi::apply( [](auto... v) { return with_strides(v...); }, sliced );
+    }
   };
 
   /// Deduction guide for kwk::stride
@@ -134,6 +184,13 @@ namespace kwk
         return stride{ (s.template axis<I>() =  get<I>(t))... };
       }(std::make_index_sequence<sizeof...(D)>{}, d);
     }
+  }
+
+  template<std::int32_t N, auto... D>
+  constexpr auto compress(stride<D...> const& s) noexcept
+  {
+    auto extracted = kumi::extract(s, kumi::index<stride<D...>::static_size-N>);
+    return with_strides(extracted);
   }
 }
 

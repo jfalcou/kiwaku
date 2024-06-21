@@ -9,6 +9,7 @@
 
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/container/pick.hpp>
+#include <kwk/utility/traits/reachable.hpp>
 #include <kwk/detail/container/builder.hpp>
 #include <kwk/detail/memory/block.hpp>
 #include <type_traits>
@@ -29,8 +30,9 @@ namespace kwk
     using shape_type        = typename access_t::shape_type;
     using container_kind    = decltype(Tag);
 
-    static constexpr std::int32_t static_order  = access_t::static_order;
-    static constexpr bool         has_label     = meta_t::has_label;
+    static constexpr std::int32_t static_order          = access_t::static_order;
+    static constexpr bool         has_label             = meta_t::has_label;
+    static constexpr bool         preserve_reachability = Builder::preserve_reachability;
 
     constexpr container( container_kind ) noexcept
             : meta_t{}, data_t{}, access_t{}
@@ -44,10 +46,10 @@ namespace kwk
             : meta_t{ params }, data_t{ params }, access_t{ params }
     {}
 
-    static constexpr  auto          kind()         noexcept  { return Tag;      }
-    constexpr         std::int32_t  order() const  noexcept  { return this->shape().order(); }
-    constexpr         auto          numel() const  noexcept  { return this->shape().numel(); }
-    constexpr         bool          empty() const  noexcept  { return this->size() == 0;     }
+    static constexpr  auto  kind()        noexcept  { return Tag;                   }
+    static constexpr  auto  order()       noexcept  { return static_order;          }
+    constexpr         auto  numel() const noexcept  { return this->shape().numel(); }
+    constexpr         bool  empty() const noexcept  { return this->size() == 0;     }
 
     using meta_t::label;
 
@@ -112,27 +114,40 @@ namespace kwk
     }
 
     template<kumi::sized_product_type<static_order> Pos>
-    const_reference operator()(Pos p) const noexcept
+    decltype(auto) operator()(Pos p) const noexcept
     {
-      return kumi::apply([&](auto... i) -> const_reference { return (*this)(i...); }, p);
+      return kumi::apply([&](auto... i) -> decltype(auto) { return (*this)(i...); }, p);
     }
 
     template<kumi::sized_product_type<static_order> Pos>
-    reference operator()(Pos p) noexcept
+    decltype(auto) operator()(Pos p) noexcept
     {
-      return kumi::apply([&](auto... i) -> reference { return (*this)(i...); }, p);
+      return kumi::apply([&](auto... i) -> decltype(auto) { return (*this)(i...); }, p);
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order) const_reference operator()(Is... is) const noexcept
+    requires(sizeof...(Is) == static_order) decltype(auto) operator()(Is... is) const noexcept
     {
       return data(static_cast<data_t const&>(*this))[ access_t::index(is...) ];
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order) reference operator()(Is... is) noexcept
+    requires(sizeof...(Is) == static_order) decltype(auto) operator()(Is... is) noexcept
     {
       return data(static_cast<data_t&>(*this))[ access_t::index(is...) ];
+    }
+
+    template<concepts::slicer... Slicers>
+    requires( (sizeof...(Slicers) <= static_order) && (!std::integral<Slicers> || ...))
+    auto operator()(Slicers... slice) const noexcept
+    {
+      auto shp = this->shape();
+      auto str = compress<sizeof...(slice)>(this->stride());
+
+      if constexpr(preserve_reachability && kwk::preserve_reachability<Slicers...>)
+        return make_view(source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...));
+      else
+        return make_view( source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...), unreachable);
     }
 
     constexpr auto get_data() const  noexcept { return data(static_cast<data_t const&>(*this)); }

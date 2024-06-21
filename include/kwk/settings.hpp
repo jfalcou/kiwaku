@@ -21,6 +21,7 @@ namespace kwk
 #include <kwk/settings/category.hpp>
 #include <kwk/settings/extent.hpp>
 #include <kwk/settings/label.hpp>
+#include <kwk/settings/reachable.hpp>
 #include <kwk/settings/size.hpp>
 #include <kwk/settings/source.hpp>
 #include <kwk/settings/strides.hpp>

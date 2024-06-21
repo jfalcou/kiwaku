@@ -15,17 +15,22 @@ namespace kwk_test
   {
     T dim;
     constexpr slicer(T dim_): dim(dim_) { }
-  };
 
-  template<auto... S, std::size_t N, typename T>
-  constexpr auto reshape( kwk::shape<S...> const& sh
-                        , slicer<T> s
-                        , kumi::index_t<N> const&
-                        ) noexcept
-  {
-    if constexpr( kwk::concepts::static_constant<T> ) return kwk::fixed<N + 10 * T::value>;
-    else                                              return get<N>(sh) + 10 * s.dim;
-  }
+    template<auto... Desc, std::size_t N>
+    constexpr auto reshape( kwk::shape<Desc...> const& sh
+                          , kumi::index_t<N> const&
+                          ) const noexcept
+    {
+      if constexpr (requires{ T::value; })
+      {
+        return kwk::fixed<N + 10 * T::value>;
+      }
+      else
+      {
+        return get<N>(sh) + 10 * dim;
+      }
+    }
+  };
 }
 
 TTS_CASE("Check that slicing keeps dynamic values")
@@ -71,7 +76,6 @@ TTS_CASE("Check that slicing keeps dynamic values")
   TTS_EQUAL(get<4>(res7), 56);
   TTS_EQUAL(get<5>(res7), 68);
   TTS_EQUAL(get<6>(res7), 74);
-
 };
 
 TTS_CASE("Check that slicing keeps static values")
@@ -117,7 +121,7 @@ TTS_CASE("Check that slicing keeps static values")
   TTS_EQUAL(get<3>(res4), 43U);
   TTS_EQUAL(get<3>(res7), 43U);
 
-  TTS_EQUAL(get<4>(res7)    , 54U);
-  TTS_EQUAL(get<5>(res7)    , 65U);
-  TTS_EQUAL(get<6>(res7)    , 76U);
+  TTS_EQUAL(get<4>(res7), 54U);
+  TTS_EQUAL(get<5>(res7), 65U);
+  TTS_EQUAL(get<6>(res7), 76U);
 };
