@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: Member List</title>
+<title>Kiwaku: kwk::concepts::unit_slicer Concept Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1make__view.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1unit__slicer.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,17 +121,28 @@ $(document).ready(function(){initNavTree('structkwk_1_1make__view.html',''); ini
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">kwk::make_view&lt; Settings &gt; Member List</div></div>
+  <div class="headertitle"><div class="title">kwk::concepts::unit_slicer Concept Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="structkwk_1_1make__view.html">kwk::make_view&lt; Settings &gt;</a>, including all inherited members.</p>
-</div><!-- contents -->
+<p>slicer specifier with unit step concept  
+<a href="conceptkwk_1_1concepts_1_1unit__slicer.html#details">More...</a></p>
+
+<p><code>#include &lt;kwk/concepts/slicer.hpp&gt;</code></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A kwk::unit_slicer is a type which fulfills kwk::slicer and doesn't break the contiguity of the dimension it slices. </p>
+</div><h2 class="groupheader">Concept definition</h2>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> S&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1unit__slicer.html">kwk::concepts::unit_slicer</a> =  <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1slicer.html">slicer&lt;S&gt;</a> &amp;&amp; is_contiguous&lt;S&gt;</div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1slicer_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1slicer.html">kwk::concepts::slicer</a></div><div class="ttdoc">slicer specifier concept</div><div class="ttdef"><b>Definition:</b> slicer.hpp:29</div></div>
+<div class="ttc" id="aconceptkwk_1_1concepts_1_1unit__slicer_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1unit__slicer.html">kwk::concepts::unit_slicer</a></div><div class="ttdoc">slicer specifier with unit step concept</div><div class="ttdef"><b>Definition:</b> slicer.hpp:45</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><b>concepts</b></li><li class="navelem"><a class="el" href="conceptkwk_1_1concepts_1_1unit__slicer.html">unit_slicer</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

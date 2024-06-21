@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['shape_5ftype_0',['shape_type',['../structkwk_1_1table.html#ad15f56bb61637a7cb51a727eddc71ac3',1,'kwk::table::shape_type()'],['../structkwk_1_1view.html#a7a1f24b9c101e77d63ac94dd00baf9b7',1,'kwk::view::shape_type()']]]
+  ['reference_0',['reference',['../structkwk_1_1table.html#ae6791b5f53e0f80bf3bb5afac70600e0',1,'kwk::table::reference()'],['../structkwk_1_1view.html#a17801a3cd40872a38c204fd7dc3ed379',1,'kwk::view::reference()']]]
 ];

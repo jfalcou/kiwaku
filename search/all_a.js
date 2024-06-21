@@ -20,9 +20,11 @@ var searchData=
   ['numeric_5fextent_17',['numeric_extent',['../conceptkwk_1_1concepts_1_1numeric__extent.html',1,'kwk::concepts']]],
   ['pointer_18',['pointer',['../conceptkwk_1_1concepts_1_1pointer.html',1,'kwk::concepts']]],
   ['range_19',['range',['../conceptkwk_1_1concepts_1_1range.html',1,'kwk::concepts']]],
-  ['static_5faxis_20',['static_axis',['../conceptkwk_1_1concepts_1_1static__axis.html',1,'kwk::concepts']]],
-  ['table_21',['table',['../conceptkwk_1_1concepts_1_1table.html',1,'kwk::concepts']]],
-  ['tag_5finvocable_22',['tag_invocable',['../conceptkwk_1_1tag__invocable.html',1,'kwk']]],
-  ['tags_23',['tags',['../namespacekwk_1_1tags.html',1,'kwk']]],
-  ['view_24',['view',['../conceptkwk_1_1concepts_1_1view.html',1,'kwk::concepts']]]
+  ['slicer_20',['slicer',['../conceptkwk_1_1concepts_1_1slicer.html',1,'kwk::concepts']]],
+  ['static_5faxis_21',['static_axis',['../conceptkwk_1_1concepts_1_1static__axis.html',1,'kwk::concepts']]],
+  ['table_22',['table',['../conceptkwk_1_1concepts_1_1table.html',1,'kwk::concepts']]],
+  ['tag_5finvocable_23',['tag_invocable',['../conceptkwk_1_1tag__invocable.html',1,'kwk']]],
+  ['tags_24',['tags',['../namespacekwk_1_1tags.html',1,'kwk']]],
+  ['unit_5fslicer_25',['unit_slicer',['../conceptkwk_1_1concepts_1_1unit__slicer.html',1,'kwk::concepts']]],
+  ['view_26',['view',['../conceptkwk_1_1concepts_1_1view.html',1,'kwk::concepts']]]
 ];

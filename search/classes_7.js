@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unsupported_5fcall_0',['unsupported_call',['../structkwk_1_1unsupported__call.html',1,'kwk']]]
+  ['view_0',['view',['../structkwk_1_1view.html',1,'kwk']]]
 ];

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: Member List</title>
+<title>Kiwaku: kwk::stride::stride</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('structkwk_1_1make__table.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structkwk_1_1stride_a193106ff05c7f71d4cb6cabebe876279.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,18 +120,50 @@ $(document).ready(function(){initNavTree('structkwk_1_1make__table.html',''); in
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">kwk::make_table&lt; Settings &gt; Member List</div></div>
-</div><!--header-->
 <div class="contents">
+<a id="a193106ff05c7f71d4cb6cabebe876279" name="a193106ff05c7f71d4cb6cabebe876279"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a193106ff05c7f71d4cb6cabebe876279">&#9670;&#160;</a></span>stride()</h2>
 
-<p>This is the complete list of members for <a class="el" href="structkwk_1_1make__table.html">kwk::make_table&lt; Settings &gt;</a>, including all inherited members.</p>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;auto... Strides&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structkwk_1_1stride.html">kwk::stride</a>&lt; Strides &gt;::stride </td>
+          <td>(</td>
+          <td class="paramtype">concepts::extent auto...&#160;</td>
+          <td class="paramname"><em>values</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructs a <a class="el" href="structkwk_1_1stride.html" title="Fixed order stride with mixed size capability.">kwk::stride</a> with a variadic list of extents.</p>
+<p>Passing a runtime stride size where a static size is provided is undefined behavior if both values are not equal.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">values</td><td>Variadic list of dimensions' values </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li><li class="navelem"><a class="el" href="structkwk_1_1stride.html">stride</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

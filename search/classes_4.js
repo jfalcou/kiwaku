@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['make_5ftable_0',['make_table',['../structkwk_1_1make__table.html',1,'kwk']]],
-  ['make_5fview_1',['make_view',['../structkwk_1_1make__view.html',1,'kwk']]]
+  ['shape_0',['shape',['../structkwk_1_1shape.html',1,'kwk']]],
+  ['stride_1',['stride',['../structkwk_1_1stride.html',1,'kwk']]]
 ];

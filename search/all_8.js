@@ -10,5 +10,6 @@ var searchData=
   ['is_5ffully_5fdynamic_7',['is_fully_dynamic',['../structkwk_1_1shape.html#ad7cc4178635b97a47f771e630d97da41',1,'kwk::shape']]],
   ['is_5ffully_5fstatic_8',['is_fully_static',['../structkwk_1_1shape.html#a14d93ff03c503872967f01da532a594f',1,'kwk::shape']]],
   ['is_5fjoker_9',['is_joker',['../structkwk_1_1is__joker.html',1,'kwk']]],
-  ['is_5fstatic_5fextent_10',['is_static_extent',['../structkwk_1_1is__static__extent.html',1,'kwk']]]
+  ['is_5fstatic_5fextent_10',['is_static_extent',['../structkwk_1_1is__static__extent.html',1,'kwk']]],
+  ['is_5funit_11',['is_unit',['../structkwk_1_1stride.html#a93e186840a9ab6e2d64a4f438e74882d',1,'kwk::stride']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['value_5ftype_0',['value_type',['../structkwk_1_1table.html#a5d510776e9e21567496f525718c2c870',1,'kwk::table::value_type()'],['../structkwk_1_1view.html#a91ecc4e3ea69660ff102b7eaf22283d8',1,'kwk::view::value_type()']]]
+  ['tag_5finvoke_5fresult_0',['tag_invoke_result',['../group__invoke.html#ga49771be90000328b8e6fb7e0330a41a2',1,'kwk']]],
+  ['tag_5fof_1',['tag_of',['../group__invoke.html#ga05ec997ef2d1c398afbefdbab5223167',1,'kwk']]]
 ];

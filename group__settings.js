@@ -6,5 +6,6 @@ var group__settings =
     [ "kwk::label", "group__settings.html#gabb68e6f180ef839836e0dc210cd1772f", null ],
     [ "kwk::size", "group__settings.html#ga2846917ba45ea58670d9d45afe907925", null ],
     [ "kwk::source", "group__settings.html#gaef8fdcbb44ad887e90784c21469e06eb", null ],
-    [ "kwk::strides", "group__settings.html#ga9f6509c2ec5668331e3d18e48ec35478", null ]
+    [ "kwk::strides", "group__settings.html#ga9f6509c2ec5668331e3d18e48ec35478", null ],
+    [ "kwk::unreachable", "group__settings.html#ga803bd4ac5bdee7e3427f12d84805bd62", null ]
 ];

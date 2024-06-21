@@ -164,14 +164,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1joker.html">joker</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the <a class="el" href="group__utility_ga5008705a9f99e5f4bf3eab64f12e8ac1.html#ga5008705a9f99e5f4bf3eab64f12e8ac1">kwk::_</a> object.  <a href="structkwk_1_1joker.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1make__table.html">make_table</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type helper.  <a href="structkwk_1_1make__table.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1make__view.html">make_view</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type helper.  <a href="structkwk_1_1make__view.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1shape.html">shape</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed order shape with mixed size capability.  <a href="structkwk_1_1shape.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1stride.html">stride</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed order stride with mixed size capability.  <a href="structkwk_1_1stride.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkwk_1_1table.html">table</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning, contiguous multi-dimensional container.  <a href="structkwk_1_1table.html#details">More...</a><br /></td></tr>
@@ -197,6 +194,16 @@ Concepts</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a2569ce77ae62fe68cd0cb4d7261eb2f3"><td class="memTemplParams" colspan="2"><a id="a2569ce77ae62fe68cd0cb4d7261eb2f3" name="a2569ce77ae62fe68cd0cb4d7261eb2f3"></a>
+template&lt;typename... Settings&gt; </td></tr>
+<tr class="memitem:a2569ce77ae62fe68cd0cb4d7261eb2f3"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make_table_t</b> = <a class="el" href="structkwk_1_1table.html">table</a>&lt; __::builder&lt; rbr::settings(<a class="el" href="namespacekwk.html#a73b06e6568836ced3f015cda983dcff4">table_</a>, Settings{}...)&gt; &gt;</td></tr>
+<tr class="memdesc:a2569ce77ae62fe68cd0cb4d7261eb2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type helper. <br /></td></tr>
+<tr class="separator:a2569ce77ae62fe68cd0cb4d7261eb2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431617994d8e4d0604155ef88f875cab"><td class="memTemplParams" colspan="2"><a id="a431617994d8e4d0604155ef88f875cab" name="a431617994d8e4d0604155ef88f875cab"></a>
+template&lt;typename... Settings&gt; </td></tr>
+<tr class="memitem:a431617994d8e4d0604155ef88f875cab"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make_view_t</b> = <a class="el" href="structkwk_1_1view.html">view</a>&lt; __::builder&lt; rbr::settings(<a class="el" href="namespacekwk.html#af8672f59bb148e9e3840296bab16c231">view_</a>, Settings{}...)&gt; &gt;</td></tr>
+<tr class="memdesc:a431617994d8e4d0604155ef88f875cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type helper. <br /></td></tr>
+<tr class="separator:a431617994d8e4d0604155ef88f875cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga49771be90000328b8e6fb7e0330a41a2"><td class="memTemplParams" colspan="2">
 template&lt;typename Tag , typename... Args&gt; </td></tr>
 <tr class="memitem:ga49771be90000328b8e6fb7e0330a41a2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tag_invoke_result</b> = std::invoke_result_t&lt; decltype(kwk::tag_invoke), Tag, Args... &gt;</td></tr>
@@ -252,15 +259,15 @@ requires (N&gt;0 &amp;&amp; N&lt;=sizeof...(D))</td></tr>
 <tr class="memitem:a38b2400f855b10afb7308c8173da1f67"><td class="memTemplItemLeft" align="right" valign="top">KWK_CONST constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a38b2400f855b10afb7308c8173da1f67.html#a38b2400f855b10afb7308c8173da1f67">compress</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; D... &gt; const &amp;s) noexcept</td></tr>
 <tr class="memdesc:a38b2400f855b10afb7308c8173da1f67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compress a <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> to a given order.  <br /></td></tr>
 <tr class="separator:a38b2400f855b10afb7308c8173da1f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa090076284bbdd664ad5562af3577722"><td class="memTemplParams" colspan="2"><a id="aa090076284bbdd664ad5562af3577722" name="aa090076284bbdd664ad5562af3577722"></a>
-template&lt;concepts::extent... T&gt; </td></tr>
-<tr class="memitem:aa090076284bbdd664ad5562af3577722"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>stride</b> (T...) -&gt; stride&lt; <a class="el" href="group__extension_gaa69fbcc54405bf59adecf19f229c1825.html#gaa69fbcc54405bf59adecf19f229c1825">to_descriptor</a>(T{})... &gt;</td></tr>
-<tr class="memdesc:aa090076284bbdd664ad5562af3577722"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduction guide for kwk::stride. <br /></td></tr>
-<tr class="separator:aa090076284bbdd664ad5562af3577722"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af811af24909a4a34f72e7bcff3b21f8f"><td class="memTemplParams" colspan="2">template&lt;concepts::extent... D&gt; </td></tr>
 <tr class="memitem:af811af24909a4a34f72e7bcff3b21f8f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_af811af24909a4a34f72e7bcff3b21f8f.html#af811af24909a4a34f72e7bcff3b21f8f">with_strides</a> (D... d) noexcept</td></tr>
-<tr class="memdesc:af811af24909a4a34f72e7bcff3b21f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a kwk::stride from a list of stride value or joker.  <br /></td></tr>
+<tr class="memdesc:af811af24909a4a34f72e7bcff3b21f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="structkwk_1_1stride.html" title="Fixed order stride with mixed size capability.">kwk::stride</a> from a list of stride value or joker.  <br /></td></tr>
 <tr class="separator:af811af24909a4a34f72e7bcff3b21f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa090076284bbdd664ad5562af3577722"><td class="memTemplParams" colspan="2"><a id="aa090076284bbdd664ad5562af3577722" name="aa090076284bbdd664ad5562af3577722"></a>
+template&lt;concepts::extent... T&gt; </td></tr>
+<tr class="memitem:aa090076284bbdd664ad5562af3577722"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>stride</b> (T...) -&gt; <a class="el" href="structkwk_1_1stride.html">stride</a>&lt; <a class="el" href="group__extension_gaa69fbcc54405bf59adecf19f229c1825.html#gaa69fbcc54405bf59adecf19f229c1825">to_descriptor</a>(T{})... &gt;</td></tr>
+<tr class="memdesc:aa090076284bbdd664ad5562af3577722"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduction guide for <a class="el" href="structkwk_1_1stride.html" title="Fixed order stride with mixed size capability.">kwk::stride</a>. <br /></td></tr>
+<tr class="separator:aa090076284bbdd664ad5562af3577722"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a4819e5b66e39687cfd30e7c8134238"><td class="memTemplParams" colspan="2">template&lt;auto... D&gt; </td></tr>
 <tr class="memitem:a5a4819e5b66e39687cfd30e7c8134238"><td class="memTemplItemLeft" align="right" valign="top">KWK_PURE constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacekwk_a5a4819e5b66e39687cfd30e7c8134238.html#a5a4819e5b66e39687cfd30e7c8134238">as_stride</a> (<a class="el" href="structkwk_1_1shape.html">shape</a>&lt; D... &gt; s) noexcept</td></tr>
 <tr class="separator:a5a4819e5b66e39687cfd30e7c8134238"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -382,6 +389,10 @@ constexpr __::category_&#160;</td><td class="memItemRight" valign="bottom"><b>ca
 constexpr __::label_&#160;</td><td class="memItemRight" valign="bottom"><b>label</b> = {}</td></tr>
 <tr class="memdesc:gabb68e6f180ef839836e0dc210cd1772f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Label setting for <a class="el" href="structkwk_1_1table.html" title="Owning, contiguous multi-dimensional container.">kwk::table</a> and <a class="el" href="structkwk_1_1view.html" title="Non-owning, contiguous multi-dimensional container.">kwk::view</a>. <br /></td></tr>
 <tr class="separator:gabb68e6f180ef839836e0dc210cd1772f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga803bd4ac5bdee7e3427f12d84805bd62"><td class="memItemLeft" align="right" valign="top">
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>unreachable</b> = rbr::flag(__::unreachable_{})</td></tr>
+<tr class="memdesc:ga803bd4ac5bdee7e3427f12d84805bd62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data reachability option. <br /></td></tr>
+<tr class="separator:ga803bd4ac5bdee7e3427f12d84805bd62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2846917ba45ea58670d9d45afe907925"><td class="memItemLeft" align="right" valign="top">
 constexpr __::size_&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> = {}</td></tr>
 <tr class="memdesc:ga2846917ba45ea58670d9d45afe907925"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size setting for <a class="el" href="structkwk_1_1table.html" title="Owning, contiguous multi-dimensional container.">kwk::table</a> and <a class="el" href="structkwk_1_1view.html" title="Non-owning, contiguous multi-dimensional container.">kwk::view</a>. <br /></td></tr>
