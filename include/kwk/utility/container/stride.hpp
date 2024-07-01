@@ -81,11 +81,7 @@ namespace kwk
     //==============================================================================================
     // stride is its self option keyword
     //==============================================================================================
-<<<<<<< HEAD
     using stored_value_type = stride<Strides...>;
-=======
-    using stored_value_type = stride<S...> const&;
->>>>>>> Fix improper typing for rbr::option
     using keyword_type      = __::strides_;
 
     // constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
