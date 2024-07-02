@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/container.hpp>
+#include <kwk/context/context.hpp>
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/algorithm/algos/predicates.hpp>
 #include <kwk/detail/algorithm/for_until.hpp>
@@ -57,7 +58,6 @@ namespace kwk
     return kwk::find_if(cpu, c, f);
   }
 
-
   template <typename Context, concepts::container Out>
   constexpr auto find(Context& ctx, Out const& out, auto value)
   {
@@ -70,28 +70,29 @@ namespace kwk
     return find(cpu, out, value);
   }
 
-
   template <typename Context, typename Func, concepts::container Out>
   constexpr auto find_if_not(Context& ctx, Out const& out, Func f)
   {
     return find_if(ctx, out, [f](auto x){return !f(x);});
   }
+
   template <typename Func, concepts::container Out>
   constexpr auto find_if_not(Out const& out, Func f)
   {
     return kwk::find_if_not(cpu, out, f);
   }
 
-
   template <typename Context, concepts::container Out, concepts::container Values>
   constexpr auto find_first_of(Context& ctx, Out const& out, Values const& in)
   {
-    // TODO: possible performance issue with contexts (any_of will call a new proxy each time it is called) 
+    // TODO: possible performance issue with contexts
+    // (any_of will call a new proxy each time it is called) 
     return find_if(ctx, out, [&](auto e)
     {
       return any_of(ctx, in, [&](auto x){return (x==e);});
     });
   }
+
   template <concepts::container Out, concepts::container Values>
   constexpr auto find_first_of(Out const& out, Values const& in)
   {
@@ -99,7 +100,6 @@ namespace kwk
   }
 
   // TODO?: add find_first_of(Out const& out, Values const& in, Func f)?
-
 
   template <typename Context, typename Func, concepts::container Out>
   constexpr auto find_last_if(Context& ctx, Out const& out, Func f)
@@ -114,34 +114,34 @@ namespace kwk
 
     return res;
   }
+
   template <typename Func, concepts::container Out>
   constexpr auto find_last_if(Out const& out, Func f)
   {
     return find_last_if(cpu, out, f);
   }
 
-
   template <typename Context, concepts::container Out>
   constexpr auto find_last(Context& ctx, Out const& out, auto value)
   {
     return find_last_if(ctx, out, [&](auto e){return e == value;});
   }
+
   template <concepts::container Out>
   constexpr auto find_last(Out const& out, auto value)
   {
     return kwk::find_last(cpu, out, value);
   }
 
-
   template <typename Context, typename Func, concepts::container Out>
   constexpr auto find_last_if_not(Context& ctx, Out const& out, Func f)
   {
     return find_last_if(ctx, out, [f](auto x){return !f(x);});
   }
+
   template <typename Func, concepts::container Out>
   constexpr auto find_last_if_not(Out const& out, Func f)
   {
     return kwk::find_last_if_not(cpu, out, f);
   }
-
 }

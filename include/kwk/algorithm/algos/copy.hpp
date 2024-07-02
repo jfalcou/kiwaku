@@ -20,7 +20,6 @@ namespace kwk
   template<typename Context, concepts::container Out, concepts::container In>
   constexpr auto copy(Context& ctx, Out& out, In const& in)
   {
-    // TODO: remettre kwk:: devant
     kwk::transform(ctx, [](auto in) { return in; }, out, KWK_FWD(in) );
   }
 
@@ -34,8 +33,7 @@ namespace kwk
   template<typename Context, typename Func, concepts::container Out, concepts::container In>
   constexpr auto copy_if(Context& ctx, Func f, Out& out, In const& in)
   {
-    // TODO: remettre kwk:: devant
-    // for_each(ctx, [&](auto... is) { if(f(in(is...))) out(is...) = KWK_FWD(in)(is...); }, out.shape() );
+    // kwk::for_each(ctx, [&](auto... is) { if(f(in(is...))) out(is...) = KWK_FWD(in)(is...); }, out.shape() );
     ctx.map([f](auto& o, auto const& i) { if(f(i)) o = i; }, ctx.out(out), ctx.in(in));
   }
 

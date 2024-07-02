@@ -11,6 +11,8 @@
 #include "test.hpp"
 #include "../generic/predicates.hpp"
 
+// TODO: update these tests
+
 TTS_CASE("Check for kwk::all_of(in, func) 1D")
 {
   kwk::test::all_of_in_func_1D(kwk::cpu);

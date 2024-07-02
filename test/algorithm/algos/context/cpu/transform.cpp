@@ -11,6 +11,8 @@
 #include "test.hpp"
 #include "../generic/transform.hpp"
 
+// TODO: update these tests
+
 TTS_CASE("Check for kwk::transform(value, new_value) 1D - CPU context")
 {
   kwk::test::transform_value_new_value_1D(kwk::cpu);

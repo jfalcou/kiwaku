@@ -26,10 +26,6 @@ namespace kwk
   constexpr auto for_each(Context& ctx, Func&& f, shape<S...> const& shp)
   {
     return ctx.map(KWK_FWD(f), shp);
-    // return [&]<std::size_t... N>(std::index_sequence<N...> const&)
-    // {
-    //   return __::for_each(f, shp );
-    // }( std::make_index_sequence<shape<S...>::static_order>{} );
   }
 
   //====================================================================================================================
@@ -55,9 +51,6 @@ namespace kwk
   {
     kwk::for_each(cpu, KWK_FWD(f), shp);
   }
-
-
-
 
   template<typename Context, typename Func, concepts::container C0, concepts::container... Cs>
   constexpr auto for_each(Context& ctx, Func&& f, C0&& c0, Cs&&... cs)
@@ -87,7 +80,6 @@ namespace kwk
   template<typename Func, concepts::container C0, concepts::container... Cs>
   constexpr auto for_each(Func&& f, C0&& c0, Cs&&... cs)
   {
-    // kwk::for_each([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
     return kwk::for_each(cpu, KWK_FWD(f), KWK_FWD(c0), KWK_FWD(cs)...);
   }
 
@@ -112,10 +104,10 @@ namespace kwk
   template<typename Context, typename Func, concepts::container Container>
   constexpr auto for_each_index(Context& ctx, Func&& f, Container&& c)
   {
-    kwk::for_each( ctx
-            , [&](auto... is) { return KWK_FWD(f)(KWK_FWD(c)(is...), is...); }
-            , c.shape()
-            );
+    kwk::for_each ( ctx
+                  , [&](auto... is) { return KWK_FWD(f)(KWK_FWD(c)(is...), is...); }
+                  , c.shape()
+                  );
     return f;
   }
 
@@ -124,7 +116,6 @@ namespace kwk
   {
     return for_each_index(cpu, f, c);
   }
-
 
 
 

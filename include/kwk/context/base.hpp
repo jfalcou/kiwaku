@@ -25,6 +25,7 @@ namespace kwk
     static auto&        out  (kwk::concepts::container auto& c)       { return c; }
     static auto&        inout(kwk::concepts::container auto& c)       { return c; }
 
+    // reduce is not part of base_context anymore.
     // template<typename Func, concepts::container In>
     // constexpr auto reduce(In const& in, Func f, auto init) const
     // {

@@ -11,6 +11,8 @@
 #include "test.hpp"
 #include "../generic/reduce.hpp"
 
+// TODO: update these tests
+
 TTS_CASE("Check for kwk::reduce(in) 1D")
 {
   kwk::test::reduce_in_1D(kwk::cpu);

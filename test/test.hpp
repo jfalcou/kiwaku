@@ -1,10 +1,10 @@
-//==================================================================================================
+//======================================================================================================================
 /**
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 **/
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 #include <type_traits>
 #include <utility>
@@ -39,9 +39,7 @@ kumi::tuple<int, int, int, int> lindex_to_pos ( std::size_t const d1
   p[2] = remains / d3;
   remains -= p[2] * d3;
   p[3] = remains;
-  // std::cout << "pos: ";
-  // for (auto const e : p) { std::cout << e << " "; }
-  // std::cout << "\n";
+
   return kumi::tuple<int, int, int, int>{p[0], p[1], p[2], p[3]};
 }
 
@@ -55,6 +53,7 @@ kumi::tuple<int, int> lindex_to_pos ( std::size_t const d1
   p[0] = remains / (d1);
   remains -= p[0] * (d1);
   p[1] = remains;
+
   return kumi::tuple<int, int>{p[0], p[1]};
 }
 
@@ -74,9 +73,7 @@ std::array<std::size_t, 4> lindex_to_pos_arr( std::size_t const d1
   p[2] = remains / d3;
   remains -= p[2] * d3;
   p[3] = remains;
-  // std::cout << "pos: ";
-  // for (auto const e : p) { std::cout << e << " "; }
-  // std::cout << "\n";
+
   return p;
 }
 
@@ -90,6 +87,7 @@ std::array<std::size_t, 2> lindex_to_pos_arr( std::size_t const d1
   p[0] = remains / d1;
   remains -= p[0] * d1;
   p[1] = remains;
+
   return p;
 }
 

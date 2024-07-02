@@ -1,14 +1,15 @@
-//==================================================================================================
+//======================================================================================================================
 /**
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 **/
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 
 #include <algorithm>
 #include <kwk/concepts/container.hpp>
+#include <kwk/context/context.hpp>
 #include <kwk/algorithm/algos/reduce.hpp>
 #include <kwk/detail/abi.hpp>
 #include <cstddef>
@@ -23,13 +24,12 @@ starts_with -> sous vue de k depuis le début (interprété 1D ?)
 namespace kwk
 {
 
-  // TODO: Trouver les bons algos en SYCL ?
-
   template<typename Context, typename Func, concepts::container In>
   constexpr auto all_of(Context& ctx, In const& in, Func f)
   {
     return reduce(ctx, in, [f](auto a, auto e) {  return a && f(e); }, true );
   }
+
   template<typename Func, concepts::container In>
   constexpr auto all_of(In const& in, Func f)
   {
@@ -41,6 +41,7 @@ namespace kwk
   {
     return reduce(ctx, in, [f](auto a, auto e) {  return a || f(e); }, false );
   }
+
   template<typename Func, concepts::container In>
   constexpr auto any_of(In const& in, Func f)
   {
@@ -52,6 +53,7 @@ namespace kwk
   {
     return !any_of(ctx, in, f);
   }
+
   template<typename Func, concepts::container In>
   constexpr auto none_of(In const& in, Func f)
   {
@@ -63,6 +65,7 @@ namespace kwk
   {
     return reduce(ctx, in, [value](auto a, auto e) {  return a + ((e==value) ? 1 : 0); }, std::size_t{} );
   }
+
   template<concepts::container In>
   constexpr auto count(In const& in, auto value)
   {
@@ -74,6 +77,7 @@ namespace kwk
   {
     return reduce(ctx, in, [f](auto a, auto e) {  return a + (f(e) ? 1 : 0); }, std::size_t{} );
   }
+
   template<typename Func, concepts::container In>
   constexpr auto count_if(In const& in, Func f)
   {

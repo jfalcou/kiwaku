@@ -1,10 +1,10 @@
-//==================================================================================================
+//======================================================================================================================
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Contributors & Maintainers
   SPDX-License-Identifier: BSL-1.0
 */
-//==================================================================================================
+//======================================================================================================================
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/container.hpp>
 #include "test.hpp"
@@ -390,5 +390,3 @@ TTS_CASE("Check for kwk::for_each_index(func, container) 4D")
 
   TTS_ALL_EQUAL(input, expected_result);
 };
-
-

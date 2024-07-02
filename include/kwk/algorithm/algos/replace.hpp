@@ -8,6 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/container.hpp>
+#include <kwk/context/context.hpp>
 #include <kwk/algorithm/algos/for_each.hpp>
 
 namespace kwk
@@ -17,6 +18,7 @@ namespace kwk
   {
     ctx.map([=](auto& o) { if(f(o)) o = new_value; }, Context::inout(out));
   }
+
   template<typename Func, concepts::container Out>
   constexpr void replace_if(Out& out, Func f, auto new_value)
   {
@@ -28,6 +30,7 @@ namespace kwk
   {
     replace_if(ctx, out, [old_value](auto const& x) { return x == old_value; }, new_value);
   }
+
   template<concepts::container Out>
   constexpr void replace(Out& out, auto old_value, auto new_value)
   {
