@@ -71,7 +71,7 @@ namespace kwk
     //! @param v Integral value to store
     explicit constexpr size_t(std::convertible_to<T> auto v)
     {
-      KIWAKU_ASSERT(v <= max(), "Size " << +v << " is out of [0," << +max() << "]");
+      KIWAKU_ASSERT(static_cast<T>(v) <= max(), "Size " << +v << " is out of [0," << +max() << "]");
       value_ = static_cast<T>(v);
     }
 
@@ -83,16 +83,6 @@ namespace kwk
     template<std::unsigned_integral U>
     constexpr size_t(size_t<U> other) : size_t(other.value())
     {}
-
-    /// @brief Compare the value fo two kwk::size_t instance
-    friend constexpr auto operator<=>(size_t a, size_t b) noexcept =default;
-
-    /// @overload
-    template<typename U>
-    friend constexpr auto operator<=>(size_t a, size_t<U> b) noexcept
-    {
-      return a.value() <=> b.value();
-    }
 
     //! @brief Assign a kwk::size_t value to another
     //!
@@ -119,6 +109,20 @@ namespace kwk
       KIWAKU_ASSERT(v <= max(), "Size " << +v << " is out of [0," << +max() << "]");
       value_ = static_cast<T>(v);
       return *this;
+    }
+
+    /// @brief Equality comparion between kwk::size_t
+    template<typename U>
+    friend constexpr auto operator==(size_t a, size_t<U> b) noexcept
+    {
+      return a.value() == b.value();
+    }
+
+    /// @brief Comparions between kwk::size_t
+    template<typename U>
+    friend constexpr auto operator<=>(size_t a, size_t<U> b) noexcept
+    {
+      return a.value() <=> b.value();
     }
 
     constexpr auto operator+() const noexcept
