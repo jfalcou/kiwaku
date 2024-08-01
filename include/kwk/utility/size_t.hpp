@@ -69,10 +69,10 @@ namespace kwk
                     );
     }
 
-    /// @brief Comparison operators
+    /// @brief Compare the value fo two kwk::size_t instance
     friend constexpr auto operator<=>(size_t a, size_t b) noexcept =default;
 
-    /// @brief Comparison operators with different kwk::size_t types
+    /// @overload
     template<typename U, U Max>
     friend constexpr auto operator<=>(size_t a, size_t<U,Max> b) noexcept
     {
