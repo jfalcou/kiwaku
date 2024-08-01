@@ -7,6 +7,7 @@
 //======================================================================================================================
 #pragma once
 
+#include <cstdarg>
 #include <kwk/detail/assert.hpp>
 #include <cstdint>
 #include <limits>
@@ -49,7 +50,7 @@ namespace kwk
     //! Does not participate in overload resolution if `other.max() > max()`.
     //! @param other kwk::size_t to copy
     template<typename U, U Max>
-    constexpr size_t(size_t<U,Max> other) requires(Max<=max())
+    constexpr size_t(size_t<U,Max> other) requires(Max <= max())
               : value_(static_cast<T>(other.value()))
     {}
 
@@ -62,8 +63,8 @@ namespace kwk
     //! @param v Integral value to store
     explicit constexpr size_t(std::convertible_to<T> auto v) : value_(static_cast<T>(v))
     {
-      KIWAKU_ASSERT ( value_ >= T{0}  , "size_t " << +value_ << " is not positive.");
-      KIWAKU_ASSERT ( value_ <= max() , "size_t " << +value_ << " is over its expected maximum size_t: "
+      KIWAKU_ASSERT ( value_ >= T{0}  , "Size " << +value_ << " is not positive.");
+      KIWAKU_ASSERT ( value_ <= max() , "Size " << +value_ << " is over its expected maximum size: "
                                                   << +max() << "."
                     );
     }
@@ -78,17 +79,30 @@ namespace kwk
       return a.value() <=> b.value();
     }
 
+    //! @brief Assign a kwk::size_t value to another
+    //!
+    //! Assign an kwk::size_t value within the current upper bound to another one.
+    //! Does not participate in overload resolution if `other.max() > max()`.
+    //!
+    //! @param v kwk::size_t value to assign.
     template<typename U, U Max>
-    constexpr size_t& operator=(size_t<U,Max> other) requires(Max<=MaxValue)
+    constexpr size_t& operator=(size_t<U,Max> other) requires(Max <= max())
     {
       value_ = other.value();
       return *this;
     }
 
-    constexpr size_t& operator=(std::convertible_to<T> auto other)
+    //! @brief Assign an integral value to a kwk::size_t
+    //!
+    //! Assign an integral value within the current upper bound to a kwk::size_t.
+    //!
+    //! If `v` is negative or if `v` is greater than the current upper bound, the behavior is undefined.
+    //!
+    //! @param v Integral value to assign.
+    constexpr size_t& operator=(std::convertible_to<T> auto v)
     {
-      KIWAKU_ASSERT ( other >= T{0} , "size_t " << +other << " is not positive.");
-      KIWAKU_ASSERT ( other <= max(), "size_t " << +other << " is over its expected maximum size_t: "
+      KIWAKU_ASSERT ( v >= T{0} , "Size " << +v << " is not positive.");
+      KIWAKU_ASSERT ( v <= max(), "Size " << +va_end(ap) << " is over its expected maximum size: "
                                                 << +max() << "."
                     );
 
