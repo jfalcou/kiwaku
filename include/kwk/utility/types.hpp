@@ -13,21 +13,53 @@
 
 namespace kwk
 {
+  //================================================================================================
+  //! @ingroup utility
+  //! @brief Type representing a number of elements with a safe API.
+  //!
+  //! kwk::size_t stores signed integral in order to represent a number of element that can be safely
+  //! used in comparisons and arithmetic contexts.
+  //!
+  //! kwk::size_t can also be defined with a custom upper bound. When constructing or assigning a value
+  //! to a kwk::size_t instance, the value assigned must be less or equal to this upper bound or the
+  //! behavior is undefined.
+  //!
+  //! @tparam T Internal std::signed_integral type used for storage
+  //! @tparam MaxValue Positive upper bound for kwk::size_t value.
+  //================================================================================================
   template<std::signed_integral T, T MaxValue = std::numeric_limits<T>::max()>
   struct size_t
   {
-    using value_type        = T;
-    using kwk_size_type  = void;
+    using kwk_size_type  = void
+;
+    /// @brief Size value storage type.
+    using value_type     = T;
 
+    /// @brief Upper bound for current size.
     static constexpr auto max() { return MaxValue; }
 
-    constexpr size_t() : value_(T{}) {}
+    //! @brief Default constructor
+    //!
+    //! Constructs a kwk::size_t of value 0
+    constexpr size_t() : value_(T{0}) {}
 
+    //! @brief Conversion constructor
+    //!
+    //! Constructs a kwk::size_t from another one with a compatible upper bound.
+    //! Does not participate in overload resolution if `other.max() > max()`.
+    //! @param other kwk::size_t to copy
     template<typename U, U Max>
     constexpr size_t(size_t<U,Max> other) requires(Max<=max())
               : value_(static_cast<T>(other.value()))
     {}
 
+    //! @brief Constructor from integral value
+    //!
+    //! Constructs a kwk::size_t from an integral value compatible with the current upper bound.
+    //!
+    //! If `v` is negative or if `v` is greater than the current upper bound, the behavior is undefined.
+    //!
+    //! @param v Integral value to store
     explicit constexpr size_t(std::convertible_to<T> auto v) : value_(static_cast<T>(v))
     {
       KIWAKU_ASSERT ( value_ >= T{0}  , "size_t " << +value_ << " is not positive.");
@@ -36,6 +68,10 @@ namespace kwk
                     );
     }
 
+    /// @brief Comparison operators
+    friend constexpr auto operator<=>(size_t a, size_t b) noexcept =default;
+
+    /// @brief Comparison operators with different kwk::size_t types
     template<typename U, U Max>
     friend constexpr auto operator<=>(size_t a, size_t<U,Max> b) noexcept
     {
@@ -60,8 +96,10 @@ namespace kwk
       return *this;
     }
 
+    /// @brief Stream insertion operator
     friend std::ostream& operator<<(std::ostream& os, size_t s) { return os << s.value_; }
 
+    /// @brief Access to the stored size value
     constexpr auto value() const noexcept { return value_; }
 
     private:
@@ -90,18 +128,29 @@ namespace kwk
     }
   }
 
+  /// @brief Deduction guide for kwk::size_t
   template<std::integral T>
   size_t(T v) -> size_t<decltype(__::from_type<T>())>;
 
-  using size64        = size_t<std::int64_t>;
-  using size32        = size_t<std::int32_t>;
-  using size16        = size_t<std::int16_t>;
-  using size8         = size_t<std::int8_t>;
-  using default_size  = size64;
+  /// @brief Type alias for 64 bits kwk::size_t.
+  using size64_t        = size_t<std::int64_t>;
+  /// @brief Type alias for 32 bits kwk::size_t.
+  using size32_t        = size_t<std::int32_t>;
+  /// @brief Type alias for 16 bits kwk::size_t.
+  using size16_t        = size_t<std::int16_t>;
+  /// @brief Type alias for 8 bits kwk::size_t.
+  using size8_t         = size_t<std::int8_t>;
+  /// @brief Type alias for the default kwk::size_t type.
+  using default_size_t  = size64_t;
 
+  //! @brief Type alias for a kwk::size_t type with a given upper-bound
+  //!
+  //! Evaluates to an instance of kwk::size_t with the best type able to store value with
+  //! the specified upper bound.
   template<std::ptrdiff_t MaxSize>
   using size_for = decltype(__::from_size<MaxSize>());
 
-  template<typename T>
+  //! @brief Type alias for a kwk::size_t type compatible with a given integral type
+  template<std::integral T>
   using size_from = size_t<decltype(__::from_type<T>())>;
 }
