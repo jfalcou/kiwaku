@@ -102,11 +102,11 @@ namespace kwk
     constexpr size_t& operator=(std::convertible_to<T> auto v)
     {
       KIWAKU_ASSERT ( v >= T{0} , "Size " << +v << " is not positive.");
-      KIWAKU_ASSERT ( v <= max(), "Size " << +va_end(ap) << " is over its expected maximum size: "
-                                                << +max() << "."
+      KIWAKU_ASSERT ( v <= max(), "Size " << +v << " is over its expected maximum size: "
+                                          << +max() << "."
                     );
 
-      value_ = static_cast<T>(other);
+      value_ = static_cast<T>(v);
       return *this;
     }
 
