@@ -18,6 +18,7 @@ namespace kwk
   //====================================================================================================================
 }
 
+#include <kwk/utility/types.hpp>
 #include <kwk/utility/container.hpp>
 #include <kwk/utility/traits.hpp>
 #include <kwk/utility/memory.hpp>

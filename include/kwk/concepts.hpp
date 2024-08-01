@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <kwk/concepts/types.hpp>
 #include <kwk/concepts/allocator.hpp>
 #include <kwk/concepts/container.hpp>
 #include <kwk/concepts/extent.hpp>
