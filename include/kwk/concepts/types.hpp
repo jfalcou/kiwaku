@@ -23,12 +23,4 @@ namespace kwk::concepts
     typename T::kwk_size_type;
     { T::max() };
   };
-
-  //================================================================================================
-  //! @brief Bounded Size Type concept
-  //!
-  //! A **KIWAKU** BoundedSize Type is a safe size value with a non-trivial upper bound.
-  //================================================================================================
-  template<typename T>
-  concept bounded_size_type = size_type<T> && (T::max() != std::numeric_limits<typename T::value_type>::max());
 }
