@@ -241,7 +241,7 @@ namespace kwk
     KWK_PURE constexpr bool contains(Coords... p) const noexcept
     requires(static_order == sizeof...(Coords))
     {
-      return kumi::apply( [&](auto... m) { return ((p < m) && ... && true); }, *this);
+      return kumi::apply( [&](auto... m) { return ((p < static_cast<Coords>(m)) && ... && true); }, *this);
     }
 
     //==============================================================================================
