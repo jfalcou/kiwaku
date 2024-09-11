@@ -81,10 +81,12 @@ namespace kwk
     //==============================================================================================
     // stride is its self option keyword
     //==============================================================================================
-    using stored_value_type = stride<Strides...>;
+    using stored_value_type = stride<Strides...> const&;
     using keyword_type      = __::strides_;
 
-    constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    // constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    constexpr stored_value_type operator()(keyword_type const&) const noexcept { return *this; }
+
 
     //==============================================================================================
     //! @brief Constructs a default @ref kwk::stride equals to [1 1 ... 1]
