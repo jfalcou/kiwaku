@@ -17,7 +17,7 @@ jobs:
   gcc-linux:
     runs-on: [ubuntu-latest]
     container:
-      image: ghcr.io/jfalcou/compilers:v6
+      image: ghcr.io/jfalcou/compilers:v7
     strategy:
       fail-fast: false
       matrix:
@@ -26,7 +26,7 @@ jobs:
         - { opts: -Ofast -flto=auto -DNDEBUG }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Kiwaku using g++-12 with ${{ matrix.cfg.opts }}
         run: |
           mkdir build
@@ -40,7 +40,7 @@ jobs:
   clang-linux:
     runs-on: [ubuntu-latest]
     container:
-      image: ghcr.io/jfalcou/compilers:v6
+      image: ghcr.io/jfalcou/compilers:v7
     strategy:
       fail-fast: false
       matrix:
@@ -51,7 +51,7 @@ jobs:
         - { opts: "-O0 -stdlib=libc++"                  , linker: -stdlib=libc++ }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Running CMake for clang++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
@@ -62,7 +62,7 @@ jobs:
         run: cd build && ctest --output-on-failure -j 2
 
   clang-macosx:
-    runs-on: [macos-12]
+    runs-on: [macos-14]
     strategy:
       fail-fast: false
       matrix:
@@ -73,7 +73,7 @@ jobs:
         - { opts: "-Ofast -flto -DNDEBUG -stdlib=libc++", linker: -stdlib=libc++  }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Running CMake for clang++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
@@ -84,7 +84,7 @@ jobs:
         run: cd build && ctest --output-on-failure -j 2
 
   gcc-macosx:
-    runs-on: [macos-11]
+    runs-on: [macos-14]
     strategy:
       fail-fast: false
       matrix:
@@ -93,18 +93,18 @@ jobs:
         - { opts: -Ofast -flto -DNDEBUG }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Running CMake for g++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}"
+          cmake .. -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}"
       - name: Compiling Unit Tests
         run:  cd build && make unit -j 2
       - name: Running Unit Tests
         run: cd build && ctest --output-on-failure -j 2
 
   android:
-    runs-on: [macos-12]
+    runs-on: [macos-14]
     strategy:
       fail-fast: false
       matrix:
@@ -113,7 +113,7 @@ jobs:
         - { opts: -Ofast -flto -DNDEBUG }
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Running CMake for g++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
@@ -131,7 +131,7 @@ jobs:
   #       - { mode: Release}
   #   steps:
   #     - name: Fetch current branch
-  #       uses: actions/checkout@v3
+  #       uses: actions/checkout@v4
   #     - name: Running CMake for MSVC ${{ matrix.cfg.mode }}
   #       run: |
   #         mkdir build && cd build
