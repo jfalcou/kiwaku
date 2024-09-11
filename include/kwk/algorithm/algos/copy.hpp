@@ -9,6 +9,7 @@
 
 #include <kwk/concepts/container.hpp>
 #include <kwk/algorithm/algos/transform.hpp>
+#include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/detail/abi.hpp>
 #include <cstddef>
 #include <utility>
