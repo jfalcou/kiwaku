@@ -1,25 +1,33 @@
-//==================================================================================================
+//======================================================================================================================
 /**
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 **/
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 
 #include <kwk/concepts/container.hpp>
-#include <kwk/algorithm/algos/for_each.hpp>
-#include <kwk/detail/abi.hpp>
-#include <cstddef>
-#include <utility>
+#include <kwk/context/context.hpp>
 
 namespace kwk
 {
+  // Transform is not a required part of contexts anymore
+  template< typename Context, typename Func, concepts::container Out
+          , concepts::container C0, concepts::container... Cs
+          >
+  constexpr void transform(Context& ctx,Func&& f, Out& out, C0 const& c0, Cs const&... cs)
+  {
+    ctx.map ( [&](auto& o, auto const& i0, auto const&... in) { o = KWK_FWD(f)(i0, in...); }
+            , ctx.out(out), ctx.in(c0), ctx.in(cs)...
+            );
+  }
+
   template< typename Func, concepts::container Out
           , concepts::container C0, concepts::container... Cs
           >
-  constexpr auto transform(Func f, Out& out, C0&& c0, Cs&&... cs)
+  constexpr void transform(Func&& f, Out& out, C0&& c0, Cs&&... cs)
   {
-    kwk::for_each([&](auto... is) { out(is...) = f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, out.shape() );
+    kwk::transform(cpu, KWK_FWD(f), out, KWK_FWD(c0), KWK_FWD(cs)...);
   }
 }
