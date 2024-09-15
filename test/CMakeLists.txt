@@ -11,6 +11,9 @@ glob_unit(${unit_root} "algorithm/algos/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/reduce/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/reduce.cpp")
 
+glob_unit(${unit_root} "algorithm/algos/copy/*.cpp")
+glob_unit(${unit_root} "algorithm/algos/context/cpu/copy.cpp")
+
 glob_unit(${unit_root} "algorithm/views/*.cpp")
 glob_unit(${unit_root} "concepts/*.cpp")
 glob_unit(${unit_root} "container/table/*.cpp")
