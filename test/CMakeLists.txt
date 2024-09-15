@@ -20,6 +20,9 @@ glob_unit(${unit_root} "algorithm/algos/numeric/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/replace/*.cpp")
 # glob_unit(${unit_root} "algorithm/algos/context/cpu/replace.cpp") WIP
 
+glob_unit(${unit_root} "algorithm/algos/binary_search/*.cpp")
+# glob_unit(${unit_root} "algorithm/algos/context/cpu/binary_search.cpp") WIP
+
 glob_unit(${unit_root} "algorithm/views/*.cpp")
 glob_unit(${unit_root} "concepts/*.cpp")
 glob_unit(${unit_root} "container/table/*.cpp")
