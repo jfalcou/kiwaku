@@ -26,6 +26,9 @@ glob_unit(${unit_root} "algorithm/algos/binary_search/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/find/*.cpp")
 # glob_unit(${unit_root} "algorithm/algos/context/cpu/find.cpp") WIP
 
+glob_unit(${unit_root} "algorithm/algos/predicates/*.cpp")
+# glob_unit(${unit_root} "algorithm/algos/context/cpu/predicates.cpp") WIP
+
 glob_unit(${unit_root} "algorithm/views/*.cpp")
 glob_unit(${unit_root} "concepts/*.cpp")
 glob_unit(${unit_root} "container/table/*.cpp")
