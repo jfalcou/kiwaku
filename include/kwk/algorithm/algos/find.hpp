@@ -16,6 +16,7 @@
 #include <kwk/detail/abi.hpp>
 #include <cstddef>
 #include <utility>
+#include <optional>
 
 // ALGO:
 /*
@@ -30,7 +31,8 @@ namespace kwk
 
   // Unused context
   template<typename Context, typename Container, typename Check>
-  auto find_if(Context&, Container const& c, Check f)
+  std::optional<kumi::tuple<int, Container::static_order>>
+  find_if(Context&, Container const& c, Check f)
   {
     // TODO: if no element found, return a kumi tuple containing the size of each dimension
     // and NOT -1 for each dimension.
