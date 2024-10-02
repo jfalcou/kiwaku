@@ -51,5 +51,24 @@ namespace kwk
       }
       return os << ")";
     }
+
+    // === Kumi interface ===
+    using is_product_type = void;
+
+    template<std::size_t I>
+    friend constexpr auto const& get(position const& p) noexcept
+    {
+      return p.pos[I];
+    }
+
+    template<std::size_t I>
+    friend constexpr auto& get(position& p) noexcept
+    {
+      return p.pos[I];
+    }
+    // ^^^ Kumi interface ^^^
   };
 }
+
+template<std::size_t Sz> struct std::tuple_size<kwk::position<Sz>> : std::integral_constant<std::size_t, Sz> {};
+template<std::size_t Sz> struct std::tuple_element<Sz, kwk::position<Sz>> { using type = typename kwk::position<Sz>::position_type; };
