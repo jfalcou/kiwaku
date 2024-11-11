@@ -10,6 +10,22 @@
 // Faster than std::forward
 #define KWK_FWD(...) static_cast<decltype(__VA_ARGS__) &&>(__VA_ARGS__)
 
+// Portable debug break built-in
+#if !defined( KWK_ASSERT_USE_DBG_BREAK )
+#    define KWK_ASSERT_DBG_BREAK()
+#elif defined( _MSC_VER )
+#    define KWK_ASSERT_DBG_BREAK() __debugbreak()
+#elif defined( __GNUC__ )
+#    define KWK_ASSERT_DBG_BREAK() __builtin_trap()
+#endif
+
+// Mark a function to be not inlined
+#if defined(__GNUC__)
+#define KWK_COLD  [[gnu::cold, gnu::noinline]]
+#else
+#define KWK_COLD
+#endif
+
 // Force a function to be inline
 #if defined(KWK_NO_FORCEINLINE)
 #  define KWK_TRIVIAL            inline
