@@ -32,6 +32,20 @@ include(${CPM_DOWNLOAD_LOCATION})
 ##======================================================================================================================
 CPMAddPackage(NAME COPACABANA GITHUB_REPOSITORY jfalcou/copacabana GIT_TAG main)
 
+CPMAddPackage ( NAME KUMI   GITHUB_REPOSITORY jfalcou/kumi
+                GIT_TAG main
+                OPTIONS "KUMI_BUILD_TEST OFF"
+                        "KUMI_BUILD_DOCUMENTATION OFF"
+                        "KUMI_QUIET ON"
+              )
+
+CPMAddPackage ( NAME RABERU   GITHUB_REPOSITORY jfalcou/raberu
+                GIT_TAG main
+                OPTIONS "RABERU_BUILD_TEST OFF"
+                        "RABERU_BUILD_DOCUMENTATION OFF"
+                        "RABERU_QUIET ON"
+              )
+
 if(KIWAKU_BUILD_TEST)
   CPMAddPackage ( NAME TTS   GITHUB_REPOSITORY jfalcou/tts
                   GIT_TAG main
