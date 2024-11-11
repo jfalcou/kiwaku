@@ -29,4 +29,4 @@ target_include_directories( kiwaku_test INTERFACE
                             ${PROJECT_SOURCE_DIR}/include
                           )
 
-target_link_libraries(kiwaku_test INTERFACE tts::tts)
+target_link_libraries(kiwaku_test INTERFACE tts::tts kumi::kumi raberu::raberu)
