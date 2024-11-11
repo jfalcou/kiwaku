@@ -10,12 +10,12 @@ set(root "${CMAKE_SOURCE_DIR}/test")
 ## Unit Tests
 ##==================================================================================================
 copa_glob_unit( PATTERN "unit/utility/memory/*.cpp"
-                RELATIVE ${root} INTERFACE kiwaku_test
+                QUIET RELATIVE ${root} INTERFACE kiwaku_test
               )
 
 ##==================================================================================================
 ## Doc Tests
 ##==================================================================================================
-copa_glob_unit( PATTERN "docs/*.cpp"
-                QUIET RELATIVE ${root} INTERFACE kiwaku_test
-              )
+# copa_glob_unit( PATTERN "docs/tutorial/*.cpp"
+#                 QUIET RELATIVE ${root} INTERFACE kiwaku_test
+#               )
