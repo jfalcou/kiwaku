@@ -12,9 +12,10 @@
 namespace kwk::concepts
 {
   //================================================================================================
-  //! @brief Allocator concept
+  //! @brief **KIWAKU** allocator concept
   //!
-  //! A **KIWAKU** Allocator is a type which instances can be passed to the following free functions:
+  //! A **KIWAKU** Allocator is a type which instances can be passed as parameter to the following
+  //! functions:
   //!   + `allocate(Allocator& alloc, std::size_t size)`
   //!   + `deallocate(Allocator& alloc, void* ptr)`
   //================================================================================================

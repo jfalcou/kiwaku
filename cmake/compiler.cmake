@@ -26,7 +26,7 @@ endif()
 
 target_include_directories( kiwaku_test INTERFACE
                             ${PROJECT_SOURCE_DIR}/test
-                            ${PROJECT_SOURCE_DIR}/standalone
+                            ${PROJECT_SOURCE_DIR}/include
                           )
 
 target_link_libraries(kiwaku_test INTERFACE tts::tts)

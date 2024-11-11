@@ -6,10 +6,16 @@
 copa_setup_test_targets()
 set(root "${CMAKE_SOURCE_DIR}/test")
 
-copa_glob_unit( PATTERN "unit/*.cpp"
-                QUIET RELATIVE ${root} INTERFACE kiwaku_test DEPENDENCIES kiwaku-standalone
+##==================================================================================================
+## Unit Tests
+##==================================================================================================
+copa_glob_unit( PATTERN "unit/utility/memory/*.cpp"
+                RELATIVE ${root} INTERFACE kiwaku_test
               )
 
+##==================================================================================================
+## Doc Tests
+##==================================================================================================
 copa_glob_unit( PATTERN "docs/*.cpp"
-                QUIET RELATIVE ${root} INTERFACE kiwaku_test DEPENDENCIES kiwaku-standalone
+                QUIET RELATIVE ${root} INTERFACE kiwaku_test
               )

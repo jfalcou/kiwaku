@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 #include <kwk/detail/abi.hpp>
-#include <kwk/utility/linear_index.hpp>
+//#include <kwk/utility/linear_index.hpp>
 
 template<int N> using int_ = std::integral_constant<int,N>;
 template<int N> struct nD : std::integral_constant<int,N> {};
@@ -17,8 +17,9 @@ template<typename N> using up_to = std::make_index_sequence<N::value>;
 
 #define TTS_MAIN
 #define TTS_CUSTOM_DRIVER_FUNCTION kwk_entry_point
-#include "tts.hpp"
+#include <tts/tts.hpp>
 
+/*
 template<typename T, typename S>
 void fill_data(T* data, S shp, bool fill)
 requires(S::static_order == 1)
@@ -83,6 +84,7 @@ requires(S::static_order == 4)
     }
   }
 }
+*/
 
 int main(int argc, char const **argv)
 {

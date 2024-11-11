@@ -7,7 +7,6 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/assert.hpp>
 #include <cstdlib>
 
 namespace kwk

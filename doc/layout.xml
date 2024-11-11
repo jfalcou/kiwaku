@@ -11,8 +11,8 @@
         <tab type="usergroup" visible="yes" title="Algorithms">
         </tab>
         <tab type="user" url="@ref utility" title="Utility"/>
+        <tab type="concepts" visible="yes"      title="Concepts List"/>
       </tab>
-
       <tab type="usergroup" visible="yes" title="Tutorials">
         <tab type="user" url="@ref tutorial-01" title="Multi-dimensional views"/>
       </tab>

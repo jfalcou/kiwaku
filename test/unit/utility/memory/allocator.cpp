@@ -7,7 +7,6 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kwk/utility.hpp>
-#include <kwk/concepts.hpp>
 
 struct box
 {
@@ -64,7 +63,7 @@ struct box
 
   kwk::any_allocator  alloc;
   float*              data_;
-  std::size_t      size_;
+  std::size_t         size_;
 };
 
 TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
