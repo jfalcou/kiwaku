@@ -16,8 +16,7 @@ namespace kwk
 
   //====================================================================================================================
   //! @defgroup utility Miscellaneous Helpers
-  //! @brief **Miscellaneous Helpers**<br/>
-  //! This module defines various functions, types and variables for simplifying **KIWAKU** usage.
+  //! @brief This module defines various functions, types and variables for simplifying **KIWAKU** usage.
   //====================================================================================================================
 }
 
