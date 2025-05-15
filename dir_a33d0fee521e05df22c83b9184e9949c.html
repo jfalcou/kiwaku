@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::for_each</title>
+<title>Kiwaku: kwk/context Directory Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('dir_a33d0fee521e05df22c83b9184e9949c.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,79 +120,23 @@ $(document).ready(function(){initNavTree('group__algorithms_ga54e01e5eeaba1ca902
 </div>
 </div>
 
+<div class="header">
+  <div class="headertitle"><div class="title">context Directory Reference</div></div>
+</div><!--header-->
 <div class="contents">
-<a id="ga54e01e5eeaba1ca902e3360ba9d6adc6" name="ga54e01e5eeaba1ca902e3360ba9d6adc6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga54e01e5eeaba1ca902e3360ba9d6adc6">&#9670;&#160;</a></span>for_each() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Func , auto... S&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto kwk::for_each </td>
-          <td>(</td>
-          <td class="paramtype">Func&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;&#160;</td>
-          <td class="paramname"><em>shp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="subdirs" name="subdirs"></a>
+Directories</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">directory &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_0b00e83f95dbb92cfb61dfaf2f1b5d0e.html">cpu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><div class="memdoc">
-<p>Applies the given function object <code>f</code> to every coordinates that are valid inside the given <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> <code>shp</code>. Coordinates are iterated in order of the optimal memory access.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">f</td><td>Function object, to be applied to a variadic list of integral coordinates. The signature of the function should be equivalent to the following: <div class="fragment"><div class="line"><span class="keywordtype">void</span> f(std::integral <span class="keyword">auto</span>... is);</div>
-</div><!-- fragment --></td></tr>
-    <tr><td class="paramname">shp</td><td>A <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> used as boundaries for the coordinates </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The function object <code>f</code> which could have been modified.</dd></dl>
-<h2 class="groupheader">Example </h2>
-<div class="fragment"><div class="line"> </div>
-<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;kwk/kwk.hpp&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main()</div>
-<div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> print  = [](<span class="keyword">auto</span> p2, <span class="keyword">auto</span> p1, <span class="keyword">auto</span> p0)</div>
-<div class="line">                {</div>
-<div class="line">                  std::cout &lt;&lt; p2 &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p1 &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; p0 &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line">                  <span class="keywordflow">if</span>(p1==2 &amp;&amp; p0==1) std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line">                };</div>
-<div class="line"> </div>
-<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(print, <a class="code hl_function" href="namespacekwk_af057bfaa645bda968136a76d111bc1d8.html#af057bfaa645bda968136a76d111bc1d8">kwk::of_size</a>(4,3,2));</div>
-<div class="line">}</div>
-<div class="ttc" id="agroup__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6_html_ga54e01e5eeaba1ca902e3360ba9d6adc6"><div class="ttname"><a href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a></div><div class="ttdeci">constexpr auto for_each(Func f, shape&lt; S... &gt; const &amp;shp)</div><div class="ttdoc">Simple walkthrough over all possible indexes.</div><div class="ttdef"><b>Definition:</b> for_each.hpp:42</div></div>
-<div class="ttc" id="anamespacekwk_af057bfaa645bda968136a76d111bc1d8_html_af057bfaa645bda968136a76d111bc1d8"><div class="ttname"><a href="namespacekwk_af057bfaa645bda968136a76d111bc1d8.html#af057bfaa645bda968136a76d111bc1d8">kwk::of_size</a></div><div class="ttdeci">KWK_TRIVIAL constexpr auto of_size(D... d)</div><div class="ttdoc">Generates a kwk::shape from a list of Extent.</div><div class="ttdef"><b>Definition:</b> shape.hpp:339</div></div>
-</div><!-- fragment --> 
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
+    <li class="navelem"><a class="el" href="dir_1e4a5e3461aefd6fb1cec8db41d3896b.html">kwk</a></li><li class="navelem"><a class="el" href="dir_a33d0fee521e05df22c83b9184e9949c.html">context</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

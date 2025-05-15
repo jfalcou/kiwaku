@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__algorithms_ga33f271444bad07bc261a65d55ece942f.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__algorithms_ga16aa3f9107d2e0c6c06a728253bcfa9a.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,8 +121,8 @@ $(document).ready(function(){initNavTree('group__algorithms_ga33f271444bad07bc26
 </div>
 
 <div class="contents">
-<a id="ga33f271444bad07bc261a65d55ece942f" name="ga33f271444bad07bc261a65d55ece942f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga33f271444bad07bc261a65d55ece942f">&#9670;&#160;</a></span>for_each() <span class="overload">[1/2]</span></h2>
+<a id="ga16aa3f9107d2e0c6c06a728253bcfa9a" name="ga16aa3f9107d2e0c6c06a728253bcfa9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga16aa3f9107d2e0c6c06a728253bcfa9a">&#9670;&#160;</a></span>for_each() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -135,7 +135,7 @@ template&lt;typename Func , concepts::container C0, concepts::container... Cs&gt
         <tr>
           <td class="memname">constexpr auto kwk::for_each </td>
           <td>(</td>
-          <td class="paramtype">Func&#160;</td>
+          <td class="paramtype">Func &amp;&amp;&#160;</td>
           <td class="paramname"><em>f</em>, </td>
         </tr>
         <tr>
@@ -185,14 +185,14 @@ template&lt;typename Func , concepts::container C0, concepts::container... Cs&gt
 <div class="line">  <span class="keyword">auto</span> print = [](<span class="keyword">const</span> <span class="keywordtype">int</span>&amp; n) { std::cout &lt;&lt; n &lt;&lt; <span class="charliteral">&#39; &#39;</span>; };</div>
 <div class="line"> </div>
 <div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;Before:\t&quot;</span>;</div>
-<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(print, v);</div>
+<div class="line">  kwk::for_each(print, v);</div>
 <div class="line">  std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// increment elements in-place</span></div>
-<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>( [](<span class="keywordtype">int</span> &amp;n){ n++; }, v);</div>
+<div class="line">  kwk::for_each( [](<span class="keywordtype">int</span> &amp;n){ n++; }, v);</div>
 <div class="line"> </div>
 <div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;After:\t&quot;</span>;</div>
-<div class="line">  <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(print, v);</div>
+<div class="line">  kwk::for_each(print, v);</div>
 <div class="line">  std::cout &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">struct </span>Sum</div>
@@ -202,10 +202,9 @@ template&lt;typename Func , concepts::container C0, concepts::container... Cs&gt
 <div class="line">  };</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// invoke Sum::operator() for each element</span></div>
-<div class="line">  Sum s = <a class="code hl_function" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a>(Sum{}, v);</div>
+<div class="line">  Sum s = kwk::for_each(Sum{}, v);</div>
 <div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;sum:\t&quot;</span> &lt;&lt; s.sum &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6_html_ga54e01e5eeaba1ca902e3360ba9d6adc6"><div class="ttname"><a href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk::for_each</a></div><div class="ttdeci">constexpr auto for_each(Func f, shape&lt; S... &gt; const &amp;shp)</div><div class="ttdoc">Simple walkthrough over all possible indexes.</div><div class="ttdef"><b>Definition:</b> for_each.hpp:42</div></div>
 <div class="ttc" id="agroup__settings_html_gaef8fdcbb44ad887e90784c21469e06eb"><div class="ttname"><a href="group__settings.html#gaef8fdcbb44ad887e90784c21469e06eb">kwk::source</a></div><div class="ttdeci">constexpr __::source_ source</div><div class="ttdoc">Data source setting for kwk::table and kwk::view.</div><div class="ttdef"><b>Definition:</b> source.hpp:61</div></div>
 <div class="ttc" id="astructkwk_1_1view_html"><div class="ttname"><a href="structkwk_1_1view.html">kwk::view</a></div><div class="ttdoc">Non-owning, contiguous multi-dimensional container.</div><div class="ttdef"><b>Definition:</b> view.hpp:25</div></div>
 </div><!-- fragment --> 
