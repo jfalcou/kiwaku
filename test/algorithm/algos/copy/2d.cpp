@@ -10,9 +10,9 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 
-// copy 4D
+// copy 2D
 
-TTS_CASE("Check for kwk::copy(out, in) 4D")
+TTS_CASE("Check for kwk::copy(out, in) 2D")
 {
   const std::size_t d0 = 12;
   const std::size_t d1 = 70;
@@ -31,9 +31,8 @@ TTS_CASE("Check for kwk::copy(out, in) 4D")
 };
 
 
-TTS_CASE("Check for kwk::copy(out, in) 4D with double")
+TTS_CASE("Check for kwk::copy(out, in) 2D with double")
 {
-  
   const std::size_t d0 = 12;
   const std::size_t d1 = 70;
   const std::size_t input_size = d0 * d1;
@@ -51,7 +50,7 @@ TTS_CASE("Check for kwk::copy(out, in) 4D with double")
 };
 
 
-TTS_CASE("Check for kwk::copy_if(func, out, in) 4D")
+TTS_CASE("Check for kwk::copy_if(func, out, in) 2D")
 {
   const std::size_t d0 = 12;
   const std::size_t d1 = 70;
