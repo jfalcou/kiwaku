@@ -32,7 +32,7 @@ namespace kwk
                                     , [&](auto... is) { found = f(is...); }
                                     );
       loops();
-      return f;
+      return found;
     }
   }
 }

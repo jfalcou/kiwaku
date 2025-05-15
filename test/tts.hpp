@@ -483,7 +483,7 @@ namespace tts::detail
 }
 #define TTS_PROTOTYPE(...) [] __VA_ARGS__
 #define TTS_CASE(ID)                                                                                \
-static bool const TTS_CAT(case_,TTS_FUNCTION) = ::tts::detail::test_capture{ID} + TTS_PROTOTYPE(()) \
+[[maybe_unused]] static bool const TTS_CAT(case_,TTS_FUNCTION) = ::tts::detail::test_capture{ID} + TTS_PROTOTYPE(()) \
 
 #define TTS_CASE_TPL(ID,...)                                                                        \
 static bool const TTS_CAT(case_,TTS_FUNCTION) = ::tts::detail::test_captures<__VA_ARGS__>{ID}       \
