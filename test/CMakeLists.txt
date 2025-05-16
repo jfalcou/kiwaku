@@ -8,7 +8,7 @@ set(unit_root "${CMAKE_SOURCE_DIR}/test")
 
 # SYCL
 
-glob_unit(${unit_root} "algorithm/algos/context/sycl/for_each.cpp")
+glob_unit(${unit_root} "algorithm/algos/context/sycl/*.cpp")
 
 glob_unit(${unit_root} "algorithm/algos/*.cpp")
 
