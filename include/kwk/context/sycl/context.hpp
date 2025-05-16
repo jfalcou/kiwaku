@@ -52,6 +52,17 @@ namespace kwk::sycl
       parent::wait();
     }
 
+    template<typename Func>
+    void map_index(Func f, concepts::sycl::proxy auto&& p0)
+    {
+      parent::submit([&](::sycl::handler &h) 
+      {
+        auto acc = p0.access(h);
+        h.parallel_for(p0.size(), [=](auto i) { f(KWK_FWD(acc)[i], i.get_id(1)); });
+      });
+      parent::wait();
+    }
+
     // Generic map that will work regardless of data transfer directionality
     // but not optimized when all initial or final transfers are not required.
     template<typename Func, concepts::container C0, concepts::container... Cs>
