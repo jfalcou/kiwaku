@@ -73,10 +73,10 @@ namespace kwk::sycl
     }
 
     template<typename Func, concepts::container C0, concepts::container... Cs>
-    constexpr auto for_each(kwk::sycl::context& ctx, Func&& f, C0&& c0, Cs&&... cs)
+    constexpr auto for_each(kwk::sycl::context& ctx, Func f, C0&& c0, Cs&&... cs)
     {
       std::cout << "!!!!!!!!!!!!!!!!!!! for_each SYCL used !\n";
-      ctx.map([&](auto... is) { return KWK_FWD(f)(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
+      ctx.map([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
       // return f;
     }
 
@@ -274,35 +274,17 @@ namespace kwk
   }
 
   // template<typename Func, auto... S>
-  // constexpr auto for_each(kwk::sycl::context& ctx, Func&& f, shape<S...> const& shp)
+  // constexpr auto for_each(kwk::sycl::context& ctx, Func f, shape<S...> const& shp)
   // {
   //   std::cout << "for_each SYCL used !\n";
-  //   //return ctx.map(KWK_FWD(f), shp);
+  //   //return ctx.map(f, shp);
   // }
 
   template<typename Func, concepts::container C0, concepts::container... Cs>
-  constexpr auto for_each(kwk::sycl::context& ctx, Func&& f, C0&& c0, Cs&&... cs)
+  constexpr auto for_each(kwk::sycl::context& ctx, Func f, C0&& c0, Cs&&... cs)
   {
     // std::cout << "---------------------------------- for_each SYCL used !\n";
     return ctx.map(f, KWK_FWD(c0), KWK_FWD(cs)...);
   }
-
-
-  // Transform is not a required part of contexts anymore
-  template< typename Func, concepts::container Out
-  , concepts::container C0, concepts::container... Cs
-  >
-  constexpr void transform(kwk::sycl::context& ctx, Func f, Out& out, C0 const& c0, Cs const&... cs)
-  {
-    // TODO: I replaced "KWK_FWD(f)" by just "f" to make the SYCL compiler happy
-    auto new_f = [f](auto& o, auto const& i0, auto const&... in) { o = f(i0, in...); };
-
-    ctx.map( new_f // [&](auto& o, auto const& i0, auto const&... in) { o = KWK_FWD(f)(i0, in...); }
-           , ctx.out(out)
-           , ctx.in(c0)
-           , ctx.in(cs)...
-           );
-  }
-
 
 }
