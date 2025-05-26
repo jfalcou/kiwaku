@@ -128,18 +128,6 @@ namespace kwk::sycl
     void map(Func f, C0&& c0, Cs&&... cs)
     {
       map(f, inout(c0), inout(cs)...);
-
-      // int a = 0;
-      // auto fn = [&](auto e) { return ++a; };
-
-      // auto containers = kumi::tuple{fn(c0), fn(cs)...};
-
-      // auto proxies = kumi::tuple{inout(c0), inout(cs)...};
-
-      // kumi::for_each_index(
-      //                       [](auto i, auto const& m) { std::cout << "Container #" << i << " : " << m << "\n";}
-      //                     , containers
-      //                     );
     }
 
     template<typename Func, concepts::container C0, concepts::container... Cs>
@@ -151,31 +139,15 @@ namespace kwk::sycl
       // return f;
     }
 
-    // template<typename T, typename Func>
-    // void for_all(std::vector<T>& data, Func f)
-    // {
-    //   sycl::queue q;
-    //   sycl::buffer<T> in(data);
-
-    //   q.submit([&](sycl::handler &h)
-    //   {
-    //     sycl::accessor  pr{in, h};
-    //     auto            sz = data.size();
-    //     h.parallel_for(sycl::nd_range<1>(64,8), [=](sycl::item<1> i)
-    //     {
-    //       if (i < sz) f(pr[i]);
-    //     });
-    //   });
-    // }
 
     template<typename Func, concepts::container In>
     auto reduce_internal(In const& in, [[maybe_unused]] Func f, [[maybe_unused]] auto init)
     {
-      std::cout 
-      << "Running on device: "
-      << parent::get_device().get_info<::sycl::info::device::name>()
-      << "   workitem_count(" << workitem_count << ")"
-      << "\n";
+      // std::cout 
+      // << "Running on device: "
+      // << parent::get_device().get_info<::sycl::info::device::name>()
+      // << "   workitem_count(" << workitem_count << ")"
+      // << "\n";
       // std::cout << "kwk::sycl::context::reduce_internal\n";
 
       using data_type = typename In::value_type;
@@ -249,81 +221,12 @@ namespace kwk::sycl
       }
       catch (::sycl::exception const &e)
       {
-        std::cout << "An exception is caught for vector add.\n";
+        std::cout << "An exception is caught for SYCL reduce.\n";
         std::terminate();
       }
     }
 
 
-
-
-    //   void VectorAdd(queue &q, const IntVector &a_vector, const IntVector &b_vector, IntVector &sum_parallel) {
-    //   range<1> num_items{a_vector.size()};
-
-    //   buffer a_buf(a_vector);
-    //   buffer b_buf(b_vector);
-    //   buffer sum_buf(sum_parallel.data(), num_items);
-
-    //   for (size_t i = 0; i < num_repetitions; i++ ) {
-
-    //     q.submit([&](handler &h) {
-    //       accessor a(a_buf, h, read_only);
-    //       accessor b(b_buf, h, read_only);
-    //       accessor sum(sum_buf, h, write_only, no_init);
-    //       h.parallel_for(num_items, [=](auto i) { sum[i] = a[i] + b[i]; });
-    //     });
-    //   };
-    //   // Wait until compute tasks on GPU done
-    //   q.wait();
-    // }
-
-    template<concepts::container Out, concepts::container In>
-    auto copy_2(Out& out, In const& in)
-    {
-      std::cout << "sycl copy called\n";
-
-      ::sycl::buffer buf_out{out.get_data(), ::sycl::range<1>(out.numel())};
-      ::sycl::buffer buf_in {in.get_data() , ::sycl::range<1>(in.numel())};
-
-      parent::submit([&](::sycl::handler &h) 
-      {
-        auto access_in  = ::sycl::accessor{buf_in , h, ::sycl::read_only};
-        auto access_out = ::sycl::accessor{buf_out, h, ::sycl::write_only};
-
-        std::cout << "sycl copy - before kernel\n";
-
-        // For each element of the input tables, call our lambda parameter with the input accessors
-        h.parallel_for(out.numel(), [=](auto i) { access_out[i] = access_in[i]; });
-
-        std::cout << "sycl copy - after kernel\n";
-      });
-      parent::wait();
-    }
-    
-    template<concepts::container Out, concepts::container In>
-    auto copy_1(Out& out, In const& in)
-    {
-      std::cout << "sycl copy called\n";
-      auto proxy_in  = kwk::sycl::context::in(in);
-      auto proxy_out = kwk::sycl::context::out(out);
-
-      parent::submit([&](::sycl::handler &h) 
-      {
-        // Maps each sycl proxy to an accessor
-        auto access_in  = proxy_in.access(h);
-        auto access_out = proxy_out.access(h);
-
-        // For each element of the input tables, call our lambda parameter with the input accessors
-        h.parallel_for(proxy_out.size(), [=](auto i) { access_out[i] = access_in[i]; });
-      });
-      parent::wait();
-    }
-
-
-    // TODO: regarder la doc de SYCL pour savoir comment c'est censé fonctionner les réductions en SYCL (y a des variables de réduction)
-    // Regarder les exemples (spec Kronos à préférer au code de Intel)
-
-    
 
     template<concepts::container Container, typename Check>
     std::optional<kwk::position<Container::static_order>>
@@ -334,17 +237,24 @@ namespace kwk::sycl
       std::vector<int> found_at_index{-1};
       ::sycl::buffer b_found(found_at_index);
 
+      // std::cout << "CONTEXT WIP - find_if\n";
+
+      // auto p_container = inout(container);
+
+      // std::cout << "CONTEXT WIP - call to p_container.pouet()...\n";
+      // p_container.pouet();
+      // std::cout << "CONTEXT WIP - OK!\n";
+      // Always call in/out/inout outside of the submit lambda.
+      auto p_container = in(container);
+
+
       parent::submit([&](::sycl::handler &h) 
       {
-        auto p_container = inout(container);
-        // Maps each sycl proxy to an accessor
-        // auto accs = kumi::map([&](auto& b) { return b.access(h); }, kumi::tuple{p});
         auto a_container = p_container.access(h);
-
-        // ::sycl::accessor a_data(b_data, h, read_only);
         ::sycl::accessor a_found(b_found, h, ::sycl::read_write);
     
-        h.parallel_for(numel, [=](auto index) {
+        h.parallel_for(numel, [=](auto index)
+        {
           int glob_id       = index[0];
           int current_value = a_container[index];
 
@@ -367,11 +277,11 @@ namespace kwk::sycl
       });
 
       parent::wait();
-      
+
       ::sycl::host_accessor hostAcc(b_found, ::sycl::read_only);
       int index = hostAcc[0];
       
-      std::cout << "Result: " << index << "\n";
+      // std::cout << "Result: " << index << "\n";
 
       if (index != -1)
       {
@@ -380,10 +290,6 @@ namespace kwk::sycl
       } else {
         return std::nullopt;
       }
-
-      // kwk::position<Container::static_order> kwk_pos{kwk::utils::tools::linear_to_pos(index, container)};
-
-
 
     }
 
@@ -397,42 +303,28 @@ namespace kwk::sycl
 
 namespace kwk
 {
-  // TODO reduce: soit on fait ctx.reduce, soit dans le contexte sycl on réécrit la fonction reduce avec sycl_context.
-  template<typename Func, concepts::container In>
-  constexpr auto reduce(kwk::sycl::context& ctx, In const& in, Func f, auto init)
-  {
-    // std::cout << "sycl reduce\n";
-    return ctx.reduce(in, f, init);
-  }
-
-  template<concepts::container Out, concepts::container In>
-  constexpr auto copy(kwk::sycl::context& ctx, Out& out, In const& in)
-  {
-    ctx.copy_1(out, in);
-  }
-
-  // template<typename Func, auto... S>
-  // constexpr auto for_each(kwk::sycl::context& ctx, Func f, shape<S...> const& shp)
-  // {
-  //   std::cout << "for_each SYCL used !\n";
-  //   //return ctx.map(f, shp);
-  // }
 
   template<typename Func, concepts::container C0, concepts::container... Cs>
   constexpr auto for_each(kwk::sycl::context& ctx, Func f, C0&& c0, Cs&&... cs)
   {
-    std::cout << "---------------------------------- for_each SYCL used !\n";
+    // std::cout << "---------------------------------- for_each SYCL used !\n";
     return ctx.map(f, KWK_FWD(c0), KWK_FWD(cs)...);
+  }
+
+  // TODO reduce: soit on fait ctx.reduce, soit dans le contexte sycl on réécrit la fonction reduce avec sycl_context.
+  template<typename Func, concepts::container In>
+  constexpr auto reduce(kwk::sycl::context& ctx, In const& in, Func f, auto init)
+  {
+    // std::cout << "---------------------------------- reduce SYCL used !\n";
+    // std::cout << "sycl reduce\n";
+    return ctx.reduce(in, f, init);
   }
 
   template<concepts::container Container, typename Check>
   std::optional<kwk::position<Container::static_order>>
   find_if(kwk::sycl::context& ctx, Container const& c, Check f)
   {
-    std::cout << "CALL TO SYCL FIND_IF\n";
     auto res = ctx.find_if(c, f);
-    std::cout << "                FIND_IF OK !!\n";
-
     return res;
   }
 

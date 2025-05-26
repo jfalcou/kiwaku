@@ -73,7 +73,8 @@ namespace kwk
   constexpr std::optional<kwk::position<Out::static_order>>
   find(Context& ctx, Out const& out, auto value)
   {
-    return find_if(ctx, out, [&](auto e){return e == value;});
+    // Only uses value inside the kernel
+    return find_if(ctx, out, [value](auto e){return e == value;});
   }
 
   template <concepts::container Out>
