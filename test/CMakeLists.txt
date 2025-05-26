@@ -14,6 +14,7 @@ glob_unit(${unit_root} "algorithm/algos/*.cpp")
 
 glob_unit(${unit_root} "algorithm/algos/reduce/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/reduce/*.cpp")        # CPU context
+glob_unit(${unit_root} "algorithm/algos/context/sycl/reduce/*.cpp")       # SYCL context
 
 glob_unit(${unit_root} "algorithm/algos/copy/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/copy/*.cpp")          # CPU context
