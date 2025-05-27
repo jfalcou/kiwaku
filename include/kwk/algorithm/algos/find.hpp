@@ -102,15 +102,20 @@ namespace kwk
   constexpr std::optional<kwk::position<Out::static_order>>
   find_last_if(Context& ctx, Out const& out, Func f)
   {
+    // auto res = find_if(ctx, out, f);
     auto res = find_if(ctx, kwk::reverse(out), f);
 
     if (res.has_value())
     {
+      // std::cout << "find_last_if has value!\n";
       // Reverse positions
       kumi::for_each_index( [&](auto i, auto) { res.value()[i] = kwk::get<i>(out.shape()) - 1 - res.value()[i]; }
                           , out.shape()
                           );
     }
+    // else {
+    //   std::cout << "find_last_if missing value...\n";
+    // }
 
     return res;
   }
@@ -126,7 +131,7 @@ namespace kwk
   constexpr std::optional<kwk::position<Out::static_order>>
   find_last(Context& ctx, Out const& out, auto value)
   {
-    return find_last_if(ctx, out, [&](auto e){return e == value;});
+    return find_last_if(ctx, out, [value](auto e){return e == value;});
   }
 
   template <concepts::container Out>

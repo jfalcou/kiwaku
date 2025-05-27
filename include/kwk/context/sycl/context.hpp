@@ -230,20 +230,15 @@ namespace kwk::sycl
 
     template<concepts::container Container, typename Check>
     std::optional<kwk::position<Container::static_order>>
-    find_if(Container const& container, Check f)
+    find_if(Container const& container, Check f, bool ascending)
     {
       std::size_t numel = container.numel();
 
       std::vector<int> found_at_index{-1};
       ::sycl::buffer b_found(found_at_index);
 
-      // std::cout << "CONTEXT WIP - find_if\n";
+      // std::cout << "  CONTEXT SYCL - find_if - numel = " << numel << "\n";
 
-      // auto p_container = inout(container);
-
-      // std::cout << "CONTEXT WIP - call to p_container.pouet()...\n";
-      // p_container.pouet();
-      // std::cout << "CONTEXT WIP - OK!\n";
       // Always call in/out/inout outside of the submit lambda.
       auto p_container = in(container);
 
@@ -253,35 +248,63 @@ namespace kwk::sycl
         auto a_container = p_container.access(h);
         ::sycl::accessor a_found(b_found, h, ::sycl::read_write);
     
-        h.parallel_for(numel, [=](auto index)
+        // find first
+        if (ascending)
         {
-          int glob_id       = index[0];
-          int current_value = a_container[index];
-
-          if (f(current_value))
+          h.parallel_for(numel, [=](auto index)
           {
-            auto atomic_accessor = ::sycl::atomic_ref < int
-                                                    , ::sycl::memory_order::relaxed
-                                                    , ::sycl::memory_scope::device
-                                                    , ::sycl::access::address_space::global_space
-                                                    >(a_found[0]);
+            int glob_id       = index[0];
+            int current_value = a_container[index];
 
-            // TODO: find an atomic way to do the comparison and update
-            int val = atomic_accessor.load();
-            if ((val == -1) || (val > glob_id))
+            if (f(current_value))
             {
-              atomic_accessor.store(glob_id);
+              auto atomic_accessor = 
+                ::sycl::atomic_ref< int
+                                  , ::sycl::memory_order::relaxed
+                                  , ::sycl::memory_scope::device
+                                  , ::sycl::access::address_space::global_space
+                                  >(a_found[0]);
+
+              // TODO: find an atomic way to do the comparison and update
+              int val = atomic_accessor.load();
+              if ((val == -1) || (val > glob_id))
+              {
+                atomic_accessor.store(glob_id);
+              }
             }
-          }
-        });
+          });
+        }
+        else // find last
+        {
+          h.parallel_for(numel, [=](auto index)
+          {
+            int glob_id       = index[0];
+            int current_value = a_container[index];
+
+            if (f(current_value))
+            {
+              auto atomic_accessor =
+                ::sycl::atomic_ref< int
+                                  , ::sycl::memory_order::relaxed
+                                  , ::sycl::memory_scope::device
+                                  , ::sycl::access::address_space::global_space
+                                  >(a_found[0]);
+
+              // TODO: find an atomic way to do the comparison and update
+              int val = atomic_accessor.load();
+              if ((val == -1) || (val < glob_id))
+              {
+                atomic_accessor.store(glob_id);
+              }
+            }
+          });
+        }
       });
 
       parent::wait();
 
       ::sycl::host_accessor hostAcc(b_found, ::sycl::read_only);
       int index = hostAcc[0];
-      
-      // std::cout << "Result: " << index << "\n";
 
       if (index != -1)
       {
@@ -291,6 +314,21 @@ namespace kwk::sycl
         return std::nullopt;
       }
 
+    }
+
+    template<concepts::container Container, typename Check>
+    std::optional<kwk::position<Container::static_order>>
+    find_if(Container const& container, Check f)
+    {
+      return this->find_if(container, f, true);
+    }
+
+    template <typename Func, concepts::container Out>
+    constexpr std::optional<kwk::position<Out::static_order>>
+    find_last_if(Out const& out, Func f)
+    {
+      auto res = this->find_if(out, f, false);
+      return res;
     }
 
 
@@ -324,9 +362,15 @@ namespace kwk
   std::optional<kwk::position<Container::static_order>>
   find_if(kwk::sycl::context& ctx, Container const& c, Check f)
   {
-    auto res = ctx.find_if(c, f);
+    auto res = ctx.find_if(c, f, true);
     return res;
   }
 
+  template <typename Func, concepts::container Out>
+  constexpr std::optional<kwk::position<Out::static_order>>
+  find_last_if(kwk::sycl::context& ctx, Out const& out, Func f)
+  {
+    return ctx.find_last_if(out, f);
+  }
 
 }

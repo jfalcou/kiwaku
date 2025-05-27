@@ -190,53 +190,70 @@ TTS_CASE("Check for kwk::find_if_not(kwk::sycl::default_context, In, func) 1D")
 
 
 
-// TTS_CASE("Check for kwk::find_last(kwk::sycl::default_context, In, value) 1D")
-// {
-//   // // Empty array
-//   {
-//     const std::size_t input_size = 0;
-//     std::vector<int> input(input_size);
-//     auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-//     int search{6};
-//     auto res = kwk::find_last(kwk::sycl::default_context, view, search);
-//     TTS_EQUAL(res.has_value(), false);
-//   }
+TTS_CASE("Check for kwk::find_last(kwk::sycl::default_context, In, value) 1D")
+{
+  // Empty array
+  {
+    const std::size_t input_size = 0;
+    std::vector<int> input(input_size);
+    auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+    int search{6};
+    auto res = kwk::find_last(kwk::sycl::default_context, view, search);
+    TTS_EQUAL(res.has_value(), false);
+  }
 
-//   const std::size_t input_size = 40;
-//   std::array<int, input_size> input;
-//   for (std::size_t i = 0; i < input_size; ++i) { input[i] = 6; }
-//   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  const std::size_t input_size = 40;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = 6; }
+  // input[input_size/2] = 87;
+  input[4] = 87;
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-//   // Not found
-//   {
-//     auto res = kwk::find_last(kwk::sycl::default_context, view, 8);
-//     TTS_EQUAL(res.has_value(), false);
-//   }
+  // Not found
+  {
+    auto res = kwk::find_last(kwk::sycl::default_context, view, 8);
+    TTS_EQUAL(res.has_value(), false);
+  }
   
-//   // Last position
-//   {
-//     auto res = kwk::find_last(kwk::sycl::default_context, view, 6);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size-1});
-//     else                 TTS_FAIL("find_last returned std::nullopt and not the expected valid value.");
-//   }
+  // Last position
+  {
+    auto res = kwk::find_last(kwk::sycl::default_context, view, 6);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size-1});
+    else                 TTS_FAIL("find_last returned std::nullopt and not the expected valid value.");
+  }
 
-//   // Random position
-//   input[4] = 8;
-//   {
-//     auto res = kwk::find_last(kwk::sycl::default_context, view, 8);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
-//     else                 TTS_FAIL("find_last returned std::nullopt and not the expected valid value.");
-//   }
-//   input[4] = 6;
+  auto flambda = [](auto v) { return v == 87; };
 
-//   // First position
-//   input[0] = 8;
-//   {
-//     auto res = kwk::find_last(kwk::sycl::default_context, view, 8);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
-//     else                 TTS_FAIL("find_last returned std::nullopt and not the expected valid value.");
-//   }
-// };
+  // Random position
+  input[4]  = 87;
+  input[26] = 87;
+  {
+    auto res = kwk::find_if(kwk::sycl::default_context, view, flambda);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
+    else                 TTS_FAIL("find_if returned std::nullopt and not the expected valid value.");
+  }
+
+  {
+    auto res = kwk::find_last_if(kwk::sycl::default_context, view, flambda);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{26});
+    else                 TTS_FAIL("find_if returned std::nullopt and not the expected valid value.");
+  }
+
+  {
+    auto res = kwk::find_last(kwk::sycl::default_context, view, 87);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{26});
+    else                 TTS_FAIL("find_last returned std::nullopt and not the expected valid value.");
+  }
+  // input[4] = 6;
+
+  // First position
+  input[0] = 8;
+  {
+    auto res = kwk::find_last(kwk::sycl::default_context, view, 8);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
+    else                 TTS_FAIL("find_last returned std::nullopt and not the expected valid value.");
+  }
+};
 
 
 
@@ -244,105 +261,105 @@ TTS_CASE("Check for kwk::find_if_not(kwk::sycl::default_context, In, func) 1D")
 
 // ================================ TODO ================================
 // TODO: fix issues here, compiles but returns bad results.
-// TTS_CASE("Check for kwk::find_last_if(kwk::sycl::default_context, In, func) 1D")
-// {
-//   auto func = [](auto const& e) { return (e % 2) == 0; };
+TTS_CASE("Check for kwk::find_last_if(kwk::sycl::default_context, In, func) 1D")
+{
+  auto func = [](auto const& e) { return (e % 2) == 0; };
 
-//   // Empty array
-//   {
-//     const std::size_t input_size = 0;
-//     std::vector<int> input(input_size);
-//     auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-//     auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
-//     TTS_EQUAL(res.has_value(), false);
-//   }
+  // Empty array
+  {
+    const std::size_t input_size = 0;
+    std::vector<int> input(input_size);
+    auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+    auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
+    TTS_EQUAL(res.has_value(), false);
+  }
 
-//   const std::size_t input_size = 40;
-//   std::array<int, input_size> input;
-//   for (std::size_t i = 0; i < input_size; ++i) { input[i] = 5; }
-//   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  const std::size_t input_size = 40;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = 5; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-//   // Not found
-//   {
-//     auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
-//     TTS_EQUAL(res.has_value(), false);
-//   }
+  // Not found
+  {
+    auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
+    TTS_EQUAL(res.has_value(), false);
+  }
 
-//   // Last position
-//   input[input_size-1] = 8;
-//   {
-//     auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size-1});
-//     else                 TTS_FAIL("find_last_if returned std::nullopt and not the expected valid value.");
-//   }
-//   input[input_size-1] = 5;
+  // Last position
+  input[input_size-1] = 8;
+  {
+    auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size-1});
+    else                 TTS_FAIL("find_last_if returned std::nullopt and not the expected valid value.");
+  }
+  input[input_size-1] = 5;
 
-//   // Random position
-//   input[4] = 16;
-//   {
-//     auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
-//     else                 TTS_FAIL("find_last_if returned std::nullopt and not the expected valid value.");
-//   }
-//   input[4] = 5;
+  // Random position
+  input[4] = 16;
+  {
+    auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
+    else                 TTS_FAIL("find_last_if returned std::nullopt and not the expected valid value.");
+  }
+  input[4] = 5;
 
-//   // First position
-//   input[0] = 6;
-//   {
-//     auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
-//     else                 TTS_FAIL("find_last_if returned std::nullopt and not the expected valid value.");
-//   }
-// };
+  // First position
+  input[0] = 6;
+  {
+    auto res = kwk::find_last_if(kwk::sycl::default_context, view, func);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
+    else                 TTS_FAIL("find_last_if returned std::nullopt and not the expected valid value.");
+  }
+};
 
-// TTS_CASE("Check for kwk::find_last_if_not(kwk::sycl::default_context, In, func) 1D")
-// {
+TTS_CASE("Check for kwk::find_last_if_not(kwk::sycl::default_context, In, func) 1D")
+{
 
-//   auto func = [](auto const& e) { return (e % 2) != 0; };
+  auto func = [](auto const& e) { return (e % 2) != 0; };
 
-//   // Empty array
-//   {
-//     const std::size_t input_size = 0;
-//     std::vector<int> input(input_size);
-//     auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-//     auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
-//     TTS_EQUAL(res.has_value(), false);
-//   }
+  // Empty array
+  {
+    const std::size_t input_size = 0;
+    std::vector<int> input(input_size);
+    auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+    auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
+    TTS_EQUAL(res.has_value(), false);
+  }
 
-//   const std::size_t input_size = 40;
-//   std::array<int, input_size> input;
-//   for (std::size_t i = 0; i < input_size; ++i) { input[i] = 5; }
-//   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
+  const std::size_t input_size = 40;
+  std::array<int, input_size> input;
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = 5; }
+  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
-//   // Not found
-//   {
-//     auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
-//     TTS_EQUAL(res.has_value(), false);
-//   }
+  // Not found
+  {
+    auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
+    TTS_EQUAL(res.has_value(), false);
+  }
 
-//   // Last position
-//   input[input_size-1] = 8;
-//   {
-//     auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size-1});
-//     else                 TTS_FAIL("find_last_if_not returned std::nullopt and not the expected valid value.");
-//   }
-//   input[input_size-1] = 5;
+  // Last position
+  input[input_size-1] = 8;
+  {
+    auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size-1});
+    else                 TTS_FAIL("find_last_if_not returned std::nullopt and not the expected valid value.");
+  }
+  input[input_size-1] = 5;
 
-//   // Random position
-//   input[4] = 16;
-//   {
-//     auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
-//     else                 TTS_FAIL("find_last_if_not returned std::nullopt and not the expected valid value.");
-//   }
-//   input[4] = 5;
+  // Random position
+  input[4] = 16;
+  {
+    auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
+    else                 TTS_FAIL("find_last_if_not returned std::nullopt and not the expected valid value.");
+  }
+  input[4] = 5;
 
-//   // First position
-//   input[0] = 6;
-//   {
-//     auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
-//     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
-//     else                 TTS_FAIL("find_last_if_not returned std::nullopt and not the expected valid value.");
-//   }
-// };
+  // First position
+  input[0] = 6;
+  {
+    auto res = kwk::find_last_if_not(kwk::sycl::default_context, view, func);
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
+    else                 TTS_FAIL("find_last_if_not returned std::nullopt and not the expected valid value.");
+  }
+};
