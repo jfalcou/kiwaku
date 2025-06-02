@@ -13,64 +13,12 @@
 #include <kwk/context/base.hpp>
 #include <kwk/context/cpu/context.hpp>
 #include <kwk/utility/position.hpp>
+#include <kwk/context/sycl/internal/sycl_tools.hpp>
+#include <cmath>
+#include <functional>
+#include <kwk/context/sycl/internal/sycl_reduce_impl.hpp>
 
-namespace kwk::utils::tools
-{
-  template<concepts::container Container>
-  std::optional<kwk::position<Container::static_order>>
-  linear_to_pos(int index, Container const& container)
-  {
-    auto shp = container.shape();
 
-    std::vector<int> pos;
-    pos.resize(shp.nbdims());
-    std::fill(pos.begin(), pos.end(), -1);
-  
-    if (index != -1)
-    {
-      // Now convert back linear index to Kiwaku position :
-      // dim 0 is the outer dimension, and dim 1 the innermost
-      for (int dim = 0; dim < shp.nbdims(); ++dim)
-      {
-        int divide_by = 1;
-        for (int dim2 = dim + 1; dim2 < shp.nbdims(); ++dim2)
-        {
-          int d = shp[dim2];
-          divide_by *= d;
-        }
-        pos[dim] = index / divide_by;
-        index -= pos[dim] * divide_by;
-      }
-      // index should now be zero
-      if (index != 0) std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ERROR: index != 0  (equals " << index << "\n"; 
-    }
-
-    // kwk::position<shp::static_order> kwk_pos;
-    kwk::position<Container::static_order> kwk_pos;
-    for (int dim = 0; dim < shp.nbdims(); ++dim)
-    {
-      kwk_pos[dim] = pos[dim];
-    }
-    
-    return kwk_pos;
-  }
-  
-  int pos_to_linear(std::vector<int> const& pos, auto const& shp)
-  {
-    int res = 0;
-  
-    for (std::size_t dim = 0; dim < shp.nbdims(); ++dim)
-    {
-      int multiply_by = 1;
-      for (std::size_t dim2 = dim + 1; dim2 < shp.nbdims(); ++dim2)
-      {
-        multiply_by *= shp[dim2];
-      }
-      res += pos[dim] * multiply_by;
-    }
-    return res;
-  }
-}
 
 namespace kwk::sycl
 {
@@ -141,7 +89,7 @@ namespace kwk::sycl
 
 
     template<typename Func, concepts::container In>
-    auto reduce_internal(In const& in, [[maybe_unused]] Func f, [[maybe_unused]] auto init)
+    auto reduce_internal_v1(In const& in, [[maybe_unused]] Func f, [[maybe_unused]] auto init)
     {
       // std::cout 
       // << "Running on device: "
@@ -155,7 +103,13 @@ namespace kwk::sycl
       std::size_t numel = in.numel();
       // std::cout << "in.numel = " << numel << "\n";
 
+      // Number of work-items (equivalent to cuda threads)
       std::size_t witems = workitem_count;
+
+      // std::size_t iterations_per_witem = std::ceil(numel / workitem_count);
+      // std::size_t
+
+
       if (witems > numel) witems = numel; // avoid having more workitems than elements to process
       ::sycl::range<1> num_items{witems};
 
@@ -201,6 +155,7 @@ namespace kwk::sycl
       data_type res = init;
 
       ::sycl::host_accessor h_acc(out_buf);
+      // get_host_access
       for (std::size_t i = 0; i < witems; ++i)
       {
         res = f(res, h_acc[i]);
@@ -208,6 +163,44 @@ namespace kwk::sycl
 
       return res;
     }
+
+    // template<typename _Tp>
+    // struct custom_plus : public ::std::binary_function<_Tp, _Tp, _Tp>
+    // {
+    //   /// Returns the sum
+    //   _GLIBCXX14_CONSTEXPR
+    //   _Tp
+    //   operator()(const _Tp& __x, const _Tp& __y) const
+    //   { return __x + __y; }
+    // };
+
+    // template<typename _Tp, typename Func>
+    // struct custom_plus : public binary_function<_Tp, _Tp, _Tp>
+    // {
+    //   /// Returns the sum
+    //   _GLIBCXX14_CONSTEXPR
+    //   _Tp
+    //   operator()(const _Tp& __x, const _Tp& __y) const
+    //   { return f(__x, __y); }
+    // private:
+    //   Func f;
+    // };
+
+    template<typename Func, concepts::container In>
+    auto reduce_internal_v2(In const& in, [[maybe_unused]] Func func, [[maybe_unused]] auto init)
+    {
+      using data_type = typename In::value_type;
+
+      std::size_t numel = in.numel();
+
+      // Number of work-items (equivalent to cuda threads)
+      std::size_t witems = workitem_count;
+
+
+      return sycl_reduce(*this, in, func, init);
+    }
+
+
 
 
     template<typename Func, concepts::container In>
@@ -217,7 +210,7 @@ namespace kwk::sycl
       // ::sycl::test_sycl();
       try
       {
-        return reduce_internal(in, f, init);
+        return reduce_internal_v2(in, f, init);
       }
       catch (::sycl::exception const &e)
       {
@@ -332,6 +325,69 @@ namespace kwk::sycl
     }
 
 
+    // template<typename Func_R, typename Func_T, concepts::container In1, concepts::container In2>
+    // constexpr auto transform_reduce(In1 const& in1, In2 const& in2, auto init, Func_R R, Func_T T)
+    // {
+    //   // return error for in1.shape() != in2.shape()
+    //   ctx.transform_reduce(ctx, in1, in2, init, R, T);
+    //   map([&](auto const& i1, auto const& i2) { init = R(init, T(i1, i2)); }, ctx.in(in1), ctx.in(in2));
+    //   return init;
+
+    //   using data_type = typename In::value_type;
+
+    //   std::size_t numel = in.numel();
+
+    //   // Number of work-items (equivalent to cuda threads)
+    //   std::size_t witems = workitem_count;
+    //   if (witems > numel) witems = numel; // avoid having more workitems than elements to process
+    //   ::sycl::range<1> num_items{witems};
+
+    //   // Simple copy from in_vec to out_vec
+    //   std::vector<data_type> out_vec;
+    //   out_vec.resize(numel);
+
+    //   std::fill(out_vec.begin(), out_vec.end(), 0);
+
+    //   // Cas simple où num_out.size = num_in.size
+
+    //   ::sycl::buffer out_buf(out_vec);
+    //   auto in_proxy = this->in(in);
+
+    //   parent::submit([&](::sycl::handler &h) {
+    //     ::sycl::accessor in_acc = in_proxy.access(h);
+    //     ::sycl::accessor out_acc(out_buf, h, ::sycl::write_only, ::sycl::no_init);
+    //     h.parallel_for(num_items, [=](auto index) {
+    //       std::size_t gid = index[0];
+
+    //       //  in case (numel < num_items)
+    //       if (gid < numel)
+    //       {
+    //         data_type ini = in_acc[gid];
+
+    //         for (std::size_t i = gid + witems; i < numel; i += witems)
+    //         {
+    //           // sum += acc_in[i];
+    //           // ini = f(ini, acc_in[i]);
+    //           ini = R(ini, in_acc[i]);
+    //         }
+    //         out_acc[gid] = ini;
+    //       }
+    //     });
+    //   });
+    //   parent::wait();
+
+    //   data_type res = init;
+
+    //   ::sycl::host_accessor h_acc(out_buf);
+    //   for (std::size_t i = 0; i < witems; ++i)
+    //   {
+    //     res = R(res, h_acc[i]);
+    //   }
+
+    //   return res;
+    // }
+
+
 
   };
 
@@ -372,5 +428,14 @@ namespace kwk
   {
     return ctx.find_last_if(out, f);
   }
+
+  // template<typename Func_R, typename Func_T, concepts::container In1, concepts::container In2>
+  // constexpr auto transform_reduce(kwk::sycl::context& ctx, In1 const& in1, In2 const& in2, auto init, Func_R R, Func_T T)
+  // {
+  //   // return error for in1.shape() != in2.shape()
+  //   ctx.transform_reduce(ctx, in1, in2, init, R, T);
+  //   map([&](auto const& i1, auto const& i2) { init = R(init, T(i1, i2)); }, ctx.in(in1), ctx.in(in2));
+  //   return init;
+  // }
 
 }
