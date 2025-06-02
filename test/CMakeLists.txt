@@ -38,6 +38,10 @@ glob_unit(${unit_root} "algorithm/algos/context/cpu/predicates/*.cpp")    # CPU 
 glob_unit(${unit_root} "algorithm/algos/generator/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/generator/*.cpp")     # CPU context
 
+if( KIWAKU_BUILD_BENCHMARKS )
+  glob_unit(${unit_root} "bench/*.cpp")
+endif()
+
 # Context-specific tests
 glob_unit(${unit_root} "algorithm/algos/context/cpu/*.cpp")
 

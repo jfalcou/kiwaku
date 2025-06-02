@@ -37,6 +37,7 @@ include(kiwaku-install)
 option( KIWAKU_BUILD_TEST          "Build tests for Kiwaku" ON               )
 option( KIWAKU_BUILD_INTEGRATION   "Build integration tests for Kiwaku" OFF  )
 option( KIWAKU_BUILD_DOCUMENTATION "Build docs for Kiwaku"  OFF              )
+option( KIWAKU_BUILD_BENCHMARKS    "Build benchmarks for Kiwaku" ON          )
 
 ##==================================================================================================
 ## Setup Testing
@@ -47,6 +48,14 @@ if( KIWAKU_BUILD_TEST )
   add_custom_target(unit)
   add_subdirectory(test)
 endif()
+
+##==================================================================================================
+## Setup Benchmarking
+##==================================================================================================
+# if( KIWAKU_BUILD_BENCHMARKS )
+#   add_custom_target(bench)
+#   add_subdirectory(tbench)
+# endif()
 
 if( KIWAKU_BUILD_INTEGRATION )
   add_subdirectory("${PROJECT_SOURCE_DIR}/test/integration")
