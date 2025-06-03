@@ -59,4 +59,26 @@ namespace kwk::utils::tools
     }
     return res;
   }
+
+  template<concepts::container Container>
+  int pos_to_linear(Container const& container, std::optional<kwk::position<Container::static_order>> const& pos)
+  {
+    if (! pos.has_value()) return -1;
+
+    kwk::position<Container::static_order> real_pos = pos.value();    
+
+    int res = 0;
+    auto shp = container.shape();
+
+    for (int dim = 0; dim < shp.nbdims(); ++dim)
+    {
+      int multiply_by = 1;
+      for (int dim2 = dim + 1; dim2 < shp.nbdims(); ++dim2)
+      {
+        multiply_by *= shp[dim2];
+      }
+      res += real_pos[dim] * multiply_by;
+    }
+    return res;
+  }
 }

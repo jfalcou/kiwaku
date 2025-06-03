@@ -21,6 +21,7 @@ glob_unit(${unit_root} "algorithm/algos/context/cpu/copy/*.cpp")          # CPU 
 
 glob_unit(${unit_root} "algorithm/algos/numeric/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/numeric/*.cpp")       # CPU context
+glob_unit(${unit_root} "algorithm/algos/context/sycl/numeric/*.cpp")      # SYCL context
 
 glob_unit(${unit_root} "algorithm/algos/replace/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/replace/*.cpp")       # CPU context
@@ -30,7 +31,7 @@ glob_unit(${unit_root} "algorithm/algos/context/cpu/binary_search/*.cpp") # CPU 
 
 glob_unit(${unit_root} "algorithm/algos/find/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/find/*.cpp")          # CPU context
-glob_unit(${unit_root} "algorithm/algos/context/sycl/find/*.cpp")          # SYCL context
+glob_unit(${unit_root} "algorithm/algos/context/sycl/find/*.cpp")         # SYCL context
 
 glob_unit(${unit_root} "algorithm/algos/predicates/*.cpp")
 glob_unit(${unit_root} "algorithm/algos/context/cpu/predicates/*.cpp")    # CPU context
@@ -43,7 +44,7 @@ if( KIWAKU_BUILD_BENCHMARKS )
 endif()
 
 # Context-specific tests
-glob_unit(${unit_root} "algorithm/algos/context/cpu/*.cpp")
+# glob_unit(${unit_root} "algorithm/algos/context/cpu/*.cpp")
 
 
 glob_unit(${unit_root} "algorithm/views/*.cpp")

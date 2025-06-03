@@ -73,11 +73,15 @@ TTS_CASE("Check for kwk::find_if(kwk::sycl::default_context, In, func) 1D")
   // Array of size 20
   const std::size_t input_size = 20;
   std::array<int, input_size> input;
-  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
+  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2 ; }
   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
   auto func_even = [&](auto item) { return (item % 2) == 0; };
   auto func_odd = [&](auto item) { return (item % 2) == 1; };
+
+  // std::cout << "INPUT: ";
+  // for (std::size_t i = 0; i < input_size; ++i) std::cout << input[i] << " ";
+  // std::cout << "\n";
 
   // First element should be valid
   {
@@ -186,10 +190,6 @@ TTS_CASE("Check for kwk::find_if_not(kwk::sycl::default_context, In, func) 1D")
 };
 
 
-// TODO: SYCL issue with nested kernels.
-
-
-
 TTS_CASE("Check for kwk::find_last(kwk::sycl::default_context, In, value) 1D")
 {
   // Empty array
@@ -256,11 +256,6 @@ TTS_CASE("Check for kwk::find_last(kwk::sycl::default_context, In, value) 1D")
 };
 
 
-
-
-
-// ================================ TODO ================================
-// TODO: fix issues here, compiles but returns bad results.
 TTS_CASE("Check for kwk::find_last_if(kwk::sycl::default_context, In, func) 1D")
 {
   auto func = [](auto const& e) { return (e % 2) == 0; };

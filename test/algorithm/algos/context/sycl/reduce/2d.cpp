@@ -12,7 +12,7 @@
 #include "test.hpp"
 #include <numeric>
 
-TTS_CASE("Check for kwk::reduce(kwk::cpu, in) 2D")
+TTS_CASE("Check for kwk::reduce(kwk::sycl::default_context, in) 2D")
 {
   using data_type = int;
   const std::size_t d0 = 471;
@@ -24,7 +24,7 @@ TTS_CASE("Check for kwk::reduce(kwk::cpu, in) 2D")
 
   auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0, d1)};
 
-  auto res = kwk::reduce(kwk::cpu, view_in);
+  auto res = kwk::reduce(kwk::sycl::default_context, view_in);
   auto res_std = std::reduce(input.begin(), input.end());
 
   // TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
@@ -32,7 +32,7 @@ TTS_CASE("Check for kwk::reduce(kwk::cpu, in) 2D")
 };
 
 
-TTS_CASE("Check for kwk::reduce(kwk::cpu, in, func) and kwk::reduce(kwk::cpu, in, func, init) 2D")
+TTS_CASE("Check for kwk::reduce(kwk::sycl::default_context, in, func) and kwk::reduce(kwk::sycl::default_context, in, func, init) 2D")
 {
   using data_type = int;
   const std::size_t d0 = 471;
@@ -44,13 +44,11 @@ TTS_CASE("Check for kwk::reduce(kwk::cpu, in, func) and kwk::reduce(kwk::cpu, in
 
   auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0, d1)};
 
-  std::size_t count = 0;
-  auto res = kwk::reduce(kwk::cpu, view_in, [&](auto e1, auto e2) { ++count; return e1 + e2 + 1; });
-  auto res2 = kwk::reduce(kwk::cpu, view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; }, 87);
+  auto res = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; });
+  auto res2 = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; }, 87);
   auto res_std = std::reduce(input.begin(), input.end(), 0, [&](auto e1, auto e2) { return e1 + e2 + 1; });
 
   // TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(res, res_std);
   TTS_EQUAL(static_cast<decltype(view_in)::value_type>(res2), res_std + 87);
-  TTS_EQUAL(count, input_size);
 };
