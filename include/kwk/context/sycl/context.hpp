@@ -24,7 +24,7 @@ namespace kwk::sycl
   struct context : private ::sycl::queue, public kwk::base_context<context>
   {
   private:
-    std::size_t workitem_count = 1000;
+    bool PRINT_SYCL_HEADER = true;
 
   public:
     using parent = ::sycl::queue;
@@ -34,15 +34,29 @@ namespace kwk::sycl
     static auto out  (kwk::concepts::container auto& c)       { return kwk::sycl::out{c};   }
     static auto inout(kwk::concepts::container auto& c)       { return kwk::sycl::inout{c}; }
 
-    void set_workitem_count(std::size_t workitem_count_) { workitem_count = workitem_count_; }
+    void print_sycl_header(bool force_print = false)
+    {
+      if (PRINT_SYCL_HEADER || force_print)
+      {
+        std::cout << "\n\n============ SYCL RUNTIME ============" << std::endl;
+        auto device = parent::get_device();
+        auto deviceName = device.get_info<::sycl::info::device::name>();
+        std::cout << "   Device Name:    " << deviceName << std::endl;
+        auto platformName =  device.get_platform().get_info<::sycl::info::platform::name>();
+        std::cout << "   Platform Name:  " << platformName << "\n\n\n";
+      }
+    }
+
+    context()
+    {
+      print_sycl_header(true);
+    }
+
+
 
     template<typename Func>
     void map(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
     {
-      // std::cout 
-      // << "Running on device: "
-      // << parent::get_device().get_info<::sycl::info::device::name>()
-      // << "\n";
 
       parent::submit([&](::sycl::handler &h) 
       {

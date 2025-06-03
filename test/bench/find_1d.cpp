@@ -12,7 +12,7 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <optional>
-#include <benchmark/benchmark.hpp>
+#include <benchmark/benchmark_nano.hpp>
 #include <cmath>
 
 

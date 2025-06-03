@@ -11,7 +11,7 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <numeric>
-#include <benchmark/benchmark.hpp>
+#include <benchmark/benchmark_nano.hpp>
 
 // ninja bench.transform_reduce_1d.exe && ./unit/bench.transform_reduce_1d.exe
 

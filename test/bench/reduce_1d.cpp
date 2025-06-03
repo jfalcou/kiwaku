@@ -11,7 +11,7 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <numeric>
-#include <benchmark/benchmark.hpp>
+#include <benchmark/benchmark_nano.hpp>
 
 TTS_CASE("Check for kwk::reduce(in) 1D")
 {
