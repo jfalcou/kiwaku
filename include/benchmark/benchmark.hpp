@@ -34,6 +34,7 @@ struct cbench_t
 private:
   std::size_t iterations_count = 10;
   global_write_file_t current_file;
+  std::size_t version = 1;
 
 };
 
@@ -42,23 +43,26 @@ void cbench_t::start(std::string const& fname, std::string const& global_name)
   std::cout << "Start benchmark environment: " << global_name << "\n";
   current_file.open(fname);
   // std::cout << "File opened!\n";
+  current_file << version << "\n";
   current_file << global_name << "\n";
   // std::cout << "First line written to file!\n";
 }
 
 void cbench_t::run_function(std::string const& name, auto func)
 {
-  std::cout << "Benchmarking... " << name << "\n";
+  std::cout << "Benchmarking  " << name << "     (res)time  ";
   current_file << name << "\n";
   ::bench::chrono_t chrono;
+  std::cout << "    ";
   for (std::size_t i = 0; i < iterations_count; ++i)
   {
     chrono.Init();
     auto r = func();
     std::size_t elapsed = chrono.ElapsedTimeMS() ;
     current_file << elapsed << " ";
-    std::cout << "(" << r << ")-" << elapsed << "ms ";
+    std::cout << "(" << r << ")" << elapsed << " " << std::flush;
   }
+  current_file << "\n";
   std::cout << "\n";
 }
 
