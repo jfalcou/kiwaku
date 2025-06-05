@@ -11,73 +11,168 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <numeric>
-#include <benchmark/benchmark_nano.hpp>
+#include <benchmark/benchmark.hpp>
+// #include <execution>
 
-TTS_CASE("Check for kwk::reduce(in) 1D")
+// TTS_CASE("Benchmark - reduce ")
+// {
+//   using data_type = int;
+//   const std::size_t d0 = 1024 * 1024 * 256; // 256
+//   const std::size_t input_size = d0;
+//   std::vector<data_type> input;
+//   input.resize(input_size);
+
+//   for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 3; }
+
+//   auto view_in  = kwk::view{kwk::source = input.data() , kwk::of_size(d0)};
+
+//   data_type res_kwk_cpu, res_std, res_hand; // res_std_par
+
+//   // auto func = [](auto a, auto b) { return (((((((((a + b) % 60) % 59) % 58) % 57) % 56) % 55) % 35) % 25) % 15; };
+//   auto func = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
+
+  
+
+//   auto fct_kwk_cpu = [&]() {
+//     res_kwk_cpu = kwk::reduce(view_in, func, 0);
+//     return res_kwk_cpu; };
+
+//   auto fct_std = [&]() {
+//     res_std = std::reduce(input.begin(), input.end(), 0, func);
+//     return res_std; };
+
+//   // Huge error message when I try this
+//   // auto fct_std_par = [&]() {
+//   //   res_std_par = std::reduce(std::execution::par, input.begin(), input.end(), 0, func);
+//   //   return res_std_par; };
+
+//   auto fct_hand = [&]() {
+//     res_hand = 0;
+//     for (std::size_t i = 0; i < input_size; ++i)
+//     {
+//       res_hand = func(res_hand, input[i]);
+//     }
+//     return res_hand;
+//   };
+
+//   // TODO:   reduce à la main pour voir le temps pris
+//   //       + reduce de la manière la plus vectorisée possible ?
+//   //         (faire en sorte que le compilateur l'auto-vectorise de lui-même)
+//   //         (et/ou tester avec EVE)
+
+//   kwk::bench::cbench_t b;
+
+//   // std::string absolute_path = "/home/data_evo/data_sync/academique/These/kiwaku_2025-02/test/bench/bench_files/";
+//   std::string absolute_path = ""; // will output so "kiwaku_build"
+
+//   b.start(absolute_path + "reduce_1d_2025-06-04_19h15.txt", "Reduce, compute-bound");
+//   b.set_iterations(10);
+//   b.run_function("std::reduce", fct_std);
+//   // b.run_function("std::reduce with std::execution::par", fct_std_par);
+
+//   // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
+//   bool has_gpu = kwk::sycl::has_gpu();
+
+//   auto sycl_bench = [&](auto&& context, data_type& return_) -> data_type
+//   {
+//     auto fct_kwk_sycl_generic = [&]()
+//     {
+//       return_ = kwk::reduce(context, view_in, func, 0);
+//       return return_;
+//     };
+//     b.run_function("Kiwaku SYCL on " + context.get_device_name(), fct_kwk_sycl_generic);
+//     return return_;
+//     // TTS_EQUAL(return_, res_std);
+//   };
+
+//   // Execute SYCL benchmark on GPU and CPU
+//   if (has_gpu)
+//   {
+//     data_type return_;
+//     // GPU
+//     sycl_bench(kwk::sycl::context{::sycl::gpu_selector_v}, return_);
+//     TTS_EQUAL(return_, res_std);
+//     // CPU
+//     sycl_bench(kwk::sycl::context{::sycl::cpu_selector_v}, return_);
+//     TTS_EQUAL(return_, res_std);
+
+//     // // Run on GPU
+//     // data_type res_kwk_sycl_gpu;
+//     // kwk::sycl::context gpu_context{::sycl::gpu_selector_v};
+
+//     // auto fct_kwk_sycl_gpu = [&res_kwk_sycl, &view_in, func]() {
+//     //   res_kwk_sycl_gpu = kwk::reduce(gpu_context, view_in, func, 0);
+//     //   return res_kwk_sycl_gpu; };
+//     // TTS_EQUAL(res_kwk_sycl_gpu, res_std);
+//     // b.run_function("Kiwaku SYCL GPU " + gpu_context.get_device_name(), fct_kwk_sycl_gpu);
+
+//     // // Run on CPU
+//     // data_type res_kwk_sycl_cpu;
+//     // kwk::sycl::context cpu_context{::sycl::cpu_selector_v};
+
+//     // auto fct_kwk_sycl_cpu = [&res_kwk_sycl, &view_in, func]() {
+//     //   res_kwk_sycl_cpu = kwk::reduce(cpu_context, view_in, func, 0);
+//     //   return res_kwk_sycl_cpu; };
+//     // TTS_EQUAL(res_kwk_sycl_cpu, res_std);
+//     // b.run_function("Kiwaku SYCL CPU " + cpu_context.get_device_name(), fct_kwk_sycl_cpu);
+//   }
+//   else // SYCL default context
+//   {
+//     data_type return_;
+//     // CPU
+//     sycl_bench(kwk::sycl::default_context, return_);
+//     TTS_EQUAL(return_, res_std);
+//   }
+
+//   b.run_function("Kiwaku on CPU", fct_kwk_cpu);
+//   b.run_function("By hand on CPU", fct_hand);
+//   b.stop();
+
+//   // TTS_EQUAL(res_std_par, res_std);
+//   TTS_EQUAL(res_hand   , res_std);
+//   TTS_EQUAL(res_kwk_cpu, res_std);
+// };
+
+
+void reduce_test(std::string const& bench_name, std::string const& file_name, auto func, std::size_t const view_size)
 {
   using data_type = int;
-  const std::size_t d0 = 1024 * 1024 * 256;
+  const std::size_t d0 = view_size;//1024 * 1024 * 256; // 256
   const std::size_t input_size = d0;
   std::vector<data_type> input;
   input.resize(input_size);
 
-  // std::array<data_type, input_size> input;
-
   for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 3; }
-
-  std::cout << "STD array ok\n";
 
   auto view_in  = kwk::view{kwk::source = input.data() , kwk::of_size(d0)};
 
-  data_type res_kwk_cpu, res_kwk_sycl, res_std, res_hand;
+  data_type res_kwk_cpu, res_std, res_hand; // res_std_par
 
-  auto func = [](auto a, auto b) { return (((a + b) % 50) % 25) % 30; };
-  // auto func = [](auto a, auto b) { return (a + b) % 50; };
+  // auto func = [](auto a, auto b) { return (((((((((a + b) % 60) % 59) % 58) % 57) % 56) % 55) % 35) % 25) % 15; };
+  // auto func = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
 
-// auto func = [](auto a, auto b) { return a + b; };
-// |               ns/op |                op/s |    err% |     total | Benchmark name
-// |--------------------:|--------------------:|--------:|----------:|:---------------
-// |       71,837,034.00 |               13.92 |    0.7% |      0.86 | `Kiwaku CPU reduce`
-// |      104,814,624.00 |                9.54 |    0.1% |      1.42 | `Kiwaku SYCL reduce`
-// |       81,333,063.00 |               12.30 |    0.9% |      0.94 | `std reduce`
+  
 
-// auto func = [](auto a, auto b) { return (a + b) % 50; };
-// |               ns/op |                op/s |    err% |     total | Benchmark name
-// |--------------------:|--------------------:|--------:|----------:|:---------------
-// |      767,498,099.00 |                1.30 |    0.0% |      8.45 | `Kiwaku CPU reduce`
-// |      126,097,508.00 |                7.93 |    0.5% |      1.66 | `Kiwaku SYCL reduce`
-// |      320,147,871.00 |                3.12 |    0.1% |      3.57 | `std reduce`
-
-// auto func = [](auto a, auto b) { return (((a + b) % 50) % 25) % 30; };
-// |               ns/op |                op/s |    err% |     total | Benchmark name
-// |--------------------:|--------------------:|--------:|----------:|:---------------
-// |    1,514,426,949.00 |                0.66 |    0.0% |     16.66 | `Kiwaku CPU reduce`
-// |      171,731,833.00 |                5.82 |    0.2% |      2.20 | `Kiwaku SYCL reduce`
-// |      624,873,332.00 |                1.60 |    0.1% |      6.89 | `std reduce`
-// |    1,456,639,954.00 |                0.69 |    0.1% |     16.02 | `reduce by hand`
-
-  auto fct_kwk_sycl = [&res_kwk_sycl, &view_in, func]()
-  {
-    res_kwk_sycl = kwk::reduce(kwk::sycl::default_context, view_in, func, 0);
-  };
-
-  auto fct_kwk_cpu = [&]()
-  {
+  auto fct_kwk_cpu = [&]() {
     res_kwk_cpu = kwk::reduce(view_in, func, 0);
-  };
+    return res_kwk_cpu; };
 
-  auto fct_std = [&]()
-  {
+  auto fct_std = [&]() {
     res_std = std::reduce(input.begin(), input.end(), 0, func);
-  };
+    return res_std; };
 
-  auto fct_hand = [&]()
-  {
+  // Huge error message when I try this
+  // auto fct_std_par = [&]() {
+  //   res_std_par = std::reduce(std::execution::par, input.begin(), input.end(), 0, func);
+  //   return res_std_par; };
+
+  auto fct_hand = [&]() {
     res_hand = 0;
     for (std::size_t i = 0; i < input_size; ++i)
     {
       res_hand = func(res_hand, input[i]);
     }
+    return res_hand;
   };
 
   // TODO:   reduce à la main pour voir le temps pris
@@ -85,69 +180,95 @@ TTS_CASE("Check for kwk::reduce(in) 1D")
   //         (faire en sorte que le compilateur l'auto-vectorise de lui-même)
   //         (et/ou tester avec EVE)
 
-  auto b = kwk::bench::create();
-  kwk::bench::add(b, fct_kwk_cpu , "Kiwaku CPU reduce");
-  kwk::bench::add(b, fct_kwk_sycl, "Kiwaku SYCL reduce");
-  kwk::bench::add(b, fct_std     , "std reduce");
-  kwk::bench::add(b, fct_hand    , "reduce by hand");
-  // b.set_iterations(180);
-  kwk::bench::execute(b);
+  kwk::bench::cbench_t b;
 
-  // TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
+  // std::string absolute_path = "/home/data_evo/data_sync/academique/These/kiwaku_2025-02/test/bench/bench_files/";
+  std::string absolute_path = ""; // will output so "kiwaku_build"
+
+  b.start(absolute_path + file_name, bench_name);
+  b.set_iterations(10);
+  b.run_function("std::reduce", fct_std);
+  // b.run_function("std::reduce with std::execution::par", fct_std_par);
+
+  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
+  bool has_gpu = kwk::sycl::has_gpu();
+
+  auto sycl_bench = [&](auto&& context, data_type& return_) -> data_type
+  {
+    auto fct_kwk_sycl_generic = [&]()
+    {
+      return_ = kwk::reduce(context, view_in, func, 0);
+      return return_;
+    };
+    b.run_function("Kiwaku SYCL on " + context.get_device_name(), fct_kwk_sycl_generic);
+    return return_;
+    // TTS_EQUAL(return_, res_std);
+  };
+
+  // Execute SYCL benchmark on GPU and CPU
+  if (has_gpu)
+  {
+    data_type return_;
+    // GPU
+    sycl_bench(kwk::sycl::context{::sycl::gpu_selector_v}, return_);
+    TTS_EQUAL(return_, res_std);
+    // CPU
+    sycl_bench(kwk::sycl::context{::sycl::cpu_selector_v}, return_);
+    TTS_EQUAL(return_, res_std);
+
+    // // Run on GPU
+    // data_type res_kwk_sycl_gpu;
+    // kwk::sycl::context gpu_context{::sycl::gpu_selector_v};
+
+    // auto fct_kwk_sycl_gpu = [&res_kwk_sycl, &view_in, func]() {
+    //   res_kwk_sycl_gpu = kwk::reduce(gpu_context, view_in, func, 0);
+    //   return res_kwk_sycl_gpu; };
+    // TTS_EQUAL(res_kwk_sycl_gpu, res_std);
+    // b.run_function("Kiwaku SYCL GPU " + gpu_context.get_device_name(), fct_kwk_sycl_gpu);
+
+    // // Run on CPU
+    // data_type res_kwk_sycl_cpu;
+    // kwk::sycl::context cpu_context{::sycl::cpu_selector_v};
+
+    // auto fct_kwk_sycl_cpu = [&res_kwk_sycl, &view_in, func]() {
+    //   res_kwk_sycl_cpu = kwk::reduce(cpu_context, view_in, func, 0);
+    //   return res_kwk_sycl_cpu; };
+    // TTS_EQUAL(res_kwk_sycl_cpu, res_std);
+    // b.run_function("Kiwaku SYCL CPU " + cpu_context.get_device_name(), fct_kwk_sycl_cpu);
+  }
+  else // SYCL default context
+  {
+    data_type return_;
+    // CPU
+    sycl_bench(kwk::sycl::default_context, return_);
+    TTS_EQUAL(return_, res_std);
+  }
+
+  b.run_function("Kiwaku on CPU", fct_kwk_cpu);
+  b.run_function("By hand on CPU", fct_hand);
+  b.stop();
+
+  // TTS_EQUAL(res_std_par, res_std);
+  TTS_EQUAL(res_hand   , res_std);
   TTS_EQUAL(res_kwk_cpu, res_std);
-  TTS_EQUAL(res_kwk_sycl, res_std);
-  TTS_EQUAL(res_hand, res_std);
+}
+
+
+// TTS_CASE("Benchmark - reduce, compute-bound ")
+// {
+//   auto func = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
+//   const std::size_t d0 = 1024 * 1024 * 256; // 256
+
+//   reduce_test("Reduce compute-bound", "reduce_compute-bound_2025-06-04_23h11.txt", func, d0);
+// };
+
+
+
+
+TTS_CASE("Benchmark - reduce, memory-bound ")
+{
+  auto func = [](auto a, auto b) { return a + b; };
+  const std::size_t d0 = 1024 * 1024 * 400; // 256
+
+  reduce_test("Reduce memory-bound", "reduce_memory-bound_2025-06-04_23h11.txt", func, d0);
 };
-
-
-// TTS_CASE("Check for kwk::reduce(in, func) and kwk::reduce(in, func, init) 1D")
-// {
-//   using data_type = int;
-//   const std::size_t d0 = 471;
-//   const std::size_t input_size = d0;
-//   std::array<data_type, input_size> input;
-
-//   for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 3; }
-
-//   auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
-
-//   std::size_t count = 0;
-//   auto res = kwk::reduce(view_in, [&](auto e1, auto e2) { ++count; return e1 + e2 + 1; });
-//   auto res2 = kwk::reduce(view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; }, 87);
-//   auto res_std = std::reduce(input.begin(), input.end(), 0, [&](auto e1, auto e2) { return e1 + e2 + 1; });
-
-//   // TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
-//   TTS_EQUAL(res, res_std);
-//   TTS_EQUAL(static_cast<decltype(view_in)::value_type>(res2), res_std + 87);
-//   TTS_EQUAL(count, input_size);
-// };
-
-
-// TTS_CASE("Check for REDUCE")
-// {
-//   auto shp = kwk::of_size(4, kwk::fixed<6>, 3ULL);
-//   std::int32_t count = 0;
-//   kwk::for_each( [&](auto...) { ++count; }, shp);
-//   TTS_EQUAL(count, shp.numel());
-
-//   double d = 1.0;
-//   std::size_t repeated = 0;
-
-//   auto fct = [&]
-//   {
-//     d += 1.0 / d;
-//     if (d > 5.0)
-//     {
-//       d -= 5.0;
-//       // usleep(10000);
-//     }
-//     ++repeated;
-
-//     ankerl::nanobench::doNotOptimizeAway(d);
-//   };
-
-//   auto b = kwk::bench::create();
-//   kwk::bench::add(b, fct, "My first function!");
-//   kwk::bench::execute(b);
-
-// };
