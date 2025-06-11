@@ -36,8 +36,6 @@ void transform_reduce_test(std::string const& bench_name
   input2.resize(input_size);
 
   DATA_TYPE2 init_value = 11;
-  // std::array<int, input_size> input1;
-  // std::array<float, input_size> input2;
 
   srand(89561221);
   const int max_number = 1 << 20;
@@ -89,7 +87,6 @@ void transform_reduce_test(std::string const& bench_name
     };
     b.run_function("Kiwaku SYCL on " + context.get_device_name(), fct_kwk_sycl_generic);
     return return_;
-    // TTS_EQUAL(return_, res_std);
   };
 
   // Execute SYCL benchmark on GPU and CPU
@@ -122,6 +119,7 @@ void transform_reduce_test(std::string const& bench_name
 }
 
 
+
 TTS_CASE("Benchmark - transform_reduce, compute-bound ")
 {
   using data_type1 = int;
@@ -144,6 +142,7 @@ TTS_CASE("Benchmark - transform_reduce, compute-bound ")
 
   transform_reduce_test<data_type1, data_type2>("Transform_reduce compute-bound", "transform_reduce_compute-bound.bench", reduce_func, transform_func, size);
 };
+
 
 
 TTS_CASE("Benchmark - transform_reduce, memory-bound ")
