@@ -122,28 +122,28 @@ void transform_reduce_test(std::string const& bench_name
 }
 
 
-// TTS_CASE("Benchmark - transform_reduce, compute-bound ")
-// {
-//   using data_type1 = int;
-//   using data_type2 = int;
+TTS_CASE("Benchmark - transform_reduce, compute-bound ")
+{
+  using data_type1 = int;
+  using data_type2 = int;
 
-//   auto reduce_func    = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
-//   auto transform_func = [](auto a, auto b) { return ((((((((((((a + b) % 131072) % 65536) % 32768) % 16384) % 8192) % 4096) % 2048) % 1024) % 512) % 256) % 128); };
+  auto reduce_func    = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
+  auto transform_func = [](auto a, auto b) { return ((((((((((((a + b) % 131072) % 65536) % 32768) % 16384) % 8192) % 4096) % 2048) % 1024) % 512) % 256) % 128); };
 
-//   [[maybe_unused]] std::size_t kio = 1024 / (sizeof(data_type1) + sizeof(data_type2));
-//   [[maybe_unused]] std::size_t mio = 1024 * kio;
-//   [[maybe_unused]] std::size_t gio = 1024 * mio;
+  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(data_type1) + sizeof(data_type2));
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-//   std::size_t size;
-//   std::string hname = sutils::get_host_name();
-//        if (hname == "parsys-legend")          { size =   1 * gio; } 
-//   else if (hname == "pata")                   { size =   1 * gio; }
-//   else if (hname == "chaton")                 { size = 128 * mio; }
-//   else if (hname == "sylvain-ThinkPad-T580")  { size = 128 * mio; }
-//   else                                        { size =   1 * gio; }
+  std::size_t size;
+  std::string hname = sutils::get_host_name();
+       if (hname == "parsys-legend")          { size =   1 * gio; } 
+  else if (hname == "pata")                   { size =   1 * gio; }
+  else if (hname == "chaton")                 { size = 128 * mio; }
+  else if (hname == "sylvain-ThinkPad-T580")  { size = 128 * mio; }
+  else                                        { size =   1 * gio; }
 
-//   transform_reduce_test<data_type1, data_type2>("Transform_reduce compute-bound", "transform_reduce_compute-bound.txt", reduce_func, transform_func, size);
-// };
+  transform_reduce_test<data_type1, data_type2>("Transform_reduce compute-bound", "transform_reduce_compute-bound.bench", reduce_func, transform_func, size);
+};
 
 
 TTS_CASE("Benchmark - transform_reduce, memory-bound ")
@@ -166,5 +166,5 @@ TTS_CASE("Benchmark - transform_reduce, memory-bound ")
   else if (hname == "sylvain-ThinkPad-T580")  { size = 128 * mio; }
   else                                        { size =   1 * gio; }
 
-  transform_reduce_test<data_type1, data_type2>("Transform_reduce memory-bound", "transform_reduce_memory-bound.txt", reduce_func, transform_func, size);
+  transform_reduce_test<data_type1, data_type2>("Transform_reduce memory-bound", "transform_reduce_memory-bound.bench", reduce_func, transform_func, size);
 };

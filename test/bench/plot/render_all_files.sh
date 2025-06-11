@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILE_EXTENSION="txt"
+FILE_EXTENSION="bench"
 
 # should be:   for f in *.MTS;
 for f in files/*.$FILE_EXTENSION;

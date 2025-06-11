@@ -271,7 +271,7 @@ TTS_CASE("Benchmark - find-if, compute-bound, last pos")
 
   // const std::size_t d0 = 1024 * 1024 * 16;
   
-  find_test<data_type>("find-if compute-bound", "find-if_compute-bound.txt", convert_func, size, size-2);
+  find_test<data_type>("find-if compute-bound", "find-if_compute-bound.bench", convert_func, size, size-2);
   std::cout << "\n\n";
 };
 
@@ -293,7 +293,7 @@ TTS_CASE("Benchmark - find-if, memory-bound, last pos")
 
   auto convert_func = [=](auto item) { return item; };
 
-  find_test<data_type>("find-if memory-bound", "find-if_memory-bound.txt", convert_func, size, size-2);
+  find_test<data_type>("find-if memory-bound", "find-if_memory-bound.bench", convert_func, size, size-2);
   std::cout << "\n\n";
 };
 
@@ -331,7 +331,7 @@ TTS_CASE("Benchmark - find-if, compute-bound, middle")
             ) % 1784586545;
   };
 
-  find_test<data_type>("find-if compute-bound", "find-if_compute-bound_middle.txt", convert_func, size, size / 2);
+  find_test<data_type>("find-if compute-bound", "find-if_compute-bound_middle.bench", convert_func, size, size / 2);
   std::cout << "\n\n";
 };
 
@@ -353,6 +353,6 @@ TTS_CASE("Benchmark - find-if, memory-bound, middle")
 
   auto convert_func = [=](auto item) { return item; };
 
-  find_test<data_type>("find-if memory-bound", "find-if_memory-bound_middle.txt", convert_func, size, size / 2);
+  find_test<data_type>("find-if memory-bound", "find-if_memory-bound_middle.bench", convert_func, size, size / 2);
   std::cout << "\n\n";
 };

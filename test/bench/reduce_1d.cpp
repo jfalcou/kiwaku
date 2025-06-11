@@ -287,7 +287,7 @@ TTS_CASE("Benchmark - reduce, compute-bound ")
   else if (hname == "sylvain-ThinkPad-T580")  { size = 128 * mio; }
   else                                        { size =   1 * gio; }
 
-  reduce_test<data_type>("Reduce compute-bound", "reduce_compute-bound.txt", func, size);
+  reduce_test<data_type>("Reduce compute-bound", "reduce_compute-bound.bench", func, size);
 };
 
 
@@ -311,5 +311,5 @@ TTS_CASE("Benchmark - reduce, memory-bound ")
   else if (hname == "sylvain-ThinkPad-T580")  { size = 128 * mio; }
   else                                        { size =   1 * gio; }
 
-  reduce_test<data_type>("Reduce memory-bound", "reduce_memory-bound.txt", func, size);
+  reduce_test<data_type>("Reduce memory-bound", "reduce_memory-bound.bench", func, size);
 };
