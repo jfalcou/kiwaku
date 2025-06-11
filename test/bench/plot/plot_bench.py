@@ -2,21 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import statistics as stat
 import sys
-import math
 import utils.plot_utils as pu
 import utils.plot_set_sizes as plot_set_sizes
 import textwrap
 import os.path
 import argparse
 
-
-# def draw_violin_plot(color, y_list):
-#   c = color
-#   bp_ = plt.violinplot(y_list, showextrema=False)
-#   for pc in bp_['bodies']:
-#       pc.set_facecolor(c)
-#       pc.set_edgecolor(c) # #D43F3A black
-#       pc.set_alpha(1)
 
 VERSION_ATTENDUE = 3
 
@@ -30,37 +21,6 @@ def set_axis_style(ax, labels):
 title_font_size = 16  # fontsize
 
 plot_set_sizes.set_sizes()
-
-# # ============= Gestion de la taille
-# my_dpi = 96
-# output_image_name = "no_name"
-# field_type_name = "" # InterpolateNN_LayoutStride
-
-# # image_ratio = 640 / 480
-# image_ratio = 880 / 480
-
-# image_width = 1280 # 1280
-# image_height = 0
-# image_scale_factor = image_width / 640
-# line_width = image_scale_factor * 1.5
-# image_height = image_width / image_ratio #(image_width / 640) * 480
-
-# plt.figure(figsize=(image_width/my_dpi, image_height/my_dpi) , dpi=my_dpi)
-# # output_image_name = "lorentz_compare_" + computer_name + "_" + output_image_name + ".png"
-# output_image_name = "lorentz_compare_" + computer_name + "_" + output_image_name + ".png"
-
-# MY_SIZE = (10 * image_scale_factor)
-# MY_SIZE_SMALL = (6 * image_scale_factor)
-# TITLE_SIZE = (12 * image_scale_factor)
-
-# #plt.rc('font', size=MY_SIZE)          # controls default text sizes
-# plt.rc('axes', titlesize=TITLE_SIZE)     # fontsize of the axes title
-# plt.rc('axes', labelsize=MY_SIZE)     # fontsize of the x and y labels
-# plt.rc('xtick', labelsize=MY_SIZE)    # fontsize of the tick labels
-# plt.rc('ytick', labelsize=MY_SIZE)    # fontsize of the tick labels
-# plt.rc('legend', fontsize=MY_SIZE)    # legend fontsize
-# #plt.rc('figure', titlesize=MY_SIZE)   # fontsize of the figure title
-
 
 
 kwk_array_size = 1
@@ -104,8 +64,6 @@ def load_file(path):
     while line:
 
       # number of items per second = 1000 * number of elements per ms
-      # = 1000 * ()
-
       # number of elements per ms = number of items / time (ms) to process these items
       # number of elements per second = 1000 * number of items / time (ms) to process these items
 
@@ -159,35 +117,6 @@ def load_file(path):
 
   return bench_list
 
-# absolute_path = "/home/data_evo/data_sync/academique/These/kiwaku_2025-02/test/bench/bench_files/pata/"
-# absolute_path = "/home/data_not_sync/These/kiwaku_build/"
-
-# print(sys.argv[1])
-
-# absolute_path = "/home/data_evo/data_sync/academique/These/kiwaku_2025-02/test/bench/plot/files/"
-# bench_list = load_file(absolute_path + "test.txt")
-
-# ifname = "find-if_compute-bound_2025-06-05_01h45_last-pos.txt"
-# ifname = "find-if_compute-bound_2025-06-05_01h45_middle.txt"
-# ifname = "find-if_memory-bound_2025-06-05_01h45_last-pos.txt"
-# ifname = "sylvain-ThinkPad-T580_2025-06-09_23h54m57s_reduce_compute-bound.txt"
-# ifname = "sylvain-ThinkPad-T580_2025-06-09_23h55m10s_reduce_memory-bound.txt"
-# ifname = "parsys-legend_2025-06-11_01h07m32s_reduce_compute-bound.txt"
-
-only_save = False
-
-if len(sys.argv) == 2:
-  if (sys.argv[1] == "only_save"):
-    only_save = True
-
-
-# if len(sys.argv) <= 1:
-#   print("ERROR: Please provide a valid file path.")
-#   sys.exit()
-
-# fname = sys.argv[1]
-
-
 
 parser = argparse.ArgumentParser(
                     prog='Kiwaku benchmark plots',
@@ -216,9 +145,6 @@ bench_list = load_file(input_fpath) # absolute_path + ifname
 
 
 
-
-
-
 labels = []
 med_values = []
 bw_method_ = 0.04
@@ -237,13 +163,6 @@ for i in range(0, len(bench_list)):
 
   labels.append(wrapped)
 
-  # data  = bench["no-outlier_elements_per_second"] # raw_time
-  # data2 = []
-  # # Convert from ms to operations per second
-  # for val in data:
-  #   d = 1000 / val
-  #   data2.append(d) 
-
   med_values.append(bench["med_elements_per_second"])
 
   position = i
@@ -251,25 +170,10 @@ for i in range(0, len(bench_list)):
   # pu.draw_violin_plot('red', data2)
   pu.draw_violin_plot_pos_ext(global_colors[i], global_colors[i], bench["no-outlier_elements_per_second"], [position]) # no-outlier_
 
-  # bp_ = plt.violinplot(y_list, showextrema=False)
-  # for pc in bp_['bodies']:
-  #     pc.set_facecolor(color)
-  #     pc.set_edgecolor(color) # #D43F3A black
-  #     pc.set_alpha(1)
-
-  # violin_parts = plt.violinplot(data2, [position], points=600, widths=0.7, showmeans=False,
-  #                               showextrema=True, showmedians=True, bw_method=bw_method_)
-
-  # color='blue'
-  # for pc in violin_parts['bodies']:
-  #   pc.set_facecolor(color)
-  #   pc.set_edgecolor(color)
-  #   pc.set_alpha(1)
 
 plt.ylabel(measured_variable + unit_name)
 
 plt.title(global_name + "") # , fontsize=title_font_size)
-# + ", operations per second (higher is better)"
 
 # set style for the axes
 set_axis_style(plt.gca(), labels)
@@ -281,17 +185,7 @@ plt.rcParams['grid.alpha'] = 1
 plt.rcParams['grid.color'] = "black" ##cccccc
 plt.grid(linewidth=line_width)
 
-
-# bar_colors = ['tab:red', 'tab:blue', 'tab:red', 'tab:orange']
-# # bar_colors = ['tab:red', 'tab:blue', 'tab:red', 'tab:orange']
-
 plt.bar(labels, med_values, label=labels, color=global_colors, alpha=0.3)
-
-
-# for i in range(0, len(bench_list)):
-#   bench = bench_list[i]
-#   print(bench["bench_name"] + ": " + str(bench["med_time"]))
-
 
 # output_fname = global_name.replace(" ", "_").replace(",", "").lower() + ".png"
 output_fname = input_fpath + ".png"
