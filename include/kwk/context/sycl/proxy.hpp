@@ -28,6 +28,16 @@ namespace kwk::sycl
     
     auto size() const { return data.size(); }
 
+    // WIP
+    /* If we don't want to copy data back and trash it. buffer::set_final_data() tells the
+     * SYCL runtime where to put the data when the buffer is destroyed; nullptr
+     * indicates not to copy back. */
+    // void discard_final_data()
+    // {
+    //   data.set_final_data(nullptr);
+    // }
+    // DOSEN'T SEEM TO WORK :(
+
     protected:
     ::sycl::buffer<T> data;
   };
