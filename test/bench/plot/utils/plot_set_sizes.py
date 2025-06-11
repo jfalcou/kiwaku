@@ -16,10 +16,11 @@ def set_sizes():
   MY_SIZE = (10 * image_scale_factor)
   # MY_SIZE_SMALL = (6 * image_scale_factor)
   TITLE_SIZE = (15 * image_scale_factor)
+  AXES_SIZE  = (13 * image_scale_factor)
 
   #plt.rc('font', size=MY_SIZE)          # controls default text sizes
   plt.rc('axes', titlesize=TITLE_SIZE)     # fontsize of the axes title
-  plt.rc('axes', labelsize=MY_SIZE)     # fontsize of the x and y labels
+  plt.rc('axes', labelsize=AXES_SIZE)     # fontsize of the x and y labels
   plt.rc('xtick', labelsize=MY_SIZE)    # fontsize of the tick labels
   plt.rc('ytick', labelsize=MY_SIZE)    # fontsize of the tick labels
   plt.rc('legend', fontsize=MY_SIZE)    # legend fontsize

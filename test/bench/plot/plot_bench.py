@@ -128,19 +128,19 @@ def load_file(path):
 
       line = fp.readline()
 
-    global_med = stat.median(all_medians)
+    global_ref = max(all_medians)
 
     divide_by = 1
 
-    if global_med / 1000 >= 1:
+    if global_ref / 1000 >= 1:
       divide_by = 1000
       unit_name = " (thousands)"
 
-    if global_med / 1000000 >= 1:
+    if global_ref / 1000000 >= 1:
       divide_by = 1000000
       unit_name = " (millions)"
 
-    if global_med / 1000000000 >= 1:
+    if global_ref / 1000000000 >= 1:
       divide_by = 1000000000
       unit_name = " (billions)"
 

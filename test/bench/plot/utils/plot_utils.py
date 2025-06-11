@@ -58,12 +58,12 @@ def make_1D_list_every_1line(bench_list, field_name1, take_every = 0):
     ind += 1
   return res
 
-def make_1D_list_every_1line_divided(bench_list, field_name1, take_every, divide_by = 1):
+def make_1D_list_every_1line_divided(bench_list, field_name1, take_every, multiply_by = 1):
   res = []
   ind = 0
   for i in bench_list:
     if (ind % take_every == 0):
-      v1 = i[field_name1] / divide_by
+      v1 = i[field_name1] * multiply_by
       res.append(str(v1))
     else:
       res.append("")
@@ -114,12 +114,12 @@ def make_absolute_list(l1, keyword = None):
     res.append(l1[i][keyword])
   return res
 
-def make_absolute_list_divided(l1, keyword, divide_by):
+def make_absolute_list_divided(l1, keyword, multiply_by):
   if keyword == None:
     keyword = "elapsed_time"
   res  = []
   for i in range(0, len(l1)):
-    res.append(float(l1[i][keyword]) / divide_by)
+    res.append(float(l1[i][keyword]) * multiply_by)
   return res
 
 # def make_absolute_list(l1):
@@ -173,25 +173,50 @@ def draw_violin_plot_pos_ext(color_face, color_edge, dataset_, positions_):
   #                               showextrema=True, showmedians=True, bw_method=bw_method_)
 
 
+# Old version, kept for direct comparison with the newer version
+def filter_outliers_deprecated(list_arg):
 
-def filter_outliers(list):
+  res = list_arg.copy()
 
-  if len(list) <= 2:
-    return list
+  if len(res) <= 2:
+    return res
 
   n_quantiles = 10 ## must be >= 4
   
-  q = stat.quantiles(list, n=n_quantiles)
+  q = stat.quantiles(res, n=n_quantiles)
+  print("quartiles:")
+  print(q)
 
   index = 0
-  for i in range(len(list)):
-    elem = list[index]
+  for i in range(len(res)):
+    elem = res[index]
+    print(elem)
+    print("q[0] = " + str(q[0]) + "  q[n_quantiles - 2] = " + str(q[n_quantiles - 2])) 
     if (elem < q[0]) or (elem > q[n_quantiles - 2]):
-      list.pop(index)
+      res.pop(index)
     else:
       index += 1
 
-  return list
+  return res
+
+# New version, this is a somewhat inadequate but suits the basic expected benchmark time distribution
+def filter_outliers(list_arg):
+  res = list_arg.copy()
+  if len(res) <= 2:
+    return res
+
+  med = stat.median(list_arg)
+  index = 0
+  for i in range(len(res)):
+    elem = res[index]
+    distance = abs(elem - med)
+    # No more that 20% variation allowed
+    if (distance > abs(med * 0.2)):
+      res.pop(index)
+    else:
+      index += 1
+
+  return res
 
 
 
@@ -221,14 +246,15 @@ def remove_empty_words(list):
       list[len(list)-1] = list[len(list)-1].rstrip("\n")
   return list
 
-def list_str_to_int(list, divide_by = None):
-  print("list_str_to_int len = " + str(len(list)) + " 1st value = "+ str(list[0]) + "values:")
-  print(list)
+def list_str_to_int(list, multiply_by = None):
+  # print("list_str_to_int len = " + str(len(list)) + " 1st value = "+ str(list[0]) + "values:")
+  # print(list)
   if len(list) == 0:
     list.append(0)
   else:
-    if divide_by == None:
-      list = [int(i) for i in list]
+    if multiply_by == None:
+      list = [round(int(i)) for i in list]
     else:
-      list = [int(i)/divide_by for i in list]
+      list = [round(int(i) * multiply_by) for i in list]
+  # print(list)
   return list
