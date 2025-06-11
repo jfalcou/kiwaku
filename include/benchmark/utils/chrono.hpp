@@ -4,7 +4,7 @@
 #include <chrono>
 #include <ctime>
  
-namespace bench
+namespace sutils
 {
   struct metrics_t
   {
@@ -80,4 +80,13 @@ namespace bench
     std::chrono::time_point<std::chrono::system_clock> last_point_;
     double elapsed_;
   };
+
+  std::string get_full_date()
+  {
+    std::time_t timestamp = time(nullptr);
+    struct tm datetime = *localtime(&timestamp);
+    char output[50];
+    strftime(output, 50, "20%y-%m-%d_%Hh%Mm%Ss", &datetime);
+    return std::string{output};
+  }
 }
