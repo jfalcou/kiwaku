@@ -6,6 +6,9 @@ import math
 import utils.plot_utils as pu
 import utils.plot_set_sizes as plot_set_sizes
 import textwrap
+import os.path
+import argparse
+
 
 # def draw_violin_plot(color, y_list):
 #   c = color
@@ -15,7 +18,7 @@ import textwrap
 #       pc.set_edgecolor(c) # #D43F3A black
 #       pc.set_alpha(1)
 
-VERSION_ATTENDUE = 1
+VERSION_ATTENDUE = 3
 
 def set_axis_style(ax, labels):
   ax.set_xticks(np.arange(0, len(labels)), labels=labels)
@@ -60,7 +63,9 @@ plot_set_sizes.set_sizes()
 
 
 
+kwk_array_size = 1
 global_name = ""
+measured_variable = ""
 global_colors = [
   'tab:blue',
   'tab:orange',
@@ -74,48 +79,140 @@ global_colors = [
   'tab:cyan'
 ]
 
+unit_name = ""
 
 
 # Charge le fichier de bench "path" et retourne la liste de ce qui a été lu.
 def load_file(path):
-  global VERSION_ATTENDUE, global_name
+  global VERSION_ATTENDUE, global_name, measured_variable, kwk_array_size, unit_name
   bench_list = []
 
   with open(path) as fp:
     version = fp.readline() # version du fichier actuel (doit être 106 et non plus 105)
-    print("Version du fichier : {}".format(version))
+    print("File version: {}".format(version))
 
     if (int(version) != VERSION_ATTENDUE):
-      sys.exit("ERREUR, VERSION DU FICHIER NON COMPATIBLE : " + str(int(version)) + ".  VERSION ATTENDUE = " + str(VERSION_ATTENDUE))
-
-    divide_factor = 1
+      sys.exit("ERROR, NON-COMPATIBLE FILE VERSION : " + str(int(version)) + ".  REQUIRED VERSION = " + str(VERSION_ATTENDUE))
 
     global_name = fp.readline().rstrip("\n")
+    measured_variable = fp.readline().rstrip("\n")
+    kwk_array_size = int(fp.readline().rstrip("\n"))
+
+    all_medians = []
 
     line = fp.readline()
     while line:
 
+      # number of items per second = 1000 * number of elements per ms
+      # = 1000 * ()
+
+      # number of elements per ms = number of items / time (ms) to process these items
+      # number of elements per second = 1000 * number of items / time (ms) to process these items
+
       res = {}
-      res["bench_name"]     = line.rstrip("\n")
-      res["raw_time"]       = pu.list_str_to_int(pu.remove_empty_words(pu.remove_newline(fp.readline().split(" "))), divide_factor)
-      res["no-outier_time"] = pu.filter_outliers(res["raw_time"])
-      res["med_time"]       = stat.median(res["raw_time"])
+      res["bench_name"]      = line.rstrip("\n")
+      res["raw_time"]        = pu.list_str_to_int(pu.remove_empty_words(pu.remove_newline(fp.readline().split(" ")))) #, 1 / kwk_array_size)
+      res["elements_per_second"] = []
+      for time in res["raw_time"]:
+        if (time == 0):
+          print("ERROR\nERROR: time = 0 for " + res["bench_name"] + "\nERROR")
+        else:
+          eps = 1000 * kwk_array_size / time
+          res["elements_per_second"].append(eps)
+          # print("add " + str(eps))
+
+      # res["no-outlier_time"] = pu.filter_outliers(res["raw_time"])
+      # res["med_time"]        = stat.median(res["raw_time"])
+      all_medians.append(stat.median(res["elements_per_second"]))
       bench_list.append(res)
 
       line = fp.readline()
 
+    global_med = stat.median(all_medians)
+
+    divide_by = 1
+
+    if global_med / 1000 >= 1:
+      divide_by = 1000
+      unit_name = " (thousands)"
+
+    if global_med / 1000000 >= 1:
+      divide_by = 1000000
+      unit_name = " (millions)"
+
+    if global_med / 1000000000 >= 1:
+      divide_by = 1000000000
+      unit_name = " (billions)"
+
+    for res in bench_list:
+      for i in range(0, len(res["elements_per_second"])):
+        res["elements_per_second"][i] = res["elements_per_second"][i] / divide_by
+
+      res["no-outlier_elements_per_second"] = pu.filter_outliers(res["elements_per_second"])
+      res["med_elements_per_second"]        = stat.median(res["elements_per_second"])
+      # print()
+      # print(res["bench_name"])
+      # print(res["raw_time"])
+      # print(res["elements_per_second"])
+      # print(res["no-outlier_elements_per_second"])
+      # print()
+
   return bench_list
 
-absolute_path = "/home/data_evo/data_sync/academique/These/kiwaku_2025-02/test/bench/bench_files/pata/"
+# absolute_path = "/home/data_evo/data_sync/academique/These/kiwaku_2025-02/test/bench/bench_files/pata/"
+# absolute_path = "/home/data_not_sync/These/kiwaku_build/"
+
+# print(sys.argv[1])
+
+# absolute_path = "/home/data_evo/data_sync/academique/These/kiwaku_2025-02/test/bench/plot/files/"
 # bench_list = load_file(absolute_path + "test.txt")
 
 # ifname = "find-if_compute-bound_2025-06-05_01h45_last-pos.txt"
 # ifname = "find-if_compute-bound_2025-06-05_01h45_middle.txt"
 # ifname = "find-if_memory-bound_2025-06-05_01h45_last-pos.txt"
-ifname = "find-if_memory-bound_2025-06-05_01h45_middle.txt"
+# ifname = "sylvain-ThinkPad-T580_2025-06-09_23h54m57s_reduce_compute-bound.txt"
+# ifname = "sylvain-ThinkPad-T580_2025-06-09_23h55m10s_reduce_memory-bound.txt"
+# ifname = "parsys-legend_2025-06-11_01h07m32s_reduce_compute-bound.txt"
+
+only_save = False
+
+if len(sys.argv) == 2:
+  if (sys.argv[1] == "only_save"):
+    only_save = True
+
+
+# if len(sys.argv) <= 1:
+#   print("ERROR: Please provide a valid file path.")
+#   sys.exit()
+
+# fname = sys.argv[1]
+
+
+
+parser = argparse.ArgumentParser(
+                    prog='Kiwaku benchmark plots',
+                    description='',
+                    epilog='Text at the bottom of help')
+
+parser.add_argument('filepath')           # positional argument
+# parser.add_argument('-c', '--count')      # option that takes a value
+parser.add_argument('-s', '--only_save_image',
+                    action='store_true')  # on/off flag
+
+args = parser.parse_args()
+print(args.filepath, args.only_save_image)
+
+input_fpath = args.filepath
+
+if (not os.path.isfile(input_fpath)):
+  print("ERROR: File does not exist. Please provide a valid file path.")
+  print("ERROR: Missing file:")
+  print(input_fpath)
+  sys.exit()
+
 
 # bench_list = load_file(absolute_path + "reduce_1d_2025-06-04_19h15_compute_bound.txt")
-bench_list = load_file(absolute_path + ifname)
+bench_list = load_file(input_fpath) # absolute_path + ifname
 
 
 
@@ -140,19 +237,19 @@ for i in range(0, len(bench_list)):
 
   labels.append(wrapped)
 
-  data  = bench["no-outier_time"] # raw_time
-  data2 = []
-  # Convert from ms to operations per second
-  for val in data:
-    d = 1000 / val
-    data2.append(d) 
+  # data  = bench["no-outlier_elements_per_second"] # raw_time
+  # data2 = []
+  # # Convert from ms to operations per second
+  # for val in data:
+  #   d = 1000 / val
+  #   data2.append(d) 
 
-  med_values.append(stat.median(data2))
+  med_values.append(bench["med_elements_per_second"])
 
   position = i
 
   # pu.draw_violin_plot('red', data2)
-  pu.draw_violin_plot_pos_ext(global_colors[i], global_colors[i], data2, [position])
+  pu.draw_violin_plot_pos_ext(global_colors[i], global_colors[i], bench["no-outlier_elements_per_second"], [position]) # no-outlier_
 
   # bp_ = plt.violinplot(y_list, showextrema=False)
   # for pc in bp_['bodies']:
@@ -169,7 +266,10 @@ for i in range(0, len(bench_list)):
   #   pc.set_edgecolor(color)
   #   pc.set_alpha(1)
 
-plt.title(global_name + ", operations per second (higher is better)") # , fontsize=title_font_size)
+plt.ylabel(measured_variable + unit_name)
+
+plt.title(global_name + "") # , fontsize=title_font_size)
+# + ", operations per second (higher is better)"
 
 # set style for the axes
 set_axis_style(plt.gca(), labels)
@@ -188,14 +288,16 @@ plt.grid(linewidth=line_width)
 plt.bar(labels, med_values, label=labels, color=global_colors, alpha=0.3)
 
 
-for i in range(0, len(bench_list)):
-  bench = bench_list[i]
-  print(bench["bench_name"] + ": " + str(bench["med_time"]))
+# for i in range(0, len(bench_list)):
+#   bench = bench_list[i]
+#   print(bench["bench_name"] + ": " + str(bench["med_time"]))
 
 
-output_fname = global_name.replace(" ", "_").replace(",", "").lower() + ".png"
-plt.savefig(output_fname, format='png') #, dpi=my_dpi)
+# output_fname = global_name.replace(" ", "_").replace(",", "").lower() + ".png"
+output_fname = input_fpath + ".png"
+plt.savefig(output_fname, format="png") #, dpi=my_dpi)
 
-plt.show()
+if (not args.only_save_image):
+  plt.show()
 
 
