@@ -53,7 +53,6 @@ namespace kwk::sycl
     }
 
 
-
     template<typename Func>
     void map(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
     {
@@ -334,11 +333,34 @@ namespace kwk::sycl
       }
     }
 
-
+    std::string get_device_name()
+    {
+      return get_device().get_info<::sycl::info::device::name>();
+    }
   };
 
-  // inline kwk::sycl::context default_context{::sycl::gpu_selector_v};
-  inline kwk::sycl::context default_context{};
+  // Checks whether GPU offloading is available in this system
+  // Don't forget the compilation flag "-fsycl -fsycl-targets=nvptx64-nvidia-cuda,x86_64"
+  // To target both Nvidia GPUs and native CPUs.
+  static bool has_gpu()
+  {
+    auto devices = ::sycl::device::get_devices();
+    for (const auto& dev : devices)
+    {
+      if (dev.is_gpu())
+      {
+        // std::cout << "\n*** SYCL - found GPU: " 
+        //           << dev.get_info<::sycl::info::device::name>() << " ***\n";
+        return true;
+      }
+    }
+    // std::cout << "\n*** SYCL - no GPU device available. ***\n\n";
+    return false;
+  }
+
+  inline kwk::sycl::context default_context{};  
+  // inline kwk::sycl::context gpu{::sycl::gpu_selector_v};
+  // inline kwk::sycl::context cpu{::sycl::cpu_selector_v};
 }
 
 namespace kwk
