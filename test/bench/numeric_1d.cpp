@@ -12,8 +12,8 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <numeric>
-#include <benchmark/benchmark.hpp>
-#include <benchmark/utils/utils.hpp>
+#include "include/benchmark.hpp"
+#include "include/utils/utils.hpp"
 #include <cmath>
 
 
