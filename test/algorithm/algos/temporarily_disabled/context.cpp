@@ -144,10 +144,10 @@ namespace test
 namespace kwk
 {
   template<typename Func, auto... S>
-  constexpr auto for_each(test::c_for_each2& ctx, Func&& f, shape<S...> const& shp)
+  constexpr auto for_each(test::c_for_each2& ctx, Func f, shape<S...> const& shp)
   {
     ctx.set_message("for_each(ctx, f, shp) used!");
-    kwk::for_each(cpu, KWK_FWD(f), shp);
+    kwk::for_each(cpu, f, shp);
   }
 
   template<typename Func, concepts::container C0, concepts::container... Cs>
@@ -694,7 +694,6 @@ namespace test
   struct c_find             : public context_for_each {};
   struct c_find_if          : public context_for_each {};
   struct c_find_if_not      : public context_for_each {};
-  struct c_find_first_of    : public context_for_each {};
   struct c_find_last        : public context_for_each {};
   struct c_find_last_if     : public context_for_each {};
   struct c_find_last_if_not : public context_for_each {};
@@ -722,13 +721,6 @@ namespace kwk
     return find_if_not(cpu, o, f);
   }
 
-  template <concepts::container Out, concepts::container Values>
-  constexpr auto find_first_of(test::c_find_first_of& ctx, Out const& o, Values const& v)
-  {
-    ctx.set_message("find_first_of used!");
-    return find_first_of(cpu, o, v);
-  }
-
   template <typename Func, concepts::container Out>
   constexpr auto find_last_if(test::c_find_last_if& ctx, Out const& o, Func f)
   {
@@ -752,8 +744,6 @@ namespace kwk
 
   // find_if -> kwk::__::for_until
   // find_if_not -> find_if
-  // find_first_of -> find_if
-  // find_first_of -> any_of -> reduce -> for_each
   // find -> find_if
   // find_last_if -> find_if
   // find_last -> find_last_if -> find_if
@@ -805,38 +795,6 @@ TTS_CASE("Check for context overload - initially from find.hpp")
   }
 
   auto v2 = test::make_view_2();
-
-  // find_first_of -> find_if
-  // find_first_of -> any_of -> reduce -> for_each
-  {
-    // vvv  find_first_of -> find_if -> kwk::__::for_until  vvv
-    test::c_find_first_of c1;
-    TTS_EQUAL(c1.get_message(),   test::messaging_context::base_message);
-    kwk::find_first_of(c1, v, v2);
-    TTS_EQUAL(c1.get_message(),   std::string{"find_first_of used!"});
-
-    test::c_find_if c2;
-    TTS_EQUAL(c2.get_message(),   test::messaging_context::base_message);
-    kwk::find_first_of(c2, v, v2);
-    TTS_EQUAL(c2.get_message(0),   std::string{"find_if used!"});
-    TTS_EQUAL(c2.get_message(1),   std::string{"map used!"});
-
-    // vvv  find_first_of -> any_of -> reduce -> for_each  vvv
-    test::c_any_of c3;
-    TTS_EQUAL(c3.get_message(),   test::messaging_context::base_message);
-    kwk::find_first_of(c3, v, v2);
-    TTS_EQUAL(c3.get_message(),   std::string{"any_of used!"});
-
-    test::c_reduce3 c4;
-    TTS_EQUAL(c4.get_message(),   test::messaging_context::base_message);
-    kwk::find_first_of(c4, v, v2);
-    TTS_EQUAL(c4.get_message(),   std::string{"reduce(ctx, in, f, init) used!"});
-
-    test::context_for_each c5;
-    TTS_EQUAL(c5.get_message(),   test::messaging_context::base_message);
-    kwk::find_first_of(c5, v, v2);
-    TTS_EQUAL(c5.get_message(),   std::string{"map used!"});
-  }
 
   // TODO: finir cette partie lorsque les predicates seront finis eux aussi
 

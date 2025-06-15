@@ -23,9 +23,9 @@ namespace kwk
   //====================================================================================================================
 
   template<typename Context, typename Func, auto... S>
-  constexpr auto for_each(Context& ctx, Func&& f, shape<S...> const& shp)
+  constexpr auto for_each(Context& ctx, Func f, shape<S...> const& shp)
   {
-    return ctx.map(KWK_FWD(f), shp);
+    return ctx.map(f, shp);
   }
 
   //====================================================================================================================
@@ -47,15 +47,15 @@ namespace kwk
   //! @include docs/algorithms/for_each_shape.cpp
   //====================================================================================================================
   template<typename Func, auto... S>
-  constexpr auto for_each(Func&& f, shape<S...> const& shp)
+  constexpr auto for_each(Func f, shape<S...> const& shp)
   {
-    kwk::for_each(cpu, KWK_FWD(f), shp);
+    kwk::for_each(cpu, f, shp);
   }
 
   template<typename Context, typename Func, concepts::container C0, concepts::container... Cs>
-  constexpr auto for_each(Context& ctx, Func&& f, C0&& c0, Cs&&... cs)
+  constexpr auto for_each(Context& ctx, Func f, C0&& c0, Cs&&... cs)
   {
-    ctx.map([&](auto... is) { return KWK_FWD(f)(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
+    ctx.map([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
     return f;
   }
 
@@ -78,9 +78,9 @@ namespace kwk
   //! @include docs/algorithms/for_each.cpp
   //====================================================================================================================
   template<typename Func, concepts::container C0, concepts::container... Cs>
-  constexpr auto for_each(Func&& f, C0&& c0, Cs&&... cs)
+  constexpr auto for_each(Func f, C0&& c0, Cs&&... cs)
   {
-    return kwk::for_each(cpu, KWK_FWD(f), KWK_FWD(c0), KWK_FWD(cs)...);
+    return kwk::for_each(cpu, f, KWK_FWD(c0), KWK_FWD(cs)...);
   }
 
   //====================================================================================================================
@@ -102,10 +102,10 @@ namespace kwk
   //! @include docs/algorithms/for_each_index.cpp
   //====================================================================================================================
   template<typename Context, typename Func, concepts::container Container>
-  constexpr auto for_each_index(Context& ctx, Func&& f, Container&& c)
+  constexpr auto for_each_index(Context& ctx, Func f, Container&& c)
   {
     kwk::for_each ( ctx
-                  , [&](auto... is) { return KWK_FWD(f)(KWK_FWD(c)(is...), is...); }
+                  , [&](auto... is) { return f(KWK_FWD(c)(is...), is...); }
                   , c.shape()
                   );
     return f;
