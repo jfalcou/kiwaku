@@ -33,14 +33,39 @@ void find_test( std::string const& bench_name
   std::vector<DATA_TYPE> input;
   input.resize(input_size);
 
-  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 79865 + 871 ; }
+  DATA_TYPE find_initial_value = -88;
+  input[put_at_pos] = find_initial_value;
+  DATA_TYPE find_image_value = convert_func(find_initial_value);
+  auto compare_func = [=](auto item) { return (convert_func(item) == find_image_value); };
+  std::cout << "START - input[put_at_pos] = " << input[put_at_pos] << " find_image_value = " << find_image_value << "\n";
 
-  auto view_in  = kwk::view{kwk::source = input.data() , kwk::of_size(d0)};
+  srand(9546312);
+  DATA_TYPE min_value = 0.;
+  DATA_TYPE max_value = 8465124931.;
 
-  int initial_value = 45121;
-  input[put_at_pos] = initial_value;
-  int image_value = convert_func(initial_value);
-  auto compare_func = [=](auto item) { return (convert_func(item) == image_value); };
+  for (std::size_t i = 0; i < input_size; ++i)
+  {
+    // Ignore the find position
+    if (i == put_at_pos) continue;
+
+    // We want a random value that has an image by convert_func
+    // that does not match find_image_value.
+    // So we keep generating a random value until the value is valid. 
+    std::size_t rpt = 0;
+    do
+    {
+      input[i] = kwk::bench::random_float<DATA_TYPE>(min_value, max_value);
+      ++rpt;
+      if (rpt > 1) { std::cout << "!! find_test: !! Erroneous value, same image, rpt = " << rpt << ", pos = " << i << "\n"; }
+    }
+    while (convert_func(input[i]) == find_image_value);
+  }
+
+  std::cout << "AFTER FILL - input[put_at_pos] = " << input[put_at_pos] << " find_image_value = " << find_image_value << "\n";
+  std::cout << "AFTER FILL - compare_func(input[put_at_pos]) = " << compare_func(input[put_at_pos]) << "\n";
+  std::cout << "AFTER FILL - compare_func(input[put_at_pos - 1]) = " << compare_func(input[put_at_pos - 1]) << "\n";
+
+  auto view_in  = kwk::view{kwk::source = input.data(), kwk::of_size(d0)};
 
   int res_kwk_cpu, res_std, res_hand; // res_std_par
 
@@ -77,13 +102,13 @@ void find_test( std::string const& bench_name
   std::string absolute_path = ""; // will output to "kiwaku_build"
 
   b.start(absolute_path + kwk::bench::fprefix() + file_name, bench_name, "Processed elements, per second (higher is better)", view_size);
-  b.set_iterations(10);
+  b.set_iterations(1);
   b.run_function("std::find_if, single thread on CPU", fct_std);
 
   // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
   bool has_gpu = kwk::sycl::has_gpu();
 
-  auto sycl_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
+  auto sycl_bench = [&](auto&& context, int& return_) -> int
   {
     auto fct_kwk_sycl_generic = [&]()
     {
@@ -98,7 +123,7 @@ void find_test( std::string const& bench_name
   // Execute SYCL benchmark on GPU and CPU
   if (has_gpu)
   {
-    DATA_TYPE return_;
+    int return_;
     // GPU
     sycl_bench(kwk::sycl::context{::sycl::gpu_selector_v}, return_);
     TTS_EQUAL(return_, res_std);
@@ -108,7 +133,7 @@ void find_test( std::string const& bench_name
   }
   else // SYCL default context
   {
-    DATA_TYPE return_;
+    int return_;
     // CPU
     sycl_bench(kwk::sycl::default_context, return_);
     TTS_EQUAL(return_, res_std);
@@ -128,32 +153,40 @@ void find_test( std::string const& bench_name
 
 TTS_CASE("Benchmark - find-if, compute-bound, last pos")
 {
-  auto convert_func = [=](auto item)
+
+  sutils::printer_t::head("Benchmark - find-if, compute-bound, last pos", true);
+
+  using data_type = float;
+  // We must ensure type coherency for comparisons to still make sense.
+  auto convert_func = [=](data_type item) -> data_type
   {
     // TODO: test with multiplications and divisions
     // Modulo may imply thread divergence, which would impair GPU performance.
     return
-    static_cast<int>(
+    static_cast<data_type>(
       std::cos(
         std::sin(
           std::cos(
             std::sin(
-              static_cast<float>(item * 11) * 7.
-                    ) * 3.8
-                  ) * 8.7
+              std::cos(
+                std::sin(
+                  static_cast<float>(item * 11.) * 7.
+                        ) * 3.8
+                      ) / 1.12
+                    ) * 3.17874
+                  ) / 8.7
                 ) * 9.48
-              ) * 89647681.
-            ) % 1784586545;
+              ) / 89.647681
+            ) * 1.8746221;
   };
 
-  using data_type = int;
   [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
   [[maybe_unused]] std::size_t mio = 1024 * kio;
   [[maybe_unused]] std::size_t gio = 1024 * mio;
 
   std::size_t size;
   std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size = 256 * mio; } 
+       if (hname == "parsys-legend")          { size =   1 * gio; } 
   else if (hname == "pata")                   { size =  64 * mio; }
   else if (hname == "chaton")                 { size =  64 * mio; }
   else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
@@ -165,87 +198,94 @@ TTS_CASE("Benchmark - find-if, compute-bound, last pos")
   std::cout << "\n\n";
 };
 
-
+// sqrt(4 * cos * cos + sin * sin)
 
 TTS_CASE("Benchmark - find-if, memory-bound, last pos")
 {
-  using data_type = int;
+  sutils::printer_t::head("Benchmark - find-if, memory-bound, last pos", true);
+
+  using data_type = float;
   [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
   [[maybe_unused]] std::size_t mio = 1024 * kio;
   [[maybe_unused]] std::size_t gio = 1024 * mio;
 
   std::size_t size;
   std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =  10 * gio; } 
+       if (hname == "parsys-legend")          { size =   6 * gio; } 
   else if (hname == "pata")                   { size = 256 * mio; }
   else if (hname == "chaton")                 { size = 256 * mio; }
   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
   else                                        { size = 256 * mio; }
 
-  auto convert_func = [=](auto item) { return item; };
+  auto convert_func = [=](data_type item) -> data_type { return item; };
 
   find_test<data_type>("find-if memory-bound", "find-if_memory-bound.bench", convert_func, size, size-2);
   std::cout << "\n\n";
 };
 
 
+// ========== MIDDLE ==========
 
-TTS_CASE("Benchmark - find-if, compute-bound, middle")
-{
-  using data_type = int;
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+// TTS_CASE("Benchmark - find-if, compute-bound, middle")
+// {
+//   using data_type = float;
+//   [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
+//   [[maybe_unused]] std::size_t mio = 1024 * kio;
+//   [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size = 256 * mio; } 
-  else if (hname == "pata")                   { size =  64 * mio; }
-  else if (hname == "chaton")                 { size =  64 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
-  else                                        { size =  64 * mio; }
+//   std::size_t size;
+//   std::string hname = sutils::get_host_name();
+//        if (hname == "parsys-legend")          { size = 256 * mio; } 
+//   else if (hname == "pata")                   { size =  64 * mio; }
+//   else if (hname == "chaton")                 { size =  64 * mio; }
+//   else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
+//   else                                        { size =   8 * mio; }
 
-  auto convert_func = [=](auto item)
-  {
-    // TODO: test with multiplications and divisions
-    // Modulo may imply thread divergence, which would impair GPU performance.
-    return
-    static_cast<int>(
-      std::cos(
-        std::sin(
-          std::cos(
-            std::sin(
-              static_cast<float>(item * 11) * 7.
-                    ) * 3.8
-                  ) * 8.7
-                ) * 9.48
-              ) * 89647681.
-            ) % 1784586545;
-  };
+//   auto convert_func = [=](auto item)
+//   {
+//     // TODO: test with multiplications and divisions
+//     // Modulo may imply thread divergence, which would impair GPU performance.
+//     return
+//     static_cast<data_type>(
+//       std::cos(
+//         std::sin(
+//           std::cos(
+//             std::sin(
+//               std::cos(
+//                 std::sin(
+//                   static_cast<float>(item * 11.) * 7.
+//                         ) * 3.8
+//                       ) / 1.12
+//                     ) * 3.17874
+//                   ) / 8.7
+//                 ) * 9.48
+//               ) / 89.647681
+//             ) * 1.8746221;
+//   };
 
-  find_test<data_type>("find-if compute-bound", "find-if_compute-bound_middle.bench", convert_func, size, size / 2);
-  std::cout << "\n\n";
-};
+//   find_test<data_type>("find-if compute-bound", "find-if_compute-bound_middle.bench", convert_func, size, size / 2);
+//   std::cout << "\n\n";
+// };
 
 
 
-TTS_CASE("Benchmark - find-if, memory-bound, middle")
-{
-  using data_type = int;
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+// TTS_CASE("Benchmark - find-if, memory-bound, middle")
+// {
+//   using data_type = float;
+//   [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
+//   [[maybe_unused]] std::size_t mio = 1024 * kio;
+//   [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =  10 * gio; } 
-  else if (hname == "pata")                   { size = 256 * mio; }
-  else if (hname == "chaton")                 { size = 256 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-  else                                        { size = 256 * mio; }
+//   std::size_t size;
+//   std::string hname = sutils::get_host_name();
+//        if (hname == "parsys-legend")          { size =  10 * gio; }
+//   else if (hname == "pata")                   { size = 256 * mio; }
+//   else if (hname == "chaton")                 { size = 256 * mio; }
+//   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+//   else                                        { size =  32 * mio; }
 
-  auto convert_func = [=](auto item) { return item; };
+//   auto convert_func = [=](auto item) { return item; };
 
-  find_test<data_type>("find-if memory-bound", "find-if_memory-bound_middle.bench", convert_func, size, size / 2);
-  std::cout << "\n\n";
-};
+//   find_test<data_type>("find-if memory-bound", "find-if_memory-bound_middle.bench", convert_func, size, size / 2);
+//   std::cout << "\n\n";
+// };

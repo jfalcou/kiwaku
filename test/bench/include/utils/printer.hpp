@@ -17,7 +17,7 @@ namespace sutils
 
   struct printer_t
   {
-    inline static void head(const std::string& str)
+    inline static void head(const std::string& str, const bool insert_newline_above = false)
     {
       std::string hd = "===================================================";
       std::string hp = "-";
@@ -28,6 +28,7 @@ namespace sutils
       uint lpad_len = hd.size() - (rpad_len + header.length());
       std::string lpad(lpad_len, '=');
 
+      if (insert_newline_above) std::cout << "\n";
       std::cout << hd << "\n";
       std::cout << hd << "\n";
       std::cout << rpad << header << lpad << "\n";

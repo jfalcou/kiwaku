@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#define ANKERL_NANOBENCH_IMPLEMENT
+// #define ANKERL_NANOBENCH_IMPLEMENT
 #include "utils/utils.hpp"
 
 namespace kwk::bench
@@ -73,5 +73,10 @@ std::string fprefix()
   return sutils::get_host_name() + "_" + sutils::get_full_date() + "_";
 }
 
+template<typename DATA_TYPE>
+DATA_TYPE random_float(DATA_TYPE min, DATA_TYPE max)
+{
+  return (static_cast<DATA_TYPE>(rand()) / static_cast<DATA_TYPE>(RAND_MAX)) * (max - min) + min; 
+}
 
 }
