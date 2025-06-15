@@ -342,7 +342,7 @@ namespace kwk::sycl
   // Checks whether GPU offloading is available in this system
   // Don't forget the compilation flag "-fsycl -fsycl-targets=nvptx64-nvidia-cuda,x86_64"
   // To target both Nvidia GPUs and native CPUs.
-  static bool has_gpu()
+  [[maybe_unused]] static bool has_gpu()
   {
     auto devices = ::sycl::device::get_devices();
     for (const auto& dev : devices)
