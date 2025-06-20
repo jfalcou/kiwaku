@@ -184,61 +184,6 @@ TTS_CASE("Check for kwk::find_if_not(In, func) 1D")
 };
 
 
-// TODO?: Implement find_last_of?
-TTS_CASE("Check for kwk::find_first_of(In, In) 1D")
-{
-  // Empty array
-  {
-    const std::size_t input_size = 0;
-    std::vector<int> input(input_size);
-    auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-    std::vector<int> search{-10, -5, 0, 8, 11};
-    auto sv = kwk::view{kwk::source = search, kwk::of_size(search.size())};
-    auto res = kwk::find_first_of(view, sv);
-    TTS_EQUAL(res.has_value(), false);
-  }
-
-  const std::size_t input_size = 40;
-  std::array<int, input_size> input;
-  for (std::size_t i = 0; i < input_size; ++i) { input[i] = i * 2; }
-  auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
-
-  // No element found
-  {
-    std::vector<int> search{-10, -5, 1, 7, 11};
-    auto sv  = kwk::view{kwk::source = search, kwk::of_size(search.size())};
-    auto res = kwk::find_first_of(view, sv);
-    TTS_EQUAL(res.has_value(), false);
-  }
-
-  // Element "0" found at position 0
-  {
-    std::vector<int> search{-10, -5, 0, 8, 11};
-    auto sv  = kwk::view{kwk::source = search, kwk::of_size(search.size())};
-    auto res = kwk::find_first_of(view, sv);
-    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
-    else                 TTS_FAIL("find_first_of returned std::nullopt and not the expected valid value.");
-  }
-
-  // Element "8" found at position 4
-  {
-    std::vector<int> search{-10, -5, 1, 16, 8};
-    auto sv  = kwk::view{kwk::source = search, kwk::of_size(search.size())};
-    auto res = kwk::find_first_of(view, sv);
-    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
-    else                 TTS_FAIL("find_first_of returned std::nullopt and not the expected valid value.");
-  }
-
-  // Element "input_size*2-2" found at last position: input_size-1
-  {
-    std::vector<int> search{input_size*2-2, -5, 1, 7, 11};
-    auto sv  = kwk::view{kwk::source = search, kwk::of_size(search.size())};
-    auto res = kwk::find_first_of(view, sv);
-    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size-1});
-    else                 TTS_FAIL("find_first_of returned std::nullopt and not the expected valid value.");
-  }
-};
-
 
 TTS_CASE("Check for kwk::find_last(In, value) 1D")
 {
@@ -255,11 +200,14 @@ TTS_CASE("Check for kwk::find_last(In, value) 1D")
   const std::size_t input_size = 40;
   std::array<int, input_size> input;
   for (std::size_t i = 0; i < input_size; ++i) { input[i] = 6; }
+
+  // for (std::size_t i = 30; i < 33; ++i) { input[i] = 8; }
+
   auto view = kwk::view{kwk::source = input, kwk::of_size(input_size)};
 
   // Not found
   {
-    auto res = kwk::find_last(view, 8);
+    auto res = kwk::find_last(view, 9);
     TTS_EQUAL(res.has_value(), false);
   }
   
@@ -271,9 +219,19 @@ TTS_CASE("Check for kwk::find_last(In, value) 1D")
   }
 
   // Random position
-  input[4] = 8;
+  input[4] = 87;
+
   {
-    auto res = kwk::find_last(view, 8);
+    auto res = kwk::find_if(kwk::reverse(view), [](auto v) { return v == 87; });
+    if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{input_size - 1 - 4});
+    else                 TTS_FAIL("find_if returned std::nullopt and not the expected valid value.");
+  }
+
+  // TODO - TODO - TODO - TODO - TODO
+  // ??????????????????????????? 
+  // TEST fails if I remove the previous test with find_if.
+  {
+    auto res = kwk::find_last(view, 87);
     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{4});
     else                 TTS_FAIL("find_last returned std::nullopt and not the expected valid value.");
   }

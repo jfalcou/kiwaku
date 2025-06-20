@@ -9,7 +9,7 @@
 #include <kwk/algorithm/algos/copy.hpp>
 #include <kwk/container.hpp>
 #include "test.hpp"
-#include "../generic/copy.hpp"
+#include "generic/copy.hpp"
 
 // TODO: update these tests
 

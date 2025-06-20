@@ -1,0 +1,14 @@
+3
+Transform_reduce memory-bound
+Processed elements, per second (higher is better)
+1342177280
+std::transform_reduce, single thread on CPU
+323 321 321 318 331 331 328 327 335 332 
+Kiwaku SYCL on NVIDIA GeForce RTX 2080 Ti
+904 1066 1067 1063 1067 1066 1072 1070 1065 1068 
+Kiwaku SYCL on AMD Ryzen 9 5950X 16-Core Processor            
+728 591 591 592 596 598 597 589 585 590 
+Kiwaku on CPU
+289 284 285 287 289 289 287 287 285 289 
+By hand on CPU
+291 287 279 281 282 280 286 284 293 293 

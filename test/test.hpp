@@ -21,6 +21,7 @@ template<typename N> using up_to = std::make_index_sequence<N::value>;
 #include "tts.hpp"
 
 #define FLOAT_TOLERANCE_PERCENT 0.01
+#define FLOAT_TOLERANCE_PERCENT_BENCH 50.f
 
 
 kumi::tuple<int, int, int, int> lindex_to_pos ( std::size_t const d1
