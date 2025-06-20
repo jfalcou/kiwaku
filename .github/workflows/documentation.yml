@@ -13,7 +13,7 @@ jobs:
   generate-doc:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/jfalcou/compilers:v6
+      image: ghcr.io/jfalcou/compilers:v9
     strategy:
       fail-fast: false
     steps:
@@ -27,7 +27,7 @@ jobs:
       - name: Generate Doxygen
         run: |
           cd build
-          ninja doxygen
+          ninja kiwaku-doxygen
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
