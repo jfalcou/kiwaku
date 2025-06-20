@@ -21,5 +21,5 @@ CPMAddPackage ( NAME kiwaku
 
 # Use kiwaku
 add_executable(test_kiwaku ../main.cpp)
-target_link_libraries(test_kiwaku PUBLIC kiwaku::kiwaku)
+target_link_libraries(test_kiwaku PUBLIC kiwaku::kiwaku kumi::kumi raberu::raberu)
 add_test(NAME test_kiwaku COMMAND test_kiwaku)
