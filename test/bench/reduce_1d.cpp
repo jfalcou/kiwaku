@@ -13,7 +13,8 @@
 #include <numeric>
 #include "include/benchmark.hpp"
 #include "include/utils/utils.hpp"
-// #include <execution> for parallel std execution
+// For parallel std execution, don't forget the -ltbb compiler flag
+#include <execution>
 
 
 
@@ -28,7 +29,7 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
 {
 
   // The maximum rounding-errors between function results
-  float ERROR_MAX_PERCENT = 50; // 50% difference max
+  const float ERROR_MAX_PERCENT = 50; // 50% difference max
 
   const std::size_t d0 = view_size;
   const std::size_t input_size = d0;
@@ -57,7 +58,7 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
 
   auto view_in  = kwk::view{kwk::source = input.data() , kwk::of_size(d0)};
 
-  DATA_TYPE res_kwk_cpu, res_std, res_hand; // res_std_par
+  DATA_TYPE res_kwk_cpu, res_std, res_std_par, res_std_par_unseq, res_hand;
 
   auto fct_kwk_cpu = [&]() {
     res_kwk_cpu = kwk::reduce(view_in, func, input[0]);
@@ -67,12 +68,16 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
     res_std = std::reduce(input.begin(), input.end(), input[0], func);
     return res_std; };
 
-  // Huge error message when I try this
-  // auto fct_std_par = [&]() {
-  //   res_std_par = std::reduce(std::execution::par, input.begin(), input.end(), 0, func);
-  //   return res_std_par; };
+  auto fct_std_par = [&]() {
+    res_std_par = std::reduce(std::execution::par, input.begin(), input.end(), input[0], func);
+    return res_std_par; };
 
-  auto fct_hand = [&]() {
+  auto fct_std_par_unseq = [&]() {
+    res_std_par_unseq = std::reduce(std::execution::par_unseq, input.begin(), input.end(), input[0], func);
+    return res_std_par_unseq; };
+
+  auto fct_hand = [&]()
+  {
     res_hand = input[0];
     for (std::size_t i = 1; i < input_size; ++i)
     {
@@ -86,14 +91,16 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
   //       (and/or test with EVE)
 
   kwk::bench::cbench_t b;
-  b.set_iterations(1);
+  // b.set_iterations(1);
 
   std::string absolute_path = ""; // will output to "kiwaku_build"
 
   std::string final_fname = kwk::bench::fprefix() + file_name;
 
   b.start(absolute_path + final_fname, bench_name, "Processed elements, per second (higher is better)", view_size);
-  b.run_function("std::reduce, single thread on CPU", fct_std);
+  b.run_function("std::execution::seq", fct_std);
+  b.run_function("std::execution::par", fct_std_par);
+  b.run_function("std::execution::par_unseq", fct_std_par_unseq);
   // b.run_function("std::reduce with std::execution::par", fct_std_par);
 
   // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
@@ -137,8 +144,10 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
   
 
   // TTS_EQUAL(res_std_par, res_std);
-  TTS_RELATIVE_EQUAL(res_hand   , res_std, ERROR_MAX_PERCENT);
-  TTS_RELATIVE_EQUAL(res_kwk_cpu, res_std, ERROR_MAX_PERCENT);
+  TTS_RELATIVE_EQUAL(res_std_par      , res_std, ERROR_MAX_PERCENT);
+  TTS_RELATIVE_EQUAL(res_std_par_unseq, res_std, ERROR_MAX_PERCENT);
+  TTS_RELATIVE_EQUAL(res_hand         , res_std, ERROR_MAX_PERCENT);
+  TTS_RELATIVE_EQUAL(res_kwk_cpu      , res_std, ERROR_MAX_PERCENT);
 }
 
 
@@ -155,7 +164,7 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
   
 //   std::size_t size;
 //   std::string hname = sutils::get_host_name();
-//        if (hname == "parsys-legend")          { size =   1 * gio; } // 4
+//        if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } // 4
 //   else if (hname == "pata")                   { size =   1 * gio; }
 //   else if (hname == "chaton")                 { size = 128 * mio; }
 //   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
@@ -168,8 +177,6 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
 
 TTS_CASE("Benchmark - reduce, memory-bound ")
 {
-
-  
   sutils::printer_t::head("Benchmark - Reduce, memory-bound", true);
 
   using data_type = float;
@@ -182,12 +189,14 @@ TTS_CASE("Benchmark - reduce, memory-bound ")
 
   std::size_t size;
   std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   6 * gio; } 
+       if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
   else if (hname == "pata")                   { size =   1 * gio; }
   else if (hname == "chaton")                 { size = 128 * mio; }
   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-  else if (hname == "sylvain-caillou")        { size =  32 * mio; }
+  else if (hname == "lapierre")               { size =  32 * mio; }
   else                                        { size =   1 * gio; }
+  
+  sutils::printer_t::head("Benchmark - reduce, memory-bound", true);
 
   reduce_test<data_type>("Reduce memory-bound", "reduce_memory-bound.bench", func, size);
 };
