@@ -9,5 +9,5 @@ enable_testing()
 
 find_package(kiwaku CONFIG REQUIRED)
 add_executable(test_kiwaku ../main.cpp)
-target_link_libraries(test_kiwaku PUBLIC kiwaku::kiwaku kumi::kumi raberu::raberu)
+target_link_libraries(test_kiwaku PUBLIC kiwaku::kiwaku)
 add_test(NAME test_kiwaku COMMAND test_kiwaku)
