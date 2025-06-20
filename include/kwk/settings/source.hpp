@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/settings/source/ptr_source.hpp>
 #include <kwk/settings/source/array_source.hpp>
 #include <kwk/settings/source/range_source.hpp>
@@ -47,7 +47,7 @@ namespace kwk::__
     template<typename Src> std::ostream& display(std::ostream& os, Src src) const
     {
       auto ptr = storage(src);
-      return os << "Source: " << ptr << " (" << rbr::detail::type<decltype(ptr)>.name() << ") ";
+      return os << "Source: " << ptr << " (" << rbr::_::type<decltype(ptr)>.name() << ") ";
     }
   };
 }

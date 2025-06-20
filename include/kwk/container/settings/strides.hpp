@@ -9,7 +9,7 @@
 
 #include <kwk/concepts/extent.hpp>
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/settings/strides.hpp>
 #include <kwk/settings/size.hpp>
 

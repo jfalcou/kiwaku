@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/utility/invoke.hpp>
 #include <kwk/container/settings/category.hpp>
 

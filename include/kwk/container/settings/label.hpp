@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/settings/label.hpp>
 
 namespace kwk::__

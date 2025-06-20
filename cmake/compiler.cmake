@@ -28,6 +28,8 @@ target_include_directories( kiwaku_docs INTERFACE
                             ${PROJECT_SOURCE_DIR}/include
                           )
 
+target_link_libraries(kiwaku_docs INTERFACE kumi::kumi raberu::raberu)
+
 ##======================================================================================================================
 ## Compiler options for Unit Tests
 ##======================================================================================================================

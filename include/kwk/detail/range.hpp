@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/kumi.hpp>
+#include <kumi/tuple.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <type_traits>
 #include <cstddef>

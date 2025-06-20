@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <cstdint>
 
 namespace kwk::__
@@ -24,7 +24,7 @@ namespace kwk::__
       constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
       friend std::ostream& operator<<(std::ostream& os, info const&)
       {
-        return os << rbr::detail::type<T>.name();
+        return os << rbr::_::type<T>.name();
       }
 
       friend constexpr bool operator==(info, info) noexcept { return true;  }

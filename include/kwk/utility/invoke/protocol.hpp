@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/utility/invoke/tag_invoke.hpp>
 
 namespace kwk
@@ -58,7 +58,7 @@ concept deferred_callable = requires(T) { typename T::deferred_callable_tag; };
 template<callable Tag>
 std::ostream& operator<<(std::ostream& os, Tag const&)
 {
-  return os << rbr::detail::type<Tag>.name();
+  return os << rbr::_::type<Tag>.name();
 }
 }
 

@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <iomanip>
 #include <ostream>
-#include <kwk/detail/kumi.hpp>
+#include <kumi/tuple.hpp>
 
 namespace kwk
 {

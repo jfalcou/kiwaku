@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/container/pick.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 
 namespace kwk::__
 {

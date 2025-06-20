@@ -9,7 +9,7 @@
 
 #include <kwk/concepts/axis.hpp>
 #include <kwk/detail/stdfix.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/utility/joker.hpp>
 #include <type_traits>
 

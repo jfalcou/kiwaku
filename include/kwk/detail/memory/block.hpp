@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/detail/memory/heap_block.hpp>
 #include <kwk/detail/memory/shallow_block.hpp>
 #include <kwk/detail/memory/stack_block.hpp>

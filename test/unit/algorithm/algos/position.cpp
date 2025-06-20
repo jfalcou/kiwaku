@@ -7,7 +7,7 @@
 //======================================================================================================================
 #include <kwk/utility/position.hpp>
 #include "test.hpp"
-#include <kwk/detail/kumi.hpp>
+#include <kumi/tuple.hpp>
 
 // for_each 1D - 4D
 
