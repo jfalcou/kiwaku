@@ -44,7 +44,7 @@ endif()
 copa_setup_install( LIBRARY kiwaku
                     FEATURES cxx_std_20
                     DOC     ${PROJECT_SOURCE_DIR}/LICENSE.md
-                    INCLUDE ${PROJECT_SOURCE_DIR}/include/kiwaku
+                    INCLUDE ${PROJECT_SOURCE_DIR}/include/kwk
                   )
 
 ##======================================================================================================================
