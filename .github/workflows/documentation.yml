@@ -1,8 +1,8 @@
-####################################################################################################
+##======================================================================================================================
 ##  KIWAKU - Containers Well Made
 ##  Copyright : KIWAKU Contributors & Maintainers
 ##  SPDX-License-Identifier: BSL-1.0
-####################################################################################################
+##======================================================================================================================
 name: KIWAKU Documentation Generation
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Fetch current branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
       - name: Prepare KIWAKU
         run: |
           mkdir build && cd build
@@ -30,7 +30,7 @@ jobs:
           ninja kiwaku-doxygen
 
       - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/docs
+          publish_dir: ./build/doc
