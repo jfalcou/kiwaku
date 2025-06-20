@@ -12,7 +12,7 @@
 #include <kwk/detail/container/accessor.hpp>
 #include <kwk/settings/reachable.hpp>
 #include <kwk/detail/memory/block.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 
 namespace kwk::__
 {

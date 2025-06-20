@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 
 namespace kwk
 {

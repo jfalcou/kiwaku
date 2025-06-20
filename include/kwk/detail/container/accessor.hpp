@@ -6,7 +6,7 @@
 */
 //==================================================================================================
 #pragma once
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/container/pick.hpp>
 #include <type_traits>
 #include <utility>

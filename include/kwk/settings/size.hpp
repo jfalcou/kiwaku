@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/utility/container/shape.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <concepts>
 
 namespace kwk::__

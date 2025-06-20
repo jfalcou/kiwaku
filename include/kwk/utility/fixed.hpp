@@ -9,7 +9,7 @@
 
 #include <kwk/concepts/values.hpp>
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <bit>
 #include <cstdint>

@@ -9,7 +9,7 @@
 
 #include <kwk/concepts/category.hpp>
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 
 namespace kwk::__
 {

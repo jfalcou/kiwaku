@@ -10,7 +10,7 @@
 #include <kwk/concepts/axis.hpp>
 #include <kwk/concepts/extent.hpp>
 #include <kwk/detail/stdfix.hpp>
-#include <kwk/detail/kumi.hpp>
+#include <kumi/tuple.hpp>
 #include <kwk/settings/axis.hpp>
 #include <kwk/settings/type.hpp>
 #include <kwk/utility/fixed.hpp>

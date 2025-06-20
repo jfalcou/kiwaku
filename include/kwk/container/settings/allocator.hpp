@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/detail/abi.hpp>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/settings/allocator.hpp>
 #include <kwk/utility/memory/heap_allocator.hpp>
 

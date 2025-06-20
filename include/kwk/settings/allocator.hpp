@@ -7,7 +7,7 @@
 //==================================================================================================
 #pragma once
 
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/concepts/allocator.hpp>
 
 namespace kwk::__
@@ -21,7 +21,7 @@ namespace kwk::__
 
     template<typename A> std::ostream& show(std::ostream& os, A) const
     {
-      return os << "Allocation via: " << rbr::detail::type<A>.name();
+      return os << "Allocation via: " << rbr::_::type<A>.name();
     }
   };
 }
