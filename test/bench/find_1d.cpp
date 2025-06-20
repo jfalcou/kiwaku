@@ -18,6 +18,7 @@
 #include "include/benchmark.hpp"
 #include "include/utils/utils.hpp"
 #include <cmath>
+#include <execution> // don't forget the -ltbb compiler flag
 
 
 template<typename DATA_TYPE>
@@ -37,7 +38,14 @@ void find_test( std::string const& bench_name
   input[put_at_pos] = find_initial_value;
   DATA_TYPE find_image_value = convert_func(find_initial_value);
   auto compare_func = [=](auto item) { return (convert_func(item) == find_image_value); };
-  std::cout << "START - input[put_at_pos] = " << input[put_at_pos] << " find_image_value = " << find_image_value << "\n";
+
+  // std::cout << "START - input[put_at_pos] = " << input[put_at_pos] << " find_image_value = " << find_image_value << "\n";
+
+  if ( ! compare_func(input[put_at_pos]))
+  {
+    std::cout << "!=!=!=!=!=!=!=!=!=! ERROR (v1) @find_test: compare_func(input[put_at_pos]) returns false.";
+    std::terminate();
+  }
 
   srand(9546312);
   DATA_TYPE min_value = 0.;
@@ -61,13 +69,19 @@ void find_test( std::string const& bench_name
     while (convert_func(input[i]) == find_image_value);
   }
 
-  std::cout << "AFTER FILL - input[put_at_pos] = " << input[put_at_pos] << " find_image_value = " << find_image_value << "\n";
-  std::cout << "AFTER FILL - compare_func(input[put_at_pos]) = " << compare_func(input[put_at_pos]) << "\n";
-  std::cout << "AFTER FILL - compare_func(input[put_at_pos - 1]) = " << compare_func(input[put_at_pos - 1]) << "\n";
+  // std::cout << "AFTER FILL - input[put_at_pos] = " << input[put_at_pos] << " find_image_value = " << find_image_value << "\n";
+  // std::cout << "AFTER FILL - compare_func(input[put_at_pos]) = " << compare_func(input[put_at_pos]) << "\n";
+  // std::cout << "AFTER FILL - compare_func(input[put_at_pos - 1]) = " << compare_func(input[put_at_pos - 1]) << "\n";
+
+  if ( ! compare_func(input[put_at_pos]))
+  {
+    std::cout << "!=!=!=!=!=!=!=!=!=! ERROR (v2) @find_test: compare_func(input[put_at_pos]) returns false.";
+    std::terminate();
+  }
 
   auto view_in  = kwk::view{kwk::source = input.data(), kwk::of_size(d0)};
 
-  int res_kwk_cpu, res_std, res_hand; // res_std_par
+  int res_kwk_cpu, res_std, res_std_par, res_std_par_unseq, res_hand;
 
   auto fct_kwk_cpu = [&]()
   {
@@ -83,6 +97,23 @@ void find_test( std::string const& bench_name
     else                    res_std = -1;
     return res_std;
   };
+
+  auto fct_std_par = [&]()
+  {
+    auto pos = std::find_if(std::execution::par, input.begin(), input.end(), compare_func);
+    if (pos != input.end()) res_std_par = std::distance(input.begin(), pos);
+    else                    res_std_par = -1;
+    return res_std_par;
+  };
+
+  auto fct_std_par_unseq = [&]()
+  {
+    auto pos = std::find_if(std::execution::par_unseq, input.begin(), input.end(), compare_func);
+    if (pos != input.end()) res_std_par_unseq = std::distance(input.begin(), pos);
+    else                    res_std_par_unseq = -1;
+    return res_std_par_unseq;
+  };
+
 
   auto fct_hand = [&]()
   {
@@ -102,8 +133,10 @@ void find_test( std::string const& bench_name
   std::string absolute_path = ""; // will output to "kiwaku_build"
 
   b.start(absolute_path + kwk::bench::fprefix() + file_name, bench_name, "Processed elements, per second (higher is better)", view_size);
-  b.set_iterations(1);
-  b.run_function("std::find_if, single thread on CPU", fct_std);
+  // b.set_iterations(1);
+  b.run_function("std::execution::seq", fct_std);
+  b.run_function("std::execution::par", fct_std_par);
+  b.run_function("std::execution::par_unseq", fct_std_par_unseq);
 
   // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
   bool has_gpu = kwk::sycl::has_gpu();
@@ -143,27 +176,27 @@ void find_test( std::string const& bench_name
   b.run_function("By hand on CPU", fct_hand);
   b.stop();
 
-  // TTS_EQUAL(res_std_par, res_std);
-  TTS_EQUAL(res_hand   , res_std);
-  TTS_EQUAL(res_kwk_cpu, res_std);
+  TTS_EQUAL(res_std_par       , res_std);
+  TTS_EQUAL(res_std_par_unseq , res_std);
+  TTS_EQUAL(res_hand          , res_std);
+  TTS_EQUAL(res_kwk_cpu       , res_std);
 }
 
 
 
+enum find_test_pos { first, middle, last };
 
-TTS_CASE("Benchmark - find-if, compute-bound, last pos")
+void find_test_compute_bound(find_test_pos pos)
 {
+  using DATA_TYPE = float;
 
-  sutils::printer_t::head("Benchmark - find-if, compute-bound, last pos", true);
-
-  using data_type = float;
   // We must ensure type coherency for comparisons to still make sense.
-  auto convert_func = [=](data_type item) -> data_type
+  auto convert_func = [=](DATA_TYPE item) -> DATA_TYPE
   {
     // TODO: test with multiplications and divisions
     // Modulo may imply thread divergence, which would impair GPU performance.
     return
-    static_cast<data_type>(
+    static_cast<DATA_TYPE>(
       std::cos(
         std::sin(
           std::cos(
@@ -180,112 +213,83 @@ TTS_CASE("Benchmark - find-if, compute-bound, last pos")
             ) * 1.8746221;
   };
 
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
+  [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
   [[maybe_unused]] std::size_t mio = 1024 * kio;
   [[maybe_unused]] std::size_t gio = 1024 * mio;
 
   std::size_t size;
   std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   1 * gio; } 
+       if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
   else if (hname == "pata")                   { size =  64 * mio; }
   else if (hname == "chaton")                 { size =  64 * mio; }
   else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
+  else if (hname == "lapierre")               { size =   8 * mio; }
   else                                        { size =  64 * mio; }
-
-  // const std::size_t d0 = 1024 * 1024 * 16;
   
-  find_test<data_type>("find-if compute-bound", "find-if_compute-bound.bench", convert_func, size, size-2);
+
+  std::string pos_str = "";
+  std::size_t put_at_pos = 0;
+  switch (pos)
+  {
+    case first:   pos_str = "pos(first)";  put_at_pos = 0;        break;
+    case middle:  pos_str = "pos(middle)"; put_at_pos = size / 2; break;
+    case last:    pos_str = "pos(last)";   put_at_pos = size - 1; break;
+    default: break;
+  }
+
+  sutils::printer_t::head("Benchmark - find-if, compute-bound, " + pos_str, true);
+
+  find_test<DATA_TYPE>("find-if compute-bound " + pos_str, "find-if_compute-bound_" + pos_str + ".bench", convert_func, size, put_at_pos);
   std::cout << "\n\n";
-};
+}
 
-// sqrt(4 * cos * cos + sin * sin)
+TTS_CASE("Benchmark - find-if, compute-bound, last pos")    { find_test_compute_bound(find_test_pos::last);   };
+TTS_CASE("Benchmark - find-if, compute-bound, middle pos")  { find_test_compute_bound(find_test_pos::middle); };
+TTS_CASE("Benchmark - find-if, compute-bound, first pos")   { find_test_compute_bound(find_test_pos::first);  };
 
-TTS_CASE("Benchmark - find-if, memory-bound, last pos")
+
+
+
+
+void find_test_memory_bound(find_test_pos pos)
 {
-  sutils::printer_t::head("Benchmark - find-if, memory-bound, last pos", true);
+  using DATA_TYPE = float;
 
-  using data_type = float;
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
+  [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
   [[maybe_unused]] std::size_t mio = 1024 * kio;
   [[maybe_unused]] std::size_t gio = 1024 * mio;
 
   std::size_t size;
   std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   6 * gio; } 
+       if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
   else if (hname == "pata")                   { size = 256 * mio; }
   else if (hname == "chaton")                 { size = 256 * mio; }
   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+  else if (hname == "lapierre")               { size =  32 * mio; }
   else                                        { size = 256 * mio; }
+  // sutils::printer_t::head("SIZE = " + std::to_string(size), true);
 
-  auto convert_func = [=](data_type item) -> data_type { return item; };
+  std::string pos_str = "";
+  std::size_t put_at_pos = 0;
+  switch (pos)
+  {
+    case first:   pos_str = "pos(first)";  put_at_pos = 0;        break;
+    case middle:  pos_str = "pos(middle)"; put_at_pos = size / 2; break;
+    case last:    pos_str = "pos(last)";   put_at_pos = size - 1; break;
+    default: break;
+  }
 
-  find_test<data_type>("find-if memory-bound", "find-if_memory-bound.bench", convert_func, size, size-2);
+  sutils::printer_t::head("Benchmark - find-if, memory-bound, " + pos_str, true);
+
+  auto convert_func = [=](DATA_TYPE item) -> DATA_TYPE { return item; };
+
+  find_test<DATA_TYPE>("find-if memory-bound " + pos_str, "find-if-memory-bound_" + pos_str + ".bench", convert_func, size, put_at_pos);
   std::cout << "\n\n";
-};
+}
 
+// sqrt(4 * cos * cos + sin * sin)
 
-// ========== MIDDLE ==========
+TTS_CASE("Benchmark - find-if, memory-bound, last pos")    { find_test_memory_bound(find_test_pos::last);   };
+TTS_CASE("Benchmark - find-if, memory-bound, middle pos")  { find_test_memory_bound(find_test_pos::middle); };
+TTS_CASE("Benchmark - find-if, memory-bound, first pos")   { find_test_memory_bound(find_test_pos::first);  };
 
-// TTS_CASE("Benchmark - find-if, compute-bound, middle")
-// {
-//   using data_type = float;
-//   [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
-//   [[maybe_unused]] std::size_t mio = 1024 * kio;
-//   [[maybe_unused]] std::size_t gio = 1024 * mio;
-
-//   std::size_t size;
-//   std::string hname = sutils::get_host_name();
-//        if (hname == "parsys-legend")          { size = 256 * mio; } 
-//   else if (hname == "pata")                   { size =  64 * mio; }
-//   else if (hname == "chaton")                 { size =  64 * mio; }
-//   else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
-//   else                                        { size =   8 * mio; }
-
-//   auto convert_func = [=](auto item)
-//   {
-//     // TODO: test with multiplications and divisions
-//     // Modulo may imply thread divergence, which would impair GPU performance.
-//     return
-//     static_cast<data_type>(
-//       std::cos(
-//         std::sin(
-//           std::cos(
-//             std::sin(
-//               std::cos(
-//                 std::sin(
-//                   static_cast<float>(item * 11.) * 7.
-//                         ) * 3.8
-//                       ) / 1.12
-//                     ) * 3.17874
-//                   ) / 8.7
-//                 ) * 9.48
-//               ) / 89.647681
-//             ) * 1.8746221;
-//   };
-
-//   find_test<data_type>("find-if compute-bound", "find-if_compute-bound_middle.bench", convert_func, size, size / 2);
-//   std::cout << "\n\n";
-// };
-
-
-
-// TTS_CASE("Benchmark - find-if, memory-bound, middle")
-// {
-//   using data_type = float;
-//   [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
-//   [[maybe_unused]] std::size_t mio = 1024 * kio;
-//   [[maybe_unused]] std::size_t gio = 1024 * mio;
-
-//   std::size_t size;
-//   std::string hname = sutils::get_host_name();
-//        if (hname == "parsys-legend")          { size =  10 * gio; }
-//   else if (hname == "pata")                   { size = 256 * mio; }
-//   else if (hname == "chaton")                 { size = 256 * mio; }
-//   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-//   else                                        { size =  32 * mio; }
-
-//   auto convert_func = [=](auto item) { return item; };
-
-//   find_test<data_type>("find-if memory-bound", "find-if_memory-bound_middle.bench", convert_func, size, size / 2);
-//   std::cout << "\n\n";
-// };
