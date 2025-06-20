@@ -69,49 +69,49 @@ struct box
 
 TTS_CASE( "Checks allocator is suitable for pseudo-container support" )
 {
-  box b( 5, kwk::heap );
-  box c( 7, kwk::heap );
+  box b0( 5, kwk::heap );
+  box b1( 7, kwk::heap );
 
-  for(int i=0;i<5;i++) b.get(i) = 1.f/static_cast<float>(1+i);
-  for(int i=0;i<7;i++) c.get(i) = 1.5f*static_cast<float>(1+i);
+  for(int i=0;i<5;i++) b0.get(i) = 1.f/static_cast<float>(1+i);
+  for(int i=0;i<7;i++) b1.get(i) = 1.5f*static_cast<float>(1+i);
 
-  TTS_EQUAL ( b.get(0), 1.f   );
-  TTS_EQUAL ( b.get(1), 1.f/2 );
-  TTS_EQUAL ( b.get(2), 1.f/3 );
-  TTS_EQUAL ( b.get(3), 1.f/4 );
-  TTS_EQUAL ( b.get(4), 1.f/5 );
+  TTS_EQUAL ( b0.get(0), 1.f   );
+  TTS_EQUAL ( b0.get(1), 1.f/2 );
+  TTS_EQUAL ( b0.get(2), 1.f/3 );
+  TTS_EQUAL ( b0.get(3), 1.f/4 );
+  TTS_EQUAL ( b0.get(4), 1.f/5 );
 
-  TTS_EQUAL ( c.get(0), 1.5f    );
-  TTS_EQUAL ( c.get(1), 1.5f*2  );
-  TTS_EQUAL ( c.get(2), 1.5f*3  );
-  TTS_EQUAL ( c.get(3), 1.5f*4  );
-  TTS_EQUAL ( c.get(4), 1.5f*5  );
-  TTS_EQUAL ( c.get(5), 1.5f*6  );
-  TTS_EQUAL ( c.get(6), 1.5f*7  );
+  TTS_EQUAL ( b1.get(0), 1.5f    );
+  TTS_EQUAL ( b1.get(1), 1.5f*2  );
+  TTS_EQUAL ( b1.get(2), 1.5f*3  );
+  TTS_EQUAL ( b1.get(3), 1.5f*4  );
+  TTS_EQUAL ( b1.get(4), 1.5f*5  );
+  TTS_EQUAL ( b1.get(5), 1.5f*6  );
+  TTS_EQUAL ( b1.get(6), 1.5f*7  );
 
-  box d = c;
+  box b2 = b1;
 
-  TTS_EQUAL ( d.get(0), 1.5f    );
-  TTS_EQUAL ( d.get(1), 1.5f*2  );
-  TTS_EQUAL ( d.get(2), 1.5f*3  );
-  TTS_EQUAL ( d.get(3), 1.5f*4  );
-  TTS_EQUAL ( d.get(4), 1.5f*5  );
-  TTS_EQUAL ( d.get(5), 1.5f*6  );
-  TTS_EQUAL ( d.get(6), 1.5f*7  );
+  TTS_EQUAL ( b2.get(0), 1.5f    );
+  TTS_EQUAL ( b2.get(1), 1.5f*2  );
+  TTS_EQUAL ( b2.get(2), 1.5f*3  );
+  TTS_EQUAL ( b2.get(3), 1.5f*4  );
+  TTS_EQUAL ( b2.get(4), 1.5f*5  );
+  TTS_EQUAL ( b2.get(5), 1.5f*6  );
+  TTS_EQUAL ( b2.get(6), 1.5f*7  );
 
-  c = b;
+  b1 = b0;
 
-  TTS_EQUAL ( c.get(0), 1.f   );
-  TTS_EQUAL ( c.get(1), 1.f/2 );
-  TTS_EQUAL ( c.get(2), 1.f/3 );
-  TTS_EQUAL ( c.get(3), 1.f/4 );
-  TTS_EQUAL ( c.get(4), 1.f/5 );
+  TTS_EQUAL ( b1.get(0), 1.f   );
+  TTS_EQUAL ( b1.get(1), 1.f/2 );
+  TTS_EQUAL ( b1.get(2), 1.f/3 );
+  TTS_EQUAL ( b1.get(3), 1.f/4 );
+  TTS_EQUAL ( b1.get(4), 1.f/5 );
 
-  d = std::move(b);
+  b2 = std::move(b0);
 
-  TTS_EQUAL ( d.get(0), 1.f   );
-  TTS_EQUAL ( d.get(1), 1.f/2 );
-  TTS_EQUAL ( d.get(2), 1.f/3 );
-  TTS_EQUAL ( d.get(3), 1.f/4 );
-  TTS_EQUAL ( d.get(4), 1.f/5 );
+  TTS_EQUAL ( b2.get(0), 1.f   );
+  TTS_EQUAL ( b2.get(1), 1.f/2 );
+  TTS_EQUAL ( b2.get(2), 1.f/3 );
+  TTS_EQUAL ( b2.get(3), 1.f/4 );
+  TTS_EQUAL ( b2.get(4), 1.f/5 );
 };

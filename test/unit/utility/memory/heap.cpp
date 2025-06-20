@@ -10,18 +10,18 @@
 
 TTS_CASE( "Nullpotent Allocation/Deallocation through heap_allocator" )
 {
-  kwk::heap_allocator a;
+  kwk::heap_allocator alloc;
 
-  auto memory = allocate( a, 0 );
+  auto memory = allocate( alloc, 0 );
   TTS_EQUAL ( memory   , nullptr );
-  deallocate(a, memory);
+  deallocate(alloc, memory);
 };
 
 TTS_CASE( "Allocation/Deallocation through heap_allocator" )
 {
-  kwk::heap_allocator a;
-  auto memory = allocate( a, 64 );
+  kwk::heap_allocator alloc;
+  auto memory = allocate( alloc, 64 );
 
   TTS_NOT_EQUAL ( memory, nullptr );
-  deallocate(a, memory);
+  deallocate(alloc, memory);
 };
