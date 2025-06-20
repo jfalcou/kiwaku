@@ -117,6 +117,7 @@ def load_file(path):
 
   return bench_list
 
+#  python3 plot_bench.py files/2025-06-19-legend/renamed/parsys-legend_2025-06-19_23h07m47s_for_each_memory-bound.bench
 
 parser = argparse.ArgumentParser(
                     prog='Kiwaku benchmark plots',
@@ -156,7 +157,7 @@ for i in range(0, len(bench_list)):
 
   wrapped = textwrap.fill(
     bench["bench_name"],
-    width=18,
+    width=12,
     break_long_words=False,
     subsequent_indent=""
   )
@@ -192,6 +193,10 @@ output_fname = input_fpath + ".png"
 plt.savefig(output_fname, format="png") #, dpi=my_dpi)
 
 if (not args.only_save_image):
+  for i in range(0, len(bench_list)):
+    bench = bench_list[i]
+    print(bench["bench_name"] + ": " + str(round(bench["med_elements_per_second"] * 100) / 100) + " elements per second")
   plt.show()
+
 
 
