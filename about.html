@@ -181,24 +181,45 @@ Using the library</h1>
 <h2><a class="anchor" id="autotoc_md15"></a>
 Compilation</h2>
 <p>Once installed, you can compile the following code to check if everything is alright.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;kwk/container.hpp&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;kumi/tuple.hpp&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">auto</span> get_student(<span class="keywordtype">int</span> <span class="keywordtype">id</span>)</div>
+<div class="line">{</div>
+<div class="line">        <span class="keywordflow">if</span> (<span class="keywordtype">id</span> == 0)  <span class="keywordflow">return</span> kumi::make_tuple(3.8, <span class="charliteral">&#39;A&#39;</span>, <span class="stringliteral">&quot;Lisa Simpson&quot;</span>);</div>
+<div class="line">  <span class="keywordflow">else</span>  <span class="keywordflow">if</span> (<span class="keywordtype">id</span> == 1)  <span class="keywordflow">return</span> kumi::make_tuple(2.9, <span class="charliteral">&#39;C&#39;</span>, <span class="stringliteral">&quot;Milhouse Van Houten&quot;</span>);</div>
+<div class="line">  <span class="keywordflow">else</span>  <span class="keywordflow">if</span> (<span class="keywordtype">id</span> == 2)  <span class="keywordflow">return</span> kumi::make_tuple(1.7, <span class="charliteral">&#39;D&#39;</span>, <span class="stringliteral">&quot;Ralph Wiggum&quot;</span>);</div>
+<div class="line">  <span class="keywordflow">else</span>                <span class="keywordflow">return</span> kumi::make_tuple(0., <span class="charliteral">&#39;F&#39;</span>, <span class="stringliteral">&quot;Unknown&quot;</span>);</div>
+<div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main()</div>
 <div class="line">{</div>
-<div class="line">  <span class="keywordtype">float</span> ref[] = {1,2,3,4,5,6,7,8,9,10,11,12};</div>
+<div class="line">  <span class="keyword">auto</span> student0 = get_student(0);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keyword">auto</span> v = <a class="code hl_struct" href="structkwk_1_1view.html">kwk::view</a>{ <a class="code hl_variable" href="group__settings.html#gaef8fdcbb44ad887e90784c21469e06eb">kwk::source</a> = ref</div>
-<div class="line">                    , <a class="code hl_function" href="namespacekwk_af1fd6102366cab9dbb5f43470f227aac.html#af1fd6102366cab9dbb5f43470f227aac">kwk::of_size</a>(4,3)</div>
-<div class="line">                    , <a class="code hl_variable" href="group__settings.html#gabb68e6f180ef839836e0dc210cd1772f">kwk::label</a> = <span class="stringliteral">&quot;Test matrix&quot;</span></div>
-<div class="line">                    };</div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;ID: 0, &quot;</span></div>
+<div class="line">            &lt;&lt; <span class="stringliteral">&quot;GPA: &quot;</span>    &lt;&lt; kumi::get&lt;0&gt;(student0) &lt;&lt; <span class="stringliteral">&quot;, &quot;</span></div>
+<div class="line">            &lt;&lt; <span class="stringliteral">&quot;grade: &quot;</span>  &lt;&lt; kumi::get&lt;1&gt;(student0) &lt;&lt; <span class="stringliteral">&quot;, &quot;</span></div>
+<div class="line">            &lt;&lt; <span class="stringliteral">&quot;name: &quot;</span>   &lt;&lt; kumi::get&lt;2&gt;(student0) &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"> </div>
-<div class="line">  std::cout &lt;&lt; v &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line">  <span class="keyword">auto</span> [ gpa1, grade1, name1 ] = get_student(1);</div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;ID: 1, &quot;</span></div>
+<div class="line">            &lt;&lt; <span class="stringliteral">&quot;GPA: &quot;</span> &lt;&lt; gpa1 &lt;&lt; <span class="stringliteral">&quot;, &quot;</span></div>
+<div class="line">            &lt;&lt; <span class="stringliteral">&quot;grade: &quot;</span> &lt;&lt; grade1 &lt;&lt; <span class="stringliteral">&quot;, &quot;</span></div>
+<div class="line">            &lt;&lt; <span class="stringliteral">&quot;name: &quot;</span> &lt;&lt; name1 &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">auto</span> all_students = kumi::make_tuple(get_student(0),get_student(1),get_student(2));</div>
+<div class="line"> </div>
+<div class="line">  kumi::for_each_index( [](<span class="keyword">auto</span> i, <span class="keyword">auto</span> <span class="keyword">const</span>&amp; m) { std::cout &lt;&lt; <span class="stringliteral">&quot;Data #&quot;</span> &lt;&lt; i &lt;&lt; <span class="stringliteral">&quot; : &quot;</span> &lt;&lt; m &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;}</div>
+<div class="line">                      , all_students</div>
+<div class="line">                      );</div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">auto</span> grades = kumi::get&lt;0&gt;(kumi::transpose(all_students));</div>
+<div class="line">  std::cout &lt;&lt; grades &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__settings_html_gabb68e6f180ef839836e0dc210cd1772f"><div class="ttname"><a href="group__settings.html#gabb68e6f180ef839836e0dc210cd1772f">kwk::label</a></div><div class="ttdeci">constexpr __::label_ label</div><div class="ttdoc">Label setting for kwk::table and kwk::view.</div><div class="ttdef"><b>Definition</b> label.hpp:37</div></div>
-<div class="ttc" id="agroup__settings_html_gaef8fdcbb44ad887e90784c21469e06eb"><div class="ttname"><a href="group__settings.html#gaef8fdcbb44ad887e90784c21469e06eb">kwk::source</a></div><div class="ttdeci">constexpr __::source_ source</div><div class="ttdoc">Data source setting for kwk::table and kwk::view.</div><div class="ttdef"><b>Definition</b> source.hpp:61</div></div>
-<div class="ttc" id="anamespacekwk_af1fd6102366cab9dbb5f43470f227aac_html_af1fd6102366cab9dbb5f43470f227aac"><div class="ttname"><a href="namespacekwk_af1fd6102366cab9dbb5f43470f227aac.html#af1fd6102366cab9dbb5f43470f227aac">kwk::of_size</a></div><div class="ttdeci">constexpr auto of_size(D... d)</div><div class="ttdoc">Generates a kwk::shape from a list of Extent.</div><div class="ttdef"><b>Definition</b> shape.hpp:339</div></div>
-<div class="ttc" id="astructkwk_1_1view_html"><div class="ttname"><a href="structkwk_1_1view.html">kwk::view</a></div><div class="ttdoc">Non-owning, contiguous multi-dimensional container.</div><div class="ttdef"><b>Definition</b> view.hpp:25</div></div>
 </div><!-- fragment --><p>To do so, use your C++20 aware favorite compiler, for example g++.</p>
 <pre class="fragment">$ g++ test.cpp -std=c++20 -O3 -DNDEBUG -I/path/to/install/include -o output
 </pre><p>Don't forget the <code>--std=c++20</code> option to be sure to activate C++20 support. If you use a different compiler, check your compiler user's manual to use the proper option.</p>

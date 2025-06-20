@@ -133,15 +133,14 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1slicer.html'
 <p>A <b>KIWAKU</b> Slicer is a type which instances can be used to compute a sub-volume of a container. </p>
 </div><h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> S&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1slicer.html">kwk::concepts::slicer</a> =  <span class="keyword">requires</span>(<a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">S</a> <span class="keyword">const</span>&amp; <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">s</a>)</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1slicer.html">kwk::concepts::slicer</a> =  <span class="keyword">requires</span>(S <span class="keyword">const</span>&amp; s)</div>
 <div class="line">  {</div>
-<div class="line">    { origin  (<a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">shape&lt;_&gt;</a>{} , <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">s</a>)                  };</div>
-<div class="line">    { reindex (<a class="code hl_struct" href="structkwk_1_1shape.html">shape&lt;_&gt;</a>{} , <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">s</a>, kumi::index&lt;0&gt;)  };</div>
-<div class="line">    { reshape (<a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">shape&lt;_&gt;</a>{} , <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">s</a>, kumi::index&lt;0&gt;)  };</div>
-<div class="line">    { restride(<a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">stride&lt;_&gt;</a>{}, <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">s</a>, kumi::index&lt;0&gt;)  };</div>
+<div class="line">    { origin  (shape&lt;_&gt;{} , s)                  };</div>
+<div class="line">    { reindex (<a class="code hl_struct" href="structkwk_1_1shape.html">shape&lt;_&gt;</a>{} , s, kumi::index&lt;0&gt;)  };</div>
+<div class="line">    { reshape (shape&lt;_&gt;{} , s, kumi::index&lt;0&gt;)  };</div>
+<div class="line">    { restride(stride&lt;_&gt;{}, s, kumi::index&lt;0&gt;)  };</div>
 <div class="line">  }</div>
 <div class="ttc" id="aconceptkwk_1_1concepts_1_1slicer_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1slicer.html">kwk::concepts::slicer</a></div><div class="ttdoc">slicer specifier concept</div><div class="ttdef"><b>Definition</b> slicer.hpp:29</div></div>
-<div class="ttc" id="agroup__utility_html_gaac3d175a241803308de3f331028753e6"><div class="ttname"><a href="group__utility.html#gaac3d175a241803308de3f331028753e6">kwk::fixed</a></div><div class="ttdeci">constexpr auto fixed</div><div class="ttdoc">Provides a short-cut to define a std::integral_constant value from a literal integer.</div><div class="ttdef"><b>Definition</b> fixed.hpp:107</div></div>
 <div class="ttc" id="astructkwk_1_1shape_html"><div class="ttname"><a href="structkwk_1_1shape.html">kwk::shape</a></div><div class="ttdoc">Fixed order shape with mixed size capability.</div><div class="ttdef"><b>Definition</b> shape.hpp:78</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

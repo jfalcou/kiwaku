@@ -133,7 +133,7 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1basic__conta
 <p>A <a class="el" href="conceptkwk_1_1concepts_1_1basic__container.html">kwk::concepts::basic_container</a> is a type exhibiting the basic interface of a nD container. </p>
 </div><h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1basic__container.html">kwk::concepts::basic_container</a> =  <span class="keyword">requires</span>(T <span class="keyword">const</span>&amp; <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">t</a>)</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1basic__container.html">kwk::concepts::basic_container</a> =  <span class="keyword">requires</span>(T <span class="keyword">const</span>&amp; t)</div>
 <div class="line">  {</div>
 <div class="line">    <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::value_type;</div>
 <div class="line">    <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::reference;</div>
@@ -141,12 +141,11 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1basic__conta
 <div class="line">    <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::pointer;</div>
 <div class="line">    <span class="keyword">typename</span> std::remove_cvref_t&lt;T&gt;::const_pointer;</div>
 <div class="line"> </div>
-<div class="line">    { <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">t</a>.order() };</div>
-<div class="line">    { <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">t</a>.kind()  };</div>
-<div class="line">    { <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">t</a>.shape() };</div>
+<div class="line">    { t.order() };</div>
+<div class="line">    { t.kind()  };</div>
+<div class="line">    { t.shape() };</div>
 <div class="line">  }</div>
 <div class="ttc" id="aconceptkwk_1_1concepts_1_1basic__container_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1basic__container.html">kwk::concepts::basic_container</a></div><div class="ttdoc">Basic container concept.</div><div class="ttdef"><b>Definition</b> container.hpp:27</div></div>
-<div class="ttc" id="agroup__utility_html_gaac3d175a241803308de3f331028753e6"><div class="ttname"><a href="group__utility.html#gaac3d175a241803308de3f331028753e6">kwk::fixed</a></div><div class="ttdeci">constexpr auto fixed</div><div class="ttdoc">Provides a short-cut to define a std::integral_constant value from a literal integer.</div><div class="ttdef"><b>Definition</b> fixed.hpp:107</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
