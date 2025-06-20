@@ -8,7 +8,6 @@ project(kiwaku LANGUAGES CXX)
 
 ##======================================================================================================================
 option( KIWAKU_BUILD_TEST           "Build tests   for Kiwaku"            ON  )
-option( KIWAKU_BUILD_INTEGRATION    "Build integration tests for Kiwaku"  OFF )
 option( KIWAKU_BUILD_DOCUMENTATION  "Build Doxygen for Kiwaku"            OFF )
 
 ##======================================================================================================================

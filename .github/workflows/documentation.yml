@@ -22,7 +22,7 @@ jobs:
       - name: Prepare KIWAKU
         run: |
           mkdir build && cd build
-          cmake .. -G Ninja -DKIWAKU_BUILD_TEST=OFF -DKIWAKU_BUILD_INTEGRATION=OFF -DKIWAKU_BUILD_DOCUMENTATION=ON
+          cmake .. -G Ninja -DKIWAKU_BUILD_TEST=OFF -DKIWAKU_BUILD_DOCUMENTATION=ON
 
       - name: Generate Doxygen
         run: |
