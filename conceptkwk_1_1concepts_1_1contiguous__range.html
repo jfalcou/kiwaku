@@ -132,12 +132,13 @@ $(document).ready(function(){initNavTree('conceptkwk_1_1concepts_1_1contiguous__
 <div class="textblock"><p>Concept for Range types providing access to a contiguous block of data. </p>
 </div><h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Range&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1contiguous__range.html">kwk::concepts::contiguous_range</a> =  <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1range.html">range&lt;Range&gt;</a> &amp;&amp; <span class="keyword">requires</span>(Range&amp;&amp; r)</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptkwk_1_1concepts_1_1contiguous__range.html">kwk::concepts::contiguous_range</a> =  <a class="code hl_concept" href="conceptkwk_1_1concepts_1_1range.html">range&lt;Range&gt;</a> &amp;&amp; <span class="keyword">requires</span>(<a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">Range</a>&amp;&amp; <a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">r</a>)</div>
 <div class="line">  {</div>
-<div class="line">    { std::data(r)  };</div>
+<div class="line">    { std::data(<a class="code hl_variable" href="group__utility.html#gaac3d175a241803308de3f331028753e6">r</a>)  };</div>
 <div class="line">  }</div>
 <div class="ttc" id="aconceptkwk_1_1concepts_1_1contiguous__range_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1contiguous__range.html">kwk::concepts::contiguous_range</a></div><div class="ttdoc">Concept for Range types providing access to a contiguous block of data.</div><div class="ttdef"><b>Definition</b> range.hpp:28</div></div>
 <div class="ttc" id="aconceptkwk_1_1concepts_1_1range_html"><div class="ttname"><a href="conceptkwk_1_1concepts_1_1range.html">kwk::concepts::range</a></div><div class="ttdoc">Concept for types supporting calls to standard begin/end/size interface.</div><div class="ttdef"><b>Definition</b> range.hpp:19</div></div>
+<div class="ttc" id="agroup__utility_html_gaac3d175a241803308de3f331028753e6"><div class="ttname"><a href="group__utility.html#gaac3d175a241803308de3f331028753e6">kwk::fixed</a></div><div class="ttdeci">constexpr auto fixed</div><div class="ttdoc">Provides a short-cut to define a std::integral_constant value from a literal integer.</div><div class="ttdef"><b>Definition</b> fixed.hpp:107</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
