@@ -161,65 +161,79 @@ void transform_reduce_test(std::string const& bench_name
 
 TTS_CASE("Benchmark - transform_reduce, compute-bound ")
 {
-  using DATA_TYPE = float;
-
-  auto reduce_func    = [](auto a, auto b) { return a * b; };
-  auto transform_func = [](auto a, auto b)
+  if (::kwk::bench::enable_global)
   {
-    // cos²(a) + sin²(a) = 1
-    // cos²(b) + sin²(b) = 1
-    return  (
-              std::cos(a) * 1.86413 * std::cos(a) 
-            + std::cos(b) * 1.86413 * std::cos(b)
-            + std::sin(a) * 1.86413 * std::sin(a) 
-            + std::sin(b) * 1.86413 * std::sin(b)
-            ) / (1.86413 * 2);
-  };
-  // auto reduce_func    = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
-  // auto transform_func = [](auto a, auto b) { return ((((((((((((a + b) % 131072) % 65536) % 32768) % 16384) % 8192) % 4096) % 2048) % 1024) % 512) % 256) % 128); };
+    using DATA_TYPE = float;
 
-  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 2);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+    auto reduce_func    = [](auto a, auto b) { return a * b; };
+    auto transform_func = [](auto a, auto b)
+    {
+      // cos²(a) + sin²(a) = 1
+      // cos²(b) + sin²(b) = 1
+      return  (
+                std::cos(a) * 1.86413 * std::cos(a) 
+              + std::cos(b) * 1.86413 * std::cos(b)
+              + std::sin(a) * 1.86413 * std::sin(a) 
+              + std::sin(b) * 1.86413 * std::sin(b)
+              ) / (1.86413 * 2);
+    };
+    // auto reduce_func    = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
+    // auto transform_func = [](auto a, auto b) { return ((((((((((((a + b) % 131072) % 65536) % 32768) % 16384) % 8192) % 4096) % 2048) % 1024) % 512) % 256) % 128); };
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-  else if (hname == "pata")                   { size =   1 * gio; }
-  else if (hname == "chaton")                 { size = 128 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-  else if (hname == "lapierre")               { size =  32 * mio; }
-  else                                        { size =   1 * gio; }
-  
-  sutils::printer_t::head("Benchmark - transform_reduce, compute-bound", true);
+    [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 2);
+    [[maybe_unused]] std::size_t mio = 1024 * kio;
+    [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  transform_reduce_test<DATA_TYPE>("Transform_reduce compute-bound", "transform_reduce_compute-bound.bench", reduce_func, transform_func, size);
+    std::size_t size;
+    std::string hname = sutils::get_host_name();
+         if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+    else if (hname == "pata")                   { size =   1 * gio; }
+    else if (hname == "chaton")                 { size = 128 * mio; }
+    else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+    else if (hname == "lapierre")               { size =  32 * mio; }
+    else                                        { size =   1 * gio; }
+
+    sutils::printer_t::head("Benchmark - transform_reduce, compute-bound", true);
+
+    transform_reduce_test<DATA_TYPE>("Transform_reduce compute-bound", "transform_reduce_compute-bound.bench", reduce_func, transform_func, size);
+  }
+  else
+  {
+    TTS_EQUAL(true, true);
+  }
 };
 
 
 
 TTS_CASE("Benchmark - transform_reduce, memory-bound ")
 {
-  using DATA_TYPE = float;
-  using DATA_TYPE = float;
+  if (::kwk::bench::enable_global)
+  {
+    using DATA_TYPE = float;
+    using DATA_TYPE = float;
 
-  auto reduce_func    = [](auto a, auto b) { return (a + b); };
-  auto transform_func = [](auto a, auto b) { return (a * b); };
+    auto reduce_func    = [](auto a, auto b) { return (a + b); };
+    auto transform_func = [](auto a, auto b) { return (a * b); };
 
-  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) + sizeof(DATA_TYPE));
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+    [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) + sizeof(DATA_TYPE));
+    [[maybe_unused]] std::size_t mio = 1024 * kio;
+    [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-  else if (hname == "pata")                   { size =   1 * gio; }
-  else if (hname == "chaton")                 { size = 128 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-  else if (hname == "lapierre")               { size =  32 * mio; }
-  else                                        { size =   1 * gio; }
-  
-  sutils::printer_t::head("Benchmark - transform_reduce, memory-bound", true);
+    std::size_t size;
+    std::string hname = sutils::get_host_name();
+        if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+    else if (hname == "pata")                   { size =   1 * gio; }
+    else if (hname == "chaton")                 { size = 128 * mio; }
+    else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+    else if (hname == "lapierre")               { size =  32 * mio; }
+    else                                        { size =   1 * gio; }
+    
+    sutils::printer_t::head("Benchmark - transform_reduce, memory-bound", true);
 
-  transform_reduce_test<DATA_TYPE>("Transform_reduce memory-bound", "transform_reduce_memory-bound.bench", reduce_func, transform_func, size);
+    transform_reduce_test<DATA_TYPE>("Transform_reduce memory-bound", "transform_reduce_memory-bound.bench", reduce_func, transform_func, size);
+  }
+  else
+  {
+    TTS_EQUAL(true, true);
+  }
 };

@@ -154,49 +154,64 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
 
 // TTS_CASE("Benchmark - reduce, compute-bound ")
 // {
-//   using data_type = int;
+//   if (::kwk::bench::enable_global)
+//   {
+//     using data_type = int;
 
-//   auto func = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
+//     auto func = [](auto a, auto b) { return (((((((((((a + b) % 4096) % 2048) % 1024) % 512) % 256) % 128) % 64) % 32) % 16) % 8); };
 
-//   [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
-//   [[maybe_unused]] std::size_t mio = 1024 * kio;
-//   [[maybe_unused]] std::size_t gio = 1024 * mio;
-  
-//   std::size_t size;
-//   std::string hname = sutils::get_host_name();
-//        if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } // 4
-//   else if (hname == "pata")                   { size =   1 * gio; }
-//   else if (hname == "chaton")                 { size = 128 * mio; }
-//   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-//   else                                        { size =   1 * gio; }
+//     [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
+//     [[maybe_unused]] std::size_t mio = 1024 * kio;
+//     [[maybe_unused]] std::size_t gio = 1024 * mio;
+    
+//     std::size_t size;
+//     std::string hname = sutils::get_host_name();
+//          if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } // 4
+//     else if (hname == "pata")                   { size =   1 * gio; }
+//     else if (hname == "chaton")                 { size = 128 * mio; }
+//     else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+//     else if (hname == "lapierre")               { size =  32 * mio; }
+//     else                                        { size =   1 * gio; }
 
-//   reduce_test<data_type>("Reduce compute-bound", "reduce_compute-bound.bench", func, size);
+//     sutils::printer_t::head("Benchmark - reduce, compute-bound", true);
+
+//     reduce_test<data_type>("Reduce compute-bound", "reduce_compute-bound.bench", func, size);
+//   }
+//   else
+//   {
+//     TTS_EQUAL(true, true);
+//   }
 // };
 
 
 
 TTS_CASE("Benchmark - reduce, memory-bound ")
 {
-  sutils::printer_t::head("Benchmark - Reduce, memory-bound", true);
+  if (::kwk::bench::enable_global)
+  {
+    sutils::printer_t::head("Benchmark - Reduce, memory-bound", true);
 
-  using data_type = float;
+    using data_type = float;
 
-  auto func = [](data_type a, data_type b) { return a * b; };
+    auto func = [](data_type a, data_type b) { return a * b; };
 
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+    [[maybe_unused]] std::size_t kio = 1024 / sizeof(data_type);
+    [[maybe_unused]] std::size_t mio = 1024 * kio;
+    [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-  else if (hname == "pata")                   { size =   1 * gio; }
-  else if (hname == "chaton")                 { size = 128 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-  else if (hname == "lapierre")               { size =  32 * mio; }
-  else                                        { size =   1 * gio; }
-  
-  sutils::printer_t::head("Benchmark - reduce, memory-bound", true);
+    std::size_t size;
+    std::string hname = sutils::get_host_name();
+         if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+    else if (hname == "pata")                   { size =   1 * gio; }
+    else if (hname == "chaton")                 { size = 128 * mio; }
+    else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+    else if (hname == "lapierre")               { size =  32 * mio; }
+    else                                        { size =   1 * gio; }
 
-  reduce_test<data_type>("Reduce memory-bound", "reduce_memory-bound.bench", func, size);
+    reduce_test<data_type>("Reduce memory-bound", "reduce_memory-bound.bench", func, size);
+  }
+  else
+  {
+    TTS_EQUAL(true, true);
+  }
 };

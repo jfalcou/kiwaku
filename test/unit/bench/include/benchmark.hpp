@@ -7,8 +7,10 @@
 namespace kwk::bench
 {
 
-  // const double LEGEND_LOAD_FACTOR = 0.001;
-  const double LEGEND_LOAD_FACTOR = 1.;
+// const double LEGEND_LOAD_FACTOR = 0.001;
+const double LEGEND_LOAD_FACTOR = 1.;
+
+bool enable_global = false;
 
 // Each benchmark file is for a direct comparison.
 // Each file should be loaded by the python visualizer

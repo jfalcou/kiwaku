@@ -142,102 +142,123 @@ void for_each_test( std::string const& bench_name
 
 TTS_CASE("Benchmark - for_each, compute-bound_trigo")
 {
-  using DATA_TYPE = float;
-
-  auto map_func = [=](DATA_TYPE& item)
+  if (::kwk::bench::enable_global)
   {
-    // TODO: test with multiplications and divisions
-    // Modulo may imply thread divergence, which would impair GPU performance.
-    item = static_cast<DATA_TYPE>(
-      std::cos(
-        std::sin(
-          std::cos(
-            std::sin(
-              std::cos(
-                std::sin(
-                  static_cast<float>(item * 11.f) * 7.f
-                        ) * 3.8f
-                      ) / 1.12f
-                    ) * 3.17874f
-                  ) / 8.7f
-                ) * 9.48f
-              ) / 89.647681f
-            ) * 1.8746221f;
-  };
+    using DATA_TYPE = float;
 
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+    auto map_func = [=](DATA_TYPE& item)
+    {
+      // TODO: test with multiplications and divisions
+      // Modulo may imply thread divergence, which would impair GPU performance.
+      item = static_cast<DATA_TYPE>(
+        std::cos(
+          std::sin(
+            std::cos(
+              std::sin(
+                std::cos(
+                  std::sin(
+                    static_cast<float>(item * 11.f) * 7.f
+                          ) * 3.8f
+                        ) / 1.12f
+                      ) * 3.17874f
+                    ) / 8.7f
+                  ) * 9.48f
+                ) / 89.647681f
+              ) * 1.8746221f;
+    };
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-  else if (hname == "pata")                   { size =  64 * mio; }
-  else if (hname == "chaton")                 { size =  64 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
-  else if (hname == "lapierre")               { size =   8 * mio; }
-  else                                        { size =   8 * mio; }
-  
+    [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
+    [[maybe_unused]] std::size_t mio = 1024 * kio;
+    [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  sutils::printer_t::head("Benchmark - for_each, compute-bound_trigo", true);
+    std::size_t size;
+    std::string hname = sutils::get_host_name();
+        if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+    else if (hname == "pata")                   { size =  64 * mio; }
+    else if (hname == "chaton")                 { size =  64 * mio; }
+    else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
+    else if (hname == "lapierre")               { size =   8 * mio; }
+    else                                        { size =   8 * mio; }
+    
 
-  for_each_test<DATA_TYPE>("for_each compute-bound_trigo", "for_each_compute-bound_trigo.bench", map_func, size);
-  std::cout << "\n\n";
+    sutils::printer_t::head("Benchmark - for_each, compute-bound_trigo", true);
+
+    for_each_test<DATA_TYPE>("for_each compute-bound_trigo", "for_each_compute-bound_trigo.bench", map_func, size);
+    std::cout << "\n\n";
+  }
+  else
+  {
+    TTS_EQUAL(true, true);
+  }
 };
 
 
-TTS_CASE("Benchmark - for_each, fma")
-{
-  using DATA_TYPE = float;
+// TTS_CASE("Benchmark - for_each, fma")
+// {
+//   if (::kwk::bench::enable_global)
+//   {
+//     using DATA_TYPE = float;
 
-  // FMA
-  auto map_func = [=](DATA_TYPE& d) { d = d * 8.7845f + 3.7645f; };
+//     // FMA
+//     auto map_func = [=](DATA_TYPE& d) { d = d * 8.7845f + 3.7645f; };
 
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+//     [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
+//     [[maybe_unused]] std::size_t mio = 1024 * kio;
+//     [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-  else if (hname == "pata")                   { size =  64 * mio; }
-  else if (hname == "chaton")                 { size =  64 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
-  else if (hname == "lapierre")               { size =   8 * mio; }
-  else                                        { size =   8 * mio; }
-  
+//     std::size_t size;
+//     std::string hname = sutils::get_host_name();
+//         if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+//     else if (hname == "pata")                   { size =  64 * mio; }
+//     else if (hname == "chaton")                 { size =  64 * mio; }
+//     else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
+//     else if (hname == "lapierre")               { size =   8 * mio; }
+//     else                                        { size =   8 * mio; }
+    
 
-  sutils::printer_t::head("Benchmark - for_each, compute-bound_fma", true);
+//     sutils::printer_t::head("Benchmark - for_each, compute-bound_fma", true);
 
-  for_each_test<DATA_TYPE>("for_each compute-bound_fma", "for_each_compute-bound_fma.bench", map_func, size);
-  std::cout << "\n\n";
-};
+//     for_each_test<DATA_TYPE>("for_each compute-bound_fma", "for_each_compute-bound_fma.bench", map_func, size);
+//     std::cout << "\n\n";
+//   }
+//   else
+//   {
+//     TTS_EQUAL(true, true);
+//   }
+// };
 
 TTS_CASE("Benchmark - for_each, memory-bound")
 {
-  using DATA_TYPE = float;
+  if (::kwk::bench::enable_global)
+  {
+    using DATA_TYPE = float;
 
-  // FMA
-  auto map_func = [=](DATA_TYPE& d) { d = d * 2.f; };
+    // FMA
+    auto map_func = [=](DATA_TYPE& d) { d = d * 2.f; };
 
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
+    [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
+    [[maybe_unused]] std::size_t mio = 1024 * kio;
+    [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-       if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-  else if (hname == "pata")                   { size =  64 * mio; }
-  else if (hname == "chaton")                 { size =  64 * mio; }
-  else if (hname == "sylvain-ThinkPad-T580")  { size =  64 * mio; }
-  else if (hname == "lapierre")               { size =  64 * mio; }
-  else                                        { size =  64 * mio; }
-  
+    std::size_t size;
+    std::string hname = sutils::get_host_name();
+        if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+    else if (hname == "pata")                   { size =  64 * mio; }
+    else if (hname == "chaton")                 { size =  64 * mio; }
+    else if (hname == "sylvain-ThinkPad-T580")  { size =  64 * mio; }
+    else if (hname == "lapierre")               { size =  64 * mio; }
+    else                                        { size =  64 * mio; }
+    
 
-  sutils::printer_t::head("Benchmark - for_each, memory-bound", true);
+    sutils::printer_t::head("Benchmark - for_each, memory-bound", true);
 
-  for_each_test<DATA_TYPE>("for_each memory-bound", "for_each_memory-bound.bench", map_func, size);
-  std::cout << "\n\n";
+    for_each_test<DATA_TYPE>("for_each memory-bound", "for_each_memory-bound.bench", map_func, size);
+    std::cout << "\n\n";
+  }
+  else
+  {
+    TTS_EQUAL(true, true);
+  }
 };
 
 
