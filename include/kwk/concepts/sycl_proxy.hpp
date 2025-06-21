@@ -8,7 +8,7 @@
 #pragma once
 
 #include <concepts>
-#include <kwk/detail/raberu.hpp>
+#include <raberu/raberu.hpp>
 #include <kwk/detail/stdfix.hpp>
 #include <kwk/settings/size.hpp>
 #include <kwk/settings/type.hpp>
