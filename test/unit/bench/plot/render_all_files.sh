@@ -3,7 +3,7 @@
 FILE_EXTENSION="bench"
 
 # should be:   for f in *.MTS;
-for f in files/*.$FILE_EXTENSION;
+for f in files/2025-06-19-legend/renamed/*.$FILE_EXTENSION;
 do
 
   # No matching file
