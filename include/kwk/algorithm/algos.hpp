@@ -26,11 +26,6 @@ namespace kwk
 #include <kwk/algorithm/algos/predicates.hpp>
 #include <kwk/algorithm/algos/generator.hpp>
 #include <kwk/algorithm/algos/binary_search.hpp>
-#include <kwk/algorithm/algos/comparison.hpp>
 #include <kwk/algorithm/algos/find.hpp>
 #include <kwk/algorithm/algos/numeric.hpp>
-#include <kwk/algorithm/algos/partition.hpp>
 #include <kwk/algorithm/algos/predicates.hpp>
-#include <kwk/algorithm/algos/remove.hpp>
-#include <kwk/algorithm/algos/shuffle.hpp>
-#include <kwk/algorithm/algos/sort.hpp>
