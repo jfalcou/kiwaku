@@ -10,7 +10,12 @@ namespace kwk::bench
 // const double LEGEND_LOAD_FACTOR = 0.001;
 const double LEGEND_LOAD_FACTOR = 1.;
 
-bool enable_global = false;
+bool enable_global = true;
+
+const std::string EVE_COMPILER_FLAG = "mavx2_mfma";
+// -mavx2 -mfma
+// -msse4.2
+// -march=skylake-avx512
 
 // Each benchmark file is for a direct comparison.
 // Each file should be loaded by the python visualizer
