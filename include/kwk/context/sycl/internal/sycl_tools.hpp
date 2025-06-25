@@ -2,6 +2,7 @@
 
 #include <kwk/concepts/container.hpp>
 #include <kwk/utility/position.hpp>
+#include <vector>
 
 namespace kwk::utils::tools
 {
