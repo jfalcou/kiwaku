@@ -6,7 +6,7 @@
 */
 //==================================================================================================
 #include <kwk/context/eve/context.hpp>
-#include <kwk/context/sycl/internal/sycl_tools.hpp>
+// #include <kwk/context/sycl/internal/sycl_tools.hpp>
 #include <cstdlib>
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/container.hpp>
