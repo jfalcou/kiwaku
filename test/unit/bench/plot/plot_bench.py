@@ -18,10 +18,12 @@ def set_axis_style(ax, labels):
   # ax.set_xlabel('Sample name')
 
 
-title_font_size = 16  # fontsize
+# title_font_size = 16  # fontsize
 
 plot_set_sizes.set_sizes()
 
+max_text_width_on_axis = 16 # Legends such as "Kiwaku SYCL GPU"
+# TODO: enlever Kiwaku carrément ? SYCL c'est assez clair si je le dis dans le texte.
 
 kwk_array_size = 1
 global_name = ""
@@ -80,7 +82,7 @@ def load_file(path):
           # print("add " + str(eps))
 
       # res["no-outlier_time"] = pu.filter_outliers(res["raw_time"])
-      # res["med_time"]        = stat.median(res["raw_time"])
+      res["med_time"]        = stat.median(res["raw_time"])
       all_medians.append(stat.median(res["elements_per_second"]))
       bench_list.append(res)
 
@@ -151,13 +153,12 @@ med_values = []
 bw_method_ = 0.04
 
 
-
 for i in range(0, len(bench_list)):
   bench = bench_list[i]
 
   wrapped = textwrap.fill(
     bench["bench_name"],
-    width=12,
+    width=max_text_width_on_axis,
     break_long_words=False,
     subsequent_indent=""
   )
@@ -188,14 +189,23 @@ plt.grid(linewidth=line_width)
 
 plt.bar(labels, med_values, label=labels, color=global_colors, alpha=0.3)
 
+
 # output_fname = global_name.replace(" ", "_").replace(",", "").lower() + ".png"
 output_fname = input_fpath + ".png"
 plt.savefig(output_fname, format="png") #, dpi=my_dpi)
 
 if (not args.only_save_image):
+  
   for i in range(0, len(bench_list)):
     bench = bench_list[i]
     print(bench["bench_name"] + ": " + str(round(bench["med_elements_per_second"] * 100) / 100) + " elements per second")
+  
+  print(" ====== ")
+
+  for i in range(0, len(bench_list)):
+    bench = bench_list[i]
+    print(bench["bench_name"] + ": " + str(round(bench["med_time"])) + " ms per function call")
+  
   plt.show()
 
 
