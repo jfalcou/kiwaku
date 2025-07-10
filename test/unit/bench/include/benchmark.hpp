@@ -4,18 +4,27 @@
 // #define ANKERL_NANOBENCH_IMPLEMENT
 #include "utils/utils.hpp"
 
+#define ENABLE_TBB true
+
+#if ENABLE_TBB
+  #include <execution> // don't forget the -ltbb compiler flag
+#endif
+
 namespace kwk::bench
 {
 
-const double LEGEND_LOAD_FACTOR = 0.001;
-// const double LEGEND_LOAD_FACTOR = 1.;
+
+
+// const double LEGEND_LOAD_FACTOR = 0.001;
+// const double LEGEND_LOAD_FACTOR = 0.2;
+const double LEGEND_LOAD_FACTOR = 1.;
 
 bool enable_global = true;
 
 const std::string EVE_COMPILER_FLAG = "mavx2_mfma";
 const std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
 // -mavx2 -mfma
-// -msse4.2
+// -msse4.2 on devrait avoir x4
 // -march=skylake-avx512
 
 // Each benchmark file is for a direct comparison.
@@ -33,10 +42,13 @@ struct cbench_t
   void run_function(std::string const& name, auto func, auto reset_func); 
   void run_function(std::string const& name, auto func);
 
+  // For small arrays (e.g. contained in the L2 cache)
+  void run_function_rpt(std::string const& name, std::size_t const repeat, auto func, auto reset_func);
+
   void stop();
 
 private:
-  std::size_t iterations_count = 10;
+  std::size_t iterations_count = 4;
   sutils::global_write_file_t current_file;
   std::size_t version = 3;
 
@@ -56,6 +68,7 @@ void cbench_t::start(std::string const& fname, std::string const& global_name, s
   current_file << array_size << "\n";
   // std::cout << "First line written to file!\n";
 }
+
 
 void cbench_t::run_function(std::string const& name, auto func, auto reset_func)
 {
@@ -78,11 +91,36 @@ void cbench_t::run_function(std::string const& name, auto func, auto reset_func)
   current_file << "\n";
   std::cout << "  sum_ret(" << sum_ret << ")\n\n";
 }
-
 void cbench_t::run_function(std::string const& name, auto func)
 { 
   auto reset_func = []{ /* Do nothing */ };
   run_function(name, func, reset_func);
+}
+
+
+void cbench_t::run_function_rpt(std::string const& name, std::size_t const repeat, auto func, auto reset_func)
+{
+  std::cout << "Benchmarking  " << name << ":\n";
+  current_file << name << "\n";
+  sutils::chrono_t chrono;
+  std::cout << "    ";
+  double sum_ret = 0;
+  for (std::size_t i = 0; i < iterations_count; ++i)
+  {
+    reset_func(); // not measured by the timer
+    chrono.Init();
+    for (std::size_t i2 = 0; i2 < repeat; ++i2)
+    {
+      auto r = func();
+      sum_ret += r;
+    }
+    std::size_t elapsed = chrono.ElapsedTimeMS() ;
+    current_file << elapsed << " ";
+    std::cout << elapsed << " " << std::flush;
+    // std::cout << "(" << r << ") " << std::flush; //  "(" << r << ")" <<
+  }
+  current_file << "\n";
+  std::cout << "  sum_ret(" << sum_ret << ")\n\n";
 }
 
 void cbench_t::stop()
