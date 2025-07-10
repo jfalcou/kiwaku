@@ -53,4 +53,26 @@ namespace kwk
                         };
     }(std::make_integer_sequence<int, shape<Desc...>::static_order - 1 >{});
   }
+
+
+  // TODO at some point, to have cleaner EVE algorithms
+  // //================================================================================================
+  // //! @ingroup utility
+  // //! @brief  Computes a tuple of coordinates from a linear index and a shape
+  // //!
+  // //! Behavior is undefined if idx is out of the index space defined by shp.
+  // //!
+  // //! @param idx  Linear index to convert into a nD coordinate set
+  // //! @param shp  Shape used as a reference
+  // //! @return A std::optional<kwk::position<shape<Desc>::static_order> containing the
+  // //! multi-dimensional position corresponding to idx
+  // //================================================================================================
+  // template<std::integral Idx,auto... Desc>
+  // KWK_CONST constexpr
+  // auto coordinates_kwk( Idx idx, shape<Desc...> const shp) noexcept
+  // {
+  //   auto arr = coordinates(idx, shp);
+  //   return std::optional<kwk::position<shape<Desc...>::static_order>>{arr};
+  //   // or                              <std::size(arr)>
+  // }
 }
