@@ -9,11 +9,53 @@
 #include <kwk/detail/algorithm/for_until.hpp>
 #include <kwk/utility/coordinates.hpp>
 
+#include <kwk/utility/position.hpp>
+#include <vector>
+
 #include <eve/eve.hpp>
 
 /// Depending on the eve version
 #include <eve/module/algo.hpp> 
-//#include <eve/algo.hpp>
+
+namespace kwk::tools
+{
+    template<concepts::container Container>
+    std::optional<kwk::position<Container::static_order>>
+    linear_to_pos(int index, Container const& container)
+    {
+        auto shp = container.shape();
+
+        std::vector<int> pos;
+        pos.resize(shp.nbdims());
+        std::fill(pos.begin(), pos.end(), -1);
+
+        if (index != -1)
+        {
+            // Now convert back linear index to Kiwaku position :
+            // dim 0 is the outer dimension, and dim 1 the innermost
+            for (int dim = 0; dim < shp.nbdims(); ++dim)
+            {
+                int divide_by = 1;
+                for (int dim2 = dim + 1; dim2 < shp.nbdims(); ++dim2)
+                {
+                    int d = shp[dim2];
+                    divide_by *= d;
+                }
+                pos[dim] = index / divide_by;
+                index -= pos[dim] * divide_by;
+            }
+        }
+
+        // kwk::position<shp::static_order> kwk_pos;
+        kwk::position<Container::static_order> kwk_pos;
+        for (int dim = 0; dim < shp.nbdims(); ++dim)
+        {
+            kwk_pos[dim] = pos[dim];
+        }
+
+        return kwk_pos;
+    }
+}
 
 namespace kwk
 {
@@ -496,11 +538,18 @@ namespace kwk
         return find_if(kwk::simd, in, [&](auto e){return e == value;});
     }
 
+    template<typename tuple_t>
+    constexpr auto get_array_from_tuple(tuple_t&& tuple)
+    {
+        constexpr auto get_array = [](auto&& ... x){ return std::array{std::forward<decltype(x)>(x) ... }; };
+        return kumi::apply(get_array, std::forward<tuple_t>(tuple));
+    }
+
     //
     template<concepts::container In, typename Func>
     constexpr auto find_if([[maybe_unused]] kwk::eve::context const& ctx, In const& in, Func f)
     {
-        using coords_t = kumi::result::generate_t<In::static_order, std::ptrdiff_t>;
+        using coords_t = kwk::position<In::static_order>;
 
         if constexpr (In::preserve_reachability)
         {
@@ -509,10 +558,9 @@ namespace kwk
             if(find < r_in.end())
             {
                 auto linear_pos  = find - r_in.begin();
-                auto pos = kwk::coordinates(linear_pos, in.shape());
-                return std::optional<coords_t>{kumi::to_tuple(pos)};
+                return std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
             }
-            return std::nullopt; //std::optional<coords_t>{std::nullopt};
+            return std::optional<coords_t>{std::nullopt};
         }
         else if constexpr (In::stride::is_unit)
         {
@@ -527,14 +575,12 @@ namespace kwk
                 if(find < r_in.end())
                 {
                     auto linear_pos = find - rmd;
-                    auto kwk_pos = kwk::coordinates(linear_pos, in.shape());
-                    pos = kumi::to_tuple(kwk_pos);
+                    pos = std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
 
                     return true;
                 }
                 return false;
             }, ext);
-
             return pos;
         }
         else
@@ -576,8 +622,7 @@ namespace kwk
     template<concepts::container In, typename Func>
     constexpr auto find_last_if([[maybe_unused]] kwk::eve::context const& ctx, In const& in, Func f)
     {
-        //using coords_t = decltype(kumi::generate<In::static_order, std::ptrdiff_t>(0));
-        using coords_t = kumi::result::generate_t<In::static_order, std::ptrdiff_t>;
+        using coords_t = kwk::position<In::static_order>;
 
         if constexpr (In::preserve_reachability)
         {
@@ -586,8 +631,7 @@ namespace kwk
             if(find < r_in.end())
             {
                 auto linear_pos  = find - r_in.begin();
-                auto pos = kwk::coordinates(linear_pos, in.shape());
-                return std::optional<coords_t>{kumi::to_tuple(pos)};
+                return std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
             }
             return std::optional<coords_t>{std::nullopt};
         }
@@ -604,8 +648,7 @@ namespace kwk
                 if(find < r_in.end())
                 {
                     auto linear_pos = find - rmd;
-                    auto kwk_pos = kwk::coordinates(linear_pos, in.shape());
-                    pos = std::optional<coords_t>{kumi::to_tuple(kwk_pos)};
+                    pos = std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
 
                     return true;
                 }
