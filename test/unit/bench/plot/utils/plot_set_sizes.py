@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 def set_sizes():
   # ============= Gestion de la taille
   my_dpi = 96
-  image_ratio = 640 / 480
+  # image_ratio = 640 / 480
+  # image_ratio = 640 / 120
+  image_ratio = 1280 / 268
   # image_ratio = 880 / 480
 
   image_width = 1280 # 1280
@@ -13,10 +15,12 @@ def set_sizes():
 
   plt.figure(figsize=(image_width/my_dpi, image_height/my_dpi) , dpi=my_dpi)
 
-  MY_SIZE = (10 * image_scale_factor)
-  # MY_SIZE_SMALL = (6 * image_scale_factor)
-  TITLE_SIZE = (15 * image_scale_factor)
-  AXES_SIZE  = (13 * image_scale_factor)
+  font_factor = image_scale_factor
+
+  MY_SIZE = (10 * font_factor)
+  # MY_SIZE_SMALL = (6 * font_factor)
+  TITLE_SIZE = (15 * font_factor)
+  AXES_SIZE  = (13 * font_factor)
 
   #plt.rc('font', size=MY_SIZE)          # controls default text sizes
   plt.rc('axes', titlesize=TITLE_SIZE)     # fontsize of the axes title
