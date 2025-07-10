@@ -7,6 +7,7 @@
 //======================================================================================================================
 #pragma once
 
+#include <kwk/context/cpu/context.hpp>
 #include <kwk/concepts/container.hpp>
 #include <kwk/context/context.hpp>
 #include <kwk/detail/algorithm/for_each.hpp>
@@ -14,7 +15,6 @@
 #include <cstddef>
 #include <utility>
 
-// #include <kwk/context/cpu/context.hpp>
 namespace kwk
 {
   //====================================================================================================================
@@ -49,7 +49,7 @@ namespace kwk
   template<typename Func, auto... S>
   constexpr auto for_each(Func f, shape<S...> const& shp)
   {
-    kwk::for_each(cpu, f, shp);
+    kwk::for_each(::kwk::cpu, f, shp);
   }
 
   template<typename Context, typename Func, concepts::container C0, concepts::container... Cs>
