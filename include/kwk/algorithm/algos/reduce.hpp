@@ -44,7 +44,8 @@ namespace kwk
   template<typename Context, typename Func, concepts::container In>
   constexpr auto reduce(Context& ctx, In const& in, Func f)
   {
-    return kwk::reduce(ctx, in, f, typename In::value_type{});
+    return kwk::reduce(ctx, in, f, typename In::value_type{}); 
+    // TODO: replace value_type by in.data()[0] and start at 2nd element?
   }
 
   template<typename Func, concepts::container In>
