@@ -25,7 +25,13 @@
 /// @param func 
 /// @param view_size  
 template<typename DATA_TYPE>
-void reduce_test(std::string const& bench_name, std::string const& file_name, auto func, DATA_TYPE func_id, std::size_t const view_size)
+void reduce_test( std::string const& bench_name
+                , std::string const& file_name
+                , auto func
+                , auto func_eve
+                , DATA_TYPE func_id
+                , std::size_t const view_size
+                )
 {
 
   // The maximum rounding-errors between function results
@@ -48,7 +54,7 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
 
   auto view_in  = kwk::view{kwk::source = input.data() , kwk::of_size(d0)};
 
-  DATA_TYPE res_kwk_cpu, res_std, res_hand, res_eve; // res_std_par, res_std_par_unseq, 
+  DATA_TYPE res_kwk_cpu, res_std, res_std_unseq, res_std_par, res_std_par_unseq, res_hand, res_eve;  
 
   auto fct_kwk_cpu = [&]() {
     res_kwk_cpu = kwk::reduce(view_in, func, input[0]);
@@ -57,14 +63,6 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
   auto fct_std = [&]() {
     res_std = std::reduce(input.begin(), input.end(), input[0], func);
     return res_std; };
-
-  // auto fct_std_par = [&]() {
-  //   res_std_par = std::reduce(std::execution::par, input.begin(), input.end(), input[0], func);
-  //   return res_std_par; };
-
-  // auto fct_std_par_unseq = [&]() {
-  //   res_std_par_unseq = std::reduce(std::execution::par_unseq, input.begin(), input.end(), input[0], func);
-  //   return res_std_par_unseq; };
 
   auto fct_hand = [&]()
   {
@@ -82,8 +80,25 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
 
   b.start(absolute_path + final_fname, bench_name, "Processed elements, per second (higher is better)", view_size);
   b.run_function("std::execution::seq", fct_std);
-  // b.run_function("std::execution::par", fct_std_par);
-  // b.run_function("std::execution::par_unseq", fct_std_par_unseq);
+
+  #if ENABLE_TBB
+    auto fct_std_unseq = [&]() {
+      res_std_unseq = std::reduce(std::execution::unseq, input.begin(), input.end(), input[0], func);
+      return res_std_unseq; };
+
+    auto fct_std_par = [&]() {
+      res_std_par = std::reduce(std::execution::par, input.begin(), input.end(), input[0], func);
+      return res_std_par; };
+
+    auto fct_std_par_unseq = [&]() {
+      res_std_par_unseq = std::reduce(std::execution::par_unseq, input.begin(), input.end(), input[0], func);
+      return res_std_par_unseq; };
+
+    b.run_function("std::execution::unseq", fct_std_unseq);
+    b.run_function("std::execution::par", fct_std_par);
+    b.run_function("std::execution::par_unseq", fct_std_par_unseq);
+  #endif
+
 
   // //      reduce(kwk::simd, d,std::pair{eve::add, 0}, 10);
   // template<typename Op, typename Id, concepts::container In>
@@ -91,7 +106,7 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
 
   auto fct_kwk_eve_generic = [&]()
   {
-    res_eve = kwk::reduce(kwk::simd, view_in, std::pair{func, func_id}, input[0]);
+    res_eve = kwk::reduce(kwk::simd, view_in, std::pair{func_eve, func_id}, input[0]);
     return res_eve;
   };
   b.run_function(kwk::bench::EVE_BACKEND_NAME, fct_kwk_eve_generic);
@@ -100,11 +115,10 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
   b.run_function("By hand on CPU", fct_hand);
   b.stop();
 
-  // TODO: TTS_RELATIVE_EQUAL
-
   // TTS_EQUAL(res_std_par, res_std);
-  // TTS_RELATIVE_EQUAL(res_std_par      , res_std, ERROR_MAX_PERCENT);
-  // TTS_RELATIVE_EQUAL(res_std_par_unseq, res_std, ERROR_MAX_PERCENT);
+  TTS_RELATIVE_EQUAL(res_std_unseq    , res_std, ERROR_MAX_PERCENT);
+  TTS_RELATIVE_EQUAL(res_std_par      , res_std, ERROR_MAX_PERCENT);
+  TTS_RELATIVE_EQUAL(res_std_par_unseq, res_std, ERROR_MAX_PERCENT);
   TTS_RELATIVE_EQUAL(res_hand         , res_std, ERROR_MAX_PERCENT);
   TTS_RELATIVE_EQUAL(res_kwk_cpu      , res_std, ERROR_MAX_PERCENT);
   TTS_RELATIVE_EQUAL(res_eve          , res_std, ERROR_MAX_PERCENT);
@@ -115,11 +129,15 @@ TTS_CASE("Benchmark - reduce, memory-bound ")
 {
   if (::kwk::bench::enable_global)
   {
+    ::kwk::bench::get_eve_compiler_flag();
+
     sutils::printer_t::head("Benchmark - Reduce, memory-bound", true);
 
     using DATA_TYPE = float;
 
     auto func = [](auto a, auto b) { return a * b; };
+
+    
     DATA_TYPE func_id = 1; // Neutral element, for addition
 
     [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
@@ -130,12 +148,13 @@ TTS_CASE("Benchmark - reduce, memory-bound ")
     std::string hname = sutils::get_host_name();
          if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
     else if (hname == "pata")                   { size =   1 * gio; }
-    else if (hname == "chaton")                 { size = 128 * mio; }
+    else if (hname == "chaton")                 { size =   2 * gio; }
+    else if (hname == "falcou-avx512")          { size =   6 * gio; }
     else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
     else if (hname == "lapierre")               { size =  32 * mio; }
     else                                        { size =   1 * gio; }
 
-    reduce_test<DATA_TYPE>("Reduce memory-bound", "reduce_memory-bound_" + kwk::bench::EVE_COMPILER_FLAG + ".bench", func, func_id, size);
+    reduce_test<DATA_TYPE>("Reduce memory-bound", "reduce_memory-bound_" + kwk::bench::EVE_COMPILER_FLAG + ".bench", func, func, func_id, size);
   }
   else
   {
