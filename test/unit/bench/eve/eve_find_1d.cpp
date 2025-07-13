@@ -63,7 +63,8 @@ void find_test( std::string const& bench_name
 
   srand(9546312);
   DATA_TYPE min_value = 0.;
-  DATA_TYPE max_value = 8465124931.;
+  DATA_TYPE max_value = M_PI * 2;
+  // DATA_TYPE max_value = 8465124931.;
 
   for (std::size_t i = 0; i < input_size; ++i)
   {
@@ -310,7 +311,7 @@ void find_test_compute_bound(find_test_pos pos)
     sutils::printer_t::head("Benchmark - find-if, compute-bound, " + pos_str, true);
 
     find_test<DATA_TYPE>("find-if compute-bound " + pos_str
-                        , "find-if_compute-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
+                        , "find-if_compute-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + "_2PI.bench"
                         , convert_func
                         , convert_func_eve
                         , size
@@ -325,71 +326,71 @@ void find_test_compute_bound(find_test_pos pos)
 }
 
 TTS_CASE("Benchmark - find-if, compute-bound, last pos")    { find_test_compute_bound(find_test_pos::last);   };
-TTS_CASE("Benchmark - find-if, compute-bound, middle pos")  { find_test_compute_bound(find_test_pos::middle); };
+// TTS_CASE("Benchmark - find-if, compute-bound, middle pos")  { find_test_compute_bound(find_test_pos::middle); };
 // TTS_CASE("Benchmark - find-if, compute-bound, first pos")   { find_test_compute_bound(find_test_pos::first);  };
 
 
 
 
 
-void find_test_memory_bound(find_test_pos pos)
-{
-  if (::kwk::bench::enable_global)
-  {
-    ::kwk::bench::get_eve_compiler_flag();
-    
-    using DATA_TYPE = float;
+// void find_test_memory_bound(find_test_pos pos)
+// {
+//   if (::kwk::bench::enable_global)
+//   {
+//     ::kwk::bench::get_eve_compiler_flag();
 
-    [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
-    [[maybe_unused]] std::size_t mio = 1024 * kio;
-    [[maybe_unused]] std::size_t gio = 1024 * mio;
+//     using DATA_TYPE = float;
 
-    std::size_t size;
-    std::string hname = sutils::get_host_name();
-         if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-    else if (hname == "pata")                   { size = 256 * mio; }
+//     [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
+//     [[maybe_unused]] std::size_t mio = 1024 * kio;
+//     [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-    else if (hname == "falcou-avx512")          { size =   6 * gio; }
-    else if (hname == "chaton")                 { size = 256 * mio; }
+//     std::size_t size;
+//     std::string hname = sutils::get_host_name();
+//          if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+//     else if (hname == "pata")                   { size = 256 * mio; }
 
-    else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-    else if (hname == "lapierre")               { size =  32 * mio; }
-    else                                        { size = 256 * mio; }
-    // sutils::printer_t::head("SIZE = " + std::to_string(size), true);
+//     else if (hname == "falcou-avx512")          { size =   6 * gio; }
+//     else if (hname == "chaton")                 { size = 256 * mio; }
 
-    std::string pos_str = "";
-    std::size_t put_at_pos = 0;
-    switch (pos)
-    {
-      case first:   pos_str = "pos(first)";  put_at_pos = 0;        break;
-      case middle:  pos_str = "pos(middle)"; put_at_pos = size / 2; break;
-      case last:    pos_str = "pos(last)";   put_at_pos = size - 1; break;
-      default: break;
-    }
+//     else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+//     else if (hname == "lapierre")               { size =  32 * mio; }
+//     else                                        { size = 256 * mio; }
+//     // sutils::printer_t::head("SIZE = " + std::to_string(size), true);
 
-    sutils::printer_t::head("Benchmark - find-if, memory-bound, " + pos_str, true);
+//     std::string pos_str = "";
+//     std::size_t put_at_pos = 0;
+//     switch (pos)
+//     {
+//       case first:   pos_str = "pos(first)";  put_at_pos = 0;        break;
+//       case middle:  pos_str = "pos(middle)"; put_at_pos = size / 2; break;
+//       case last:    pos_str = "pos(last)";   put_at_pos = size - 1; break;
+//       default: break;
+//     }
 
-    auto convert_func = [=](auto const& item) { return item; };
-    // auto convert_func = [=](auto const& item) { return ::std::cos(item) * static_cast<DATA_TYPE>(1.45); };
-    // auto convert_func_eve = [=](auto const& item) { return ::eve::cos(item) * static_cast<DATA_TYPE>(1.45); };
+//     sutils::printer_t::head("Benchmark - find-if, memory-bound, " + pos_str, true);
 
-    find_test<DATA_TYPE>("find-if memory-bound " + pos_str, "find-if-memory-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
-                        , convert_func
-                        , convert_func
-                        , size
-                        , put_at_pos
-                        );
-    std::cout << "\n\n";
-  }
-  else
-  {
-    TTS_EQUAL(true, true);
-  }
-}
+//     auto convert_func = [=](auto const& item) { return item; };
+//     // auto convert_func = [=](auto const& item) { return ::std::cos(item) * static_cast<DATA_TYPE>(1.45); };
+//     // auto convert_func_eve = [=](auto const& item) { return ::eve::cos(item) * static_cast<DATA_TYPE>(1.45); };
 
-// sqrt(4 * cos * cos + sin * sin)
+//     find_test<DATA_TYPE>("find-if memory-bound " + pos_str, "find-if-memory-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
+//                         , convert_func
+//                         , convert_func
+//                         , size
+//                         , put_at_pos
+//                         );
+//     std::cout << "\n\n";
+//   }
+//   else
+//   {
+//     TTS_EQUAL(true, true);
+//   }
+// }
 
-TTS_CASE("Benchmark - find-if, memory-bound, last pos")    { find_test_memory_bound(find_test_pos::last);   };
-TTS_CASE("Benchmark - find-if, memory-bound, middle pos")  { find_test_memory_bound(find_test_pos::middle); };
-// TTS_CASE("Benchmark - find-if, memory-bound, first pos")   { find_test_memory_bound(find_test_pos::first);  };
+// // sqrt(4 * cos * cos + sin * sin)
+
+// TTS_CASE("Benchmark - find-if, memory-bound, last pos")    { find_test_memory_bound(find_test_pos::last);   };
+// TTS_CASE("Benchmark - find-if, memory-bound, middle pos")  { find_test_memory_bound(find_test_pos::middle); };
+// // TTS_CASE("Benchmark - find-if, memory-bound, first pos")   { find_test_memory_bound(find_test_pos::first);  };
 
