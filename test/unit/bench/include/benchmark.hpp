@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <filesystem>
+#include <algorithm>
 // #define ANKERL_NANOBENCH_IMPLEMENT
 #include "utils/utils.hpp"
 
@@ -21,8 +24,11 @@ const double LEGEND_LOAD_FACTOR = 1.;
 
 bool enable_global = true;
 
-const std::string EVE_COMPILER_FLAG = "mavx2_mfma";
-const std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
+std::string EVE_COMPILER_FLAG = "ERROR-unknown-EVE-flag";
+
+// Will be updated in get_eve_compiler_flag()
+std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG; 
+
 // -mavx2 -mfma
 // -msse4.2 on devrait avoir x4
 // -march=skylake-avx512
@@ -37,6 +43,8 @@ struct cbench_t
   // void set_title(std::string global_name_)    { global_name = global_name_; }
   void set_iterations(std::size_t iter_count) { iterations_count = iter_count; }
   void start(std::string const& fname, std::string const& global_name, std::string const& measured_variable, std::size_t array_size);
+
+  
   
   // When a reset function is needed for every iteration
   void run_function(std::string const& name, auto func, auto reset_func); 
@@ -56,17 +64,41 @@ private:
 
 void cbench_t::start(std::string const& fname, std::string const& global_name, std::string const& measured_variable, std::size_t array_size)
 {
+  std::string out_dir = "../kiwaku_bench_results/";
+
   std::cout << "\n============================"
             << "\nStart benchmark environment:\n"
             << "    " << global_name << "\n"
-            << "    " << fname << "\n\n";
-  current_file.open(fname);
+            << "    " << fname << "\n"
+            << "    in directory " << out_dir << "\n\n";
+  
+  std::filesystem::create_directory(out_dir);
+
+  current_file.open(out_dir + fname);
   // std::cout << "File opened!\n";
   current_file << version << "\n";
   current_file << global_name << "\n";
   current_file << measured_variable << "\n";
   current_file << array_size << "\n";
   // std::cout << "First line written to file!\n";
+}
+
+
+void get_eve_compiler_flag()
+{
+  if (const char* env_p = std::getenv("EVE_FLAG"))
+  {
+    EVE_COMPILER_FLAG = std::string(env_p);
+    std::replace(EVE_COMPILER_FLAG.begin(), EVE_COMPILER_FLAG.end(), ' ', '_'); // replace all ' ' by '_'
+    EVE_BACKEND_NAME = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
+    std::cout << "EVE_COMPILER_FLAG set to " << EVE_COMPILER_FLAG << "\n";
+  } else {
+    std::cout << "\n\n";
+    std::cout << "=======================================================\n";
+    std::cout << "ERROR: please define the EVE_FLAG environment variable.\n";
+    std::cout << "=======================================================\n\n\n";
+    std::terminate();
+  }
 }
 
 
