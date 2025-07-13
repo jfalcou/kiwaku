@@ -19,6 +19,7 @@
 #include "../include/utils/utils.hpp"
 #include <cmath>
 #include <execution> // don't forget the -ltbb compiler flag
+#include <iostream>
 
 #include <eve/module/math.hpp>
 
@@ -32,6 +33,8 @@ void find_test( std::string const& bench_name
               , std::size_t const put_at_pos
               )
 {
+  ::kwk::bench::get_eve_compiler_flag();
+
   const std::size_t d0 = view_size;
   const std::size_t input_size = d0;
   std::vector<DATA_TYPE> input;
@@ -121,7 +124,7 @@ void find_test( std::string const& bench_name
 
 
   #if ENABLE_TBB
-    int res_std_par, res_std_par_unseq;
+    int res_std_par, res_std_par_unseq, res_std_unseq;
     auto fct_std_par = [&]()
     {
       auto pos = std::find_if(std::execution::par, input.begin(), input.end(), compare_func);
@@ -137,8 +140,18 @@ void find_test( std::string const& bench_name
       else                    res_std_par_unseq = -1;
       return res_std_par_unseq;
     };
-    b.run_function("std::execution::par", fct_std_par);
+
+    auto fct_std_unseq = [&]()
+    {
+      auto pos = std::find_if(std::execution::par_unseq, input.begin(), input.end(), compare_func);
+      if (pos != input.end()) res_std_unseq = std::distance(input.begin(), pos);
+      else                    res_std_unseq = -1;
+      return res_std_unseq;
+    };
+    b.run_function("std::execution::unseq"    , fct_std_unseq);
+    b.run_function("std::execution::par"      , fct_std_par);
     b.run_function("std::execution::par_unseq", fct_std_par_unseq);
+    TTS_EQUAL(res_std_unseq     , res_std);
     TTS_EQUAL(res_std_par       , res_std);
     TTS_EQUAL(res_std_par_unseq , res_std);
   #endif
@@ -264,8 +277,11 @@ void find_test_compute_bound(find_test_pos pos)
     std::string hname = sutils::get_host_name();
          if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
     else if (hname == "pata")                   { size =  64 * mio; }
+    
+    else if (hname == "falcou-avx512")          { size = 256 * mio; }
     else if (hname == "chaton")                 { size =  64 * mio; }
-    else if (hname == "sylvain-ThinkPad-T580")  { size =   8 * mio; }
+
+    else if (hname == "sylvain-ThinkPad-T580")  { size =  64 * mio; }
     else if (hname == "lapierre")               { size =   8 * mio; }
     else                                        { size =  64 * mio; }
     
@@ -283,7 +299,7 @@ void find_test_compute_bound(find_test_pos pos)
     sutils::printer_t::head("Benchmark - find-if, compute-bound, " + pos_str, true);
 
     find_test<DATA_TYPE>("find-if compute-bound " + pos_str
-                        , "find-if_compute-bound_" + pos_str + ".bench"
+                        , "find-if_compute-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
                         , convert_func
                         , convert_func_eve
                         , size
@@ -299,7 +315,7 @@ void find_test_compute_bound(find_test_pos pos)
 
 TTS_CASE("Benchmark - find-if, compute-bound, last pos")    { find_test_compute_bound(find_test_pos::last);   };
 TTS_CASE("Benchmark - find-if, compute-bound, middle pos")  { find_test_compute_bound(find_test_pos::middle); };
-TTS_CASE("Benchmark - find-if, compute-bound, first pos")   { find_test_compute_bound(find_test_pos::first);  };
+// TTS_CASE("Benchmark - find-if, compute-bound, first pos")   { find_test_compute_bound(find_test_pos::first);  };
 
 
 
@@ -319,7 +335,10 @@ void find_test_memory_bound(find_test_pos pos)
     std::string hname = sutils::get_host_name();
          if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
     else if (hname == "pata")                   { size = 256 * mio; }
+
+    else if (hname == "falcou-avx512")          { size =   6 * gio; }
     else if (hname == "chaton")                 { size = 256 * mio; }
+
     else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
     else if (hname == "lapierre")               { size =  32 * mio; }
     else                                        { size = 256 * mio; }
@@ -341,7 +360,7 @@ void find_test_memory_bound(find_test_pos pos)
     // auto convert_func = [=](auto const& item) { return ::std::cos(item) * static_cast<DATA_TYPE>(1.45); };
     // auto convert_func_eve = [=](auto const& item) { return ::eve::cos(item) * static_cast<DATA_TYPE>(1.45); };
 
-    find_test<DATA_TYPE>("find-if memory-bound " + pos_str, "find-if-memory-bound_" + pos_str + ".bench"
+    find_test<DATA_TYPE>("find-if memory-bound " + pos_str, "find-if-memory-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
                         , convert_func
                         , convert_func
                         , size
@@ -359,5 +378,5 @@ void find_test_memory_bound(find_test_pos pos)
 
 TTS_CASE("Benchmark - find-if, memory-bound, last pos")    { find_test_memory_bound(find_test_pos::last);   };
 TTS_CASE("Benchmark - find-if, memory-bound, middle pos")  { find_test_memory_bound(find_test_pos::middle); };
-TTS_CASE("Benchmark - find-if, memory-bound, first pos")   { find_test_memory_bound(find_test_pos::first);  };
+// TTS_CASE("Benchmark - find-if, memory-bound, first pos")   { find_test_memory_bound(find_test_pos::first);  };
 
