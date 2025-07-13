@@ -23,10 +23,20 @@ namespace sutils
       std::string hp = "-";
       
       std::string header = hp + " " + str + " " + hp;
-      uint rpad_len = (hd.size() - header.size()) / 2;
-      std::string rpad(rpad_len, '=');
-      uint lpad_len = hd.size() - (rpad_len + header.length());
-      std::string lpad(lpad_len, '=');
+
+      std::string rpad = "";
+      std::string lpad = "";
+      
+      
+      if (hd.size() > header.size())
+      {
+        int rpad_len = (hd.size() - header.size()) / 2;
+        int lpad_len = hd.size() - (rpad_len + header.size());
+        std::string r(rpad_len, '=');
+        std::string l(lpad_len, '=');
+        rpad = r;
+        lpad = l;
+      }
 
       if (insert_newline_above) std::cout << "\n";
       std::cout << hd << "\n";
