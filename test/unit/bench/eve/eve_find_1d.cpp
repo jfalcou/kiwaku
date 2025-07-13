@@ -33,7 +33,6 @@ void find_test( std::string const& bench_name
               , std::size_t const put_at_pos
               )
 {
-  ::kwk::bench::get_eve_compiler_flag();
 
   const std::size_t d0 = view_size;
   const std::size_t input_size = d0;
@@ -51,6 +50,16 @@ void find_test( std::string const& bench_name
     std::cout << "!=!=!=!=!=!=!=!=!=! ERROR (v1) @find_test: compare_func(input[put_at_pos]) returns false.";
     std::terminate();
   }
+
+  // auto reset_data = [&](std::vector<DATA_TYPE>& vect)
+  // {
+  //   std::mt19937 gen(78512); // rd()
+  //   std::uniform_real_distribution<DATA_TYPE> dis(0, 2.0 * M_PI);
+  //   for (std::size_t i = 0; i < L2_size; ++i)
+  //     {
+  //       vect[i] = dis(gen);
+  //     }
+  // };
 
   srand(9546312);
   DATA_TYPE min_value = 0.;
@@ -182,6 +191,8 @@ void find_test_compute_bound(find_test_pos pos)
 {
   if (::kwk::bench::enable_global)
   {
+    ::kwk::bench::get_eve_compiler_flag();
+
     using DATA_TYPE = float;
 
     // We must ensure type coherency for comparisons to still make sense.
@@ -325,6 +336,8 @@ void find_test_memory_bound(find_test_pos pos)
 {
   if (::kwk::bench::enable_global)
   {
+    ::kwk::bench::get_eve_compiler_flag();
+    
     using DATA_TYPE = float;
 
     [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
