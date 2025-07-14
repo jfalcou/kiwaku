@@ -54,7 +54,7 @@ namespace sutils
     {
       PauseTiming();
       ResumeTiming();
-      return elapsed_ * 1000;
+      return static_cast<std::size_t>(elapsed_ * 1000);
     }
 
     std::size_t ElapsedTimeMSReset()
@@ -63,7 +63,7 @@ namespace sutils
       ResumeTiming();
       double res = elapsed_ * 1000;
       Init();
-      return res;
+      return static_cast<std::size_t>(res);
     }
 
     std::string Str()

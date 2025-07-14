@@ -30,8 +30,8 @@ namespace sutils
       
       if (hd.size() > header.size())
       {
-        int rpad_len = (hd.size() - header.size()) / 2;
-        int lpad_len = hd.size() - (rpad_len + header.size());
+        std::size_t rpad_len = (hd.size() - header.size()) / 2;
+        std::size_t lpad_len = hd.size() - (rpad_len + header.size());
         std::string r(rpad_len, '=');
         std::string l(lpad_len, '=');
         rpad = r;
