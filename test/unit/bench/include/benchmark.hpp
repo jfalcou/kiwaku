@@ -4,6 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <algorithm>
+#include <cmath>
 // #define ANKERL_NANOBENCH_IMPLEMENT
 #include "utils/utils.hpp"
 
@@ -12,6 +13,9 @@
 #if ENABLE_TBB
   #include <execution> // don't forget the -ltbb compiler flag
 #endif
+
+#define EVE_ENABLE_SYCL true
+
 
 namespace kwk::bench
 {
@@ -52,6 +56,8 @@ struct cbench_t
 
   // For small arrays (e.g. contained in the L2 cache)
   void run_function_rpt(std::string const& name, std::size_t const repeat, auto func, auto reset_func);
+
+  void run_function_rpt_bwidth(std::string const& name, std::size_t const repeat, auto func, auto reset_func, double tsize_byte);
 
   void stop();
 
@@ -149,6 +155,35 @@ void cbench_t::run_function_rpt(std::string const& name, std::size_t const repea
     std::size_t elapsed = chrono.ElapsedTimeMS() ;
     current_file << elapsed << " ";
     std::cout << elapsed << " " << std::flush;
+    // std::cout << "(" << r << ") " << std::flush; //  "(" << r << ")" <<
+  }
+  current_file << "\n";
+  std::cout << "  sum_ret(" << sum_ret << ")\n\n";
+}
+
+// tsize_byte is the total data size read + written by the algorithm, in bytes
+void cbench_t::run_function_rpt_bwidth(std::string const& name, std::size_t const repeat, auto func, auto reset_func, double tsize_byte)
+{
+  std::cout << "Benchmarking  " << name << " (run_function_rpt_bwidth):\n";
+  current_file << name << "\n";
+  sutils::chrono_t chrono;
+  std::cout << "    ";
+  double sum_ret = 0;
+  for (std::size_t i = 0; i < iterations_count; ++i)
+  {
+    reset_func(); // not measured by the timer
+    chrono.Init();
+    for (std::size_t i2 = 0; i2 < repeat; ++i2)
+    {
+      auto r = func();
+      sum_ret += r;
+    }
+    std::size_t elapsed = chrono.ElapsedTimeMS() ;
+    double elapsed_s = static_cast<double>(elapsed) / 1000;
+    double bandwidthGB = std::round((tsize_byte / elapsed_s) / 100000000.) / 10; // 100000000. = 0.1 billion
+
+    current_file << elapsed << " ";
+    std::cout << elapsed << "(" << bandwidthGB << "GB/s) " << " " << std::flush;
     // std::cout << "(" << r << ") " << std::flush; //  "(" << r << ")" <<
   }
   current_file << "\n";
