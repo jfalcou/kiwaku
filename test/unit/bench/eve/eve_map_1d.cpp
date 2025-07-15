@@ -5,6 +5,14 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
+
+#include "../include/benchmark.hpp"
+#include "../include/utils/utils.hpp"
+
+#if EVE_ENABLE_SYCL
+  #include <kwk/context/sycl/context.hpp>
+#endif
+
 #include <kwk/context/cpu/context.hpp>
 #include <kwk/context/eve/context.hpp>
 // #include <kwk/context/sycl/internal/sycl_tools.hpp>
@@ -14,8 +22,6 @@
 #include "test.hpp"
 #include <numeric>
 #include <optional>
-#include "../include/benchmark.hpp"
-#include "../include/utils/utils.hpp"
 #include <cmath>
 #include <execution> // don't forget the -ltbb compiler flag
 #include <eve/module/math.hpp>
@@ -162,6 +168,42 @@ void for_each_test( std::string const& bench_name
     #endif
   #endif
 
+  #if EVE_ENABLE_SYCL
+    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
+    bool has_gpu = kwk::sycl::has_gpu();
+
+    auto sycl_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
+    {
+      auto fct_kwk_sycl_generic = [&]()
+      {
+        kwk::for_each(context, map_func, kwk_in, kwk_out);
+        return_ = kwk_out(L2_size / 2);
+        return return_;
+      };
+      b.run_function("Kiwaku SYCL on " + context.get_device_name(), fct_kwk_sycl_generic, [&]{ reset_data(data_out); });
+      return return_;
+    };
+
+    // Execute SYCL benchmark on GPU and CPU
+    if (has_gpu)
+    {
+      DATA_TYPE return_;
+      // GPU
+      sycl_bench(kwk::sycl::context{::sycl::gpu_selector_v}, return_);
+      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+      // CPU
+      sycl_bench(kwk::sycl::context{::sycl::cpu_selector_v}, return_);
+      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+    }
+    else // SYCL default context
+    {
+      DATA_TYPE return_;
+      // CPU
+      sycl_bench(kwk::sycl::default_context, return_);
+      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+    }
+  #endif
+
 
   auto generic_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
   {
@@ -225,6 +267,44 @@ TTS_CASE("Benchmark - for_each, compute-bound_trigo")
           + ::eve::cos(in) * ::eve::cos(in) + ::eve::sin(in) * ::eve::sin(in) + ::eve::cos(in) * ::eve::cos(in) + ::eve::sin(in) * ::eve::sin(in);
     };
 
+    // auto map_func = [=](DATA_TYPE const& in, DATA_TYPE& out)
+    // {
+    //   out = static_cast<DATA_TYPE>(
+    //     std::cos(
+    //       std::sin(
+    //         std::cos(
+    //           std::sin(
+    //             std::cos(
+    //               std::sin(
+    //                 static_cast<float>(in * 11.f) * 7.f
+    //                       ) * 3.8f
+    //                     ) / 1.12f
+    //                   ) * 3.17874f
+    //                 ) / 8.7f
+    //               ) * 9.48f
+    //             ) / 89.647681f
+    //           ) * 1.8746221f;
+    // };
+
+    // auto map_func_eve = [=](DATA_TYPE const& in, DATA_TYPE& out)
+    // {
+    //   out = static_cast<DATA_TYPE>(
+    //     eve::cos(
+    //       eve::sin(
+    //         eve::cos(
+    //           eve::sin(
+    //             eve::cos(
+    //               eve::sin(
+    //                 static_cast<float>(in * 11.f) * 7.f
+    //                       ) * 3.8f
+    //                     ) / 1.12f
+    //                   ) * 3.17874f
+    //                 ) / 8.7f
+    //               ) * 9.48f
+    //             ) / 89.647681f
+    //           ) * 1.8746221f;
+    // };
+
     [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
     [[maybe_unused]] std::size_t mio = 1024 * kio;
     [[maybe_unused]] std::size_t gio = 1024 * mio;
@@ -234,7 +314,8 @@ TTS_CASE("Benchmark - for_each, compute-bound_trigo")
     std::string hname = sutils::get_host_name();
     // Total data to process
          if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-    else if (hname == "pata")                   { L2_size = 256 * kio; total_size = 8 * mio; }
+
+    else if (hname == "pata")                   { total_size = 128 * mio; L2_size = total_size; }
     else if (hname == "chaton")                 { total_size = 128 * mio; L2_size = total_size; }
     // else if (hname == "chaton")                 { L2_size = 256 * kio; total_size = 128 * mio; }
     else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }
@@ -330,8 +411,8 @@ TTS_CASE("Benchmark - for_each, memory-bound")
     std::string hname = sutils::get_host_name();
     // Total data to process
          if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-    else if (hname == "pata")                   { L2_size = 256 * kio; total_size = 8 * mio; }
-    else if (hname == "chaton")                 { L2_size = 256 * kio; total_size = 8 * mio; }
+    else if (hname == "pata")                   { total_size = 2 * gio; L2_size = total_size; }
+    else if (hname == "chaton")                 { total_size = 2 * gio; L2_size = total_size; }
     else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }
 
     // 512 kio par L2
@@ -364,48 +445,6 @@ TTS_CASE("Benchmark - for_each, memory-bound")
 };
 
 
-
-
-
-
-// TTS_CASE("Benchmark - for_each, memory-bound")
-// {
-//   if (::kwk::bench::enable_global)
-//   {
-//     using DATA_TYPE = float;
-
-//     // FMA
-//     auto map_func     = [=](DATA_TYPE& d) { d = d * static_cast<DATA_TYPE>(2.f); };
-//     auto map_func_eve = [=](DATA_TYPE& d) { d = d * static_cast<DATA_TYPE>(2.f); };
-
-//     [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
-//     [[maybe_unused]] std::size_t mio = 1024 * kio;
-//     [[maybe_unused]] std::size_t gio = 1024 * mio;
-
-//     std::size_t size;
-//     std::string hname = sutils::get_host_name();
-//          if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-//     else if (hname == "pata")                   { size =  64 * mio; }
-//     else if (hname == "chaton")                 { size =  64 * mio; }
-//     else if (hname == "sylvain-ThinkPad-T580")  { size =  64 * mio; }
-//     else if (hname == "lapierre")               { size =  64 * mio; }
-//     else                                        { size =  64 * mio; }
-
-//     sutils::printer_t::head("Benchmark - for_each, memory-bound", true);
-
-//     for_each_test<DATA_TYPE>( "for_each memory-bound"
-//                             , "for_each_memory-bound_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
-//                             , map_func
-//                             , map_func_eve
-//                             , size
-//                             );
-//     std::cout << "\n\n";
-//   }
-//   else
-//   {
-//     TTS_EQUAL(true, true);
-//   }
-// };
 
 
 
