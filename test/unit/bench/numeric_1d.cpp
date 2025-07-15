@@ -112,7 +112,7 @@ void transform_reduce_test(std::string const& bench_name
   b.run_function("std::execution::par", fct_std_par);
   b.run_function("std::execution::par_unseq", fct_std_par_unseq);
 
-  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
+  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
   bool has_gpu = kwk::sycl::has_gpu();
 
   auto sycl_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
@@ -221,7 +221,7 @@ TTS_CASE("Benchmark - transform_reduce, memory-bound ")
 
     std::size_t size;
     std::string hname = sutils::get_host_name();
-        if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+         if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
     else if (hname == "pata")                   { size =   1 * gio; }
     else if (hname == "chaton")                 { size = 128 * mio; }
     else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }

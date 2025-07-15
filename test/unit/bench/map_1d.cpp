@@ -47,6 +47,11 @@ void for_each_test( std::string const& bench_name
       {
         vect[i] = kwk::bench::random_float<DATA_TYPE>(min_value, max_value);
       }
+
+    // for (std::size_t i = 0; i < data_size; ++i)
+    //   {
+    //     vect[i] = 1;
+    //   }
   };
 
   auto view_data  = kwk::view{kwk::source = data.data(), kwk::of_size(d0)};
@@ -96,7 +101,7 @@ void for_each_test( std::string const& bench_name
   b.run_function("std::execution::par", fct_std_par, [&]{ reset_data(data_std); });
   b.run_function("std::execution::par_unseq", fct_std_par_unseq, [&]{ reset_data(data_std); });
 
-  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
+  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
   bool has_gpu = kwk::sycl::has_gpu();
 
   auto sycl_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
@@ -242,9 +247,9 @@ TTS_CASE("Benchmark - for_each, memory-bound")
 
     std::size_t size;
     std::string hname = sutils::get_host_name();
-        if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+         if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
     else if (hname == "pata")                   { size =  64 * mio; }
-    else if (hname == "chaton")                 { size =  64 * mio; }
+    else if (hname == "chaton")                 { size =  4 * gio; }
     else if (hname == "sylvain-ThinkPad-T580")  { size =  64 * mio; }
     else if (hname == "lapierre")               { size =  64 * mio; }
     else                                        { size =  64 * mio; }

@@ -340,7 +340,7 @@ namespace kwk::sycl
   };
 
   // Checks whether GPU offloading is available in this system
-  // Don't forget the compilation flag "-fsycl -fsycl-targets=nvptx64-nvidia-cuda,x86_64"
+  // Don't forget the compilation flag "-fsycl -fsycl-targets=nvptx64-nvidia-cuda,x86_64" x86_64 or spir64
   // To target both Nvidia GPUs and native CPUs.
   [[maybe_unused]] static bool has_gpu()
   {

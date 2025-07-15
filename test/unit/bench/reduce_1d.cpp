@@ -103,7 +103,7 @@ void reduce_test(std::string const& bench_name, std::string const& file_name, au
   b.run_function("std::execution::par_unseq", fct_std_par_unseq);
   // b.run_function("std::reduce with std::execution::par", fct_std_par);
 
-  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda
+  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
   bool has_gpu = kwk::sycl::has_gpu();
 
   auto sycl_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
