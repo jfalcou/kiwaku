@@ -271,7 +271,10 @@ TTS_CASE("Benchmark - for_each, memory-bound")
     std::size_t L2_size; // L2 cache size, in bytes
     std::string hname = sutils::get_host_name();
     // Total data to process
-         if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+         if (hname == "parsys-legend")          { total_size = 6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; L2_size = total_size;  } 
+
+        //  if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+
     else if (hname == "pata")                   { total_size = 1 * gio; L2_size = total_size; }
     else if (hname == "chaton")                 { total_size = 2 * gio; L2_size = total_size; }
     else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }

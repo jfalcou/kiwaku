@@ -14,7 +14,7 @@
   #include <execution> // don't forget the -ltbb compiler flag
 #endif
 
-#define EVE_ENABLE_SYCL true
+#define EVE_ENABLE_SYCL false
 
 
 namespace kwk::bench

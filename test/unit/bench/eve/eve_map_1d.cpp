@@ -402,7 +402,7 @@ TTS_CASE("Benchmark - for_each, memory-bound")
       out = in + 2;
     };
 
-    [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
+    [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // Only one item for (read + (read + write))
     [[maybe_unused]] std::size_t mio = 1024 * kio;
     [[maybe_unused]] std::size_t gio = 1024 * mio;
 
