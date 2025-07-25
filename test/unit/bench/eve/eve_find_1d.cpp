@@ -5,6 +5,14 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
+
+#include "../include/benchmark.hpp"
+#include "../include/utils/utils.hpp"
+
+#if EVE_ENABLE_SYCL
+  #include <kwk/context/sycl/context.hpp>
+#endif
+
 #include <kwk/context/eve/context.hpp>
 #include <kwk/context/sycl/internal/sycl_tools.hpp>
 #include <cstdlib>
@@ -15,8 +23,6 @@
 #include "test.hpp"
 #include <numeric>
 #include <optional>
-#include "../include/benchmark.hpp"
-#include "../include/utils/utils.hpp"
 #include <cmath>
 #include <execution> // don't forget the -ltbb compiler flag
 #include <iostream>
@@ -42,7 +48,7 @@ void find_test( std::string const& bench_name
   DATA_TYPE find_initial_value = -88;
   input[put_at_pos] = find_initial_value;
   DATA_TYPE find_image_value = convert_func(find_initial_value);
-  auto compare_func = [&](auto const& item) { return (convert_func(item) == find_image_value); };
+  auto compare_func = [=](auto const& item) { return (convert_func(item) == find_image_value); };
   auto compare_func_eve = [&](auto const& item) { return (convert_func_eve(item) == find_image_value); };
 
   if ( ! compare_func(input[put_at_pos]))
@@ -153,7 +159,7 @@ void find_test( std::string const& bench_name
 
     auto fct_std_unseq = [&]()
     {
-      auto pos = std::find_if(std::execution::par_unseq, input.begin(), input.end(), compare_func);
+      auto pos = std::find_if(std::execution::unseq, input.begin(), input.end(), compare_func);
       if (pos != input.end()) res_std_unseq = std::distance(input.begin(), pos);
       else                    res_std_unseq = -1;
       return res_std_unseq;
@@ -164,6 +170,42 @@ void find_test( std::string const& bench_name
     TTS_EQUAL(res_std_unseq     , res_std);
     TTS_EQUAL(res_std_par       , res_std);
     TTS_EQUAL(res_std_par_unseq , res_std);
+  #endif
+
+  #if EVE_ENABLE_SYCL
+    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
+    bool has_gpu = kwk::sycl::has_gpu();
+
+    auto sycl_bench = [&](auto&& context, int& return_) -> int
+    {
+      auto fct_kwk_sycl_generic = [&]()
+      {
+        auto pos = kwk::find_if(context, view_in, compare_func);
+        return_ = kwk::utils::tools::pos_to_linear(view_in, pos);
+        return return_;
+      };
+      b.run_function("Kiwaku SYCL on " + context.get_device_name(), fct_kwk_sycl_generic);
+      return return_;
+    };
+
+    // Execute SYCL benchmark on GPU and CPU
+    if (has_gpu)
+    {
+      int return_;
+      // GPU
+      sycl_bench(kwk::sycl::context{::sycl::gpu_selector_v}, return_);
+      TTS_EQUAL(return_, res_std);
+      // CPU
+      sycl_bench(kwk::sycl::context{::sycl::cpu_selector_v}, return_);
+      TTS_EQUAL(return_, res_std);
+    }
+    else // SYCL default context
+    {
+      int return_;
+      // CPU
+      sycl_bench(kwk::sycl::default_context, return_);
+      TTS_EQUAL(return_, res_std);
+    }
   #endif
 
   auto fct_eve = [&]()
@@ -325,72 +367,72 @@ void find_test_compute_bound(find_test_pos pos)
   }
 }
 
-TTS_CASE("Benchmark - find-if, compute-bound, last pos")    { find_test_compute_bound(find_test_pos::last);   };
-// TTS_CASE("Benchmark - find-if, compute-bound, middle pos")  { find_test_compute_bound(find_test_pos::middle); };
+// TTS_CASE("Benchmark - find-if, compute-bound, last pos")    { find_test_compute_bound(find_test_pos::last);   };
+TTS_CASE("Benchmark - find-if, compute-bound, middle pos")  { find_test_compute_bound(find_test_pos::middle); };
 // TTS_CASE("Benchmark - find-if, compute-bound, first pos")   { find_test_compute_bound(find_test_pos::first);  };
 
 
 
 
 
-// void find_test_memory_bound(find_test_pos pos)
-// {
-//   if (::kwk::bench::enable_global)
-//   {
-//     ::kwk::bench::get_eve_compiler_flag();
+void find_test_memory_bound(find_test_pos pos)
+{
+  if (::kwk::bench::enable_global)
+  {
+    ::kwk::bench::get_eve_compiler_flag();
 
-//     using DATA_TYPE = float;
+    using DATA_TYPE = float;
 
-//     [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
-//     [[maybe_unused]] std::size_t mio = 1024 * kio;
-//     [[maybe_unused]] std::size_t gio = 1024 * mio;
+    [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
+    [[maybe_unused]] std::size_t mio = 1024 * kio;
+    [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-//     std::size_t size;
-//     std::string hname = sutils::get_host_name();
-//          if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-//     else if (hname == "pata")                   { size = 256 * mio; }
+    std::size_t size;
+    std::string hname = sutils::get_host_name();
+         if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+    else if (hname == "pata")                   { size = 256 * mio; }
 
-//     else if (hname == "falcou-avx512")          { size =   6 * gio; }
-//     else if (hname == "chaton")                 { size = 256 * mio; }
+    else if (hname == "falcou-avx512")          { size =   6 * gio; }
+    else if (hname == "chaton")                 { size = 256 * mio; }
 
-//     else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
-//     else if (hname == "lapierre")               { size =  32 * mio; }
-//     else                                        { size = 256 * mio; }
-//     // sutils::printer_t::head("SIZE = " + std::to_string(size), true);
+    else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
+    else if (hname == "lapierre")               { size =  32 * mio; }
+    else                                        { size = 256 * mio; }
+    // sutils::printer_t::head("SIZE = " + std::to_string(size), true);
 
-//     std::string pos_str = "";
-//     std::size_t put_at_pos = 0;
-//     switch (pos)
-//     {
-//       case first:   pos_str = "pos(first)";  put_at_pos = 0;        break;
-//       case middle:  pos_str = "pos(middle)"; put_at_pos = size / 2; break;
-//       case last:    pos_str = "pos(last)";   put_at_pos = size - 1; break;
-//       default: break;
-//     }
+    std::string pos_str = "";
+    std::size_t put_at_pos = 0;
+    switch (pos)
+    {
+      case first:   pos_str = "pos(first)";  put_at_pos = 0;        break;
+      case middle:  pos_str = "pos(middle)"; put_at_pos = size / 2; break;
+      case last:    pos_str = "pos(last)";   put_at_pos = size - 1; break;
+      default: break;
+    }
 
-//     sutils::printer_t::head("Benchmark - find-if, memory-bound, " + pos_str, true);
+    sutils::printer_t::head("Benchmark - find-if, memory-bound, " + pos_str, true);
 
-//     auto convert_func = [=](auto const& item) { return item; };
-//     // auto convert_func = [=](auto const& item) { return ::std::cos(item) * static_cast<DATA_TYPE>(1.45); };
-//     // auto convert_func_eve = [=](auto const& item) { return ::eve::cos(item) * static_cast<DATA_TYPE>(1.45); };
+    auto convert_func = [=](auto const& item) { return item; };
+    // auto convert_func = [=](auto const& item) { return ::std::cos(item) * static_cast<DATA_TYPE>(1.45); };
+    // auto convert_func_eve = [=](auto const& item) { return ::eve::cos(item) * static_cast<DATA_TYPE>(1.45); };
 
-//     find_test<DATA_TYPE>("find-if memory-bound " + pos_str, "find-if-memory-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
-//                         , convert_func
-//                         , convert_func
-//                         , size
-//                         , put_at_pos
-//                         );
-//     std::cout << "\n\n";
-//   }
-//   else
-//   {
-//     TTS_EQUAL(true, true);
-//   }
-// }
+    find_test<DATA_TYPE>("find-if memory-bound " + pos_str, "find-if-memory-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + ".bench"
+                        , convert_func
+                        , convert_func
+                        , size
+                        , put_at_pos
+                        );
+    std::cout << "\n\n";
+  }
+  else
+  {
+    TTS_EQUAL(true, true);
+  }
+}
 
-// // sqrt(4 * cos * cos + sin * sin)
+// sqrt(4 * cos * cos + sin * sin)
 
-// TTS_CASE("Benchmark - find-if, memory-bound, last pos")    { find_test_memory_bound(find_test_pos::last);   };
-// TTS_CASE("Benchmark - find-if, memory-bound, middle pos")  { find_test_memory_bound(find_test_pos::middle); };
+TTS_CASE("Benchmark - find-if, memory-bound, last pos")    { find_test_memory_bound(find_test_pos::last);   };
+TTS_CASE("Benchmark - find-if, memory-bound, middle pos")  { find_test_memory_bound(find_test_pos::middle); };
 // // TTS_CASE("Benchmark - find-if, memory-bound, first pos")   { find_test_memory_bound(find_test_pos::first);  };
 
