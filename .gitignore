@@ -60,3 +60,5 @@ exec.sh
 
 *.inactive
 *.ignore
+
+test/unit/bench/plot/files
