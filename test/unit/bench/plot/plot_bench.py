@@ -43,18 +43,21 @@ global_colors = [
 
 unit_name = ""
 
+CURRENT_VERSION = 0
 
 # Charge le fichier de bench "path" et retourne la liste de ce qui a été lu.
 def load_file(path):
-  global VERSION_ATTENDUE, global_name, measured_variable, kwk_array_size, unit_name
+  global VERSION_ATTENDUE, CURRENT_VERSION, global_name, measured_variable, kwk_array_size, unit_name
   bench_list = []
 
   with open(path) as fp:
     version = fp.readline() # version du fichier actuel (doit être 106 et non plus 105)
     print("File version: {}".format(version))
 
-    if (int(version) != VERSION_ATTENDUE):
+    if ((int(version) != VERSION_ATTENDUE) and not ((int(version) == 4) and (VERSION_ATTENDUE == 3))):
       sys.exit("ERROR, NON-COMPATIBLE FILE VERSION : " + str(int(version)) + ".  REQUIRED VERSION = " + str(VERSION_ATTENDUE))
+    
+    CURRENT_VERSION = int(version)
 
     global_name = fp.readline().rstrip("\n")
     measured_variable = fp.readline().rstrip("\n")
@@ -103,6 +106,9 @@ def load_file(path):
     if global_ref / 1000000000 >= 1:
       divide_by = 1000000000
       unit_name = " (billions)"
+    
+    if (CURRENT_VERSION == 4): # ignore unit, since it's a raw performance comparison
+      unit_name = ""
 
     for res in bench_list:
       for i in range(0, len(res["elements_per_second"])):
