@@ -35,7 +35,7 @@
 #include <execution> // don't forget the -ltbb compiler flag
 #include <eve/module/math.hpp>
 
-#define ENABLE_CHECK true
+enum data_reset_t { trigo, ones };
 
 template<typename DATA_TYPE>
 void for_each_test( std::string const& bench_name
@@ -43,69 +43,83 @@ void for_each_test( std::string const& bench_name
                   , auto map_func
                   , auto map_func_eve
                   , std::size_t const L2_size
-                  , std::size_t const repeat_count
+                  , std::size_t const total_number_of_elements
+                  , const data_reset_t data_reset
                   )
 {
   constexpr bool enable_check = ENABLE_CHECK;
+  const std::size_t repeat_count = 1; // deprecated, led to erroneous benchmarks
+  std::size_t total_data_size = total_number_of_elements * sizeof(DATA_TYPE) * 4;
 
-  std::cout << "L2_size(" << L2_size << ") repeat_count(" << repeat_count << ")\n";
-  std::vector<DATA_TYPE> data_in;
-  std::vector<DATA_TYPE> data_out;
-  std::vector<DATA_TYPE> data_out_truth; // remember result for checking other values
+  // std::cout << "L2_size(" << L2_size << ") repeat_count(" << repeat_count << ")\n";
+  std::vector<DATA_TYPE> data_re(L2_size);
+  std::vector<DATA_TYPE> data_im(L2_size);
 
-  // data_size doit être plus petit que la taille du cache
-  data_in.resize(L2_size);
-  data_out.resize(L2_size);
-  data_out_truth.resize(L2_size);
+  // Remember result for checking other values
+  std::vector<DATA_TYPE> data_truth_re(L2_size);
+  std::vector<DATA_TYPE> data_truth_im(L2_size);
 
-  auto reset_data = [&](std::vector<DATA_TYPE>& vect)
+  auto reset_data = [&](std::vector<DATA_TYPE>& re, std::vector<DATA_TYPE>& im)
   {
-    std::mt19937 gen(78512); // rd()
-    std::uniform_real_distribution<DATA_TYPE> dis(0, 2.0 * M_PI);
-    for (std::size_t i = 0; i < L2_size; ++i)
-      {
-        vect[i] = dis(gen);
-      }
+    if (data_reset == data_reset_t::ones)
+    {
+      std::fill(re.begin(), re.end(), 1);
+      std::fill(im.begin(), im.end(), 1);
+    }
+    if (data_reset == data_reset_t::trigo) 
+    {
+      std::mt19937 gen(78512); // rd()
+      std::uniform_real_distribution<float> dis(0, 2.0 * M_PI);
+      for (std::size_t i = 0; i < L2_size; ++i)
+        {
+          float val =  dis(gen);
+          re[i] = std::sin(val);
+          im[i] = std::cos(val);
+        }
+    }
   };
 
   // Kiwaku views
-  auto kwk_in   = kwk::view{kwk::source = data_in.data()  , kwk::of_size(L2_size)};
-  auto kwk_out  = kwk::view{kwk::source = data_out.data() , kwk::of_size(L2_size)};
+  auto kwk_re = kwk::view{kwk::source = data_re.data(), kwk::of_size(L2_size)};
+  auto kwk_im = kwk::view{kwk::source = data_im.data(), kwk::of_size(L2_size)};
 
 
   // Benchmark initialization
-  kwk::bench::cbench_t b;
-  b.start(kwk::bench::fprefix() + file_name, bench_name, "Processed elements, per second (higher is better)", L2_size * repeat_count);
+  kwk::bench::cbench_t b; // Processed elements, per second (higher is better)
+  b.start(kwk::bench::fprefix() + file_name, bench_name, "Throughput", total_number_of_elements);
   // b.set_iterations(1);
 
 
   // ====== Generic std function, used later ======
   auto fct_std_for_each = [&](auto const& policy)
   {
-    auto start_data = &data_in[0];
+    auto start_data = &data_re[0];
     // std::execution::unseq
     // Is function call expensive?
     std::for_each ( policy
-                  , data_in.begin()
-                  , data_in.end()
-                  , [&](auto const& in) 
+                  , data_re.begin()
+                  , data_re.end()
+                  , [&](auto& re) 
                     {
-                      int index = &in - start_data;
-                      return map_func(in, data_out[index]); // e = data_in[index]
+                      int index = &re - start_data;
+                      return map_func(re, data_im[index]);
                     }
                   );
-    return data_out[L2_size / 2];
+    return data_im[L2_size / 2] + data_re[L2_size / 2];
   };
+
 
   // ====== Generic std benchmark ======
   auto bench_std = [&](auto const& policy, std::string policy_name)
   {
-    b.run_function_rpt( policy_name
+    b.run_function_rpt_bwidth( policy_name
                       , repeat_count
                       , [&]{ return fct_std_for_each(policy); }
-                      , [&]{ reset_data(data_out); }
+                      , [&]{ reset_data(data_re, data_im); }
+                      , total_data_size
                       );
   };
+
 
   // ====== Generic Kiwaku benchmark ======
   // -> DATA_TYPE
@@ -114,11 +128,16 @@ void for_each_test( std::string const& bench_name
     DATA_TYPE return_;
     auto fct_kwk_sycl_generic = [&]()
     {
-      kwk::for_each(context, map_func_, kwk_in, kwk_out);
-      return_ = kwk_out(L2_size / 2);
+      kwk::for_each(context, map_func_, kwk_re, kwk_im);
+      return_ = kwk_re(L2_size / 2) + kwk_im(L2_size / 2);
       return return_;
     };
-    b.run_function_rpt(context_name, repeat_count, fct_kwk_sycl_generic, [&]{ reset_data(data_out); });
+    b.run_function_rpt_bwidth (  context_name
+                              , repeat_count
+                              , fct_kwk_sycl_generic
+                              , [&]{ reset_data(data_re, data_im); }
+                              , total_data_size
+                              );
     // return return_;
   };
 
@@ -126,29 +145,32 @@ void for_each_test( std::string const& bench_name
   // ====== hand-written sequential ======
   auto fct_hand = [&]()
   {
-    for (std::size_t i = 0; i < L2_size; ++i) { map_func(data_in[i], data_out[i]); }
-    return data_out[L2_size / 2];
+    for (std::size_t i = 0; i < L2_size; ++i) { map_func(data_re[i], data_im[i]); }
+    return data_re[L2_size / 2] + data_im[L2_size / 2];
   };
-  b.run_function_rpt("hand CPU", repeat_count, fct_hand, [&]{ reset_data(data_out); });
+  b.run_function_rpt_bwidth("hand CPU", repeat_count, fct_hand, [&]{ reset_data(data_re, data_im); }, total_data_size);
 
   // Remember output for later verification
-  for (std::size_t i = 0; i < data_out_truth.size(); ++i) { data_out_truth[i] = data_out[i]; }
+  std::copy(data_re.begin(), data_re.end(), data_truth_re.begin());
+  std::copy(data_im.begin(), data_im.end(), data_truth_im.begin());
 
 
   // ====== Kiwaku CPU context ======
   bench_kiwaku(::kwk::cpu, "kwk CPU", map_func);
-  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
 
 
   // ====== std sequential ======
   bench_std(std::execution::seq, "seq");
-  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
 
 
   // ====== std unsequenced ======
   bench_std(std::execution::unseq, "unseq");
-  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
-
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
 
 
   // Don't forget the -ltbb compiler flag
@@ -156,11 +178,13 @@ void for_each_test( std::string const& bench_name
 
     // ====== std parallel ======
     bench_std(std::execution::par, "par");
-    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
 
     // ====== std parallel unsequenced ======
     bench_std(std::execution::par_unseq, "par_unseq");
-    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
   #endif
 
 
@@ -175,15 +199,17 @@ void for_each_test( std::string const& bench_name
     if (has_gpu)
     {
       // ====== Kiwaku SYCL GPU ======
-      auto& ctx = kwk::sycl::context{::sycl::gpu_selector_v};
-      bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
-      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+      auto ctx_cpu = kwk::sycl::context{::sycl::gpu_selector_v};
+      bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), map_func);
+      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
 
       #if KIWAKU_BENCH_MTHREAD
         // ====== Kiwaku SYCL CPU ======
-        auto& ctx = kwk::sycl::context{::sycl::cpu_selector_v};
-        bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
-        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+        auto ctx_gpu = kwk::sycl::context{::sycl::cpu_selector_v};
+        bench_kiwaku(ctx_gpu, "kwk SYCL " + ctx_gpu.get_device_name(), map_func);
+        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
       #endif
     }
     else
@@ -192,7 +218,8 @@ void for_each_test( std::string const& bench_name
         // ====== CPU ======
         auto& ctx = kwk::sycl::default_context;
         bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
-        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
       #endif
     }
   #endif
@@ -201,33 +228,23 @@ void for_each_test( std::string const& bench_name
   // EVE SIMD
   #if KIWAKU_BENCH_EVE
     bench_kiwaku(::kwk::simd, "kwk SIMD", map_func_eve);
-    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
   #endif
 
 
 
-  for (std::size_t i = 0; i < 30; ++i) { std::cout << data_out_truth[i] << " "; }
+  for (std::size_t i = 0; i < 30; ++i) { std::cout << data_truth_re[i] << " "; }
+  std::cout << "\n";
+  for (std::size_t i = 0; i < 30; ++i) { std::cout << data_truth_im[i] << " "; }
   std::cout << "\n";
   b.stop();
 }
 
 
 
-TTS_CASE("Benchmark - for_each, compute-bound_trigo")
+TTS_CASE("Benchmark - for_each, compute-bound")
 {
-
-  // (a + ib) * (c + id) = ac + iad + ibc -bd = ac - bd + i(ad + bc)
-
-  // (a + ib) * (a + ib) = aa - bb + i(aa + ba)
-  // std::size_t repeat_inner = 50;
-
-  // auto map_v2 = [=](DATA_TYPE& re, DATA_TYPE& im) {
-  //   for (std::size_t i = 0; i < repeat_inner; ++i) {
-  //     re = re * re - im * im;
-  //     im = re * re + im * im;
-  //   }
-  // };
-
 
   if (::kwk::bench::enable_global)
   {
@@ -237,57 +254,7 @@ TTS_CASE("Benchmark - for_each, compute-bound_trigo")
 
     // const DATA_TYPE PI = static_cast<DATA_TYPE>(M_PI);
 
-    auto map_func = [=](DATA_TYPE const& in, DATA_TYPE& out)
-    {
-      // out = ::std::cos(in) + ::std::sin(in);
-      out = ::std::cos(in) * ::std::cos(in) + ::std::sin(in) * ::std::sin(in) + ::std::cos(in) * ::std::cos(in) + ::std::sin(in) * ::std::sin(in)
-          + ::std::cos(in) * ::std::cos(in) + ::std::sin(in) * ::std::sin(in) + ::std::cos(in) * ::std::cos(in) + ::std::sin(in) * ::std::sin(in);
-    };
 
-    auto map_func_eve = [=](auto const& in, auto& out)
-    {
-      // out = ::eve::cos(in) + ::eve::sin(in);
-      out = ::eve::cos(in) * ::eve::cos(in) + ::eve::sin(in) * ::eve::sin(in) + ::eve::cos(in) * ::eve::cos(in) + ::eve::sin(in) * ::eve::sin(in)
-          + ::eve::cos(in) * ::eve::cos(in) + ::eve::sin(in) * ::eve::sin(in) + ::eve::cos(in) * ::eve::cos(in) + ::eve::sin(in) * ::eve::sin(in);
-    };
-
-    // auto map_func = [=](DATA_TYPE const& in, DATA_TYPE& out)
-    // {
-    //   out = static_cast<DATA_TYPE>(
-    //     std::cos(
-    //       std::sin(
-    //         std::cos(
-    //           std::sin(
-    //             std::cos(
-    //               std::sin(
-    //                 static_cast<float>(in * 11.f) * 7.f
-    //                       ) * 3.8f
-    //                     ) / 1.12f
-    //                   ) * 3.17874f
-    //                 ) / 8.7f
-    //               ) * 9.48f
-    //             ) / 89.647681f
-    //           ) * 1.8746221f;
-    // };
-
-    // auto map_func_eve = [=](DATA_TYPE const& in, DATA_TYPE& out)
-    // {
-    //   out = static_cast<DATA_TYPE>(
-    //     eve::cos(
-    //       eve::sin(
-    //         eve::cos(
-    //           eve::sin(
-    //             eve::cos(
-    //               eve::sin(
-    //                 static_cast<float>(in * 11.f) * 7.f
-    //                       ) * 3.8f
-    //                     ) / 1.12f
-    //                   ) * 3.17874f
-    //                 ) / 8.7f
-    //               ) * 9.48f
-    //             ) / 89.647681f
-    //           ) * 1.8746221f;
-    // };
 
     [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
     [[maybe_unused]] std::size_t mio = 1024 * kio;
@@ -312,7 +279,40 @@ TTS_CASE("Benchmark - for_each, compute-bound_trigo")
     else if (hname == "lapierre")               { L2_size = 128 * mio; total_size = 256 * mio; }
     else                                        { L2_size = 256 * kio; total_size = 8 * mio; }
 
-    std::size_t reps = total_size / L2_size; // Number of repetitions
+    std::size_t repetitions = total_size / L2_size; // Number of repetitions
+
+    std::cout << "\n======= REPEAT = " << repetitions << "\n\n";
+
+    // === Unitary complex ===
+    // const std::size_t repeat_inner = 10;
+    // auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
+    // {
+      // for (std::size_t i = 0; i < repeat_inner; ++i) {
+        // DATA_TYPE re_ = re;
+        // DATA_TYPE im_ = im;
+        // re = re_ * re_ - im_ * im_;
+        // im = re_ * im_ + im_ * re_;
+      // }
+    // };
+    // auto map_func_eve = map_func;
+
+    auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
+    {
+      for (std::size_t r = 0; r < repetitions; ++r)
+      {
+        re = ::std::cos(re) * ::std::cos(re) + ::std::sin(re) * ::std::sin(re);
+        im = ::std::cos(im) * ::std::cos(im) + ::std::sin(im) * ::std::sin(im);
+      }
+    };
+
+    auto map_func_eve = [=](auto& re, auto& im)
+    {
+      for (std::size_t r = 0; r < repetitions; ++r)
+      {
+        re = ::eve::cos(re) * ::eve::cos(re) + ::eve::sin(re) * ::eve::sin(re);
+        im = ::eve::cos(im) * ::eve::cos(im) + ::eve::sin(im) * ::eve::sin(im);
+      }
+    };
 
 
     std::string l2_str = std::to_string(L2_size / kio);
@@ -325,7 +325,8 @@ TTS_CASE("Benchmark - for_each, compute-bound_trigo")
                             , map_func
                             , map_func_eve
                             , L2_size
-                            , reps
+                            , L2_size * repetitions
+                            , data_reset_t::trigo
                             );
     std::cout << "\n\n";
   }
@@ -376,14 +377,16 @@ TTS_CASE("Benchmark - for_each, memory-bound")
 
     using DATA_TYPE = float;
 
-    auto map_func = [=](DATA_TYPE const& in, DATA_TYPE& out)
+    auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
     {
-      out = in + 2;
+      re = re + 2;
+      im = im + 2;
     };
 
-    auto map_func_eve = [=](auto const& in, auto& out)
+    auto map_func_eve = [=](DATA_TYPE& re, DATA_TYPE& im)
     {
-      out = in + 2;
+      re = re + 2;
+      im = im + 2;
     };
 
     [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // Only one item for (read + (read + write))
@@ -407,8 +410,6 @@ TTS_CASE("Benchmark - for_each, memory-bound")
     else if (hname == "lapierre")               { L2_size = 128 * mio; total_size = 256 * mio; }
     else                                        { L2_size = 256 * kio; total_size = 8 * mio; }
 
-    std::size_t reps = total_size / L2_size; // Number of repetitions
-
     std::string l2_str = std::to_string(L2_size / kio);
 
     sutils::printer_t::head("Benchmark - for_each, memory-bound (L2 " + l2_str + ")", true);
@@ -418,7 +419,8 @@ TTS_CASE("Benchmark - for_each, memory-bound")
                             , map_func
                             , map_func_eve
                             , L2_size
-                            , reps
+                            , L2_size * 1
+                            , data_reset_t::ones
                             );
     std::cout << "\n\n";
   }
