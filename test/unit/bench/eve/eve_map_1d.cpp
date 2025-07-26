@@ -6,10 +6,19 @@
 */
 //==================================================================================================
 
+// export KIWAKU_BUILD_BENCH="ON"
+// export KIWAKU_BENCH_EVE="ON"
+// export KIWAKU_BENCH_SYCL="OFF"
+// export KIWAKU_BENCH_MTHREAD="OFF"
+
+#if KIWAKU_BUILD_BENCH
+
 #include "../include/benchmark.hpp"
 #include "../include/utils/utils.hpp"
 
-#if EVE_ENABLE_SYCL
+
+
+#if KIWAKU_BENCH_SYCL
   #include <kwk/context/sycl/context.hpp>
 #endif
 
@@ -37,6 +46,8 @@ void for_each_test( std::string const& bench_name
                   , std::size_t const repeat_count
                   )
 {
+  constexpr bool enable_check = ENABLE_CHECK;
+
   std::cout << "L2_size(" << L2_size << ") repeat_count(" << repeat_count << ")\n";
   std::vector<DATA_TYPE> data_in;
   std::vector<DATA_TYPE> data_out;
@@ -47,194 +58,153 @@ void for_each_test( std::string const& bench_name
   data_out.resize(L2_size);
   data_out_truth.resize(L2_size);
 
-
   auto reset_data = [&](std::vector<DATA_TYPE>& vect)
   {
-    // std::string token = "salu sa va";
-    // std::random_device rd{token};
     std::mt19937 gen(78512); // rd()
     std::uniform_real_distribution<DATA_TYPE> dis(0, 2.0 * M_PI);
-    // srand(9546312);
-    // DATA_TYPE min_value = 0;
-    // DATA_TYPE max_value = 1.9 * M_PI; // Between 0 and 2PI
     for (std::size_t i = 0; i < L2_size; ++i)
       {
-        vect[i] = dis(gen); //kwk::bench::random_float<DATA_TYPE>(min_value, max_value);
+        vect[i] = dis(gen);
       }
   };
 
+  // Kiwaku views
   auto kwk_in   = kwk::view{kwk::source = data_in.data()  , kwk::of_size(L2_size)};
   auto kwk_out  = kwk::view{kwk::source = data_out.data() , kwk::of_size(L2_size)};
 
-  auto fct_kwk_cpu = [&]()
-  {
-    kwk::for_each(::kwk::cpu, map_func, kwk_in, kwk_out);
-    return kwk_out(L2_size / 2);
-  };
 
-  // auto start_data_truth = &data_out_truth[0];
-  auto std_map_func = [&](auto const& in)
-  {
-    // std::size_t index = &e - start_data_truth;
-    int index = &in - &data_in[0];
-    return map_func(in, data_out[index]); // e = data_in[index]
-  };
+  // Benchmark initialization
+  kwk::bench::cbench_t b;
+  b.start(kwk::bench::fprefix() + file_name, bench_name, "Processed elements, per second (higher is better)", L2_size * repeat_count);
+  // b.set_iterations(1);
 
-  auto fct_std = [&]()
+
+  // ====== Generic std function, used later ======
+  auto fct_std_for_each = [&](auto const& policy)
   {
-    std::for_each(data_in.begin(), data_in.end(), std_map_func);
+    auto start_data = &data_in[0];
+    // std::execution::unseq
+    // Is function call expensive?
+    std::for_each ( policy
+                  , data_in.begin()
+                  , data_in.end()
+                  , [&](auto const& in) 
+                    {
+                      int index = &in - start_data;
+                      return map_func(in, data_out[index]); // e = data_in[index]
+                    }
+                  );
     return data_out[L2_size / 2];
   };
 
-  auto fct_hand1 = [&]()
+  // ====== Generic std benchmark ======
+  auto bench_std = [&](auto const& policy, std::string policy_name)
+  {
+    b.run_function_rpt( policy_name
+                      , repeat_count
+                      , [&]{ return fct_std_for_each(policy); }
+                      , [&]{ reset_data(data_out); }
+                      );
+  };
+
+  // ====== Generic Kiwaku benchmark ======
+  // -> DATA_TYPE
+  auto bench_kiwaku = [&](auto&& context, std::string context_name, auto map_func_)
+  {
+    DATA_TYPE return_;
+    auto fct_kwk_sycl_generic = [&]()
+    {
+      kwk::for_each(context, map_func_, kwk_in, kwk_out);
+      return_ = kwk_out(L2_size / 2);
+      return return_;
+    };
+    b.run_function_rpt(context_name, repeat_count, fct_kwk_sycl_generic, [&]{ reset_data(data_out); });
+    // return return_;
+  };
+
+
+  // ====== hand-written sequential ======
+  auto fct_hand = [&]()
   {
     for (std::size_t i = 0; i < L2_size; ++i) { map_func(data_in[i], data_out[i]); }
     return data_out[L2_size / 2];
   };
+  b.run_function_rpt("hand CPU", repeat_count, fct_hand, [&]{ reset_data(data_out); });
 
-  // auto fct_hand2 = [&]()
-  // {
-  //   for (std::size_t i = 0; i < L2_size; ++i)
-  //   {
-  //     int index = &data_in[i] - &data_in[0];
-  //     map_func(data_in[i], data_out[index]);
-  //   }
-  //   return data_out[L2_size / 2];
-  // };
-
-  // auto fct_hand3 = [&]()
-  // {
-  //   for (auto const& e : data_in)
-  //   {
-  //     int index = &e - &data_in[0];
-  //     map_func(e, data_out[index]);
-  //   }
-  //   return data_out[L2_size / 2];
-  // };
+  // Remember output for later verification
+  for (std::size_t i = 0; i < data_out_truth.size(); ++i) { data_out_truth[i] = data_out[i]; }
 
 
-  kwk::bench::cbench_t b;
-  std::string absolute_path = ""; // will output to "kiwaku_build"
+  // ====== Kiwaku CPU context ======
+  bench_kiwaku(::kwk::cpu, "kwk CPU", map_func);
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
 
-  b.start(absolute_path + kwk::bench::fprefix() + file_name, bench_name, "Processed elements, per second (higher is better)", L2_size * repeat_count);
-  // b.set_iterations(1);
 
-  b.run_function_rpt("std::execution::seq", repeat_count, fct_std, [&]{ reset_data(data_out); }); // "std::for_each, single thread on CPU
+  // ====== std sequential ======
+  bench_std(std::execution::seq, "seq");
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
 
-  for (std::size_t i = 0; i < data_out_truth.size(); ++i)
-  {
-    data_out_truth[i] = data_out[i];
-  }
 
-  #if ENABLE_TBB
-    auto start_data = &data_in[0];
-    // inline ? Is function call expensive?
-    auto std_par_map_func = [&](auto const& in) 
-    {
-      std::size_t index = &in - start_data;
-      return map_func(in, data_out[index]); // e = data_in[index]
-    };
-    // Don't forget the -ltbb compiler flag
-    auto fct_std_unseq = [&]()
-    {
-      std::for_each(std::execution::unseq, data_in.begin(), data_in.end(), std_par_map_func);
-      return data_out[L2_size / 2];
-    };
+  // ====== std unsequenced ======
+  bench_std(std::execution::unseq, "unseq");
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
 
-    // Don't forget the -ltbb compiler flag
-    auto fct_std_par = [&]()
-    {
-      std::for_each(std::execution::par, data_in.begin(), data_in.end(), std_par_map_func);
-      return data_out[L2_size / 2];
-    };
 
-    // Don't forget the -ltbb compiler flag
-    auto fct_std_par_unseq = [&]()
-    {
-      std::for_each(std::execution::par_unseq, data_in.begin(), data_in.end(), std_par_map_func);
-      return data_out[L2_size / 2];
-    };
-    b.run_function_rpt("std::execution::unseq", repeat_count, fct_std_unseq, [&]{ reset_data(data_out); });
-    #if ENABLE_CHECK
-      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
-    #endif
-    b.run_function_rpt("std::execution::par", repeat_count, fct_std_par, [&]{ reset_data(data_out); });
-    #if ENABLE_CHECK
-      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
-    #endif
-    b.run_function_rpt("std::execution::par_unseq", repeat_count, fct_std_par_unseq, [&]{ reset_data(data_out); });
-    #if ENABLE_CHECK
-      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
-    #endif
+
+  // Don't forget the -ltbb compiler flag
+  #if ENABLE_TBB && KIWAKU_BENCH_MTHREAD
+
+    // ====== std parallel ======
+    bench_std(std::execution::par, "par");
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+
+    // ====== std parallel unsequenced ======
+    bench_std(std::execution::par_unseq, "par_unseq");
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
   #endif
 
-  #if EVE_ENABLE_SYCL
+
+
+  // ====== SYCL ======
+  #if KIWAKU_BENCH_SYCL
+
     // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
     bool has_gpu = kwk::sycl::has_gpu();
-
-    auto sycl_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
-    {
-      auto fct_kwk_sycl_generic = [&]()
-      {
-        kwk::for_each(context, map_func, kwk_in, kwk_out);
-        return_ = kwk_out(L2_size / 2);
-        return return_;
-      };
-      b.run_function("Kiwaku SYCL on " + context.get_device_name(), fct_kwk_sycl_generic, [&]{ reset_data(data_out); });
-      return return_;
-    };
 
     // Execute SYCL benchmark on GPU and CPU
     if (has_gpu)
     {
-      DATA_TYPE return_;
-      // GPU
-      sycl_bench(kwk::sycl::context{::sycl::gpu_selector_v}, return_);
-      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
-      // CPU
-      sycl_bench(kwk::sycl::context{::sycl::cpu_selector_v}, return_);
-      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+      // ====== Kiwaku SYCL GPU ======
+      auto& ctx = kwk::sycl::context{::sycl::gpu_selector_v};
+      bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
+      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+
+      #if KIWAKU_BENCH_MTHREAD
+        // ====== Kiwaku SYCL CPU ======
+        auto& ctx = kwk::sycl::context{::sycl::cpu_selector_v};
+        bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
+        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+      #endif
     }
-    else // SYCL default context
+    else
     {
-      DATA_TYPE return_;
-      // CPU
-      sycl_bench(kwk::sycl::default_context, return_);
-      TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+      #if KIWAKU_BENCH_MTHREAD
+        // ====== CPU ======
+        auto& ctx = kwk::sycl::default_context;
+        bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
+        if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+      #endif
     }
   #endif
 
 
-  auto generic_bench = [&](auto&& context, DATA_TYPE& return_) -> DATA_TYPE
-  {
-    auto fct_kwk_sycl_generic = [&]()
-    {
-      kwk::for_each(context, map_func_eve, kwk_in, kwk_out);
-      return_ = kwk_out(L2_size / 2);
-      return return_;
-    };
-    b.run_function_rpt(kwk::bench::EVE_BACKEND_NAME, repeat_count, fct_kwk_sycl_generic, [&]{ reset_data(data_out); });
-    return return_;
-  };
-
-  DATA_TYPE return_;
   // EVE SIMD
-  generic_bench(kwk::simd, return_);
-  #if ENABLE_CHECK
-    TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
+  #if KIWAKU_BENCH_EVE
+    bench_kiwaku(::kwk::simd, "kwk SIMD", map_func_eve);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
   #endif
 
-  b.run_function_rpt("Kiwaku on CPU", repeat_count, fct_kwk_cpu, [&]{ reset_data(data_out); });
-  #if ENABLE_CHECK
-    TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
-  #endif
 
-  b.run_function_rpt("By hand on CPU 1", repeat_count, fct_hand1, [&]{ reset_data(data_out); });
-  // b.run_function_rpt("By hand on CPU 2", repeat_count, fct_hand2, [&]{ reset_data(data_out); });
-  // b.run_function_rpt("By hand on CPU 3", repeat_count, fct_hand3, [&]{ reset_data(data_out); });
-  #if ENABLE_CHECK
-    TTS_ALL_RELATIVE_EQUAL(data_out, data_out_truth, 1);
-  #endif
 
   for (std::size_t i = 0; i < 30; ++i) { std::cout << data_out_truth[i] << " "; }
   std::cout << "\n";
@@ -245,6 +215,20 @@ void for_each_test( std::string const& bench_name
 
 TTS_CASE("Benchmark - for_each, compute-bound_trigo")
 {
+
+  // (a + ib) * (c + id) = ac + iad + ibc -bd = ac - bd + i(ad + bc)
+
+  // (a + ib) * (a + ib) = aa - bb + i(aa + ba)
+  // std::size_t repeat_inner = 50;
+
+  // auto map_v2 = [=](DATA_TYPE& re, DATA_TYPE& im) {
+  //   for (std::size_t i = 0; i < repeat_inner; ++i) {
+  //     re = re * re - im * im;
+  //     im = re * re + im * im;
+  //   }
+  // };
+
+
   if (::kwk::bench::enable_global)
   {
     ::kwk::bench::get_eve_compiler_flag();
@@ -316,7 +300,7 @@ TTS_CASE("Benchmark - for_each, compute-bound_trigo")
          if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
 
     else if (hname == "pata")                   { total_size = 128 * mio; L2_size = total_size; }
-    else if (hname == "chaton")                 { total_size = 128 * mio; L2_size = total_size; }
+    else if (hname == "chaton")                 { total_size = 32 * mio; L2_size = total_size; }
     // else if (hname == "chaton")                 { L2_size = 256 * kio; total_size = 128 * mio; }
     else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }
 
@@ -555,3 +539,6 @@ TTS_CASE("Benchmark - for_each, memory-bound")
 
 // Benchmarking  By hand on CPU 1:
 //     1240 1240 1240 1239   sum_ret(16)
+
+
+#endif // KIWAKU_BUILD_BENCH
