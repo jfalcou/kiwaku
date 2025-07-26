@@ -54,6 +54,12 @@ if(KIWAKU_BUILD_DOCUMENTATION)
   copa_setup_doxygen(${QUIET_OPTION} TARGET kiwaku-doxygen DESTINATION "${PROJECT_BINARY_DIR}/doc")
 endif()
 
+
+option(KIWAKU_BUILD_BENCH    "Build benchmarks." ON)
+option(KIWAKU_BENCH_SYCL     "Use SYCL in benchmark tests. You mush use a SYCL-capabable compiler." OFF)
+option(KIWAKU_BENCH_MTHREAD  "Use multi-thread in benchmark tests." OFF)
+option(KIWAKU_BENCH_EVE      "Use EVE SIMD in benchmark tests." ON)
+
 ##======================================================================================================================
 ## Tests setup
 ##======================================================================================================================
@@ -63,3 +69,31 @@ if(KIWAKU_BUILD_TEST)
   add_subdirectory(test)
 endif()
 
+if(KIWAKU_BUILD_BENCH)
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BUILD_BENCH)
+endif()
+
+if(KIWAKU_BENCH_EVE)
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_EVE)
+endif()
+
+if(KIWAKU_BENCH_SYCL)
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_SYCL)
+endif()
+
+if(KIWAKU_BENCH_MTHREAD)
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_MTHREAD)
+endif()
+
+# add_executable(find_1d test/unit/bench/find_1d.cpp)
+
+# target_link_libraries(find_1d PRIVATE kiwaku::kiwaku raberu::raberu kumi::kumi)
+
+# add_test(NAME find_1d_bench COMMAND find_1d)
+
+# target_link_libraries(find_1d PRIVATE kiwaku::kiwaku)
+# target_link_libraries(find_1d PRIVATE raberu)
+
+# if(KWK_ENABLE_CUSTOM_FEATURE)
+  #   target_compile_definitions(kiwaku-unit PRIVATE KWK_ENABLE_CUSTOM_FEATURE)
+  # endif()

@@ -30,10 +30,10 @@ include(${CPM_DOWNLOAD_LOCATION})
 ##======================================================================================================================
 ## Retrieve dependencies
 ##======================================================================================================================
-CPMAddPackage(NAME COPACABANA GITHUB_REPOSITORY jfalcou/copacabana GIT_TAG main)
+CPMAddPackage(NAME COPACABANA GITHUB_REPOSITORY SylvainJoube/copacabana GIT_TAG main)
 
 if(KIWAKU_BUILD_TEST)
-  CPMAddPackage ( NAME TTS   GITHUB_REPOSITORY jfalcou/tts
+  CPMAddPackage ( NAME TTS   GITHUB_REPOSITORY SylvainJoube/tts
                   GIT_TAG main
                   OPTIONS "TTS_BUILD_TEST OFF"
                           "TTS_BUILD_DOCUMENTATION OFF"
@@ -41,21 +41,21 @@ if(KIWAKU_BUILD_TEST)
                 )
 endif()
 
-CPMAddPackage(NAME KUMI   GITHUB_REPOSITORY jfalcou/kumi
+CPMAddPackage(NAME KUMI   GITHUB_REPOSITORY SylvainJoube/kumi
               GIT_TAG main
               OPTIONS "KUMI_BUILD_TEST OFF"
                       "KUMI_BUILD_DOCUMENTATION OFF"
                       "KUMI_QUIET ON"
               )
 
-CPMAddPackage(NAME RABERU GITHUB_REPOSITORY jfalcou/raberu
+CPMAddPackage(NAME RABERU GITHUB_REPOSITORY SylvainJoube/raberu
               GIT_TAG main
               OPTIONS "RABERU_BUILD_TEST OFF"
                       "RABERU_BUILD_DOCUMENTATION OFF"
                       "RABERU_QUIET ON"
               )
 
-CPMAddPackage ( NAME EVE   GITHUB_REPOSITORY jfalcou/eve
+CPMAddPackage ( NAME EVE   GITHUB_REPOSITORY SylvainJoube/eve
                 GIT_TAG main
                 OPTIONS "EVE_BUILD_TEST OFF"
                         "EVE_BUILD_BENCHMARKS OFF"
