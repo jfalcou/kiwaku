@@ -335,7 +335,12 @@ namespace kwk::sycl
 
     std::string get_device_name()
     {
-      return get_device().get_info<::sycl::info::device::name>();
+      return parent::get_device().get_info<::sycl::info::device::name>();
+    }
+
+    bool is_gpu()
+    {
+      return parent::get_device().is_gpu();
     }
   };
 
