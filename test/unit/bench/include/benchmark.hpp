@@ -14,7 +14,15 @@
   #include <execution> // don't forget the -ltbb compiler flag
 #endif
 
-#define EVE_ENABLE_SYCL false
+// #define EVE_ENABLE_SYCL false
+
+// CMake variables:
+// KIWAKU_BUILD_BENCH
+// KIWAKU_BENCH_EVE
+// KIWAKU_BENCH_SYCL
+// KIWAKU_BENCH_MTHREAD
+
+#define ENABLE_CHECK true
 
 
 namespace kwk::bench
