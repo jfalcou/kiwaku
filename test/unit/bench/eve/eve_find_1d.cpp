@@ -197,15 +197,17 @@ void find_test( std::string const& bench_name
 
   // ====== SYCL ======
   #if KIWAKU_BENCH_SYCL
-    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
+    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64  (with x86_64 or spir64)
     bool has_gpu = kwk::sycl::has_gpu();
 
     if (has_gpu)
     {
-      // ====== Kiwaku SYCL CPU ======
-      auto ctx_cpu = kwk::sycl::context{::sycl::cpu_selector_v};
-      int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), compare_func);
-      TTS_EQUAL(res_sycl_cpu, res_truth);
+      #if KIWAKU_BENCH_MTHREAD
+        // ====== Kiwaku SYCL CPU ======
+        auto ctx_cpu = kwk::sycl::context{::sycl::cpu_selector_v};
+        int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), compare_func);
+        TTS_EQUAL(res_sycl_cpu, res_truth);
+      #endif
 
       // ====== Kiwaku SYCL GPU ======
       auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
@@ -214,10 +216,12 @@ void find_test( std::string const& bench_name
     }
     else // SYCL default context
     {
-      // ====== Kiwaku SYCL CPU ======
-      auto& ctx_cpu = kwk::sycl::default_context;
-      int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), compare_func);
-      TTS_EQUAL(res_sycl_cpu, res_truth);
+      #if KIWAKU_BENCH_MTHREAD
+        // ====== Kiwaku SYCL CPU ======
+        auto& ctx_cpu = kwk::sycl::default_context;
+        int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), compare_func);
+        TTS_EQUAL(res_sycl_cpu, res_truth);
+      #endif
     }
   #endif
 
@@ -234,54 +238,30 @@ void find_test_compute_bound(find_test_pos pos)
 
   using DATA_TYPE = float;
 
-  // We must ensure type coherency for comparisons to still make sense.
-  // auto convert_func = [&](auto const& item)
-  // {
-    // TODO: test with multiplications and divisions
-    // Modulo may imply thread divergence, which would impair GPU performance.
-  //   return
-  //   static_cast<DATA_TYPE>(
-  //     std::cos(
-  //       std::sin(
-  //         std::cos(
-  //           std::sin(
-  //             std::cos(
-  //               std::sin(
-  //                 static_cast<decltype(item)>(item * 11.)
-  //                       ) * 3.8
-  //                     ) / 1.12
-  //                   ) * 3.17874
-  //                 ) / 8.7
-  //               ) * 9.48
-  //             ) / 89.647681
-  //           ) * 1.8746221;
-  // };
+  [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
 
-  // auto convert_func_eve = [&](auto const& item)
-  // {
-  //   return
-  //     (::eve::cos(
-  //       ::eve::sin(
-  //         ::eve::cos(
-  //           ::eve::sin(
-  //             ::eve::cos(
-  //               ::eve::sin(
-  //                 item * static_cast<DATA_TYPE>(11.)
-  //                       ) * static_cast<DATA_TYPE>(3.8)
-  //                     ) / static_cast<DATA_TYPE>(1.12)
-  //                   ) * static_cast<DATA_TYPE>(3.17874)
-  //                 ) / static_cast<DATA_TYPE>(8.7)
-  //               ) * static_cast<DATA_TYPE>(9.48)
-  //             ) / static_cast<DATA_TYPE>(89.647681)
-  //           ) * static_cast<DATA_TYPE>(1.8746221);
-  // };
-  // auto convert_func = [&](auto const& item)
-  // {
-  //   return std::cos( std::sin(item * static_cast<DATA_TYPE>(11.)) * static_cast<DATA_TYPE>(11.)) / static_cast<DATA_TYPE>(89.);
-  // };
+  std::size_t total_size, L2_size;
+  std::string hname = sutils::get_host_name();
+       if (hname == "parsys-legend")          { L2_size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+  else if (hname == "pata")                   { L2_size =  64 * mio; }
+
+  else if (hname == "falcou-avx512")          { L2_size = 256 * mio; }
+  else if (hname == "chaton")                 { L2_size =  64 * mio; }
+
+  else if (hname == "sylvain-ThinkPad-T580")  { L2_size =  64 * mio; }
+  else if (hname == "lapierre")               { L2_size =   8 * mio; }
+  else                                        { L2_size =  64 * mio; }
+
+  total_size = L2_size;
+
+  // TODO: Pouvoir gérer la taille du L2 et faire des tests dessus
+  std::size_t repetitions = total_size / L2_size; // Number of repetitions
 
   auto convert_func_eve = [](auto const& item)
   {
+    // répétitions ici pour augmenter l'intensité ?
     return
     ::eve::cos(
       ::eve::sin(
@@ -318,22 +298,6 @@ void find_test_compute_bound(find_test_pos pos)
     ) / static_cast<DATA_TYPE>(1.87961);
     // ::eve::sin(item) * static_cast<DATA_TYPE>(11.)
   };
-
-  [[maybe_unused]] std::size_t kio = 1024 / sizeof(DATA_TYPE);
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
-
-  std::size_t size;
-  std::string hname = sutils::get_host_name();
-        if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-  else if (hname == "pata")                   { size =  64 * mio; }
-  
-  else if (hname == "falcou-avx512")          { size = 256 * mio; }
-  else if (hname == "chaton")                 { size =  64 * mio; }
-
-  else if (hname == "sylvain-ThinkPad-T580")  { size =  64 * mio; }
-  else if (hname == "lapierre")               { size =   8 * mio; }
-  else                                        { size =  64 * mio; }
   
 
   std::string pos_str = "";
@@ -341,8 +305,8 @@ void find_test_compute_bound(find_test_pos pos)
   switch (pos)
   {
     case first:   pos_str = "pos(first)";  put_at_pos = 0;        break;
-    case middle:  pos_str = "pos(middle)"; put_at_pos = size / 2; break;
-    case last:    pos_str = "pos(last)";   put_at_pos = size - 1; break;
+    case middle:  pos_str = "pos(middle)"; put_at_pos = L2_size / 2; break;
+    case last:    pos_str = "pos(last)";   put_at_pos = L2_size - 1; break;
     default: break;
   }
 
@@ -352,7 +316,7 @@ void find_test_compute_bound(find_test_pos pos)
                       , "find-if_compute-bound_" + pos_str + "_" + kwk::bench::EVE_COMPILER_FLAG + "_2PI.bench"
                       , convert_func
                       , convert_func_eve
-                      , size
+                      , L2_size
                       , put_at_pos
                       );
   std::cout << "\n\n";

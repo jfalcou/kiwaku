@@ -200,25 +200,25 @@ void for_each_test( std::string const& bench_name
   // ====== SYCL ======
   #if KIWAKU_BENCH_SYCL
 
-    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
+    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64  (with x86_64 or spir64)
     bool has_gpu = kwk::sycl::has_gpu();
 
     // Execute SYCL benchmark on GPU and CPU
     if (has_gpu)
     {
-      // ====== Kiwaku SYCL CPU ======
-      auto ctx_cpu = kwk::sycl::context{::sycl::cpu_selector_v};
-      bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), map_func);
-      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
-      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
-
       #if KIWAKU_BENCH_MTHREAD
-        // ====== Kiwaku SYCL GPU ======
-        auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
-        bench_kiwaku(ctx_gpu, "kwk SYCL " + ctx_gpu.get_device_name(), map_func);
+        // ====== Kiwaku SYCL CPU ======
+        auto ctx_cpu = kwk::sycl::context{::sycl::cpu_selector_v};
+        bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), map_func);
         if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
         if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
       #endif
+
+      // ====== Kiwaku SYCL GPU ======
+      auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
+      bench_kiwaku(ctx_gpu, "kwk SYCL " + ctx_gpu.get_device_name(), map_func);
+      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+      if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
     }
     else
     {
