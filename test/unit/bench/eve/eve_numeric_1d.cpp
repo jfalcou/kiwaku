@@ -8,6 +8,13 @@
 
 #if KIWAKU_BUILD_BENCH
 
+#include "../include/benchmark.hpp"
+#include "../include/utils/utils.hpp"
+
+#if KIWAKU_BENCH_SYCL
+  #include <kwk/context/sycl/context.hpp>
+#endif
+
 #include <cstdlib>
 #include <kwk/context/eve/context.hpp>
 #include <kwk/context/sycl/internal/sycl_tools.hpp>
@@ -15,8 +22,6 @@
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <numeric>
-#include "../include/benchmark.hpp"
-#include "../include/utils/utils.hpp"
 #include <cmath>
 #include <execution> // don't forget the -ltbb compiler flag
 
@@ -164,6 +169,37 @@ void transform_reduce_test(std::string const& bench_name
 
   #endif // ENABLE_TBB && KIWAKU_BENCH_MTHREAD
 
+
+  // ====== SYCL ======
+  #if KIWAKU_BENCH_SYCL
+  // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64  (with x86_64 or spir64)
+  bool has_gpu = kwk::sycl::has_gpu();
+
+  if (has_gpu)
+  {
+    #if KIWAKU_BENCH_MTHREAD
+      // ====== Kiwaku SYCL CPU ======
+      auto ctx_cpu = kwk::sycl::context{::sycl::cpu_selector_v};
+      int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name());
+      TTS_RELATIVE_EQUAL(res_sycl_cpu, res_truth, FLOAT_TOLERANCE_PERCENT_BENCH);
+    #endif
+
+    // ====== Kiwaku SYCL GPU ======
+    auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
+    int res_sycl_gpu = bench_kiwaku(ctx_gpu, "kwk SYCL " + ctx_gpu.get_device_name());
+    TTS_RELATIVE_EQUAL(res_sycl_gpu, res_truth, FLOAT_TOLERANCE_PERCENT_BENCH);
+  }
+  else // SYCL default context
+  {
+    #if KIWAKU_BENCH_MTHREAD
+      // ====== Kiwaku SYCL CPU ======
+      auto& ctx_cpu = kwk::sycl::default_context;
+      int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name());
+      TTS_RELATIVE_EQUAL(res_sycl_cpu, res_truth, FLOAT_TOLERANCE_PERCENT_BENCH);
+    #endif
+  }
+  #endif
+
   b.stop();
 }
 
@@ -208,10 +244,10 @@ TTS_CASE("Benchmark - transform_reduce, compute-bound ")
 
   std::size_t size;
   std::string hname = sutils::get_host_name();
-        if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+       if (hname == "parsys-legend")          { size =   1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
   else if (hname == "falcou-avx512")          { size =   1 * gio; }
   else if (hname == "pata")                   { size =   1 * gio; }
-  else if (hname == "chaton")                 { size = 128 * mio; }
+  else if (hname == "chaton")                 { size =  32 * mio; }
   else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
   else if (hname == "lapierre")               { size =  32 * mio; }
   else                                        { size =   1 * gio; }
