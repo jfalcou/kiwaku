@@ -161,6 +161,14 @@ void for_each_test( std::string const& bench_name
   if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
 
 
+  // ====== Kiwaku SIMD ======
+  #if KIWAKU_BENCH_EVE
+    bench_kiwaku(::kwk::simd, "kwk SIMD", map_func_eve);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
+    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
+  #endif
+
+
   // ====== std sequential ======
   bench_std(std::execution::seq, "seq");
   if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
@@ -198,15 +206,15 @@ void for_each_test( std::string const& bench_name
     // Execute SYCL benchmark on GPU and CPU
     if (has_gpu)
     {
-      // ====== Kiwaku SYCL GPU ======
-      auto ctx_cpu = kwk::sycl::context{::sycl::gpu_selector_v};
+      // ====== Kiwaku SYCL CPU ======
+      auto ctx_cpu = kwk::sycl::context{::sycl::cpu_selector_v};
       bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), map_func);
       if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
       if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
 
       #if KIWAKU_BENCH_MTHREAD
-        // ====== Kiwaku SYCL CPU ======
-        auto ctx_gpu = kwk::sycl::context{::sycl::cpu_selector_v};
+        // ====== Kiwaku SYCL GPU ======
+        auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
         bench_kiwaku(ctx_gpu, "kwk SYCL " + ctx_gpu.get_device_name(), map_func);
         if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
         if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
@@ -225,12 +233,6 @@ void for_each_test( std::string const& bench_name
   #endif
 
 
-  // EVE SIMD
-  #if KIWAKU_BENCH_EVE
-    bench_kiwaku(::kwk::simd, "kwk SIMD", map_func_eve);
-    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_re, data_truth_re, 1);
-    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(data_im, data_truth_im, 1);
-  #endif
 
 
 
@@ -245,95 +247,87 @@ void for_each_test( std::string const& bench_name
 
 TTS_CASE("Benchmark - for_each, compute-bound")
 {
+  ::kwk::bench::get_eve_compiler_flag();
 
-  if (::kwk::bench::enable_global)
+  using DATA_TYPE = float;
+
+  // const DATA_TYPE PI = static_cast<DATA_TYPE>(M_PI);
+
+
+
+  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
+
+  std::size_t total_size;
+  std::size_t L2_size; // L2 cache size, in bytes
+  std::string hname = sutils::get_host_name();
+  // Total data to process
+        if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+
+  else if (hname == "pata")                   { total_size = 128 * mio; L2_size = total_size; }
+  else if (hname == "chaton")                 { total_size = 32 * mio; L2_size = total_size; }
+  // else if (hname == "chaton")                 { L2_size = 256 * kio; total_size = 128 * mio; }
+  else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }
+
+  // 512 kio par L2
+  else if (hname == "falcou-avx512")          { total_size = 512 * mio;  L2_size = total_size; //128 * kio; 
+                                                std::cout << "OK, Used computer: falcou-avx512\n"; }
+
+  // La Pierre
+  else if (hname == "lapierre")               { L2_size = 128 * mio; total_size = 256 * mio; }
+  else                                        { L2_size = 256 * kio; total_size = 8 * mio; }
+
+  std::size_t repetitions = total_size / L2_size; // Number of repetitions
+
+  std::cout << "\n======= REPEAT = " << repetitions << "\n\n";
+
+  // === Unitary complex ===
+  // const std::size_t repeat_inner = 10;
+  // auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
+  // {
+    // for (std::size_t i = 0; i < repeat_inner; ++i) {
+      // DATA_TYPE re_ = re;
+      // DATA_TYPE im_ = im;
+      // re = re_ * re_ - im_ * im_;
+      // im = re_ * im_ + im_ * re_;
+    // }
+  // };
+  // auto map_func_eve = map_func;
+
+  auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
   {
-    ::kwk::bench::get_eve_compiler_flag();
-
-    using DATA_TYPE = float;
-
-    // const DATA_TYPE PI = static_cast<DATA_TYPE>(M_PI);
-
-
-
-    [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
-    [[maybe_unused]] std::size_t mio = 1024 * kio;
-    [[maybe_unused]] std::size_t gio = 1024 * mio;
-
-    std::size_t total_size;
-    std::size_t L2_size; // L2 cache size, in bytes
-    std::string hname = sutils::get_host_name();
-    // Total data to process
-         if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-
-    else if (hname == "pata")                   { total_size = 128 * mio; L2_size = total_size; }
-    else if (hname == "chaton")                 { total_size = 32 * mio; L2_size = total_size; }
-    // else if (hname == "chaton")                 { L2_size = 256 * kio; total_size = 128 * mio; }
-    else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }
-
-    // 512 kio par L2
-    else if (hname == "falcou-avx512")          { total_size = 512 * mio;  L2_size = total_size; //128 * kio; 
-                                                  std::cout << "OK, Used computer: falcou-avx512\n"; }
-
-    // La Pierre
-    else if (hname == "lapierre")               { L2_size = 128 * mio; total_size = 256 * mio; }
-    else                                        { L2_size = 256 * kio; total_size = 8 * mio; }
-
-    std::size_t repetitions = total_size / L2_size; // Number of repetitions
-
-    std::cout << "\n======= REPEAT = " << repetitions << "\n\n";
-
-    // === Unitary complex ===
-    // const std::size_t repeat_inner = 10;
-    // auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
-    // {
-      // for (std::size_t i = 0; i < repeat_inner; ++i) {
-        // DATA_TYPE re_ = re;
-        // DATA_TYPE im_ = im;
-        // re = re_ * re_ - im_ * im_;
-        // im = re_ * im_ + im_ * re_;
-      // }
-    // };
-    // auto map_func_eve = map_func;
-
-    auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
+    for (std::size_t r = 0; r < repetitions; ++r)
     {
-      for (std::size_t r = 0; r < repetitions; ++r)
-      {
-        re = ::std::cos(re) * ::std::cos(re) + ::std::sin(re) * ::std::sin(re);
-        im = ::std::cos(im) * ::std::cos(im) + ::std::sin(im) * ::std::sin(im);
-      }
-    };
+      re = ::std::cos(re) * ::std::cos(re) + ::std::sin(re) * ::std::sin(re);
+      im = ::std::cos(im) * ::std::cos(im) + ::std::sin(im) * ::std::sin(im);
+    }
+  };
 
-    auto map_func_eve = [=](auto& re, auto& im)
-    {
-      for (std::size_t r = 0; r < repetitions; ++r)
-      {
-        re = ::eve::cos(re) * ::eve::cos(re) + ::eve::sin(re) * ::eve::sin(re);
-        im = ::eve::cos(im) * ::eve::cos(im) + ::eve::sin(im) * ::eve::sin(im);
-      }
-    };
-
-
-    std::string l2_str = std::to_string(L2_size / kio);
-
-
-    sutils::printer_t::head("Benchmark - for_each, compute-bound_trigo (L2 " + l2_str + ")", true);
-
-    for_each_test<DATA_TYPE>( "for_each compute-bound_trigo"
-                            , "for_each_compute-bound_trigo_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
-                            , map_func
-                            , map_func_eve
-                            , L2_size
-                            , L2_size * repetitions
-                            , data_reset_t::trigo
-                            );
-    std::cout << "\n\n";
-  }
-  else
+  auto map_func_eve = [=](auto& re, auto& im)
   {
-    TTS_EQUAL(true, true);
-  }
+    for (std::size_t r = 0; r < repetitions; ++r)
+    {
+      re = ::eve::cos(re) * ::eve::cos(re) + ::eve::sin(re) * ::eve::sin(re);
+      im = ::eve::cos(im) * ::eve::cos(im) + ::eve::sin(im) * ::eve::sin(im);
+    }
+  };
+
+
+  std::string l2_str = std::to_string(L2_size / kio);
+
+
+  sutils::printer_t::head("Benchmark - for_each, compute-bound_trigo (L2 " + l2_str + ")", true);
+
+  for_each_test<DATA_TYPE>( "for_each compute-bound_trigo"
+                          , "for_each_compute-bound_trigo_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                          , map_func
+                          , map_func_eve
+                          , L2_size
+                          , L2_size * repetitions
+                          , data_reset_t::trigo
+                          );
+  std::cout << "\n\n";
 };
 
 
@@ -371,63 +365,56 @@ TTS_CASE("Benchmark - for_each, compute-bound")
 
 TTS_CASE("Benchmark - for_each, memory-bound")
 {
-  if (::kwk::bench::enable_global)
+  ::kwk::bench::get_eve_compiler_flag();
+
+  using DATA_TYPE = float;
+
+  auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
   {
-    ::kwk::bench::get_eve_compiler_flag();
+    re = re + 2;
+    im = im + 2;
+  };
 
-    using DATA_TYPE = float;
-
-    auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
-    {
-      re = re + 2;
-      im = im + 2;
-    };
-
-    auto map_func_eve = [=](DATA_TYPE& re, DATA_TYPE& im)
-    {
-      re = re + 2;
-      im = im + 2;
-    };
-
-    [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // Only one item for (read + (read + write))
-    [[maybe_unused]] std::size_t mio = 1024 * kio;
-    [[maybe_unused]] std::size_t gio = 1024 * mio;
-
-    std::size_t total_size;
-    std::size_t L2_size; // L2 cache size, in bytes
-    std::string hname = sutils::get_host_name();
-    // Total data to process
-         if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
-    else if (hname == "pata")                   { total_size = 2 * gio; L2_size = total_size; }
-    else if (hname == "chaton")                 { total_size = 2 * gio; L2_size = total_size; }
-    else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }
-
-    // 512 kio par L2
-    else if (hname == "falcou-avx512")          { total_size = 2 * gio; L2_size = total_size; // memory-bound
-                                                  std::cout << "OK, Used computer: falcou-avx512\n"; }
-
-    // La Pierre
-    else if (hname == "lapierre")               { L2_size = 128 * mio; total_size = 256 * mio; }
-    else                                        { L2_size = 256 * kio; total_size = 8 * mio; }
-
-    std::string l2_str = std::to_string(L2_size / kio);
-
-    sutils::printer_t::head("Benchmark - for_each, memory-bound (L2 " + l2_str + ")", true);
-
-    for_each_test<DATA_TYPE>( "for_each memory-bound"
-                            , "for_each_memory-bound_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
-                            , map_func
-                            , map_func_eve
-                            , L2_size
-                            , L2_size * 1
-                            , data_reset_t::ones
-                            );
-    std::cout << "\n\n";
-  }
-  else
+  auto map_func_eve = [=](DATA_TYPE& re, DATA_TYPE& im)
   {
-    TTS_EQUAL(true, true);
-  }
+    re = re + 2;
+    im = im + 2;
+  };
+
+  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // Only one item for (read + (read + write))
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
+
+  std::size_t total_size;
+  std::size_t L2_size; // L2 cache size, in bytes
+  std::string hname = sutils::get_host_name();
+  // Total data to process
+        if (hname == "parsys-legend")          { L2_size = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+  else if (hname == "pata")                   { total_size = 2 * gio; L2_size = total_size; }
+  else if (hname == "chaton")                 { total_size = 2 * gio; L2_size = total_size; }
+  else if (hname == "sylvain-ThinkPad-T580")  { L2_size = 256 * kio; total_size = 8 * mio; }
+
+  // 512 kio par L2
+  else if (hname == "falcou-avx512")          { total_size = 2 * gio; L2_size = total_size; // memory-bound
+                                                std::cout << "OK, Used computer: falcou-avx512\n"; }
+
+  // La Pierre
+  else if (hname == "lapierre")               { L2_size = 128 * mio; total_size = 256 * mio; }
+  else                                        { L2_size = 256 * kio; total_size = 8 * mio; }
+
+  std::string l2_str = std::to_string(L2_size / kio);
+
+  sutils::printer_t::head("Benchmark - for_each, memory-bound (L2 " + l2_str + ")", true);
+
+  for_each_test<DATA_TYPE>( "for_each memory-bound"
+                          , "for_each_memory-bound_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                          , map_func
+                          , map_func_eve
+                          , L2_size
+                          , L2_size * 1
+                          , data_reset_t::ones
+                          );
+  std::cout << "\n\n";
 };
 
 
