@@ -5,14 +5,21 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
+#if KIWAKU_BUILD_BENCH
+
+#include "../include/benchmark.hpp"
+#include "../include/utils/utils.hpp"
+
+#if KIWAKU_BENCH_SYCL
+  #include <kwk/context/sycl/context.hpp>
+#endif
+
 #include <kwk/context/eve/context.hpp>
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/algorithm/algos/reduce.hpp>
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <numeric>
-#include "../include/benchmark.hpp"
-#include "../include/utils/utils.hpp"
 // For parallel std execution, don't forget the -ltbb compiler flag
 // #include <execution>
 
@@ -33,6 +40,7 @@ void reduce_test( std::string const& bench_name
                 , std::size_t const view_size
                 )
 {
+  std::size_t total_data_size = view_size * sizeof(DATA_TYPE) * 1;
 
   // The maximum rounding-errors between function results
   const float ERROR_MAX_PERCENT = 50; // 50% difference max
@@ -54,16 +62,15 @@ void reduce_test( std::string const& bench_name
 
   auto view_in  = kwk::view{kwk::source = input.data() , kwk::of_size(d0)};
 
-  DATA_TYPE res_kwk_cpu, res_std, res_std_unseq, res_std_par, res_std_par_unseq, res_hand, res_eve;  
+  kwk::bench::cbench_t b;
+  std::string final_fname = kwk::bench::fprefix() + file_name;
+  b.start(final_fname, bench_name, "Throughput", view_size);
 
-  auto fct_kwk_cpu = [&]() {
-    res_kwk_cpu = kwk::reduce(view_in, func, input[0]);
-    return res_kwk_cpu; };
+  DATA_TYPE res_truth;
 
-  auto fct_std = [&]() {
-    res_std = std::reduce(input.begin(), input.end(), input[0], func);
-    return res_std; };
 
+  // ====== hand-written sequential ======
+  DATA_TYPE res_hand;
   auto fct_hand = [&]()
   {
     res_hand = input[0];
@@ -73,55 +80,111 @@ void reduce_test( std::string const& bench_name
     }
     return res_hand;
   };
+  b.run_function_rpt_bwidth("hand CPU", 1, fct_hand, []{}, total_data_size);
+  res_truth = res_hand;
 
-  kwk::bench::cbench_t b;
-  std::string absolute_path = ""; // will output to "kiwaku_build"
-  std::string final_fname = kwk::bench::fprefix() + file_name;
 
-  b.start(absolute_path + final_fname, bench_name, "Processed elements, per second (higher is better)", view_size);
-  b.run_function("std::execution::seq", fct_std);
+  // ====== Generic Kiwaku bench ======
+  auto bench_kiwaku = [&](auto&& context, std::string context_name, auto func_)
+  {
+    DATA_TYPE ret = -1;
+    auto fct_kwk = [&]()
+    {
+      ret = kwk::reduce(context, view_in, func_, input[0]);
+      return ret;
+    };
+    b.run_function_rpt_bwidth(context_name, 1, fct_kwk, []{}, total_data_size);
+    return ret;
+  };
 
-  #if ENABLE_TBB
-    auto fct_std_unseq = [&]() {
-      res_std_unseq = std::reduce(std::execution::unseq, input.begin(), input.end(), input[0], func);
-      return res_std_unseq; };
 
-    auto fct_std_par = [&]() {
-      res_std_par = std::reduce(std::execution::par, input.begin(), input.end(), input[0], func);
-      return res_std_par; };
+  // ====== Kiwaku CPU ======
+  DATA_TYPE res_kwk_cpu = bench_kiwaku(::kwk::cpu, "kwk CPU", func);
+  TTS_RELATIVE_EQUAL(res_kwk_cpu, res_truth, ERROR_MAX_PERCENT);
 
-    auto fct_std_par_unseq = [&]() {
-      res_std_par_unseq = std::reduce(std::execution::par_unseq, input.begin(), input.end(), input[0], func);
-      return res_std_par_unseq; };
 
-    b.run_function("std::execution::unseq", fct_std_unseq);
-    b.run_function("std::execution::par", fct_std_par);
-    b.run_function("std::execution::par_unseq", fct_std_par_unseq);
+  // ====== Kiwaku SIMD ======
+  #if KIWAKU_BENCH_EVE
+    DATA_TYPE res_kwk_simd;
+    auto fct_kwk_eve = [&]()
+    {
+      res_kwk_simd = kwk::reduce(kwk::simd, view_in, std::pair{func_eve, func_id}, input[0]);
+      return res_kwk_simd;
+    };
+    b.run_function_rpt_bwidth("kwk simd", 1, fct_kwk_eve, []{}, total_data_size);
+    TTS_RELATIVE_EQUAL(res_kwk_simd, res_truth, ERROR_MAX_PERCENT);
   #endif
 
 
-  // //      reduce(kwk::simd, d,std::pair{eve::add, 0}, 10);
-  // template<typename Op, typename Id, concepts::container In>
-  // constexpr auto reduce([[maybe_unused]] kwk::eve::context const& ctx, In const& in, std::pair<Op, Id> R, auto init)
-
-  auto fct_kwk_eve_generic = [&]()
+  // ====== Generic std bench ======
+  auto bench_std = [&](auto const& policy, std::string context_name)
   {
-    res_eve = kwk::reduce(kwk::simd, view_in, std::pair{func_eve, func_id}, input[0]);
-    return res_eve;
+    DATA_TYPE ret = -1;
+    auto fct_std = [&]()
+    {
+      ret = std::reduce(policy, input.begin(), input.end(), input[0], func);
+      return ret;
+    };
+    b.run_function_rpt_bwidth(context_name, 1, fct_std, []{}, total_data_size);
+    return ret;
   };
-  b.run_function(kwk::bench::EVE_BACKEND_NAME, fct_kwk_eve_generic);
 
-  b.run_function("Kiwaku on CPU", fct_kwk_cpu);
-  b.run_function("By hand on CPU", fct_hand);
+
+  // ====== std sequential ======
+  DATA_TYPE res_std_seq = bench_std(std::execution::seq, "seq");
+  TTS_RELATIVE_EQUAL(res_std_seq, res_truth, ERROR_MAX_PERCENT);
+
+
+  // ====== std unsequenced ======
+  DATA_TYPE res_std_unseq = bench_std(std::execution::unseq, "unseq");
+  TTS_RELATIVE_EQUAL(res_std_unseq, res_truth, ERROR_MAX_PERCENT);
+
+
+  // Don't forget the -ltbb compiler flag
+  #if ENABLE_TBB && KIWAKU_BENCH_MTHREAD
+
+    // ====== std parallel ======
+    DATA_TYPE res_std_par = bench_std(std::execution::par, "par");
+    TTS_RELATIVE_EQUAL(res_std_par, res_truth, ERROR_MAX_PERCENT);
+
+    // ====== std parallel unsequenced ======
+    DATA_TYPE res_std_par_unseq = bench_std(std::execution::par_unseq, "par_unseq");
+    TTS_RELATIVE_EQUAL(res_std_par_unseq, res_truth, ERROR_MAX_PERCENT);
+
+  #endif // ENABLE_TBB && KIWAKU_BENCH_MTHREAD
+
+
+  // ====== SYCL ======
+  #if KIWAKU_BENCH_SYCL
+    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64  (with x86_64 or spir64)
+    bool has_gpu = kwk::sycl::has_gpu();
+
+    if (has_gpu)
+    {
+      #if KIWAKU_BENCH_MTHREAD
+        // ====== Kiwaku SYCL CPU ======
+        auto ctx_cpu = kwk::sycl::context{::sycl::cpu_selector_v};
+        int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), func);
+        TTS_EQUAL(res_sycl_cpu, res_truth);
+      #endif
+
+      // ====== Kiwaku SYCL GPU ======
+      auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
+      int res_sycl_gpu = bench_kiwaku(ctx_gpu, "kwk SYCL " + ctx_gpu.get_device_name(), func);
+      TTS_EQUAL(res_sycl_gpu, res_truth);
+    }
+    else // SYCL default context
+    {
+      #if KIWAKU_BENCH_MTHREAD
+        // ====== Kiwaku SYCL CPU ======
+        auto& ctx_cpu = kwk::sycl::default_context;
+        int res_sycl_cpu = bench_kiwaku(ctx_cpu, "kwk SYCL " + ctx_cpu.get_device_name(), func);
+        TTS_EQUAL(res_sycl_cpu, res_truth);
+      #endif
+    }
+  #endif
+
   b.stop();
-
-  // TTS_EQUAL(res_std_par, res_std);
-  TTS_RELATIVE_EQUAL(res_std_unseq    , res_std, ERROR_MAX_PERCENT);
-  TTS_RELATIVE_EQUAL(res_std_par      , res_std, ERROR_MAX_PERCENT);
-  TTS_RELATIVE_EQUAL(res_std_par_unseq, res_std, ERROR_MAX_PERCENT);
-  TTS_RELATIVE_EQUAL(res_hand         , res_std, ERROR_MAX_PERCENT);
-  TTS_RELATIVE_EQUAL(res_kwk_cpu      , res_std, ERROR_MAX_PERCENT);
-  TTS_RELATIVE_EQUAL(res_eve          , res_std, ERROR_MAX_PERCENT);
 }
 
 
@@ -148,7 +211,7 @@ TTS_CASE("Benchmark - reduce, memory-bound ")
     std::string hname = sutils::get_host_name();
          if (hname == "parsys-legend")          { size =   6 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
     else if (hname == "pata")                   { size =   1 * gio; }
-    else if (hname == "chaton")                 { size =   2 * gio; }
+    else if (hname == "chaton")                 { size =   1 * gio; }
     else if (hname == "falcou-avx512")          { size =   6 * gio; }
     else if (hname == "sylvain-ThinkPad-T580")  { size =  32 * mio; }
     else if (hname == "lapierre")               { size =  32 * mio; }
@@ -161,3 +224,5 @@ TTS_CASE("Benchmark - reduce, memory-bound ")
     TTS_EQUAL(true, true);
   }
 };
+
+#endif
