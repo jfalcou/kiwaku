@@ -52,6 +52,24 @@ namespace kwk::sycl
       print_sycl_header(true);
     }
 
+    // ::kwk::sycl::in
+    // auto access(auto const& proxy)
+    // {
+    //   // return proxy.access(current_handler);
+    // }
+
+    // template<typename T>
+    // auto access(::kwk::sycl::base_proxy<T>& proxy) { return proxy.access(current_handler); }
+
+    // template<typename T>
+    // auto access(::kwk::sycl::in<T>& proxy) { return proxy.access(current_handler); }
+
+    // template<typename T>
+    // auto access(::kwk::sycl::out<T>& proxy) { return proxy.access(current_handler); }
+
+    // template<typename T>
+    // auto access(::kwk::sycl::inout<T>& proxy) { return proxy.access(current_handler); }
+
 
     template<typename Func>
     void map(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
@@ -62,14 +80,88 @@ namespace kwk::sycl
         // Maps each sycl proxy to an accessor
         auto accs = kumi::map([&](auto& b) { return b.access(h); }, kumi::tuple{p0, ps...});
 
+        // Function passed to SYCL parallel_for
+        auto kernel = [=](auto i)
+        {
+          // Maps each accessor m to m[i]
+          auto kapply = [=](auto&&... m)
+          {
+            f(KWK_FWD(m)[i]...);
+          };
+
+          kumi::apply(kapply, accs);
+        };
+
         // For each element of the input tables, call our lambda parameter with the input accessors
-        h.parallel_for(p0.size(), [=](auto i) { kumi::apply([=](auto&&... m) { f(KWK_FWD(m)[i]...); }, accs); });
+        h.parallel_for(p0.size(), kernel);
+
+        // Same code, but more compact
+        // h.parallel_for(p0.size(), [=](auto i) { kumi::apply([=](auto&&... m) { f(KWK_FWD(m)[i]...); }, accs); });
+
         // nd_range makes my GPU crash... :'( (2023-11-10)
         // h.parallel_for(::sycl::nd_range<1>(p0.size(), 1024), [=](::sycl::item<1> i) { kumi::apply([=](auto&&... m) { f(KWK_FWD(m)[i]...); }, accs); });
       });
 
       parent::wait();
     }
+
+    template<typename Func>
+    void map_ext(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
+    {
+
+      parent::submit([&](::sycl::handler &h) 
+      {
+        // Maps each sycl proxy to an accessor
+        auto accs = kumi::map([&](auto& b) { return b.access(h); }, kumi::tuple{p0, ps...});
+
+        auto kernel = [=](auto i)
+        {
+          auto kapply = [=](auto&&... m)
+          {
+            f(i, KWK_FWD(m)...);
+          };
+
+          kumi::apply(kapply, accs);
+        };
+
+        // For each element of the input tables, call our lambda parameter with the input accessors
+        h.parallel_for(p0.size(), kernel);
+
+      });
+
+      parent::wait();
+      current_handler = nullptr;
+      prepare_kernel = nullptr;
+    }
+
+    // template<typename Func>
+    // void map2(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&& p1)
+    // {
+    //   parent::submit([&](::sycl::handler &h) 
+    //   {
+    //     auto acc0 = p0.access(h);
+    //     auto acc1 = p1.access(h);
+
+    //     auto kernel = [=](auto i)
+    //     {
+    //       f(acc0[i], acc1[i]);
+
+    //       auto kapply = [=](auto&&... m)
+    //       {
+    //         f(KWK_FWD(m)[i]...);
+    //       }
+
+    //       kumi::apply(kapply, accs);
+    //     }
+
+    //     // For each element of the input tables, call our lambda parameter with the input accessors
+    //     h.parallel_for(p0.size(), kernel);
+    //     // nd_range makes my GPU crash... :'( (2023-11-10)
+    //     // h.parallel_for(::sycl::nd_range<1>(p0.size(), 1024), [=](::sycl::item<1> i) { kumi::apply([=](auto&&... m) { f(KWK_FWD(m)[i]...); }, accs); });
+    //   });
+    //   parent::wait();
+    // }
+
 
     template<typename Func>
     void map_index(Func f, concepts::sycl::proxy auto&& p0)
@@ -377,6 +469,13 @@ namespace kwk
     // std::cout << "---------------------------------- for_each SYCL used !\n";
     return ctx.map(f, KWK_FWD(c0), KWK_FWD(cs)...);
   }
+
+  // template<typename Func, concepts::container C0, concepts::container... Cs>
+  // constexpr auto for_each_ext(kwk::sycl::context& ctx, Func f, C0&& c0, Cs&&... cs)
+  // {
+  //   // std::cout << "---------------------------------- for_each SYCL used !\n";
+  //   return ctx.map_ext(f, KWK_FWD(c0), KWK_FWD(cs)...);
+  // }
 
   // TODO reduce: soit on fait ctx.reduce, soit dans le contexte sycl on réécrit la fonction reduce avec sycl_context.
   template<typename Func, concepts::container In>
