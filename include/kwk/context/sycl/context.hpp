@@ -130,8 +130,6 @@ namespace kwk::sycl
       });
 
       parent::wait();
-      current_handler = nullptr;
-      prepare_kernel = nullptr;
     }
 
     // template<typename Func>
