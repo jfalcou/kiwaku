@@ -161,6 +161,20 @@ void transform_reduce_test(std::string const& bench_name
 
 TTS_CASE("Benchmark - transform_reduce, compute-bound ")
 {
+  #ifdef KWK_ENABLE_DEMO_FEATURE
+  std::cout << "[ Custom Feature is ENABLED! ]\n\n";
+  std::cout << "[ Custom Feature is ENABLED! ]\n\n";
+  std::cout << "[ Custom Feature is ENABLED! ]\n\n";
+  std::cout << "[ Custom Feature is ENABLED! ]\n\n";
+  #else
+  std::cout << "[ Custom Feature is DISABLED. ]\n\n";
+  std::cout << "[ Custom Feature is DISABLED. ]\n\n";
+  std::cout << "[ Custom Feature is DISABLED. ]\n\n";
+  std::cout << "[ Custom Feature is DISABLED. ]\n\n";
+  std::cout << "[ Custom Feature is DISABLED. ]\n\n";
+  std::cout << "[ Custom Feature is DISABLED. ]\n\n";
+  #endif
+
   if (::kwk::bench::enable_global)
   {
     using DATA_TYPE = float;
