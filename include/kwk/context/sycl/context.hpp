@@ -21,7 +21,7 @@
 
 namespace kwk::sycl
 {
-  struct context : private ::sycl::queue, public kwk::base_context<context>
+  struct context : public ::sycl::queue, public kwk::base_context<context>
   {
   private:
     bool PRINT_SYCL_HEADER = true;
@@ -314,9 +314,19 @@ namespace kwk::sycl
       // return init;
     }
 
+
     template<concepts::container In, typename Func>
     std::optional<kwk::position<In::static_order>>
     find_if_v2(In const& in, Func func, [[maybe_unused]] bool ascending)
+    {
+      auto in_proxy = this->in(in);
+      return find_if_v2_proxy(in, in_proxy, func, ascending);
+    }
+
+    // In only used for In::static_order
+    template<concepts::container In, typename InProxy, typename Func>
+    std::optional<kwk::position<In::static_order>>
+    find_if_v2_proxy([[maybe_unused]] In const& in, InProxy& in_proxy, Func func, [[maybe_unused]] bool ascending)
     {
       std::size_t const numel = in.numel();
       if (numel == 0) return std::nullopt;
@@ -347,7 +357,7 @@ namespace kwk::sycl
 
           bool* filter = ::sycl::malloc_device<bool>(numel, *(this));
 
-          auto in_proxy = this->in(in);
+          // auto in_proxy = this->in(in);
           // in_proxy.discard_final_data(); // Will not copy data back to the host
 
           parent::submit([&](::sycl::handler& h)
