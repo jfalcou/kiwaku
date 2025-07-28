@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/concepts/axis.hpp>
-#include <kumi/tuple.hpp>
+#include <kumi/kumi.hpp>
 
 namespace kwk
 {
