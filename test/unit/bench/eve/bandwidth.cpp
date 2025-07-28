@@ -9,7 +9,7 @@
 #include "../include/benchmark.hpp"
 #include "../include/utils/utils.hpp"
 
-#if EVE_ENABLE_SYCL
+#if KIWAKU_BENCH_SYCL
   #include <kwk/context/sycl/context.hpp>
 #endif
 
@@ -170,7 +170,7 @@ void for_each_test( std::string const& bench_name
     #endif
   #endif
 
-  #if EVE_ENABLE_SYCL
+  #if KIWAKU_BENCH_SYCL
     // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64 or spir64
     bool has_gpu = kwk::sycl::has_gpu();
 
