@@ -23,6 +23,16 @@ namespace kwk
             );
   }
 
+  template< typename Context, typename Func, typename Out
+          , typename In0, typename... Ins
+          >
+  constexpr void transform_proxy(Context& ctx, Func f, Out& out, In0& in0, Ins&... ins)
+  {
+    ctx.map ( [f](auto& o, auto const& i0, auto const&... in) { o = f(i0, in...); }
+            , out, in0, ins...
+            );
+  }
+
   template< typename Func, concepts::container Out
           , concepts::container C0, concepts::container... Cs
           >
