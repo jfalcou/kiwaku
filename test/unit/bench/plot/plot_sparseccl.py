@@ -22,7 +22,7 @@ def set_axis_style(ax, labels):
 
 plot_set_sizes.set_sizes()
 
-max_text_width_on_axis = 16 # Legends such as "Kiwaku SYCL GPU"
+max_text_width_on_axis = 24 # Legends such as "Kiwaku SYCL GPU"
 # TODO: enlever Kiwaku carrément ? SYCL c'est assez clair si je le dis dans le texte.
 
 kwk_array_size = 1
@@ -41,16 +41,23 @@ global_colors = [
   'tab:cyan'
 ]
 
-unit_name = ""
+# python3 plot_sparseccl.py final_files/sparseccl_kwk_sycl_vs_sycl_1st_kernel.bench 
+# python3 plot_sparseccl.py final_files/sparseccl_kwk_sycl_vs_sycl_2nd_kernel.bench 
+# python3 plot_sparseccl.py final_files/sparseccl_kwk_sycl_vs_sycl.bench 
+# python3 plot_sparseccl.py final_files/sparseccl_kwk.bench 
+# python3 plot_sparseccl.py final_files/sparseccl_kwk_gpu.bench 
 
-IS_MEMORY_BOUND  = False
-IS_COMPUTE_BOUND = False
+
+unit_name = ""
 
 CURRENT_VERSION = 0
 
+DIVIDE_BY = 1000
+
 # Charge le fichier de bench "path" et retourne la liste de ce qui a été lu.
 def load_file(path):
-  global VERSION_ATTENDUE, CURRENT_VERSION, global_name, measured_variable, kwk_array_size, unit_name, IS_MEMORY_BOUND, IS_COMPUTE_BOUND
+  global VERSION_ATTENDUE, CURRENT_VERSION, global_name, measured_variable, kwk_array_size, unit_name
+  global DIVIDE_BY
   bench_list = []
 
   with open(path) as fp:
@@ -65,14 +72,6 @@ def load_file(path):
     global_name = fp.readline().rstrip("\n")
     measured_variable = fp.readline().rstrip("\n")
     kwk_array_size = int(fp.readline().rstrip("\n"))
-    bound_type = fp.readline().rstrip("\n") # Memory or compute-bound
-
-    if (bound_type == "compute-bound"):
-      IS_COMPUTE_BOUND = True
-
-    if (bound_type == "memory-bound"):
-      IS_MEMORY_BOUND = True
-
 
     all_medians = []
 
@@ -86,6 +85,10 @@ def load_file(path):
       res = {}
       res["bench_name"]         = line.rstrip("\n")
       res["raw_values"]         = pu.list_str_to_float(pu.remove_empty_words(pu.remove_newline(fp.readline().split(" ")))) #, 1 / kwk_array_size)
+
+      for i in range(len(res["raw_values"])):
+        res["raw_values"][i] = round(res["raw_values"][i] / DIVIDE_BY)
+
       res["no-outlier_values"]  = pu.filter_outliers(res["raw_values"])
       res["median"]             = stat.median(res["raw_values"])
 
@@ -173,12 +176,10 @@ plt.savefig(output_fname, format="png") #, dpi=my_dpi)
 
 if (not args.only_save_image):
   
+  print("Kernel duration (milliseconds):")
   for i in range(0, len(bench_list)):
     bench = bench_list[i]
-    unit_name = ""
-    if IS_COMPUTE_BOUND: unit_name = " cycles per element"
-    if IS_MEMORY_BOUND: unit_name = " GB/s"
-    if (not IS_COMPUTE_BOUND) and (not IS_COMPUTE_BOUND): unit_name = " !!UNKNOWN_UNIT!!"
+    unit_name = " ms"
     print(bench["bench_name"] + ": " + str(round(bench["median"])) + unit_name)
   
   plt.show()

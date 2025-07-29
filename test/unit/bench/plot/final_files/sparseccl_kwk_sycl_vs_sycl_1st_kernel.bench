@@ -1,0 +1,12 @@
+3
+SparseCCL GPU: 1st kernel
+Kernel duration (ms)
+11635200
+kiwaku_sycl                           first kernel
+640127 631596 633191
+accessors                             first kernel
+638848 628123 628425
+shared_USM                            first kernel
+921326 885654 884272
+device_USM + copy
+630096 625221 625747 625480

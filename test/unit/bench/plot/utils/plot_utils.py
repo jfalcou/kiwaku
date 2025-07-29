@@ -258,3 +258,16 @@ def list_str_to_int(list, multiply_by = None):
       list = [round(int(i) * multiply_by) for i in list]
   # print(list)
   return list
+
+def list_str_to_float(list, multiply_by = None):
+  # print("list_str_to_int len = " + str(len(list)) + " 1st value = "+ str(list[0]) + "values:")
+  # print(list)
+  if len(list) == 0:
+    list.append(0)
+  else:
+    if multiply_by == None:
+      list = [round(float(i)) for i in list]
+    else:
+      list = [round(float(i) * multiply_by) for i in list]
+  # print(list)
+  return list
