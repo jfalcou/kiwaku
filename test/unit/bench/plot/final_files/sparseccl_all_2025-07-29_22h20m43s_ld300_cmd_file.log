@@ -1,0 +1,454 @@
+[sylvainj@parsys-legend src]$ ./sparseccl GPU 300 3
+
+
+============ SYCL RUNTIME ============
+   Device Name:    NVIDIA GeForce RTX 2080 Ti
+   Platform Name:  NVIDIA CUDA BACKEND
+
+
+
+========~~~~~~~ VERSION sparseccl108 - TRACCC-016 ~~~~~~~========
+====== print_choosen_backend GPUdata replicate: 300 times
+recompute: 3 times
+
+=== Currently running on computer:  ===
+====== print_choosen_backend GPU=====================================
+run_single_test_generic_traccc
+====== print_choosen_backend GPU=====!!G!P!U!!=====
+run_single_test_generic_traccc v2
+====== print_choosen_backend GPU
+OUTPUT FILE: /home/sylvainj/SparseCCL/Comparing-SyCL-data-transfer-strategies-for-tracking-use-cases/src/output/human_readable/GPU_parsys-legend_2025-07-29_22h20m43s_ld300_run1_generalFlatten.bench
+
+
+current_path     = /home/sylvainj/SparseCCL/Comparing-SyCL-data-transfer-strategies-for-tracking-use-cases/src/output/
+output_file_name = /home/sylvainj/SparseCCL/Comparing-SyCL-data-transfer-strategies-for-tracking-use-cases/src/output/GPU_parsys-legend_2025-07-29_22h20m43s_sparseccl108_generalFlatten_ld300_run1.t
+OK, fichier bien ouvert.
+
+
+Version du fichier : 108
+
+
+============================
+   SYCL TRACCC benchmark.   
+============================
+GPU_parsys-legend_2025-07-29_22h20m43s_sparseccl108_generalFlatten_ld300_run1.t
+
+-------------- 13d --------------
+
+-----> Do flatten.
+-----> traccc_repeat_load_count(1)
+
+
+==== Mode(device_USM)  memory_strategy(flatten) ====
+Iteration 1 on 3
+
+
+=========== LOAD DATA ===========
+Read from /home/sylvainj/SparseCCL/Comparing-SyCL-data-transfer-strategies-for-tracking-use-cases/src/input/lite_all_events.bin...
+  - traccc_SPARSITY_MIN(0)
+  - traccc_SPARSITY_MAX(100000)
+total_module_count = 38784
+total_cell_count = 2041344
+total_int_written = 4121472
+without sparse multiply : total_module_count = 38784
+without sparse multiply : total_cell_count   = 2041344
+-- adjust to sparcity by multiplication = 1
+alloc traccc_repeat_load_count = 300
+copy ok
+total_module_count = 11635200
+total_cell_count   = 612403200
+IN SIZE  = 771896 KiB
+OUT SIZE = 2574000 KiB
+
+
+
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   6%  t_alloc_native(754) t_alloc_sycl(0) t_fill(607) t_copy(387) t_read(81) t_dealloc_sycl(6) t_dealloc_native(17) ker0(243) ker1(238) ker2(239) ker3(238) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   13%  t_alloc_native(751) t_alloc_sycl(2) t_fill(607) t_copy(386) t_read(80) t_dealloc_sycl(7) t_dealloc_native(17) ker0(238) ker1(238) ker2(239) ker3(239) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   20%  t_alloc_native(754) t_alloc_sycl(2) t_fill(608) t_copy(386) t_read(82) t_dealloc_sycl(7) t_dealloc_native(17) ker0(239) ker1(238) ker2(240) ker3(239) 
+
+
+
+==== Mode(glibc)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   26%  t_alloc_native(754) t_alloc_sycl(4294967) t_fill(608) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3652) ker1(3648) ker2(3647) ker3(3649) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   33%  t_alloc_native(755) t_alloc_sycl(4294967) t_fill(608) t_copy(4294967) t_read(81) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3655) ker1(3650) ker2(3651) ker3(3652) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   40%  t_alloc_native(754) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(81) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3655) ker1(3651) ker2(3653) ker3(3653) 
+
+
+
+==== Mode(std_seq)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   46%  t_alloc_native(754) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3695) ker1(3694) ker2(3694) ker3(3694) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   53%  t_alloc_native(754) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3698) ker1(3696) ker2(3696) ker3(3696) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   60%  t_alloc_native(751) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3699) ker1(3697) ker2(3696) ker3(3694) 
+
+
+
+==== Mode(std_unseq)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   66%  t_alloc_native(750) t_alloc_sycl(4294967) t_fill(610) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3817) ker1(3820) ker2(3822) ker3(3823) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   73%  t_alloc_native(750) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3810) ker1(3823) ker2(3823) ker3(3824) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   80%  t_alloc_native(751) t_alloc_sycl(4294967) t_fill(610) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3811) ker1(3822) ker2(3822) ker3(3822) 
+
+
+
+==== Mode(accessors)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(0)  labels(0) ]]]   86%  t_alloc_native(753) t_alloc_sycl(0) t_fill(609) t_copy(4294967) t_read(79) t_dealloc_sycl(218) t_dealloc_native(19) ker0(638) ker1(239) ker2(239) ker3(239) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(0)  labels(0) ]]]   93%  t_alloc_native(754) t_alloc_sycl(0) t_fill(609) t_copy(4294967) t_read(80) t_dealloc_sycl(218) t_dealloc_native(19) ker0(628) ker1(240) ker2(240) ker3(238) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(0)  labels(0) ]]]   100%  t_alloc_native(753) t_alloc_sycl(0) t_fill(609) t_copy(4294967) t_read(78) t_dealloc_sycl(218) t_dealloc_native(19) ker0(628) ker1(240) ker2(239) ker3(238) 
+
+
+
+==== Mode(kiwaku_cpu)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   106%  t_alloc_native(750) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3795) ker1(3789) ker2(3791) ker3(3791) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   113%  t_alloc_native(752) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(81) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3796) ker1(3791) ker2(3791) ker3(3791) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   120%  t_alloc_native(752) t_alloc_sycl(4294967) t_fill(610) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(3794) ker1(3792) ker2(3793) ker3(3792) 
+
+
+
+==== Mode(kiwaku_sycl)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+KIWAKU DEVICE NAME: NVIDIA GeForce RTX 2080 Ti
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   126%  t_alloc_native(753) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(81) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(640) ker1(240) ker2(239) ker3(241) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+KIWAKU DEVICE NAME: NVIDIA GeForce RTX 2080 Ti
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   133%  t_alloc_native(751) t_alloc_sycl(4294967) t_fill(610) t_copy(4294967) t_read(80) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(631) ker1(240) ker2(240) ker3(239) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+KIWAKU DEVICE NAME: NVIDIA GeForce RTX 2080 Ti
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   140%  t_alloc_native(750) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(81) t_dealloc_sycl(4294967) t_dealloc_native(17) ker0(633) ker1(239) ker2(239) ker3(239) 
+
+
+
+==== Mode(kiwaku_sycl_nodir)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+KIWAKU DEVICE NAME: NVIDIA GeForce RTX 2080 Ti
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   146%  t_alloc_native(754) t_alloc_sycl(4294967) t_fill(610) t_copy(4294967) t_read(82) t_dealloc_sycl(4294967) t_dealloc_native(20) ker0(824) ker1(240) ker2(241) ker3(241) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+KIWAKU DEVICE NAME: NVIDIA GeForce RTX 2080 Ti
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   153%  t_alloc_native(755) t_alloc_sycl(4294967) t_fill(609) t_copy(4294967) t_read(79) t_dealloc_sycl(4294967) t_dealloc_native(20) ker0(823) ker1(239) ker2(239) ker3(240) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+KIWAKU DEVICE NAME: NVIDIA GeForce RTX 2080 Ti
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   160%  t_alloc_native(752) t_alloc_sycl(4294967) t_fill(610) t_copy(4294967) t_read(79) t_dealloc_sycl(4294967) t_dealloc_native(20) ker0(825) ker1(241) ker2(240) ker3(239) 
+
+
+
+==== Mode(shared_USM)  memory_strategy(flatten) ====
+Iteration 1 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   166%  t_alloc_native(4294967) t_alloc_sycl(0) t_fill(1374) t_copy(4294967) t_read(747) t_dealloc_sycl(233) t_dealloc_native(4294967) ker0(921) ker1(240) ker2(240) ker3(240) 
+Iteration 2 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   173%  t_alloc_native(4294967) t_alloc_sycl(0) t_fill(1374) t_copy(4294967) t_read(747) t_dealloc_sycl(233) t_dealloc_native(4294967) ker0(885) ker1(240) ker2(239) ker3(240) 
+Iteration 3 on 3
+==================================
+Current device type: GPU
+Current device name: NVIDIA GeForce RTX 2080 Ti
+==================================
+===== FLATTEN SIZES :
+flat_input.cells = 4899225600
+flat_output.cells = 2449612800
+flat_input.modules = 93081600
+flat_output.modules = 46540800
+============================
+
+    [[[ clusters(114166200)  labels(2809523804) ]]]   180%  t_alloc_native(4294967) t_alloc_sycl(0) t_fill(1374) t_copy(4294967) t_read(742) t_dealloc_sycl(233) t_dealloc_native(4294967) ker0(884) ker1(240) ker2(240) ker3(239) 
+
+OK, done.
