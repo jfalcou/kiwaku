@@ -45,6 +45,11 @@ std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
 // -msse4.2 on devrait avoir x4
 // -march=skylake-avx512
 
+// Compute-bound vs memory-bound
+enum bench_type_t {compute, memory};
+enum device_type_t {cpu, gpu};
+
+
 // Each benchmark file is for a direct comparison.
 // Each file should be loaded by the python visualizer
 // without requiring any change in python code.
@@ -67,6 +72,17 @@ struct cbench_t
 
   void run_function_rpt_bwidth(std::string const& name, std::size_t const repeat, auto func, auto reset_func, double tsize_byte);
   void run_function_ext(std::string const& name, std::size_t const repeat, auto func, auto reset_func, double tsize_byte);
+
+  void run_ext2 ( std::string const name
+                , auto func
+                , auto reset_func
+                , double total_number_of_elements_processed // array length * repetitions
+                , double bandwidth_per_element_in_bytes // in bytes
+                // e.g. for a transform inplace of float: 4 bytes (input) + 4 bytes (ouput) = 8
+                , bench_type_t type      // memory-bound or compute-bound
+                , double clock_speed_in_GHz // expressed in GHz
+                , device_type_t device_type
+                );
 
   void stop();
 
@@ -198,6 +214,124 @@ void cbench_t::run_function_rpt_bwidth(std::string const& name, std::size_t cons
   current_file << "\n";
   std::cout << "  sum_ret(" << sum_ret << ")\n\n";
 }
+
+// tsize_byte is the total data size read + written by the algorithm, in bytes
+void cbench_t::run_ext2 ( std::string const name
+                        , auto func
+                        , auto reset_func
+                        , double total_number_of_elements_processed // array length * repetitions
+                        , double bandwidth_per_element_in_bytes // in bytes
+                        // e.g. for a transform inplace of float: 4 bytes (input) + 4 bytes (ouput) = 8
+                        , bench_type_t type      // memory-bound or compute-bound
+                        , double clock_speed_in_GHz // expressed in GHz
+                        , device_type_t device_type
+                        )
+{
+  std::string unit = "";
+  if (type == bench_type_t::memory)   unit = "Mem Bandwidth GB/s";
+  if (type == bench_type_t::compute)  unit = "Cycles per element";
+
+  std::cout << "Benchmarking  " << name << " (run_ext2)   time(" << unit << "):\n";
+
+  // std::cout << "                clock_speed_in_GHz: " << clock_speed_in_GHz << std::endl;
+  // // std::cout << "                         elapsed_s: " << elapsed_s << std::endl;
+  // std::cout << "total_number_of_elements_processed: " << total_number_of_elements_processed << std::endl;
+
+  // std::cout << "Benchmarking  " << name << " (run_function_rpt_bwidth)   time(Mem Bandwidth GB/s):\n";
+  current_file << name << "\n";
+  switch (type)
+  {
+    case memory : current_file << "memory-bound"  << "\n"; break;
+    case compute: current_file << "compute-bound" << "\n"; break;
+    default     : current_file << "!!UNKNOWN!!-bound" << "\n"; break;
+  }
+  sutils::chrono_t chrono;
+  std::cout << "    ";
+  double sum_ret = 0;
+  for (std::size_t i = 0; i < iterations_count; ++i)
+  {
+    reset_func(); // not measured by the timer
+    chrono.Init();
+    sum_ret += func();
+    std::size_t elapsed = chrono.ElapsedTimeMS() ;
+
+    // Je ne sauvegarde plus le temps, à la place:
+    // Memory-bound : GB/s
+    // Compute-bound: nombre de cycles par élément
+    // current_file << elapsed << " ";
+
+    double elapsed_s = static_cast<double>(elapsed) / 1000;
+
+    // To keep only one digit after the decimal point
+    auto concise = [] (double n) -> double
+    {
+      return std::round(n * 10) / 10;
+    };
+
+    // GB/s
+    if (type == bench_type_t::memory)
+    {
+      // double bandwidthGB = std::round(((tsize_byte * repeat) / elapsed_s) / 100000000.) / 10; // 100000000. = 0.1 billion
+      // ^^^^^ division par 10^8 et non 10^9 pour avoir une décimale
+
+      double bandwidthGB =
+        concise(((total_number_of_elements_processed * bandwidth_per_element_in_bytes) / elapsed_s) / 1000000000.); // 1000000000. = 10^9
+
+      std::cout << elapsed << "(" << bandwidthGB << ") " << " " << std::flush; // GB/s
+      current_file << bandwidthGB << " ";
+    }
+
+    // Cycle per value
+    if (type == bench_type_t::compute)
+    {
+      // Version validée par Hadrien
+      // double frequency_hz = 4.7 * 1000000000.; // 3.4 et 4.9, expérimentalement 4,7 (via perf stat -I 1000 -- ./mon_bench) sur Legend
+      // double elapsed_per_repetition_s = elapsed_s / static_cast<double>(repeat);
+      
+      if (device_type == device_type_t::cpu)
+      {
+        double cycles_per_elem = concise(clock_speed_in_GHz * 1000000000. * elapsed_s / total_number_of_elements_processed);
+        std::cout << elapsed << "(" << cycles_per_elem << ") " << " " << std::flush; // GB/s
+        current_file << cycles_per_elem << " ";
+      }
+      
+      // TODO????????????? Je ne sais pas quelle métrique prendre.
+      if (device_type == device_type_t::gpu)
+      {
+        double cycles_per_elem = concise(clock_speed_in_GHz * 1000000000. * elapsed_s / total_number_of_elements_processed);
+        std::cout << elapsed << "(" << cycles_per_elem << ") " << " " << std::flush; // GB/s
+        current_file << cycles_per_elem << " ";
+      }
+    }
+
+    // Ma version
+    // // Cycle per value:
+    // double frequency = 4.0 * 1000000000.; // 3.4 et 4.9
+    // double elapsed_s = static_cast<double>(elapsed) / 1000.;
+    // elem_per_cycle = frequency * elapsed_s / (array_size * repeat);
+    // //  * element_size
+    // // array_size en élements (i.e. nombre de floats)
+    // // Temps pour processer array_size éléments
+
+    // // Cycle per value:
+    // double frequency_hz = 4.0 * 1000000000.; // 3.4 et 4.9
+    // // double elapsed_s = static_cast<double>(elapsed) / 1000.;
+    // double elapsed_per_repetition_s = elapsed_s / repeat;
+    // double cycle_per_elem = frequency_hz * elapsed_per_repetition_s / array_size;
+    
+
+
+    // std::cout << elapsed << "(" << cycle_per_elem << ") " << " " << std::flush; // GB/s
+    // std::cout << "(" << r << ") " << std::flush; //  "(" << r << ")" <<
+  }
+  current_file << "\n";
+  std::cout << "  sum_ret(" << sum_ret << ")\n\n";
+}
+
+
+
+
+
 
 void cbench_t::run_function_ext ( std::string const& name
                                 , std::size_t const repeat
