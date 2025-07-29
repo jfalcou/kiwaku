@@ -94,7 +94,7 @@ void transform_test ( std::string const& bench_name
 
   std::string y_axis_title = "UNKNOWN AXIS TYPE";
 
-  if (bench_type == kwk::bench::bench_type_t::compute) y_axis_title = "Elem per cycle";
+  if (bench_type == kwk::bench::bench_type_t::compute) y_axis_title = "Cycles per element";
   if (bench_type == kwk::bench::bench_type_t::memory)  y_axis_title = "Throughput"; // GB/s
 
   // Benchmark initialization

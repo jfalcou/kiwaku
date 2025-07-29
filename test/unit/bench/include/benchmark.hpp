@@ -46,7 +46,7 @@ std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
 // -march=skylake-avx512
 
 // Compute-bound vs memory-bound
-enum bench_type_t {compute, memory};
+enum bench_type_t {compute, memory, unknown};
 enum device_type_t {cpu, gpu};
 
 
@@ -59,7 +59,19 @@ struct cbench_t
 {
   // void set_title(std::string global_name_)    { global_name = global_name_; }
   void set_iterations(std::size_t iter_count) { iterations_count = iter_count; }
-  void start(std::string const& fname, std::string const& global_name, std::string const& measured_variable, std::size_t array_size);
+  void start( std::string const& fname
+            , std::string const& global_name
+            , std::string const& measured_variable
+            , std::size_t array_size
+            , bench_type_t type      // memory-bound or compute-bound
+            );
+
+  // Legacy
+  void start( std::string const& fname
+            , std::string const& global_name
+            , std::string const& measured_variable
+            , std::size_t array_size
+            );
 
   
   
@@ -93,7 +105,12 @@ private:
 
 };
 
-void cbench_t::start(std::string const& fname, std::string const& global_name, std::string const& measured_variable, std::size_t array_size)
+void cbench_t::start( std::string const& fname
+                    , std::string const& global_name
+                    , std::string const& measured_variable
+                    , std::size_t array_size
+                    , bench_type_t type      // memory-bound or compute-bound
+                    )
 {
   std::string out_dir = "../kiwaku_bench_results/";
 
@@ -111,7 +128,20 @@ void cbench_t::start(std::string const& fname, std::string const& global_name, s
   current_file << global_name << "\n";
   current_file << measured_variable << "\n";
   current_file << array_size << "\n";
+  if (type == bench_type_t::compute) current_file << "compute-bound\n";
+  if (type == bench_type_t::memory)  current_file << "memory-bound\n";
+  if (type == bench_type_t::unknown) current_file << "!!UNKNOWN!!-bound\n";
   // std::cout << "First line written to file!\n";
+}
+
+// Legacy
+void cbench_t::start( std::string const& fname
+                    , std::string const& global_name
+                    , std::string const& measured_variable
+                    , std::size_t array_size
+                    )
+{
+  start(fname, global_name, measured_variable, array_size, bench_type_t::unknown);
 }
 
 
@@ -215,6 +245,9 @@ void cbench_t::run_function_rpt_bwidth(std::string const& name, std::size_t cons
   std::cout << "  sum_ret(" << sum_ret << ")\n\n";
 }
 
+
+
+
 // tsize_byte is the total data size read + written by the algorithm, in bytes
 void cbench_t::run_ext2 ( std::string const name
                         , auto func
@@ -239,12 +272,14 @@ void cbench_t::run_ext2 ( std::string const name
 
   // std::cout << "Benchmarking  " << name << " (run_function_rpt_bwidth)   time(Mem Bandwidth GB/s):\n";
   current_file << name << "\n";
-  switch (type)
-  {
-    case memory : current_file << "memory-bound"  << "\n"; break;
-    case compute: current_file << "compute-bound" << "\n"; break;
-    default     : current_file << "!!UNKNOWN!!-bound" << "\n"; break;
-  }
+  
+  // Already written once by the start function.
+  // switch (type)
+  // {
+  //   case memory : current_file << "memory-bound"  << "\n"; break;
+  //   case compute: current_file << "compute-bound" << "\n"; break;
+  //   default     : current_file << "!!UNKNOWN!!-bound" << "\n"; break;
+  // }
   sutils::chrono_t chrono;
   std::cout << "    ";
   double sum_ret = 0;
