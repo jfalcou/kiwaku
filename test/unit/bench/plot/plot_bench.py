@@ -11,6 +11,9 @@ import argparse
 
 VERSION_ATTENDUE = 3
 
+CONVERT_TO_BANDWIDTH = True
+CONVERT_TO_BANDWIDTH_MULTIPLY = 8
+
 def set_axis_style(ax, labels):
   ax.set_xticks(np.arange(0, len(labels)), labels=labels)
   # ax.set_xlim(0.25, len(labels) + 0.75)
@@ -81,6 +84,9 @@ def load_file(path):
           print("ERROR\nERROR: time = 0 for " + res["bench_name"] + "\nERROR")
         else:
           eps = 1000 * kwk_array_size / time
+          if CONVERT_TO_BANDWIDTH:
+            eps *= CONVERT_TO_BANDWIDTH_MULTIPLY
+          
           res["elements_per_second"].append(eps)
           # print("add " + str(eps))
 
@@ -95,17 +101,30 @@ def load_file(path):
 
     divide_by = 1
 
-    if global_ref / 1000 >= 1:
-      divide_by = 1000
-      unit_name = " (thousands)"
+    if CONVERT_TO_BANDWIDTH:
+      if global_ref / 1000 >= 1:
+        divide_by = 1000
+        unit_name = " (KB/s)"
 
-    if global_ref / 1000000 >= 1:
-      divide_by = 1000000
-      unit_name = " (millions)"
+      if global_ref / 1000000 >= 1:
+        divide_by = 1000000
+        unit_name = " (MB/s)"
 
-    if global_ref / 1000000000 >= 1:
-      divide_by = 1000000000
-      unit_name = " (billions)"
+      if global_ref / 1000000000 >= 1:
+        divide_by = 1000000000
+        unit_name = " (GB/s)"
+    else:
+      if global_ref / 1000 >= 1:
+        divide_by = 1000
+        unit_name = " (thousands)"
+
+      if global_ref / 1000000 >= 1:
+        divide_by = 1000000
+        unit_name = " (millions)"
+
+      if global_ref / 1000000000 >= 1:
+        divide_by = 1000000000
+        unit_name = " (billions)"
     
     if (CURRENT_VERSION == 4): # ignore unit, since it's a raw performance comparison
       unit_name = ""
