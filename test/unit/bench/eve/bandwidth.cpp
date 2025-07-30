@@ -26,8 +26,6 @@
 #include <execution> // don't forget the -ltbb compiler flag
 #include <eve/module/math.hpp>
 
-#define ENABLE_CHECK true
-
 template<typename DATA_TYPE>
 void for_each_test( std::string const& bench_name
                   , std::string const& file_name
