@@ -15,8 +15,6 @@
 #include <cstddef>
 #include <utility>
 
-#include <kwk/concepts/sycl_proxy.hpp>
-
 namespace kwk::sycl
 {
   // base proxy
@@ -48,6 +46,10 @@ namespace kwk::sycl
   {
     public:
     auto access(::sycl::handler& h)
+    {
+      return ::sycl::accessor(base_proxy<T>::data, h, ::sycl::read_only);
+    }
+    auto access(::sycl::handler const& h) const
     {
       return ::sycl::accessor(base_proxy<T>::data, h, ::sycl::read_only);
     }
