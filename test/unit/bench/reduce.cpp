@@ -67,12 +67,10 @@ void reduce_test( std::string const& bench_name
 
   auto view_in  = kwk::view{kwk::source = input.data() , kwk::of_size(L2_length)};
 
-  std::string y_axis_title = "Throughput";
-
   kwk::bench::cbench_t b;
   b.start ( kwk::bench::fprefix() + file_name
           , bench_name
-          , "Throughput"
+          , "Throughput (GB/s)"
           , total_number_of_elements_processed
           , kwk::bench::bench_type_t::memory
           );
