@@ -1,0 +1,15 @@
+3
+transform 256 KB in L2 cache
+Cycles per element
+67108864
+compute-bound
+hand CPU
+107.6 107.6 107.6 107.6 
+kwk CPU
+108.5 108.4 108.6 108.6 
+kwk SIMD
+13.9 13.9 13.9 13.9 
+seq
+108.5 108.5 108.5 108.5 
+unseq
+107.5 107.5 107.5 107.5 

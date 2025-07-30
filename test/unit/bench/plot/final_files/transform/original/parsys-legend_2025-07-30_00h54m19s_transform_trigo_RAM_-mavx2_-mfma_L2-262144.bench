@@ -1,0 +1,19 @@
+3
+transform trigo_inpl_RAM
+Cycles per element
+67108864
+compute-bound
+hand CPU
+108.6 108.6 108.6 108.6 
+kwk CPU
+108.6 108.7 108.6 108.7 
+kwk SIMD
+18.3 18.3 18.3 18.3 
+seq
+108.7 108.6 108.7 108.8 
+unseq
+108.7 108.7 108.7 108.8 
+kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+1.4 1 1 1 
+kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+0 0 0 0 

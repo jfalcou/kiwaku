@@ -1,0 +1,15 @@
+3
+transform memory-bound RAM
+Throughput (GB/s)
+1073741824
+memory-bound
+hand CPU
+38.2 38.2 38.2 38.2 
+kwk CPU
+38 38 37.8 38.2 
+kwk SIMD
+41.9 41.9 41.9 41.9 
+seq
+38.2 38.2 38.2 38.2 
+unseq
+38 37.8 38 37.8 

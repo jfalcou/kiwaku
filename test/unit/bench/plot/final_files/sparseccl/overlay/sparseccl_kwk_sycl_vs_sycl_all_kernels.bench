@@ -1,0 +1,21 @@
+3
+SparseCCL GPU with SYCL
+DRAW_OVER
+Kernel duration (ms)
+11635200
+Kiwaku with SYCL                                       first kernel
+640127 631596 633191
+kiwaku_sycl                                       after 1st kernel
+240790 239454 241039
+accessors                                         first kernel
+638848 628123 628425
+accessors                                         after 1st kernel
+239696 239576 239434
+shared USM                                        first kernel
+921326 885654 884272
+shared USM                                        after 1st kernel
+240495 240084 240857 240350 239895 240563 240417 240881 239561
+device USM                                          + copy
+630096 625221 625747 625480
+device USM
+243434 238559 239085 238818

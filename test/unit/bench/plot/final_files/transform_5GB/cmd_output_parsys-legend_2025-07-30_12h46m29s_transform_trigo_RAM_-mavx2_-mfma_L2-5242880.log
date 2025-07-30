@@ -1,0 +1,60 @@
+[sylvainj@parsys-legend kiwaku_build_2025-06]$ ninja unit.bench.transform_trigo_inplace.exe &&./unit/unit.bench.transform_trigo_inplace.exe
+[0/2] Re-checking globbed directories...
+[1/2] Building CXX object test/CMakeFiles/unit.bench.transfo...igo_inplace.exe.dir/unit/bench/transform_trigo_inplace.cpp.o
+icpx: warning: -ltbb: 'linker' input unused [-Wunused-command-line-argument]
+icpx: warning: -ltbb: 'linker' input unused [-Wunused-command-line-argument]
+[2/2] Linking CXX executable unit/unit.bench.transform_trigo_inplace.exe
+
+
+============ SYCL RUNTIME ============
+   Device Name:    NVIDIA GeForce RTX 2080 Ti
+   Platform Name:  NVIDIA CUDA BACKEND
+
+
+[Kiwaku] - Assertions: Disabled
+EVE_COMPILER_FLAG set to -mavx2_-mfma
+
+======= REPEAT = 1
+
+
+===================================================
+===================================================
+- Benchmark - transform, compute-bound (L2 5242880) -
+===================================================
+===================================================
+
+
+============================
+Start benchmark environment:
+    transform trigo_inpl_RAM
+    parsys-legend_2025-07-30_12h46m29s_transform_trigo_RAM_-mavx2_-mfma_L2-5242880.bench
+    in directory ../kiwaku_bench_results/
+
+Benchmarking  kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Cycles per element):
+    958(1.1)  955(1.1)  955(1.1)  955(1.1)    sum_ret(12.5715)
+
+Benchmarking  kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Cycles per element):
+    24(0)  25(0)  25(0)  25(0)    sum_ret(12.7961)
+
+Benchmarking  kwk SIMD (run_ext2)   time(Cycles per element):
+    3965(13.9)  3961(13.9)  3974(13.9)  3947(13.8)    sum_ret(12.7962)
+
+Benchmarking  hand CPU (run_ext2)   time(Cycles per element):
+    30883(108.1)  30919(108.3)  30948(108.4)  30966(108.4)    sum_ret(12.7962)
+
+Benchmarking  kwk CPU (run_ext2)   time(Cycles per element):
+    30880(108.1)  30881(108.1)  30893(108.2)  30901(108.2)    sum_ret(12.7962)
+
+Benchmarking  seq (run_ext2)   time(Cycles per element):
+    30632(107.3)  30632(107.3)  30632(107.3)  30638(107.3)    sum_ret(12.7962)
+
+Benchmarking  unseq (run_ext2)   time(Cycles per element):
+    31005(108.6)  31006(108.6)  31006(108.6)  31005(108.6)    sum_ret(12.7962)
+
+3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 3.19905 
+
+
+[V] - Benchmark - transform, compute-bound, RAM
+----------------------------------------------------------------
+Results: 3 tests - 3/3 successes - 0/0 failure - 0/0 invalid
+[sylvainj@parsys-legend kiwaku_build_2025-06]$ 

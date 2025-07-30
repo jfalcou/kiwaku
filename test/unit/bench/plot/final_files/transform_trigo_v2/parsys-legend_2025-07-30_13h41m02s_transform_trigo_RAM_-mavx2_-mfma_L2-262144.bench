@@ -1,0 +1,15 @@
+3
+transform 256 MB data in RAM
+Cycles per element
+67108864
+compute-bound
+hand CPU
+104.8 104.8 104.8 104.8 
+kwk CPU
+104.6 104.6 104.6 104.6 
+kwk SIMD
+16.9 16.9 16.9 16.9 
+seq
+105.8 105.8 105.8 105.8 
+unseq
+104.7 104.8 104.8 104.8 

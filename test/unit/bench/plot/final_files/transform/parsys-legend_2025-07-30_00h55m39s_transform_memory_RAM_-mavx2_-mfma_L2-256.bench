@@ -1,0 +1,15 @@
+3
+transform memory-bound L2 cache
+Throughput (GB/s)
+1073741824
+memory-bound
+hand CPU
+73.4 73.4 73.4 73.4 
+kwk CPU
+108.7 108.7 108.7 108.7 
+kwk SIMD
+245.4 245.4 245.4 245.4 
+seq
+73.4 73.4 73.4 73.4 
+unseq
+108.7 108.7 108.7 108.7 

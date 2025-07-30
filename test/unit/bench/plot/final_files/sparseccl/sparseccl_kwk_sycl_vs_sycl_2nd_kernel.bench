@@ -1,5 +1,5 @@
 3
-SparseCCL GPU: Kiwaku vs SYCL accessors, USM shared, USM device
+SparseCCL GPU: 2nd+ kernels (data already on GPU)
 Kernel duration (ms)
 11635200
 kiwaku_sycl                    after 1st kernel
