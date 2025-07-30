@@ -1,0 +1,33 @@
+3
+transform memory-bound L2 cache
+Throughput
+1073741824
+memory-bound
+kwk SIMD
+238.6 238.6 238.6 238.6 
+Elapsed (ms):
+36 36 36 36 
+kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+2.5 2.5 2.5 2.5 
+Elapsed (ms):
+3414 3403 3407 3430 
+kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+58 58 58 58 
+Elapsed (ms):
+148 148 148 148 
+hand CPU
+108.7 108.7 108.7 108.7 
+Elapsed (ms):
+79 79 79 79 
+kwk CPU
+108.7 108.7 108.7 108.7 
+Elapsed (ms):
+79 79 79 79 
+seq
+108.7 108.7 108.7 108.7 
+Elapsed (ms):
+79 79 79 79 
+unseq
+108.7 108.7 108.7 108.7 
+Elapsed (ms):
+79 79 79 79 

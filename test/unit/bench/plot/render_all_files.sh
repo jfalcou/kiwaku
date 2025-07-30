@@ -7,7 +7,8 @@ FILE_EXTENSION="bench"
 # PATH="final_files/transform/"
 # PATH="final_files/transform_trigo_v2/"
 # PATH="final_files/reduce/"
-PATH="final_files/find_if/"
+# PATH="final_files/find_if/"
+PATH="final_files/transform_v3/"
 # PATH="files/avx512/render/"
 
 # should be:   for f in *.MTS;
