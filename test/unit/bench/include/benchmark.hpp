@@ -9,6 +9,8 @@
 // #define ANKERL_NANOBENCH_IMPLEMENT
 #include "utils/utils.hpp"
 
+#include <type_traits> // Required for std::invoke_result
+
 #define ENABLE_TBB true
 
 #if ENABLE_TBB
@@ -250,8 +252,9 @@ void cbench_t::run_function_rpt_bwidth(std::string const& name, std::size_t cons
 
 
 // tsize_byte is the total data size read + written by the algorithm, in bytes
+template<typename Func>
 void cbench_t::run_ext2 ( std::string const name
-                        , auto func
+                        , Func func
                         , auto reset_func
                         , double total_number_of_elements_processed // array length * repetitions
                         , double bandwidth_per_element_in_bytes // in bytes
@@ -283,7 +286,12 @@ void cbench_t::run_ext2 ( std::string const name
   // }
   sutils::chrono_t chrono;
   std::cout << "    ";
-  double sum_ret = 0;
+
+  // To stop conversion warnings
+  using ReturnType = typename std::invoke_result<Func>::type;
+
+  ReturnType sum_ret = 0;
+
   std::stringstream times_line;
   for (std::size_t i = 0; i < iterations_count; ++i)
   {

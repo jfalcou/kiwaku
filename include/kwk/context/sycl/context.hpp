@@ -559,6 +559,18 @@ namespace kwk
     return res;
   }
 
+  template<concepts::container Container, typename InProxy, typename Check>
+  std::optional<kwk::position<Container::static_order>>
+  find_if_proxy ( kwk::sycl::context& ctx
+                , Container const& c
+                , InProxy& in_proxy
+                , Check f
+                )
+  {
+    auto res = ctx.find_if_v2_proxy(c, in_proxy, f, true);
+    return res;
+  }
+
   template <typename Func, concepts::container Out>
   constexpr std::optional<kwk::position<Out::static_order>>
   find_last_if(kwk::sycl::context& ctx, Out const& out, Func f)
