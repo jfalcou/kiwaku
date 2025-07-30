@@ -7,6 +7,7 @@ import utils.plot_set_sizes as plot_set_sizes
 import textwrap
 import os.path
 import argparse
+import matplotlib.colors as mcolors
 
 
 VERSION_ATTENDUE = 3
@@ -41,17 +42,47 @@ global_colors = [
   'tab:cyan'
 ]
 
+# 2. Generate the darker versions
+# We will scale the RGB values of each color by a factor to make them darker.
+# A factor of 0.6 makes them noticeably darker.
+darkening_factor = 0.8
+darker_colors = []
+
+for color_name in global_colors:
+    # Convert the named color to its RGB representation (a tuple of floats from 0 to 1)
+    rgb = mcolors.to_rgb(color_name)
+    
+    # Create the darker RGB by scaling each component
+    darker_rgb = (rgb[0] * darkening_factor, 
+                  rgb[1] * darkening_factor, 
+                  rgb[2] * darkening_factor)
+    
+    darker_colors.append(darker_rgb)
+
+
+# Dessiner un plot sur deux sur le dernier plot
+DRAW_OVER = False
+ALTERNATE_DRAW_OVER = True
+
+# TODO
+# tester le draw_over avec les graphes que j'ai déjà montré à David et Hadrien
+# python3 plot_bench_over.py final_files/transform_trigo_v2/test
+
+
 unit_name = ""
 
 IS_MEMORY_BOUND  = False
 IS_COMPUTE_BOUND = False
 
 CURRENT_VERSION = 0
+bench_list = []
+bench_list2 = []
 
 # Charge le fichier de bench "path" et retourne la liste de ce qui a été lu.
 def load_file(path):
-  global VERSION_ATTENDUE, CURRENT_VERSION, global_name, measured_variable, kwk_array_size, unit_name, IS_MEMORY_BOUND, IS_COMPUTE_BOUND
-  bench_list = []
+  global VERSION_ATTENDUE, CURRENT_VERSION, global_name, measured_variable, kwk_array_size, unit_name
+  global IS_MEMORY_BOUND, IS_COMPUTE_BOUND, DRAW_OVER, bench_list, bench_list2
+  
 
   with open(path) as fp:
     version = fp.readline() # version du fichier actuel (doit être 106 et non plus 105)
@@ -64,6 +95,13 @@ def load_file(path):
 
     global_name = fp.readline().rstrip("\n")
     measured_variable = fp.readline().rstrip("\n")
+
+    # À ajouter à la main dans les fichiers de bench
+    if (measured_variable == "DRAW_OVER"):
+      DRAW_OVER = True
+      measured_variable = fp.readline().rstrip("\n")
+
+
     kwk_array_size = int(fp.readline().rstrip("\n"))
     bound_type = fp.readline().rstrip("\n") # Memory or compute-bound
 
@@ -75,6 +113,7 @@ def load_file(path):
 
 
     all_medians = []
+    all_medians2 = []
 
     line = fp.readline()
     while line:
@@ -89,12 +128,29 @@ def load_file(path):
       res["no-outlier_values"]  = pu.filter_outliers(res["raw_values"])
       res["median"]             = stat.median(res["raw_values"])
 
-      all_medians.append(res["median"])
-      bench_list.append(res)
+      if DRAW_OVER:
+        if ALTERNATE_DRAW_OVER:
+          all_medians.append(res["median"])
+          bench_list.append(res)
+        else:
+          all_medians2.append(res["median"])
+          bench_list2.append(res)
+        ALTERNATE_DRAW_OVER = not ALTERNATE_DRAW_OVER
+      else:
+        all_medians.append(res["median"])
+        bench_list.append(res)
 
       line = fp.readline()
 
-  return bench_list
+      if (line == "Elapsed (ms):\n"): # skip times header
+        # print("EQUALS ELAPSED!")
+        fp.readline()               # skip times
+        line = fp.readline()
+      # else:
+        # print("NOT NOT NOT EQUALS ELAPSED.")
+
+  # bench_list is now a global variable
+  # return bench_list
 
 #  python3 plot_bench.py files/2025-06-19-legend/renamed/parsys-legend_2025-06-19_23h07m47s_for_each_memory-bound.bench
 
@@ -121,16 +177,18 @@ if (not os.path.isfile(input_fpath)):
 
 
 # bench_list = load_file(absolute_path + "reduce_1d_2025-06-04_19h15_compute_bound.txt")
-bench_list = load_file(input_fpath) # absolute_path + ifname
+load_file(input_fpath) # absolute_path + ifname
 
 
 
 labels = []
 med_values = []
+med_values2 = []
 bw_method_ = 0.04
 
 
 for i in range(0, len(bench_list)):
+  position = i
   bench = bench_list[i]
 
   wrapped = textwrap.fill(
@@ -143,11 +201,15 @@ for i in range(0, len(bench_list)):
   labels.append(wrapped)
 
   med_values.append(bench["median"])
-
-  position = i
-
-  # pu.draw_violin_plot('red', data2)
   pu.draw_violin_plot_pos_ext(global_colors[i], global_colors[i], bench["no-outlier_values"], [position]) # no-outlier_
+
+
+  if DRAW_OVER:
+    bench2 = bench_list2[i]
+    med_values2.append(bench2["median"])
+    pu.draw_violin_plot_pos_ext(darker_colors[i], darker_colors[i], bench2["no-outlier_values"], [position])
+
+
 
 
 plt.ylabel(measured_variable + unit_name)
@@ -165,6 +227,8 @@ plt.rcParams['grid.color'] = "black" ##cccccc
 plt.grid(linewidth=line_width)
 
 plt.bar(labels, med_values, label=labels, color=global_colors, alpha=0.3)
+if DRAW_OVER:
+  plt.bar(labels, med_values2, label=labels, color=darker_colors, alpha=0.3)
 
 
 # output_fname = global_name.replace(" ", "_").replace(",", "").lower() + ".png"

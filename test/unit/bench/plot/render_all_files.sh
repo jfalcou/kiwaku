@@ -2,7 +2,10 @@
 
 FILE_EXTENSION="bench"
 
-PATH="files/2025-06-19-legend/renamed2/"
+# PATH="files/2025-06-19-legend/renamed2/"
+
+# PATH="final_files/transform/"
+PATH="final_files/transform_trigo_v2/"
 # PATH="files/avx512/render/"
 
 # should be:   for f in *.MTS;
@@ -19,7 +22,7 @@ do
 
   echo ""
   echo "Rendering ${f}:"
-  /usr/bin/python3 plot_bench.py $f -s
+  /usr/bin/python3 plot_bench2.py $f -s
 
 done
 
