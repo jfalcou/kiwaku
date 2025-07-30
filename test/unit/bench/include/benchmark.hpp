@@ -50,6 +50,7 @@ std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
 
 // Compute-bound vs memory-bound
 enum bench_type_t {compute, memory, unknown};
+enum mem_type_t {RAM, L2, unknown_mem};
 enum device_type_t {cpu, gpu};
 
 

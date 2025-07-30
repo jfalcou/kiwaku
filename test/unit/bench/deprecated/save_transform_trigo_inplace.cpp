@@ -360,11 +360,128 @@ void transform_test ( std::string const& bench_name
 
 
 
-
 #if ENABLE_TRIGO
+// TTS_CASE("Benchmark - transform, compute-bound")
+// {
+//   ::kwk::bench::get_eve_compiler_flag();
+
+//   using DATA_TYPE = float;
+
+//   // const DATA_TYPE PI = static_cast<DATA_TYPE>(M_PI);
 
 
-void compute_bound_test(kwk::bench::mem_type_t mem_type)
+
+//   [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
+//   [[maybe_unused]] std::size_t mio = 1024 * kio;
+//   [[maybe_unused]] std::size_t gio = 1024 * mio;
+
+//   std::size_t total_size;
+//   std::size_t L2_length; // L2 cache size, in bytes
+//   std::string hname = sutils::get_host_name();
+//   // Total data to process
+//         if (hname == "parsys-legend")          { total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR; L2_length = total_size; } 
+//         // if (hname == "parsys-legend")          { L2_length = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+
+//   else if (hname == "pata")                   { total_size = 128 * mio; L2_length = total_size; }
+//   else if (hname == "chaton")                 { total_size = 32 * mio; L2_length = total_size; }
+//   // else if (hname == "chaton")                 { L2_length = 256 * kio; total_size = 128 * mio; }
+//   else if (hname == "sylvain-ThinkPad-T580")  { L2_length = 256 * kio; total_size = 8 * mio; }
+
+//   // 512 kio par L2
+//   else if (hname == "falcou-avx512")          { total_size = 512 * mio;  L2_length = total_size; //128 * kio; 
+//                                                 std::cout << "OK, Used computer: falcou-avx512\n"; }
+
+//   // La Pierre
+//   else if (hname == "lapierre")               { L2_length = 128 * mio; total_size = 256 * mio; }
+//   else                                        { L2_length = 256 * kio; total_size = 8 * mio; }
+
+//   std::size_t repetitions = total_size / L2_length; // Number of repetitions
+
+//   std::cout << "\n======= REPEAT = " << repetitions << "\n\n";
+
+
+//   // === Unitary complex ===
+
+
+//   // const std::size_t repeat_inner = 10;
+//   // auto map_func = [=](DATA_TYPE& re, DATA_TYPE& im)
+//   // {
+//     // for (std::size_t i = 0; i < repeat_inner; ++i) {
+//       // DATA_TYPE re_ = re;
+//       // DATA_TYPE im_ = im;
+//       // re = re_ * re_ - im_ * im_;
+//       // im = re_ * im_ + im_ * re_;
+//     // }
+//   // };
+//   // auto map_func_eve = map_func;
+
+
+
+
+//   // // TODO: Allouer les tableaux in_re, inout_im, out_re
+//   // for (std::size_t i = 0; i < repeat_inner; ++i) {
+//   //   kwk::map(out_re, [](auto re, auto im) { return re * re - im * im; },
+//   //            in_re, inout_im);
+//   //   kwk::map(inout_im,
+//   //            [](auto re, auto im) { return re * im + im * re; },
+//   //            in_re, inout_im);
+//   //   std::swap(in_re, out_re);
+//   // }
+
+//   // kwk::transform(::kwk::simd, map_func_, kwk_re, kwk_im);
+//   // auto map_func_eve = [=](auto& re, auto& im)
+//   // {
+    
+//   //   re = ::eve::cos(re) * ::eve::cos(re) + ::eve::sin(re) * ::eve::sin(re);
+//   //   im = ::eve::cos(im) * ::eve::cos(im) + ::eve::sin(im) * ::eve::sin(im);
+//   // };
+
+
+//   // kwk::transform(::kwk::simd, map_func_, kwk_re, kwk_im);
+//   // auto map_func_eve = [=](auto& re, auto& im)
+//   // {
+//   //   for (std::size_t r = 0; r < repetitions; ++r)
+//   //   {
+//   //     re = ::eve::cos(re) * ::eve::cos(re) + ::eve::sin(re) * ::eve::sin(re);
+//   //     im = ::eve::cos(im) * ::eve::cos(im) + ::eve::sin(im) * ::eve::sin(im);
+//   //   }
+//   // };
+
+//   // const std::size_t compute_intensity = 1;
+
+//   auto func = [](auto in)
+//   {
+//     return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
+//   };
+
+//   auto func_eve = [](auto in)
+//   {
+//     return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
+//   };
+
+
+
+//   std::string l2_str = std::to_string(L2_length / kio);
+
+  
+
+
+//   sutils::printer_t::head("Benchmark - transform, compute-bound (L2 " + l2_str + ")", true);
+
+//   transform_test<DATA_TYPE>( "transform trigo_inpl"
+//                           , "transform_trigo_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+//                           , func
+//                           , func_eve
+//                           , L2_length
+//                           , L2_length * repetitions
+//                           , data_reset_t::trigo
+//                           , repetitions
+//                           );
+//   std::cout << "\n\n";
+// };
+
+#if ENABLE_RAM
+TTS_CASE("Benchmark - transform, compute-bound, RAM")
 {
   ::kwk::bench::get_eve_compiler_flag();
   using DATA_TYPE = float;
@@ -379,20 +496,12 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
   // Total data to process
   if (hname == "parsys-legend")
   {
-    total_size = 1 * gio;
-    L2_length = 256 * kio;
+    total_size = 4 * gio;
     // total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
-    // L2_length = total_size;
+    L2_length = total_size;
     clock_speed_CPU = 4.7;
     clock_speed_GPU = 1.6; // From 1.3 to 1.8
-  }
-
-  if (mem_type == kwk::bench::mem_type_t::RAM)
-  {
-    L2_length = total_size;
-  }
-  // et si kwk::bench::mem_type_t::L2, alors on garde le L2_length réel
-
+  } 
 
   std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
   std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
@@ -414,12 +523,8 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
   std::string l2_str = std::to_string(L2_length / kio);
   sutils::printer_t::head("Benchmark - transform, compute-bound (L2 " + l2_str + ")", true);
 
-  std::string mem_name = "UNKNOWN MEMORY TYPE";
-  if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
-  if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
-
-  transform_test<DATA_TYPE>( "transform compute-bound " + mem_name
-                          , "transform_trigo_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+  transform_test<DATA_TYPE>( "transform compute-bound RAM"
+                          , "transform_trigo_RAM_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
                           , func
                           , func_eve
                           , L2_length
@@ -431,25 +536,67 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
                           , true
                           );
   std::cout << "\n\n";
-}
-
-
-
-#if ENABLE_RAM
-TTS_CASE("Benchmark - transform, compute-bound, RAM")
-{
-  compute_bound_test(kwk::bench::mem_type_t::RAM);
 };
 #endif // ENABLE_RAM
-
 
 #if ENABLE_L2
-TTS_CASE("Benchmark - transform, compute-bound, L2 cache")
+TTS_CASE("Benchmark - transform, compute-bound, L2")
 {
-  compute_bound_test(kwk::bench::mem_type_t::L2);
-};
-#endif // ENABLE_RAM
+  ::kwk::bench::get_eve_compiler_flag();
+  using DATA_TYPE = float;
+  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
+  std::size_t total_size = 0;
+  std::size_t L2_length = 0; // L2 cache size, in bytes
+  double clock_speed_CPU = 0;
+  double clock_speed_GPU = 0;
+  std::string hname = sutils::get_host_name();
+  // Total data to process
+  if (hname == "parsys-legend")
+  {
+    total_size = 4 * gio;
+    // total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
+    L2_length = 256 * kio;
+    clock_speed_CPU = 4.7;
+    clock_speed_GPU = 1.6; // From 1.3 to 1.8
+  } 
 
+  std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
+  std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
+
+  auto func = [](auto in)
+  {
+    // return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
+    // eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
+    return (std::cos(in * 0.67465f) * std::cos(in * 0.921546f) + std::sin(in * 0.543217f) * std::sin(in * 0.754878f)
+            + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
+  };
+  auto func_eve = [](auto in)
+  {
+    // return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
+    return (eve::cos(in * 0.67465f) * eve::cos(in * 0.921546f) + eve::sin(in * 0.543217f) * eve::sin(in * 0.754878f)
+    + 2) ;
+  };
+
+  std::string l2_str = std::to_string(L2_length / kio);
+  sutils::printer_t::head("Benchmark - transform, compute-bound (L2 " + l2_str + ")", true);
+
+  transform_test<DATA_TYPE>( "transform compute-bound L2 cache"
+                          , "transform_trigo_L2_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                          , func
+                          , func_eve
+                          , L2_length
+                          , repetitions_over_array
+                          , data_reset_t::trigo
+                          , ::kwk::bench::bench_type_t::compute
+                          , clock_speed_CPU
+                          , clock_speed_GPU
+                          , true
+                          );
+  std::cout << "\n\n";
+};
+#endif // ENABLE_L2
 #endif // ENABLE_TRIGO
 
 
@@ -457,8 +604,129 @@ TTS_CASE("Benchmark - transform, compute-bound, L2 cache")
 
 
 #if ENABLE_MEMORY
+// TTS_CASE("Benchmark - transform, memory-bound")
+// {
+//   ::kwk::bench::get_eve_compiler_flag();
 
-void memory_bound_test(kwk::bench::mem_type_t mem_type)
+//   using DATA_TYPE = float;
+
+//   [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // single input
+//   [[maybe_unused]] std::size_t mio = 1024 * kio;
+//   [[maybe_unused]] std::size_t gio = 1024 * mio;
+
+//   std::size_t total_size;
+//   std::size_t L2_length; // L2 cache size, in bytes
+//   std::string hname = sutils::get_host_name();
+//   // Total data to process
+//   // if (hname == "parsys-legend")          { total_size = 2 ; L2_length = total_size; } 
+  
+//   if (hname == "parsys-legend")
+//   {
+//     total_size = 4 * gio * kwk::bench::LEGEND_LOAD_FACTOR;
+//     L2_length = total_size;
+//   } 
+//         // if (hname == "parsys-legend")          { L2_length = 512 * kio; total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR; } 
+
+//   else if (hname == "pata")                   { total_size = 128 * mio; L2_length = total_size; }
+//   else if (hname == "chaton")                 { total_size = 64 * mio; L2_length = total_size; } // 
+//   // else if (hname == "chaton")                 { L2_length = 256 * kio; total_size = 128 * mio; }
+//   else if (hname == "sylvain-ThinkPad-T580")  { L2_length = 256 * kio; total_size = 8 * mio; }
+
+//   // 512 kio par L2
+//   else if (hname == "falcou-avx512")          { total_size = 512 * mio;  L2_length = total_size; //128 * kio; 
+//                                                 std::cout << "OK, Used computer: falcou-avx512\n"; }
+
+//   // La Pierre
+//   else if (hname == "lapierre")               { L2_length = 128 * mio; total_size = 256 * mio; }
+//   else                                        { L2_length = 256 * kio; total_size = 8 * mio; }
+
+//   std::size_t repetitions = total_size / L2_length; // Number of repetitions
+
+//   std::cout << "\n======= REPEAT = " << repetitions << "\n\n";
+
+
+//   // const std::size_t compute_intensity_local = 1;
+
+//   auto func = [](auto in)
+//   {
+//     return in = in * 1.1;
+//   };
+
+//   auto func_eve = [](auto in)
+//   {
+//     return in = in * 1.1;
+//   };
+
+
+
+//   std::string l2_str = std::to_string(L2_length / kio);
+
+//   const std::size_t compute_intensity = 1;
+
+
+//   sutils::printer_t::head("Benchmark - transform, memory-bound (L2 " + l2_str + ")", true);
+
+//   transform_test<DATA_TYPE>( "transform memory-bound"
+//                           , "transform_memory_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+//                           , func
+//                           , func_eve
+//                           , L2_length
+//                           , L2_length * repetitions
+//                           , data_reset_t::ones
+//                           , repetitions
+//                           );
+//   std::cout << "\n\n";
+// };
+
+#if ENABLE_RAM
+TTS_CASE("Benchmark - transform, memory-bound RAM")
+{
+  ::kwk::bench::get_eve_compiler_flag();
+  using DATA_TYPE = float;
+  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // single input
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
+  std::size_t total_size = 0;
+  std::size_t L2_length = 0; // L2 cache size, in bytes
+  double clock_speed_CPU = 0;
+  double clock_speed_GPU = 0;
+  std::string hname = sutils::get_host_name();
+
+  if (hname == "parsys-legend")
+  {
+    total_size = 4 * gio * kwk::bench::LEGEND_LOAD_FACTOR;
+    L2_length = total_size;
+    clock_speed_CPU = 4.7;
+    clock_speed_GPU = 1.6; // From 1.3 to 1.8
+  } 
+
+  std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
+  std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
+
+  auto func = [](auto in) { return in = in * 1.1; };
+  auto func_eve = [](auto in) { return in = in * 1.1; };
+
+  std::string l2_str = std::to_string(L2_length / kio);
+  sutils::printer_t::head("Benchmark - transform, memory-bound (L2 " + l2_str + ")", true);
+
+  transform_test<DATA_TYPE>( "transform memory-bound RAM"
+                          , "transform_memory_RAM_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                          , func
+                          , func_eve
+                          , L2_length
+                          , repetitions_over_array
+                          , data_reset_t::ones
+                          , ::kwk::bench::bench_type_t::memory
+                          , clock_speed_CPU
+                          , clock_speed_GPU
+                          , true
+                          );
+  std::cout << "\n\n";
+};
+#endif // ENABLE_RAM
+
+#if ENABLE_L2
+TTS_CASE("Benchmark - transform, memory-bound L2")
 {
   ::kwk::bench::get_eve_compiler_flag();
   using DATA_TYPE = float;
@@ -479,28 +747,17 @@ void memory_bound_test(kwk::bench::mem_type_t mem_type)
     clock_speed_GPU = 1.6; // From 1.3 to 1.8
   } 
 
-  if (mem_type == kwk::bench::mem_type_t::RAM)
-  {
-    L2_length = total_size;
-  }
-
-
   std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
   std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
 
-  auto func     = [](auto in) { return in = in * 1.1; };
+  auto func = [](auto in) { return in = in * 1.1; };
   auto func_eve = [](auto in) { return in = in * 1.1; };
 
   std::string l2_str = std::to_string(L2_length / kio);
   sutils::printer_t::head("Benchmark - transform, memory-bound (L2 " + l2_str + ")", true);
 
-
-  std::string mem_name = "UNKNOWN MEMORY TYPE";
-  if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
-  if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
-
-  transform_test<DATA_TYPE>( "transform memory-bound " + mem_name
-                          , "transform_memory_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+  transform_test<DATA_TYPE>( "transform memory-bound L2 cache"
+                          , "transform_memory_L2_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
                           , func
                           , func_eve
                           , L2_length
@@ -512,25 +769,8 @@ void memory_bound_test(kwk::bench::mem_type_t mem_type)
                           , true
                           );
   std::cout << "\n\n";
-}
-
-
-
-#if ENABLE_RAM
-TTS_CASE("Benchmark - transform, memory-bound RAM")
-{
-  memory_bound_test(kwk::bench::mem_type_t::RAM);
 };
-#endif // ENABLE_RAM
-
-
-#if ENABLE_L2
-TTS_CASE("Benchmark - transform, memory-bound L2 cache")
-{
-  memory_bound_test(kwk::bench::mem_type_t::L2);
-};
-#endif // ENABLE_RAM
-
+#endif // ENABLE_L2
 #endif // ENABLE_MEMORY
 
 #endif // KIWAKU_BUILD_BENCH
