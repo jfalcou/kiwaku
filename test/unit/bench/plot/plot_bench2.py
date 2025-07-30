@@ -64,9 +64,12 @@ for color_name in global_colors:
 DRAW_OVER = False
 ALTERNATE_DRAW_OVER = True
 
-# TODO
-# tester le draw_over avec les graphes que j'ai déjà montré à David et Hadrien
-# python3 plot_bench_over.py final_files/transform_trigo_v2/test
+
+
+# python3 plot_bench2.py final_files/reduce/parsys-legend_2025-07-30_19h51m56s_reduce_L2_-mavx2_-mfma_L2-256.bench
+# python3 plot_bench2.py final_files/reduce/parsys-legend_2025-07-30_19h52m43s_reduce_RAM_-mavx2_-mfma_L2-6291456.bench
+
+
 
 
 unit_name = ""
@@ -218,6 +221,8 @@ plt.title(global_name + "") # , fontsize=title_font_size)
 
 # set style for the axes
 set_axis_style(plt.gca(), labels)
+
+# plt.yscale('log') # log scale
 
 line_width = 1
 
