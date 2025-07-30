@@ -1,0 +1,33 @@
+3
+transform_reduce compute-bound RAM
+Cycles per element
+33554432
+compute-bound
+kwk SIMD
+34.6 34.6 34.6 34.6 
+Elapsed (ms):
+247 247 247 247 
+kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+8.3 0.5 0.5 0.5 
+Elapsed (ms):
+175 11 11 11 
+kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+0.5 0 0 0 
+Elapsed (ms):
+11 0 0 0 
+hand CPU
+108.3 108.3 108.3 108.3 
+Elapsed (ms):
+773 773 773 773 
+kwk CPU
+109 109 109 109 
+Elapsed (ms):
+778 778 778 778 
+seq
+108.1 108 108 108.1 
+Elapsed (ms):
+772 771 771 772 
+unseq
+109.3 109.3 109.3 109.4 
+Elapsed (ms):
+780 780 780 781 

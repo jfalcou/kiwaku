@@ -28,7 +28,7 @@
 #include <kwk/context/eve/context.hpp>
 // #include <kwk/context/sycl/internal/sycl_tools.hpp>
 #include <cstdlib>
-#include <kwk/algorithm/algos/transform.hpp>
+#include <kwk/algorithm/algos/numeric.hpp>
 #include <kwk/container.hpp>
 #include "test.hpp"
 #include <numeric>
@@ -39,11 +39,14 @@
 
 enum data_reset_t { trigo, ones };
 
+#define REDUCE_NEUTRAL_ELEMENT 0
+
 template<typename DATA_TYPE>
 void transform_test ( std::string const& bench_name
                     , std::string const& file_name
-                    , auto func_generic
-                    , auto func_eve
+                    , auto func_reduce
+                    , auto func_transform_generic
+                    , auto func_transform_eve
                     , std::size_t const L2_length // number of elements contained in L2 cache (number of values, NOT size in bytes)
                     , std::size_t const repetitions_over_array
                     , const data_reset_t data_reset
@@ -59,7 +62,7 @@ void transform_test ( std::string const& bench_name
   // Total numer of element processed
   double total_number_of_elements_processed = L2_length * repetitions_over_array;
   double bandwidth_per_element_read   = sizeof(DATA_TYPE);
-  double bandwidth_per_element_write  = sizeof(DATA_TYPE);
+  double bandwidth_per_element_write  = 0;
   double bandwidth_per_element_in_bytes_cpu = bandwidth_per_element_read + bandwidth_per_element_write;
   // On GPU it varies depending on what's being measured:
   // does buffers remain from one transform call to the next?
@@ -128,18 +131,21 @@ void transform_test ( std::string const& bench_name
   // ====== Generic std function, used later ======
   auto fct_std_transform = [&](auto const& policy)
   {
+    DATA_TYPE res = REDUCE_NEUTRAL_ELEMENT;
     for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
     {
       // [&](auto const re, auto const im) { return func_transform_re(re, im); }
       // Is function call expensive?
-      std::transform( policy
-                    , vector_inout.begin()
-                    , vector_inout.end()
-                    , vector_inout.begin()
-                    , func_generic
-                    );
+      res += std::transform_reduce( policy
+                                  , vector_inout.begin()
+                                  , vector_inout.end()
+                                  , vector_inout.begin()
+                                  , REDUCE_NEUTRAL_ELEMENT
+                                  , func_reduce
+                                  , func_transform_generic
+                                  );
     }
-    return vector_inout[L2_length / 2];
+    return res;
   };
 
 
@@ -162,18 +168,51 @@ void transform_test ( std::string const& bench_name
   // -> DATA_TYPE
   // Should theoretically work for both CPU sequential and SIMD
   // (not for SYCL however)
-  auto bench_kiwaku_cpu = [&](auto&& context, std::string context_name, auto fct)
+  auto bench_kiwaku_cpu = [&](auto&& context, std::string context_name, auto transform_func_)
   {
     DATA_TYPE return_;
     auto fct_generic = [&]()
     {
+      DATA_TYPE res = REDUCE_NEUTRAL_ELEMENT;
       // TODO: mettre compute_intensity plus haut
       for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
       {
         // transform_inplace uniquement utile pour SYCL en vrai
-        kwk::transform(context, fct, kwk_inout, kwk_inout);
+        // func_reduce commune à EVE et les autres contextes Kiwaku
+        res += kwk::transform_reduce(context, kwk_inout, kwk_inout, REDUCE_NEUTRAL_ELEMENT, func_reduce, transform_func_);
       }
-      return_ = kwk_inout(L2_length / 2);
+      return_ = res;
+      return return_;
+    };
+    b.run_ext2( context_name
+              , fct_generic
+              , [&]{ reset_data(vector_inout); }
+              , total_number_of_elements_processed
+              , bandwidth_per_element_in_bytes_cpu
+              , bench_type
+              , clock_speed_CPU
+              , ::kwk::bench::device_type_t::cpu
+              );
+  };
+
+  // ====== Generic Kiwaku benchmark ======
+  // -> DATA_TYPE
+  // Should theoretically work for both CPU sequential and SIMD
+  // (not for SYCL however)
+  auto bench_kiwaku_eve = [&](auto&& context, std::string context_name)
+  {
+    DATA_TYPE return_;
+    auto fct_generic = [&]()
+    {
+      DATA_TYPE res = REDUCE_NEUTRAL_ELEMENT;
+      // TODO: mettre compute_intensity plus haut
+      for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
+      {
+        // transform_inplace uniquement utile pour SYCL en vrai
+        // func_reduce commune à EVE et les autres contextes Kiwaku
+        res += kwk::transform_reduce(context, kwk_inout, kwk_inout, REDUCE_NEUTRAL_ELEMENT, std::pair{func_reduce, REDUCE_NEUTRAL_ELEMENT}, func_transform_eve);
+      }
+      return_ = res;
       return return_;
     };
     b.run_ext2( context_name
@@ -188,10 +227,9 @@ void transform_test ( std::string const& bench_name
   };
 
 
-
   // ====== Kiwaku SIMD ======
   #if KIWAKU_BENCH_EVE
-    bench_kiwaku_cpu(::kwk::simd, "kwk SIMD", func_eve);
+    bench_kiwaku_eve(::kwk::simd, "kwk SIMD");
     // if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
   #endif
 
@@ -228,11 +266,12 @@ void transform_test ( std::string const& bench_name
         {
           auto fct_transforms = [&]()
           {
+            DATA_TYPE res = REDUCE_NEUTRAL_ELEMENT;
             for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
             {
-              kwk::transform_inplace(ctx_gpu, func_generic, kwk_inout);
+              res += ctx_gpu.transform_reduce_inplace(kwk_inout, REDUCE_NEUTRAL_ELEMENT, func_reduce, func_transform_generic);
             }
-            return kwk_inout(L2_length / 2);
+            return res;
           };
 
           b.run_ext2( "kwk SYCL GPU dumb " + ctx_gpu.get_device_name()
@@ -254,16 +293,18 @@ void transform_test ( std::string const& bench_name
 
           // 1st data transfer non counted
           auto proxy_inout = ctx_gpu.inout(kwk_inout);
-          kwk::transform_inplace_proxy(ctx_gpu, func_generic, proxy_inout);
-          reset_data(vector_inout);
+          // kwk::transform_reduce_inplace_proxy(ctx_gpu, func_transform_generic, proxy_inout);
+          // reset_data(vector_inout);
           
           auto fct_transforms = [&]()
           {
+            DATA_TYPE res = REDUCE_NEUTRAL_ELEMENT;
             for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
             {
-              kwk::transform_inplace_proxy(ctx_gpu, func_generic, proxy_inout);
+              // kwk::transform_reduce_inplace_proxy(ctx_gpu, proxy_inout, REDUCE_NEUTRAL_ELEMENT, func_reduce, func_transform_generic);
+              res += ctx_gpu.transform_reduce_inplace_proxy(kwk_inout, proxy_inout, REDUCE_NEUTRAL_ELEMENT, func_reduce, func_transform_generic);
             }
-            return kwk_inout(L2_length / 2);
+            return res;
           };
 
           b.run_ext2( context_name
@@ -288,14 +329,15 @@ void transform_test ( std::string const& bench_name
   // ====== hand-written sequential ======
   auto fct_hand = [&]()
   {
+    DATA_TYPE res = REDUCE_NEUTRAL_ELEMENT;
     for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
     {
       for (std::size_t i = 0; i < L2_length; ++i)
       {
-        vector_inout[i] = func_generic(vector_inout[i]);
+        res = func_reduce(res, func_transform_generic(vector_inout[i], vector_inout[i]));
       }
     }
-    return vector_inout[L2_length / 2];
+    return res;
   };
   b.run_ext2( "hand CPU"
             , fct_hand
@@ -310,7 +352,7 @@ void transform_test ( std::string const& bench_name
 
 
   // ====== Kiwaku CPU context ======
-  bench_kiwaku_cpu(::kwk::cpu, "kwk CPU", func_generic);
+  bench_kiwaku_cpu(::kwk::cpu, "kwk CPU", func_transform_generic);
   if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
 
 
@@ -379,6 +421,7 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
   // Total data to process
   if (hname == "parsys-legend")
   {
+    // total_size = 128 * mio;
     total_size = 1 * gio;
     L2_length = 256 * kio;
     // total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
@@ -397,19 +440,21 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
   std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
   std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
 
-  auto func = [](auto in)
+  auto func_transform = [](auto in1, auto in2)
   {
     // return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
     // eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
-    return (std::cos(in * 0.67465f) * std::cos(in * 0.921546f) + std::sin(in * 0.543217f) * std::sin(in * 0.754878f)
+    return (std::cos(in1 * 0.67465f) * std::cos(in1 * 0.921546f) + std::sin(in2 * 0.543217f) * std::sin(in2 * 0.754878f)
             + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
   };
-  auto func_eve = [](auto in)
+  auto func_transform_eve = [](auto in1, auto in2)
   {
     // return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
-    return (eve::cos(in * 0.67465f) * eve::cos(in * 0.921546f) + eve::sin(in * 0.543217f) * eve::sin(in * 0.754878f)
+    return (eve::cos(in1 * 0.67465f) * eve::cos(in1 * 0.921546f) + eve::sin(in2 * 0.543217f) * eve::sin(in2 * 0.754878f)
     + 2) ;
   };
+
+  auto func_reduce = [](auto in1, auto in2) { return in1 + in2; };
 
   std::string l2_str = std::to_string(L2_length / kio);
   sutils::printer_t::head("Benchmark - transform, compute-bound (L2 " + l2_str + ")", true);
@@ -418,10 +463,12 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
   if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
   if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
 
-  transform_test<DATA_TYPE>( "transform compute-bound " + mem_name
-                          , "transform_trigo_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
-                          , func
-                          , func_eve
+
+  transform_test<DATA_TYPE>( "transform_reduce compute-bound " + mem_name
+                          , "transform_reduce_trigo_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                          , func_reduce
+                          , func_transform
+                          , func_transform_eve
                           , L2_length
                           , repetitions_over_array
                           , data_reset_t::trigo
@@ -436,7 +483,7 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
 
 
 #if ENABLE_RAM
-TTS_CASE("Benchmark - transform, compute-bound, RAM")
+TTS_CASE("Benchmark - transform_reduce, compute-bound, RAM")
 {
   compute_bound_test(kwk::bench::mem_type_t::RAM);
 };
@@ -444,7 +491,7 @@ TTS_CASE("Benchmark - transform, compute-bound, RAM")
 
 
 #if ENABLE_L2
-TTS_CASE("Benchmark - transform, compute-bound, L2 cache")
+TTS_CASE("Benchmark - transform_reduce, compute-bound, L2 cache")
 {
   compute_bound_test(kwk::bench::mem_type_t::L2);
 };
@@ -473,7 +520,8 @@ void memory_bound_test(kwk::bench::mem_type_t mem_type)
 
   if (hname == "parsys-legend")
   {
-    total_size = 4 * gio * kwk::bench::LEGEND_LOAD_FACTOR;
+    // total_size = 1 * gio;
+    total_size = 4 * gio;
     L2_length = 256 * kio;
     clock_speed_CPU = 4.7;
     clock_speed_GPU = 1.6; // From 1.3 to 1.8
@@ -488,21 +536,24 @@ void memory_bound_test(kwk::bench::mem_type_t mem_type)
   std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
   std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
 
-  auto func     = [](auto in) { return in = in * 1.1; };
-  auto func_eve = [](auto in) { return in = in * 1.1; };
+  auto func_transform     = [](auto in1, auto in2) { return in1 + in2; };
+  auto func_transform_eve = [](auto in1, auto in2) { return in1 + in2; };
+
+  auto func_reduce = [](auto in1, auto in2) { return in1 + in2; };
 
   std::string l2_str = std::to_string(L2_length / kio);
-  sutils::printer_t::head("Benchmark - transform, memory-bound (L2 " + l2_str + ")", true);
+  sutils::printer_t::head("Benchmark - transform_reduce, memory-bound (L2 " + l2_str + ")", true);
 
 
   std::string mem_name = "UNKNOWN MEMORY TYPE";
   if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
   if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
 
-  transform_test<DATA_TYPE>( "transform memory-bound " + mem_name
-                          , "transform_memory_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
-                          , func
-                          , func_eve
+  transform_test<DATA_TYPE>( "transform_reduce memory-bound " + mem_name
+                          , "transform_reduce_memory_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                          , func_reduce
+                          , func_transform
+                          , func_transform_eve
                           , L2_length
                           , repetitions_over_array
                           , data_reset_t::ones
@@ -517,7 +568,7 @@ void memory_bound_test(kwk::bench::mem_type_t mem_type)
 
 
 #if ENABLE_RAM
-TTS_CASE("Benchmark - transform, memory-bound RAM")
+TTS_CASE("Benchmark - transform_reduce, memory-bound RAM")
 {
   memory_bound_test(kwk::bench::mem_type_t::RAM);
 };
@@ -525,7 +576,7 @@ TTS_CASE("Benchmark - transform, memory-bound RAM")
 
 
 #if ENABLE_L2
-TTS_CASE("Benchmark - transform, memory-bound L2 cache")
+TTS_CASE("Benchmark - transform_reduce, memory-bound L2 cache")
 {
   memory_bound_test(kwk::bench::mem_type_t::L2);
 };

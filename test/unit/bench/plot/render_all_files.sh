@@ -9,6 +9,7 @@ FILE_EXTENSION="bench"
 # PATH="final_files/reduce/"
 # PATH="final_files/find_if/"
 PATH="final_files/transform_v3/"
+PATH="final_files/transform_reduce/fast/"
 # PATH="files/avx512/render/"
 
 # should be:   for f in *.MTS;

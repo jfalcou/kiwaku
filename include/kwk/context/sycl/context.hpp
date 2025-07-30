@@ -298,6 +298,53 @@ namespace kwk::sycl
     }
 
 
+    template<typename Func_R, typename Func_T, concepts::container In1, typename InProxy>
+    constexpr auto transform_reduce_inplace_proxy(In1 const& in1, InProxy& in_proxy, auto init, Func_R R, Func_T T)
+    {
+      try
+      {
+        // using data_type = typename In::value_type;
+        
+        auto result = init;
+        {
+          std::size_t const numel = in1.numel();
+          ::sycl::buffer<decltype(init)> result_buf(&result, ::sycl::range<1>(1));
+
+          parent::submit([&](::sycl::handler& h)
+          {
+            ::sycl::accessor data_acc = in_proxy.access(h);
+
+            auto reduction_obj = ::sycl::reduction(result_buf, h, R);
+
+            h.parallel_for( ::sycl::range<1>(numel)
+                          , reduction_obj
+                          , [=](::sycl::id<1> i, auto& sum)
+                            {
+                              auto e = data_acc[i];
+                              sum.combine(T(e, e));
+                            }
+                          );
+          });
+          parent::wait();
+        }
+
+        return result;
+      }
+      catch (::sycl::exception const &e)
+      {
+        std::cout << "An exception is caught for SYCL transform_reduce.\n";
+        std::terminate();
+      }
+    }
+
+    template<typename Func_R, typename Func_T, concepts::container In1>
+    constexpr auto transform_reduce_inplace(In1 const& in1, auto init, Func_R R, Func_T T)
+    {
+      auto proxy = this->in(in1);
+      return transform_reduce_inplace_proxy(in1, proxy, init, R, T);
+    }
+
+
     template<typename Func_R, typename Func_T, concepts::container In1, concepts::container In2>
     constexpr auto transform_reduce(In1 const& in1, In2 const& in2, auto init, Func_R R, Func_T T)
     {
@@ -348,6 +395,8 @@ namespace kwk::sycl
       // ctx.map([&](auto const& i1, auto const& i2) { init = R(init, T(i1, i2)); }, ctx.in(in1), ctx.in(in2));
       // return init;
     }
+
+    
 
 
     template<concepts::container In, typename Func>
@@ -550,6 +599,12 @@ namespace kwk
     // return error for in1.shape() != in2.shape()
     return ctx.transform_reduce(in1, in2, init, R, T);
   }
+
+  // template<typename Context, typename Func_R, typename Func_T, concepts::container In1, typename InProxy>
+  // constexpr auto transform_reduce_inplace_proxy(In1 const& in1, InProxy& in_proxy, auto init, Func_R R, Func_T T)
+  // {
+  //   return ctx.transform_reduce_inplace_proxy(in1, in_proxy, init, R, T);
+  // }
 
   template<concepts::container Container, typename Check>
   std::optional<kwk::position<Container::static_order>>
