@@ -1,0 +1,33 @@
+3
+find-if compute-bound L2 cache pos(middle)
+Cycles per element
+268435456
+compute-bound
+hand CPU
+54.3 54.3 54.3 54.3 
+Elapsed (ms):
+3104 3104 3103 3104 
+kwk CPU
+54.1 54.1 54.1 54.1 
+Elapsed (ms):
+3089 3089 3089 3089 
+kwk simd
+17.1 17.1 17.1 17.1 
+Elapsed (ms):
+978 976 977 977 
+seq
+54.2 54.2 54.2 54.2 
+Elapsed (ms):
+3097 3097 3096 3096 
+unseq
+54.4 54.3 54.3 54.3 
+Elapsed (ms):
+3105 3104 3104 3104 
+kwk SYCL NVIDIA GeForce RTX 2080 Ti
+18 17.6 17.6 17.6 
+Elapsed (ms):
+1028 1007 1005 1005 
+kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti
+5.7 5.7 5.7 5.7 
+Elapsed (ms):
+325 326 326 325 

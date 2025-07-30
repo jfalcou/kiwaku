@@ -1,0 +1,25 @@
+3
+find-if memory-bound L2 cache pos(middle)
+Throughput (GB/s)
+1610612736
+memory-bound
+hand CPU
+292.8 292.8 292.8 292.8 
+Elapsed (ms):
+22 22 22 22 
+kwk CPU
+292.8 292.8 292.8 292.8 
+Elapsed (ms):
+22 22 22 22 
+kwk simd
+292.8 292.8 292.8 292.8 
+Elapsed (ms):
+22 22 22 22 
+seq
+29.4 29.4 29.4 29.6 
+Elapsed (ms):
+219 219 219 218 
+unseq
+146.4 146.4 140.1 134.2 
+Elapsed (ms):
+44 44 46 48 

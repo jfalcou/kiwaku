@@ -1,0 +1,33 @@
+3
+find-if memory-bound RAM pos(middle)
+Throughput (GB/s)
+1610612736
+memory-bound
+hand CPU
+70.8 71.6 71.6 71.6 
+Elapsed (ms):
+91 90 90 90 
+kwk CPU
+71.6 71.6 71.6 71.6 
+Elapsed (ms):
+90 90 90 90 
+kwk simd
+71.6 71.6 71.6 71.6 
+Elapsed (ms):
+90 90 90 90 
+seq
+29.3 29.3 29.3 29.3 
+Elapsed (ms):
+220 220 220 220 
+unseq
+59.7 59.7 59.7 59.7 
+Elapsed (ms):
+108 108 108 108 
+kwk SYCL NVIDIA GeForce RTX 2080 Ti
+12 9.4 9.4 9.4 
+Elapsed (ms):
+536 685 683 683 
+kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti
+9.5 189.5 189.5 189.5 
+Elapsed (ms):
+678 34 34 34 

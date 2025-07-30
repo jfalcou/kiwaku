@@ -1,0 +1,33 @@
+3
+find-if compute-bound RAM pos(last)
+Cycles per element
+268435456
+compute-bound
+hand CPU
+108.6 108.6 108.6 108.6 
+Elapsed (ms):
+6200 6201 6203 6204 
+kwk CPU
+108 108.1 108.1 108.1 
+Elapsed (ms):
+6171 6173 6174 6176 
+kwk simd
+35.3 35.3 35.3 35.3 
+Elapsed (ms):
+2015 2015 2015 2015 
+seq
+108.4 108.4 108.4 108.4 
+Elapsed (ms):
+6192 6191 6193 6194 
+unseq
+108.7 108.7 108.7 108.7 
+Elapsed (ms):
+6206 6210 6209 6210 
+kwk SYCL NVIDIA GeForce RTX 2080 Ti
+4.8 2.2 2 2 
+Elapsed (ms):
+276 126 117 117 
+kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti
+2 0.1 0.1 0.1 
+Elapsed (ms):
+112 8 8 8 
