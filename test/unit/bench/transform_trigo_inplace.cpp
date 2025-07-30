@@ -16,6 +16,8 @@
 #include "include/benchmark.hpp"
 #include "include/utils/utils.hpp"
 
+// Temporaire pour aller plus vite
+#define TMP_ENABLE_GPU true
 
 
 #if KIWAKU_BENCH_SYCL
@@ -47,7 +49,8 @@ void transform_test ( std::string const& bench_name
                     , const data_reset_t data_reset
                     , ::kwk::bench::bench_type_t bench_type
                     , double clock_speed_CPU // expressed in GHz
-                    , double clock_speed_GPU // expressed in GHz
+                    , [[maybe_unused]] double clock_speed_GPU // expressed in GHz
+                    , bool enable_gpu
                     )
 {
   constexpr float MAX_ERROR = 1;
@@ -70,7 +73,7 @@ void transform_test ( std::string const& bench_name
   std::vector<DATA_TYPE> truth_out(L2_length);
 
   // Only used once now, since output and inputs are separated
-  auto reset_data = [&](std::vector<DATA_TYPE>& victor)
+  [[maybe_unused]] auto reset_data = [&](std::vector<DATA_TYPE>& victor)
   {
     if (data_reset == data_reset_t::ones)
     {
@@ -87,7 +90,21 @@ void transform_test ( std::string const& bench_name
     }
   };
 
-  // reset_data(vector_inout);
+  if constexpr (!enable_check)
+  {
+    std::cout << "NO RESET DATA!\n";
+    std::cout << "NO RESET DATA!\n";
+    std::cout << "NO RESET DATA!\n";
+    std::cout << "NO RESET DATA!\n";
+    std::cout << "NO RESET DATA!\n";
+    std::cout << "NO RESET DATA!\n";
+    std::cout << "NO RESET DATA!\n";
+    std::cout << "NO RESET DATA!\n";
+  }
+
+  // auto reset_data = [&] ([[maybe_unused]] std::vector<DATA_TYPE>& victor) {};
+
+  reset_data(vector_inout);
 
   // Kiwaku views
   auto kwk_inout   = kwk::view{kwk::source = vector_inout.data()  , kwk::of_size(L2_length)};
@@ -99,7 +116,7 @@ void transform_test ( std::string const& bench_name
 
   // Benchmark initialization
   kwk::bench::cbench_t b; // Processed elements, per second (higher is better)
-  b.start(kwk::bench::fprefix() + file_name, bench_name, y_axis_title, total_number_of_elements_processed);
+  b.start(kwk::bench::fprefix() + file_name, bench_name, y_axis_title, total_number_of_elements_processed, bench_type);
   // b.set_iterations(1);
 
 
@@ -166,6 +183,103 @@ void transform_test ( std::string const& bench_name
   };
 
 
+
+  // ====== Kiwaku SIMD ======
+  #if KIWAKU_BENCH_EVE
+    bench_kiwaku_cpu(::kwk::simd, "kwk SIMD", func_eve);
+    // if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
+  #endif
+
+  // Remember output for later verification
+  std::copy(vector_inout.begin(), vector_inout.end(), truth_out.begin());
+
+
+  // ====== SYCL ======
+  if (enable_gpu)
+  {
+    #if KIWAKU_BENCH_SYCL && TMP_ENABLE_GPU
+    
+      // OSEF pour le manuscrit
+      // #if KIWAKU_BENCH_MTHREAD
+      //   // ====== CPU ======
+      //   auto& ctx = kwk::sycl::default_context;
+      //   bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
+      //   if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
+      // #endif
+
+      // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64  (with x86_64 or spir64)
+      bool has_gpu = kwk::sycl::has_gpu();
+
+      // std::cout << "===== has gpu: " << ((has_gpu)?"yes":"no" )<< "\n";
+
+      // Execute SYCL benchmark on GPU and CPU
+      if (has_gpu)
+      {
+        // ====== Kiwaku SYCL GPU ======
+        auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
+
+
+        // Kiwaku GPU without smart proxies
+        {
+          auto fct_transforms = [&]()
+          {
+            for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
+            {
+              kwk::transform_inplace(ctx_gpu, func_generic, kwk_inout);
+            }
+            return kwk_inout(L2_length / 2);
+          };
+
+          b.run_ext2( "kwk SYCL GPU dumb " + ctx_gpu.get_device_name()
+                    , fct_transforms
+                    , [&]{ reset_data(vector_inout); }
+                    , total_number_of_elements_processed
+                    , bandwidth_per_element_read + bandwidth_per_element_write
+                    , bench_type
+                    , clock_speed_GPU
+                    , ::kwk::bench::device_type_t::gpu
+                    );
+        } // Kiwaku proxy out of scope = SYCL buffer destruction = data back to host
+
+
+        // Kiwaku GPU with memory staying on GPU memory
+        {
+          std::string context_name = "kwk SYCL GPU smart " + ctx_gpu.get_device_name();
+          // Only pays the 1st data transfer
+
+          // 1st data transfer non counted
+          auto proxy_inout = ctx_gpu.inout(kwk_inout);
+          kwk::transform_inplace_proxy(ctx_gpu, func_generic, proxy_inout);
+          reset_data(vector_inout);
+          
+          auto fct_transforms = [&]()
+          {
+            for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
+            {
+              kwk::transform_inplace_proxy(ctx_gpu, func_generic, proxy_inout);
+            }
+            return kwk_inout(L2_length / 2);
+          };
+
+          b.run_ext2( context_name
+                    , fct_transforms
+                    , [&]{ reset_data(vector_inout); }
+                    , total_number_of_elements_processed
+                    , bandwidth_per_element_read + bandwidth_per_element_write // Only to GPU local memory
+                    , bench_type
+                    , clock_speed_GPU
+                    , ::kwk::bench::device_type_t::gpu
+                    );
+        } // Kiwaku proxy out of scope = SYCL buffer destruction = data back to host
+
+      }
+    #endif
+  }
+
+
+
+
+
   // ====== hand-written sequential ======
   auto fct_hand = [&]()
   {
@@ -187,9 +301,7 @@ void transform_test ( std::string const& bench_name
             , clock_speed_CPU
             , ::kwk::bench::device_type_t::cpu
             );
-
-  // Remember output for later verification
-  std::copy(vector_inout.begin(), vector_inout.end(), truth_out.begin());
+  if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
 
 
   // ====== Kiwaku CPU context ======
@@ -197,11 +309,7 @@ void transform_test ( std::string const& bench_name
   if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
 
 
-  // ====== Kiwaku SIMD ======
-  #if KIWAKU_BENCH_EVE
-    bench_kiwaku_cpu(::kwk::simd, "kwk SIMD", func_eve);
-    if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
-  #endif
+
 
 
   // ====== std sequential ======
@@ -228,84 +336,7 @@ void transform_test ( std::string const& bench_name
 
 
 
-  // ====== SYCL ======
-  #if KIWAKU_BENCH_SYCL
   
-    // OSEF pour le manuscrit
-    // #if KIWAKU_BENCH_MTHREAD
-    //   // ====== CPU ======
-    //   auto& ctx = kwk::sycl::default_context;
-    //   bench_kiwaku(ctx, "kwk SYCL " + ctx.get_device_name(), map_func);
-    //   if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
-    // #endif
-
-    // Don't forget -fsycl-targets=nvptx64-nvidia-cuda,x86_64  (with x86_64 or spir64)
-    bool has_gpu = kwk::sycl::has_gpu();
-
-    // std::cout << "===== has gpu: " << ((has_gpu)?"yes":"no" )<< "\n";
-
-    // Execute SYCL benchmark on GPU and CPU
-    if (has_gpu)
-    {
-      // ====== Kiwaku SYCL GPU ======
-      auto ctx_gpu = kwk::sycl::context{::sycl::gpu_selector_v};
-
-
-      // Kiwaku GPU without smart proxies
-      {
-        auto fct_transforms = [&]()
-        {
-          for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
-          {
-            kwk::transform_inplace(ctx_gpu, func_generic, kwk_inout);
-          }
-          return kwk_inout(L2_length / 2);
-        };
-
-        b.run_ext2( "kwk SYCL GPU dumb " + ctx_gpu.get_device_name()
-                  , fct_transforms
-                  , [&]{ reset_data(vector_inout); }
-                  , total_number_of_elements_processed
-                  , bandwidth_per_element_read + bandwidth_per_element_write
-                  , bench_type
-                  , clock_speed_GPU
-                  , ::kwk::bench::device_type_t::gpu
-                  );
-      } // Kiwaku proxy out of scope = SYCL buffer destruction = data back to host
-
-
-      // Kiwaku GPU with memory staying on GPU memory
-      {
-        std::string context_name = "kwk SYCL GPU smart " + ctx_gpu.get_device_name();
-        // Only pays the 1st data transfer
-
-        // 1st data transfer non counted
-        auto proxy_inout = ctx_gpu.inout(kwk_inout);
-        kwk::transform_inplace_proxy(ctx_gpu, func_generic, proxy_inout);
-        reset_data(vector_inout);
-        
-        auto fct_transforms = [&]()
-        {
-          for (std::size_t repeat_co = 0; repeat_co < repetitions_over_array; ++repeat_co)
-          {
-            kwk::transform_inplace_proxy(ctx_gpu, func_generic, proxy_inout);
-          }
-          return kwk_inout(L2_length / 2);
-        };
-
-        b.run_ext2( context_name
-                  , fct_transforms
-                  , [&]{ reset_data(vector_inout); }
-                  , total_number_of_elements_processed
-                  , bandwidth_per_element_read + bandwidth_per_element_write // Only to GPU local memory
-                  , bench_type
-                  , clock_speed_GPU
-                  , ::kwk::bench::device_type_t::gpu
-                  );
-      } // Kiwaku proxy out of scope = SYCL buffer destruction = data back to host
-
-    }
-  #endif
 
   // TODO: reset data ????
 
@@ -317,7 +348,10 @@ void transform_test ( std::string const& bench_name
 
 
 #define ENABLE_TRIGO true
-#define ENABLE_MEMORY false
+#define ENABLE_MEMORY true
+
+#define ENABLE_L2 true
+#define ENABLE_RAM true
 
 
 
@@ -441,7 +475,7 @@ void transform_test ( std::string const& bench_name
 //   std::cout << "\n\n";
 // };
 
-
+#if ENABLE_RAM
 TTS_CASE("Benchmark - transform, compute-bound, RAM")
 {
   ::kwk::bench::get_eve_compiler_flag();
@@ -457,7 +491,8 @@ TTS_CASE("Benchmark - transform, compute-bound, RAM")
   // Total data to process
   if (hname == "parsys-legend")
   {
-    total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
+    total_size = 4 * gio;
+    // total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
     L2_length = total_size;
     clock_speed_CPU = 4.7;
     clock_speed_GPU = 1.6; // From 1.3 to 1.8
@@ -468,18 +503,22 @@ TTS_CASE("Benchmark - transform, compute-bound, RAM")
 
   auto func = [](auto in)
   {
-    // return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
-    return std::cos(in) * std::cos(in / 3) + std::sin(in / 7) * std::sin(in / 5);
+    return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
+    // eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
+    // return (std::cos(in * 0.67465f) * std::cos(in * 0.921546f) + std::sin(in * 0.543217f) * std::sin(in * 0.754878f)
+    //         + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
   };
   auto func_eve = [](auto in)
   {
-    return eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
+    return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
+    // return (eve::cos(in * 0.67465f) * eve::cos(in * 0.921546f) + eve::sin(in * 0.543217f) * eve::sin(in * 0.754878f)
+    // + 2) ;
   };
 
   std::string l2_str = std::to_string(L2_length / kio);
   sutils::printer_t::head("Benchmark - transform, compute-bound (L2 " + l2_str + ")", true);
 
-  transform_test<DATA_TYPE>( "transform trigo_inpl_RAM"
+  transform_test<DATA_TYPE>( "transform compute-bound RAM"
                           , "transform_trigo_RAM_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
                           , func
                           , func_eve
@@ -489,11 +528,13 @@ TTS_CASE("Benchmark - transform, compute-bound, RAM")
                           , ::kwk::bench::bench_type_t::compute
                           , clock_speed_CPU
                           , clock_speed_GPU
+                          , true
                           );
   std::cout << "\n\n";
 };
+#endif // ENABLE_RAM
 
-
+#if ENABLE_L2
 TTS_CASE("Benchmark - transform, compute-bound, L2")
 {
   ::kwk::bench::get_eve_compiler_flag();
@@ -509,7 +550,8 @@ TTS_CASE("Benchmark - transform, compute-bound, L2")
   // Total data to process
   if (hname == "parsys-legend")
   {
-    total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
+    total_size = 4 * gio;
+    // total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
     L2_length = 256 * kio;
     clock_speed_CPU = 4.7;
     clock_speed_GPU = 1.6; // From 1.3 to 1.8
@@ -521,18 +563,22 @@ TTS_CASE("Benchmark - transform, compute-bound, L2")
   auto func = [](auto in)
   {
     // return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
-    return std::cos(in) * std::cos(in / 3) + std::sin(in / 7) * std::sin(in / 5);
+    // eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
+    return (std::cos(in * 0.67465f) * std::cos(in * 0.921546f) + std::sin(in * 0.543217f) * std::sin(in * 0.754878f)
+            + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
   };
   auto func_eve = [](auto in)
   {
-    return eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
+    // return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
+    return (eve::cos(in * 0.67465f) * eve::cos(in * 0.921546f) + eve::sin(in * 0.543217f) * eve::sin(in * 0.754878f)
+    + 2) ;
   };
 
   std::string l2_str = std::to_string(L2_length / kio);
   sutils::printer_t::head("Benchmark - transform, compute-bound (L2 " + l2_str + ")", true);
 
-  transform_test<DATA_TYPE>( "transform trigo_inpl_RAM"
-                          , "transform_trigo_RAM_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+  transform_test<DATA_TYPE>( "transform compute-bound L2 cache"
+                          , "transform_trigo_L2_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
                           , func
                           , func_eve
                           , L2_length
@@ -541,9 +587,11 @@ TTS_CASE("Benchmark - transform, compute-bound, L2")
                           , ::kwk::bench::bench_type_t::compute
                           , clock_speed_CPU
                           , clock_speed_GPU
+                          , true
                           );
   std::cout << "\n\n";
 };
+#endif // ENABLE_L2
 #endif // ENABLE_TRIGO
 
 
@@ -625,7 +673,7 @@ TTS_CASE("Benchmark - transform, compute-bound, L2")
 //   std::cout << "\n\n";
 // };
 
-
+#if ENABLE_RAM
 TTS_CASE("Benchmark - transform, memory-bound RAM")
 {
   ::kwk::bench::get_eve_compiler_flag();
@@ -666,11 +714,13 @@ TTS_CASE("Benchmark - transform, memory-bound RAM")
                           , ::kwk::bench::bench_type_t::memory
                           , clock_speed_CPU
                           , clock_speed_GPU
+                          , true
                           );
   std::cout << "\n\n";
 };
+#endif // ENABLE_RAM
 
-
+#if ENABLE_L2
 TTS_CASE("Benchmark - transform, memory-bound L2")
 {
   ::kwk::bench::get_eve_compiler_flag();
@@ -701,8 +751,8 @@ TTS_CASE("Benchmark - transform, memory-bound L2")
   std::string l2_str = std::to_string(L2_length / kio);
   sutils::printer_t::head("Benchmark - transform, memory-bound (L2 " + l2_str + ")", true);
 
-  transform_test<DATA_TYPE>( "transform memory-bound RAM"
-                          , "transform_memory_RAM_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+  transform_test<DATA_TYPE>( "transform memory-bound L2 cache"
+                          , "transform_memory_L2_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
                           , func
                           , func_eve
                           , L2_length
@@ -711,9 +761,11 @@ TTS_CASE("Benchmark - transform, memory-bound L2")
                           , ::kwk::bench::bench_type_t::memory
                           , clock_speed_CPU
                           , clock_speed_GPU
+                          , true
                           );
   std::cout << "\n\n";
 };
+#endif // ENABLE_L2
 #endif // ENABLE_MEMORY
 
 #endif // KIWAKU_BUILD_BENCH

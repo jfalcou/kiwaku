@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 // #define ANKERL_NANOBENCH_IMPLEMENT
 #include "utils/utils.hpp"
 
@@ -62,7 +63,7 @@ struct cbench_t
   void start( std::string const& fname
             , std::string const& global_name
             , std::string const& measured_variable
-            , std::size_t array_size
+            , std::size_t total_number_of_elements_processed
             , bench_type_t type      // memory-bound or compute-bound
             );
 
@@ -70,7 +71,7 @@ struct cbench_t
   void start( std::string const& fname
             , std::string const& global_name
             , std::string const& measured_variable
-            , std::size_t array_size
+            , std::size_t total_number_of_elements_processed
             );
 
   
@@ -108,7 +109,7 @@ private:
 void cbench_t::start( std::string const& fname
                     , std::string const& global_name
                     , std::string const& measured_variable
-                    , std::size_t array_size
+                    , std::size_t total_number_of_elements_processed
                     , bench_type_t type      // memory-bound or compute-bound
                     )
 {
@@ -127,7 +128,7 @@ void cbench_t::start( std::string const& fname
   current_file << version << "\n";
   current_file << global_name << "\n";
   current_file << measured_variable << "\n";
-  current_file << array_size << "\n";
+  current_file << total_number_of_elements_processed << "\n";
   if (type == bench_type_t::compute) current_file << "compute-bound\n";
   if (type == bench_type_t::memory)  current_file << "memory-bound\n";
   if (type == bench_type_t::unknown) current_file << "!!UNKNOWN!!-bound\n";
@@ -138,10 +139,10 @@ void cbench_t::start( std::string const& fname
 void cbench_t::start( std::string const& fname
                     , std::string const& global_name
                     , std::string const& measured_variable
-                    , std::size_t array_size
+                    , std::size_t total_number_of_elements_processed
                     )
 {
-  start(fname, global_name, measured_variable, array_size, bench_type_t::unknown);
+  start(fname, global_name, measured_variable, total_number_of_elements_processed, bench_type_t::unknown);
 }
 
 
@@ -283,12 +284,15 @@ void cbench_t::run_ext2 ( std::string const name
   sutils::chrono_t chrono;
   std::cout << "    ";
   double sum_ret = 0;
+  std::stringstream times_line;
   for (std::size_t i = 0; i < iterations_count; ++i)
   {
     reset_func(); // not measured by the timer
     chrono.Init();
     sum_ret += func();
-    std::size_t elapsed = chrono.ElapsedTimeMS() ;
+    std::size_t elapsed = chrono.ElapsedTimeMS();
+
+    times_line << elapsed << " ";
 
     // Je ne sauvegarde plus le temps, à la place:
     // Memory-bound : GB/s
@@ -296,6 +300,7 @@ void cbench_t::run_ext2 ( std::string const name
     // current_file << elapsed << " ";
 
     double elapsed_s = static_cast<double>(elapsed) / 1000;
+
 
     // To keep only one digit after the decimal point
     auto concise = [] (double n) -> double
@@ -339,6 +344,8 @@ void cbench_t::run_ext2 ( std::string const name
       }
     }
 
+    
+
     // Ma version
     // // Cycle per value:
     // double frequency = 4.0 * 1000000000.; // 3.4 et 4.9
@@ -360,6 +367,8 @@ void cbench_t::run_ext2 ( std::string const name
     // std::cout << "(" << r << ") " << std::flush; //  "(" << r << ")" <<
   }
   current_file << "\n";
+  current_file << "Elapsed (ms):\n";
+  current_file << times_line.str() << "\n";
   std::cout << "  sum_ret(" << sum_ret << ")\n\n";
 }
 
