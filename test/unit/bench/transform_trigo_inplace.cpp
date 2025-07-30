@@ -116,7 +116,12 @@ void transform_test ( std::string const& bench_name
 
   // Benchmark initialization
   kwk::bench::cbench_t b; // Processed elements, per second (higher is better)
-  b.start(kwk::bench::fprefix() + file_name, bench_name, y_axis_title, total_number_of_elements_processed, bench_type);
+  b.start ( kwk::bench::fprefix() + file_name
+          , bench_name
+          , y_axis_title
+          , total_number_of_elements_processed
+          , bench_type
+          );
   // b.set_iterations(1);
 
 

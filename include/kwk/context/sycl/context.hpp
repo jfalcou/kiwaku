@@ -213,34 +213,48 @@ namespace kwk::sycl
     //   Func f;
     // };
 
-    template<typename Func, concepts::container In>
-    auto reduce_internal_v2(In const& in, [[maybe_unused]] Func func, [[maybe_unused]] auto init)
+    template<typename Func, concepts::container In, typename InProxy>
+    auto reduce_internal_v2_proxy ( In const& in
+                                  , InProxy& in_proxy
+                                  , [[maybe_unused]] Func func
+                                  , [[maybe_unused]] auto init
+                                  , std::size_t repeat_for_bench = 1
+                                  )
     {
       using data_type = typename In::value_type;
       
       data_type result = init;
       {
         std::size_t const numel = in.numel();
-        auto in_proxy = this->in(in);
         ::sycl::buffer<data_type> result_buf(&result, ::sycl::range<1>(1));
 
-        parent::submit([&](::sycl::handler& h)
+        for (std::size_t r = 0; r < repeat_for_bench; ++r)
         {
-          ::sycl::accessor data_acc = in_proxy.access(h);
-          auto reduction_obj = ::sycl::reduction(result_buf, h, func);
-
-          h.parallel_for( ::sycl::range<1>(numel)
-                        , reduction_obj
-                        , [=](::sycl::id<1> i, auto& sum)
-                          {
-                            sum.combine(data_acc[i]);
-                          }
-                        );
-        });
-        parent::wait();
+          parent::submit([&](::sycl::handler& h)
+          {
+            ::sycl::accessor data_acc = in_proxy.access(h);
+            auto reduction_obj = ::sycl::reduction(result_buf, h, func);
+            
+              h.parallel_for( ::sycl::range<1>(numel)
+                            , reduction_obj
+                            , [=](::sycl::id<1> i, auto& sum)
+                              {
+                                sum.combine(data_acc[i]);
+                              }
+                            );
+          });
+          parent::wait();
+        }
       }
 
       return result;
+    }
+
+    template<typename Func, concepts::container In>
+    auto reduce_internal_v2(In const& in, [[maybe_unused]] Func func, [[maybe_unused]] auto init)
+    {
+      auto in_proxy = this->in(in);
+      return reduce_internal_v2_proxy(in, in_proxy, func, init);
     }
 
 
@@ -254,6 +268,27 @@ namespace kwk::sycl
       try
       {
         return reduce_internal_v2(in, f, init);
+      }
+      catch (::sycl::exception const &e)
+      {
+        std::cout << "An exception is caught for SYCL reduce.\n";
+        std::terminate();
+      }
+    }
+
+    template<typename Func, concepts::container In, typename InProxy>
+    auto reduce_proxy ( [[maybe_unused]] In const& in
+                      , [[maybe_unused]] InProxy& in_proxy
+                      , [[maybe_unused]] Func f
+                      , [[maybe_unused]] auto init
+                      , std::size_t repeat_for_bench = 1
+                      )
+    {
+      // std::cout << "kwk::sycl::context::reduce\n";
+      // ::sycl::test_sycl();
+      try
+      {
+        return reduce_internal_v2_proxy(in, in_proxy, f, init, repeat_for_bench);
       }
       catch (::sycl::exception const &e)
       {
@@ -492,6 +527,20 @@ namespace kwk
     // std::cout << "---------------------------------- reduce SYCL used !\n";
     // std::cout << "sycl reduce\n";
     return ctx.reduce(in, f, init);
+  }
+
+  template<typename Func, concepts::container In, typename InProxy>
+  constexpr auto reduce_proxy ( kwk::sycl::context& ctx
+                              , In const& in
+                              , InProxy& in_proxy
+                              , Func f
+                              , auto init
+                              , std::size_t repeat_for_bench = 1
+                              )
+  {
+    // std::cout << "---------------------------------- reduce SYCL used !\n";
+    // std::cout << "sycl reduce\n";
+    return ctx.reduce_proxy(in, in_proxy, f, init, repeat_for_bench);
   }
 
   template<typename Func_R, typename Func_T, concepts::container In1, concepts::container In2>

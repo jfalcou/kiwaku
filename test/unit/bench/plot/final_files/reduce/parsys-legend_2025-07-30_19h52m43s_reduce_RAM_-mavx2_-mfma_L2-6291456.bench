@@ -1,0 +1,29 @@
+3
+Reduce RAM
+Throughput
+1610612736
+memory-bound
+hand CPU
+6.3 6.3 6.3 6.3 
+Elapsed (ms):
+1026 1026 1026 1026 
+std::accumulate
+6.3 6.3 6.3 6.3 
+Elapsed (ms):
+1026 1026 1026 1026 
+kwk CPU
+6.3 6.3 6.3 6.3 
+Elapsed (ms):
+1025 1026 1026 1026 
+kwk simd
+36 36.2 36.8 36.2 
+Elapsed (ms):
+179 178 175 178 
+seq
+24.4 24.4 24.4 24.4 
+Elapsed (ms):
+264 264 264 264 
+unseq
+36.2 35.8 35.8 36 
+Elapsed (ms):
+178 180 180 179 

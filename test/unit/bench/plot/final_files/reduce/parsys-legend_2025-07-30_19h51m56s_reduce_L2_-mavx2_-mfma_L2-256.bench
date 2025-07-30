@@ -1,0 +1,29 @@
+3
+Reduce L2
+Throughput
+1610612736
+memory-bound
+hand CPU
+6.3 6.3 6.3 6.3 
+Elapsed (ms):
+1024 1023 1023 1023 
+std::accumulate
+6.3 6.3 6.3 6.3 
+Elapsed (ms):
+1023 1022 1023 1023 
+kwk CPU
+6.3 6.3 6.3 6.3 
+Elapsed (ms):
+1022 1022 1022 1022 
+kwk simd
+149.8 146.4 146.4 146.4 
+Elapsed (ms):
+43 44 44 44 
+seq
+24.7 24.8 24.8 24.8 
+Elapsed (ms):
+261 260 260 260 
+unseq
+99.1 99.1 99.1 99.1 
+Elapsed (ms):
+65 65 65 65 
