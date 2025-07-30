@@ -508,16 +508,16 @@ TTS_CASE("Benchmark - transform, compute-bound, RAM")
 
   auto func = [](auto in)
   {
-    return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
+    // return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
     // eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
-    // return (std::cos(in * 0.67465f) * std::cos(in * 0.921546f) + std::sin(in * 0.543217f) * std::sin(in * 0.754878f)
-    //         + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
+    return (std::cos(in * 0.67465f) * std::cos(in * 0.921546f) + std::sin(in * 0.543217f) * std::sin(in * 0.754878f)
+            + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
   };
   auto func_eve = [](auto in)
   {
-    return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
-    // return (eve::cos(in * 0.67465f) * eve::cos(in * 0.921546f) + eve::sin(in * 0.543217f) * eve::sin(in * 0.754878f)
-    // + 2) ;
+    // return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
+    return (eve::cos(in * 0.67465f) * eve::cos(in * 0.921546f) + eve::sin(in * 0.543217f) * eve::sin(in * 0.754878f)
+    + 2) ;
   };
 
   std::string l2_str = std::to_string(L2_length / kio);
