@@ -1,0 +1,173 @@
+Results: 12 tests - 12/12 successes - 0/0 failure - 0/0 invalid
+[sylvainj@parsys-legend kiwaku_build_2025-06]$ ninja unit.bench.find.exe &&./unit/unit.bench.find.exe
+[0/2] Re-checking globbed directories...
+[0/2] Building CXX object test/CMakeFiles/unit.bench.find.exe.dir/unit/bench/find.cpp.o^C
+ninja: build stopped: interrupted by user.
+[sylvainj@parsys-legend kiwaku_build_2025-06]$ ninja unit.bench.find.exe &&./unit/unit.bench.find.exe
+[0/2] Re-checking globbed directories...
+[1/2] Building CXX object test/CMakeFiles/unit.bench.find.exe.dir/unit/bench/find.cpp.o
+icpx: warning: -ltbb: 'linker' input unused [-Wunused-command-line-argument]
+icpx: warning: -ltbb: 'linker' input unused [-Wunused-command-line-argument]
+[2/2] Linking CXX executable unit/unit.bench.find.exe
+
+
+============ SYCL RUNTIME ============
+   Device Name:    NVIDIA GeForce RTX 2080 Ti
+   Platform Name:  NVIDIA CUDA BACKEND
+
+
+[Kiwaku] - Assertions: Disabled
+EVE_COMPILER_FLAG set to -mavx2_-mfma
+
+===================================================
+===================================================
+=- Benchmark - find-if, compute-bound, pos(last) -=
+===================================================
+===================================================
+
+
+============================
+Start benchmark environment:
+    find-if compute-bound RAM pos(last)
+    parsys-legend_2025-07-30_22h36m17s_find-if_compute_pos(last)_-mavx2_-mfma_rep1_L2-262144.bench
+    in directory ../kiwaku_bench_results/
+
+Benchmarking  hand CPU (run_ext2)   time(Cycles per element):
+    1554(108.8)  1554(108.8)  1554(108.8)  1554(108.8)    sum_ret(268435452)
+
+Benchmarking  kwk CPU (run_ext2)   time(Cycles per element):
+    1564(109.5)  1564(109.5)  1564(109.5)  1564(109.5)    sum_ret(268435452)
+
+Benchmarking  kwk simd (run_ext2)   time(Cycles per element):
+    500(35)  500(35)  500(35)  500(35)    sum_ret(268435452)
+
+Benchmarking  seq (run_ext2)   time(Cycles per element):
+    1544(108.1)  1544(108.1)  1544(108.1)  1544(108.1)    sum_ret(268435452)
+
+Benchmarking  unseq (run_ext2)   time(Cycles per element):
+    1557(109)  1557(109)  1557(109)  1557(109)    sum_ret(268435452)
+
+Benchmarking  kwk SYCL NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Cycles per element):
+    215(15.1)  32(2.2)  32(2.2)  32(2.2)    sum_ret(268435452)
+
+Benchmarking  kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Cycles per element):
+    31(2.2)  3(0.2)  3(0.2)  3(0.2)    sum_ret(268435452)
+
+
+
+[V] - Benchmark - find-if, compute-bound, last pos
+EVE_COMPILER_FLAG set to -mavx2_-mfma
+
+===================================================
+===================================================
+=- Benchmark - find-if, compute-bound, pos(last) -=
+===================================================
+===================================================
+
+
+============================
+Start benchmark environment:
+    find-if compute-bound L2 cache pos(last)
+    parsys-legend_2025-07-30_22h36m44s_find-if_compute_pos(last)_-mavx2_-mfma_rep1024_L2-256.bench
+    in directory ../kiwaku_bench_results/
+
+Benchmarking  hand CPU (run_ext2)   time(Cycles per element):
+    1555(108.9)  1555(108.9)  1555(108.9)  1556(109)    sum_ret(268431360)
+
+Benchmarking  kwk CPU (run_ext2)   time(Cycles per element):
+    1564(109.5)  1564(109.5)  1565(109.6)  1565(109.6)    sum_ret(268431360)
+
+Benchmarking  kwk simd (run_ext2)   time(Cycles per element):
+    493(34.5)  494(34.6)  494(34.6)  494(34.6)    sum_ret(268431360)
+
+Benchmarking  seq (run_ext2)   time(Cycles per element):
+    1545(108.2)  1545(108.2)  1545(108.2)  1545(108.2)    sum_ret(268431360)
+
+Benchmarking  unseq (run_ext2)   time(Cycles per element):
+    1557(109)  1558(109.1)  1558(109.1)  1558(109.1)    sum_ret(268431360)
+
+Benchmarking  kwk SYCL NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Cycles per element):
+    265(18.6)  253(17.7)  253(17.7)  252(17.6)    sum_ret(268431360)
+
+Benchmarking  kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Cycles per element):
+    81(5.7)  81(5.7)  80(5.6)  81(5.7)    sum_ret(268431360)
+
+
+
+[V] - Benchmark - find-if, compute-bound, last pos
+EVE_COMPILER_FLAG set to -mavx2_-mfma
+
+===================================================
+===================================================
+=- Benchmark - find-if, memory-bound, pos(last) -==
+===================================================
+===================================================
+
+
+============================
+Start benchmark environment:
+    find-if memory-bound RAM pos(last)
+    parsys-legend_2025-07-30_22h37m16s_find-if_memory_pos(last)_-mavx2_-mfma_rep1_L2-2097152.bench
+    in directory ../kiwaku_bench_results/
+
+Benchmarking  hand CPU (run_ext2)   time(Mem Bandwidth GB/s):
+    61(35.2)  59(36.4)  59(36.4)  59(36.4)    sum_ret(2147483644)
+
+Benchmarking  kwk CPU (run_ext2)   time(Mem Bandwidth GB/s):
+    60(35.8)  60(35.8)  60(35.8)  60(35.8)    sum_ret(2147483644)
+
+Benchmarking  kwk simd (run_ext2)   time(Mem Bandwidth GB/s):
+    59(36.4)  59(36.4)  60(35.8)  60(35.8)    sum_ret(2147483644)
+
+Benchmarking  seq (run_ext2)   time(Mem Bandwidth GB/s):
+    146(14.7)  146(14.7)  146(14.7)  146(14.7)    sum_ret(2147483644)
+
+Benchmarking  unseq (run_ext2)   time(Mem Bandwidth GB/s):
+    70(30.7)  71(30.2)  71(30.2)  71(30.2)    sum_ret(2147483644)
+
+Benchmarking  kwk SYCL NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Mem Bandwidth GB/s):
+    181(11.9)  232(9.3)  225(9.5)  225(9.5)    sum_ret(2147483644)
+
+Benchmarking  kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Mem Bandwidth GB/s):
+    223(9.6)  12(179)  12(179)  12(179)    sum_ret(2147483644)
+
+
+
+[V] - Benchmark - find-if, memory-bound, last pos
+EVE_COMPILER_FLAG set to -mavx2_-mfma
+
+===================================================
+===================================================
+=- Benchmark - find-if, memory-bound, pos(last) -==
+===================================================
+===================================================
+
+
+============================
+Start benchmark environment:
+    find-if memory-bound L2 cache pos(last)
+    parsys-legend_2025-07-30_22h37m18s_find-if_memory_pos(last)_-mavx2_-mfma_rep8192_L2-256.bench
+    in directory ../kiwaku_bench_results/
+
+Benchmarking  hand CPU (run_ext2)   time(Mem Bandwidth GB/s):
+    15(143.2)  14(153.4)  14(153.4)  14(153.4)    sum_ret(2147450880)
+
+Benchmarking  kwk CPU (run_ext2)   time(Mem Bandwidth GB/s):
+    14(153.4)  14(153.4)  14(153.4)  14(153.4)    sum_ret(2147450880)
+
+Benchmarking  kwk simd (run_ext2)   time(Mem Bandwidth GB/s):
+    14(153.4)  14(153.4)  14(153.4)  14(153.4)    sum_ret(2147450880)
+
+Benchmarking  seq (run_ext2)   time(Mem Bandwidth GB/s):
+    146(14.7)  145(14.8)  145(14.8)  145(14.8)    sum_ret(2147450880)
+
+Benchmarking  unseq (run_ext2)   time(Mem Bandwidth GB/s):
+    29(74.1)  29(74.1)  29(74.1)  29(74.1)    sum_ret(2147450880)
+
+Benchmarking  kwk SYCL NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Mem Bandwidth GB/s):
+    1992(1.1)  2010(1.1)  2020(1.1)  2025(1.1)    sum_ret(2147450880)
+
+Benchmarking  kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti (run_ext2)   time(Mem Bandwidth GB/s):
+    652(3.3)  650(3.3)  672(3.2)  683(3.1)    sum_ret(2147450880)
+
+
