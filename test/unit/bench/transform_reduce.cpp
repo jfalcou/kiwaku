@@ -179,7 +179,8 @@ void transform_test ( std::string const& bench_name
       {
         // transform_inplace uniquement utile pour SYCL en vrai
         // func_reduce commune à EVE et les autres contextes Kiwaku
-        res += kwk::transform_reduce(context, kwk_inout, kwk_inout, REDUCE_NEUTRAL_ELEMENT, func_reduce, transform_func_);
+        res += kwk::transform_reduce_inplace(context, kwk_inout, REDUCE_NEUTRAL_ELEMENT, func_reduce, transform_func_);
+        // res += kwk::transform_reduce(context, kwk_inout, kwk_inout, REDUCE_NEUTRAL_ELEMENT, func_reduce, transform_func_);
       }
       return_ = res;
       return return_;
@@ -334,7 +335,7 @@ void transform_test ( std::string const& bench_name
     {
       for (std::size_t i = 0; i < L2_length; ++i)
       {
-        res = func_reduce(res, func_transform_generic(vector_inout[i], vector_inout[i]));
+        res += func_reduce(res, func_transform_generic(vector_inout[i], vector_inout[i]));
       }
     }
     return res;
@@ -394,7 +395,7 @@ void transform_test ( std::string const& bench_name
 }
 
 
-#define ENABLE_TRIGO true
+#define ENABLE_TRIGO false
 #define ENABLE_MEMORY true
 
 #define ENABLE_L2 true
@@ -521,7 +522,7 @@ void memory_bound_test(kwk::bench::mem_type_t mem_type)
   if (hname == "parsys-legend")
   {
     // total_size = 1 * gio;
-    total_size = 4 * gio;
+    total_size = 6 * gio;
     L2_length = 256 * kio;
     clock_speed_CPU = 4.7;
     clock_speed_GPU = 1.6; // From 1.3 to 1.8

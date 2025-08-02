@@ -42,6 +42,20 @@ global_colors = [
   'tab:cyan'
 ]
 
+# global_colors_reduce_only = [
+#   'tab:olive',
+#   'tab:blue',
+#   'tab:orange',
+#   'tab:green',
+#   'tab:red',
+#   'tab:purple',
+#   'tab:brown',
+#   'tab:pink',
+#   'tab:gray',
+#   'tab:cyan'
+# ]
+# global_colors = global_colors_reduce_only
+
 # 2. Generate the darker versions
 # We will scale the RGB values of each color by a factor to make them darker.
 # A factor of 0.6 makes them noticeably darker.
@@ -76,6 +90,7 @@ unit_name = ""
 
 IS_MEMORY_BOUND  = False
 IS_COMPUTE_BOUND = False
+IS_KERNEL_DURATION = False
 
 CURRENT_VERSION = 0
 bench_list = []
@@ -84,7 +99,7 @@ bench_list2 = []
 # Charge le fichier de bench "path" et retourne la liste de ce qui a été lu.
 def load_file(path):
   global VERSION_ATTENDUE, CURRENT_VERSION, global_name, measured_variable, kwk_array_size, unit_name
-  global IS_MEMORY_BOUND, IS_COMPUTE_BOUND, DRAW_OVER, bench_list, bench_list2
+  global IS_MEMORY_BOUND, IS_COMPUTE_BOUND, IS_KERNEL_DURATION, DRAW_OVER, bench_list, bench_list2
   
 
   with open(path) as fp:
@@ -113,6 +128,9 @@ def load_file(path):
 
     if (bound_type == "memory-bound"):
       IS_MEMORY_BOUND = True
+
+    if (bound_type == "kernel-duration"):
+      IS_KERNEL_DURATION = True
 
 
     all_medians = []
@@ -247,7 +265,8 @@ if (not args.only_save_image):
     unit_name = ""
     if IS_COMPUTE_BOUND: unit_name = " cycles per element"
     if IS_MEMORY_BOUND: unit_name = " GB/s"
-    if (not IS_COMPUTE_BOUND) and (not IS_COMPUTE_BOUND): unit_name = " !!UNKNOWN_UNIT!!"
+    if IS_KERNEL_DURATION: unit_name = " ms"
+    if (not IS_COMPUTE_BOUND) and (not IS_COMPUTE_BOUND) and (not IS_KERNEL_DURATION): unit_name = " !!UNKNOWN_UNIT!!"
     print(bench["bench_name"] + ": " + str(round(bench["median"])) + unit_name)
   
   plt.show()
