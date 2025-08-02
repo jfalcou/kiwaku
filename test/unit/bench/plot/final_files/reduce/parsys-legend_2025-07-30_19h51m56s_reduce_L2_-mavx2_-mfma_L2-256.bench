@@ -1,16 +1,16 @@
 3
-Reduce L2
+Reduce  L2  memory-bound
 Throughput (GB/s)
 1610612736
 memory-bound
-hand CPU
-6.3 6.3 6.3 6.3 
-Elapsed (ms):
-1024 1023 1023 1023 
 std::accumulate
 6.3 6.3 6.3 6.3 
 Elapsed (ms):
 1023 1022 1023 1023 
+hand CPU
+6.3 6.3 6.3 6.3 
+Elapsed (ms):
+1024 1023 1023 1023 
 kwk CPU
 6.3 6.3 6.3 6.3 
 Elapsed (ms):

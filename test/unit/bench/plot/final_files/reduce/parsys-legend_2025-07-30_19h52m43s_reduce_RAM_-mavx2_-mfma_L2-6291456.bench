@@ -1,13 +1,13 @@
 3
-Reduce RAM
+Reduce  RAM  memory-bound
 Throughputt (GB/s)
 1610612736
 memory-bound
-hand CPU
+std::accumulate
 6.3 6.3 6.3 6.3 
 Elapsed (ms):
 1026 1026 1026 1026 
-std::accumulate
+hand CPU
 6.3 6.3 6.3 6.3 
 Elapsed (ms):
 1026 1026 1026 1026 

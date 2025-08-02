@@ -1,0 +1,21 @@
+3
+GPU throughput for memory-bound algorithms 2nd+ kernel
+Throughput (GB/s)
+1073741824
+memory-bound
+transform
+390.5 390.5 390.5 390.5 
+Elapsed (ms):
+22 22 22 22 
+transform_reduce
+379 379 379 379 
+Elapsed (ms):
+518 17 17 17 
+Reduce
+429.5 429.5 429.5 429.5 
+Elapsed (ms):
+643 15 15 14 
+find-if
+189.5 189.5 189.5 189.5 
+Elapsed (ms):
+678 36 34 34 

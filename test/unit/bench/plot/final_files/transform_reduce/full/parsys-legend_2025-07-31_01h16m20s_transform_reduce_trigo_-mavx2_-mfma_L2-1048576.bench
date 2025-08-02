@@ -3,18 +3,6 @@ transform_reduce compute-bound RAM
 Cycles per element
 268435456
 compute-bound
-kwk SIMD
-34.7 34.8 34.8 34.8 
-Elapsed (ms):
-1984 1985 1985 1985 
-kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
-0.6 0.5 0.5 0.5 
-Elapsed (ms):
-98 89 88 88 
-kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
-0.5 0 0 0 
-Elapsed (ms):
-88 4 3 3 
 hand CPU
 108.8 108.8 108.8 108.8 
 Elapsed (ms):
@@ -23,6 +11,10 @@ kwk CPU
 109.4 109.4 109.6 109.8 
 Elapsed (ms):
 6248 6248 6260 6271 
+kwk SIMD
+34.7 34.8 34.8 34.8 
+Elapsed (ms):
+1984 1985 1985 1985 
 seq
 110.7 110.7 110.7 110.7 
 Elapsed (ms):

@@ -1,0 +1,25 @@
+3
+transform_reduce memory-bound L2 cache
+Throughput
+1610612736
+memory-bound
+hand CPU
+3.2 3.2 3.2 3.2 
+Elapsed (ms):
+2033 2031 2029 2029 
+kwk CPU
+1.9 1.9 1.9 1.9 
+Elapsed (ms):
+3340 3340 3340 3340 
+kwk SIMD
+111.1 111.1 111.1 111.1 
+Elapsed (ms):
+58 58 58 58 
+seq
+1.9 1.9 1.9 1.9 
+Elapsed (ms):
+3341 3341 3341 3341 
+unseq
+33.7 33.7 33.7 33.7 
+Elapsed (ms):
+191 191 191 191 

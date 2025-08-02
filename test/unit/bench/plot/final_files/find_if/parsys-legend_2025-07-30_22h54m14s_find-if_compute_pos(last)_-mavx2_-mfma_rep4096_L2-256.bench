@@ -1,5 +1,5 @@
 3
-find-if compute-bound L2 cache pos(last)
+find-if  compute-bound  L2 cache
 Cycles per element
 268435456
 compute-bound
@@ -23,11 +23,3 @@ unseq
 108.7 108.7 108.7 108.7 
 Elapsed (ms):
 6209 6208 6209 6208 
-kwk SYCL NVIDIA GeForce RTX 2080 Ti
-17.9 17.6 17.6 17.6 
-Elapsed (ms):
-1025 1008 1007 1007 
-kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti
-5.7 5.7 5.7 5.7 
-Elapsed (ms):
-326 327 327 327 

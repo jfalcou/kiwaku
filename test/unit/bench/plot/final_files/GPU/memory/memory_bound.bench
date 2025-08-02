@@ -1,0 +1,48 @@
+3
+GPU throughput for memory-bound algorithms
+Throughput (GB/s)
+1073741824
+memory-bound
+
+
+transform   kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+12.2 12.5 12.5 12.5 
+Elapsed (ms):
+702 688 688 688 
+
+transform   kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+390.5 390.5 390.5 390.5 
+Elapsed (ms):
+22 22 22 22 
+
+
+find-if kwk SYCL NVIDIA GeForce RTX 2080 Ti
+12.1 12.1 12.1 12.1 
+Elapsed (ms):
+534 682 683 683 
+
+find-if kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti
+189.5 189.5 189.5 189.5 
+Elapsed (ms):
+678 36 34 34 
+
+
+transform_reduce   kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+12.4 12.4 12.4 12.4 
+Elapsed (ms):
+520 520 520 520 
+
+transform_reduce   kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+12.4 379 379 379 
+Elapsed (ms):
+518 17 17 17 
+
+Reduce   kwk SYCL NVIDIA GeForce RTX 2080 Ti
+12.2 12.2 12.2 12.2
+Elapsed (ms):
+529 644 639 641 
+
+Reduce   kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti keep proxy alive
+10 429.5 429.5 460.2 
+Elapsed (ms):
+643 15 15 14 

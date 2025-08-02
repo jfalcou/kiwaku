@@ -1,0 +1,17 @@
+3
+GPU kernel duration for compute-bound algorithms
+Kernel duration (ms)
+268435456
+kernel-duration
+transform
+60 61 62 60 
+Elapsed (ms):
+14 6 6 6 
+transform_reduce
+76 74 75 75 
+Elapsed (ms):
+14 6 6 6 
+find-if
+79 80 81 81 
+Elapsed (ms):
+112 8 8 8 

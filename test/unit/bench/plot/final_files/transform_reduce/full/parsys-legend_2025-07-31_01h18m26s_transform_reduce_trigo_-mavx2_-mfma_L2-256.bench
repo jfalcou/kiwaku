@@ -3,18 +3,6 @@ transform_reduce compute-bound L2 cache
 Cycles per element
 268435456
 compute-bound
-kwk SIMD
-34.3 34.2 34.3 34.2 
-Elapsed (ms):
-1957 1954 1958 1954 
-kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
-5.3 5.2 5.2 5.2 
-Elapsed (ms):
-883 866 866 865 
-kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
-1.5 1.5 1.5 1.5 
-Elapsed (ms):
-247 249 252 254 
 hand CPU
 108.8 108.8 108.8 108.8 
 Elapsed (ms):
@@ -23,6 +11,10 @@ kwk CPU
 109.7 109.8 109.8 109.8 
 Elapsed (ms):
 6268 6269 6270 6269 
+kwk SIMD
+34.3 34.2 34.3 34.2 
+Elapsed (ms):
+1957 1954 1958 1954 
 seq
 110.7 110.7 110.7 110.7 
 Elapsed (ms):

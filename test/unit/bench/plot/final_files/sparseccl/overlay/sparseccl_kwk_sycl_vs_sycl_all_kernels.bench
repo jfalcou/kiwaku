@@ -1,5 +1,5 @@
 3
-SparseCCL GPU with SYCL
+SparseCCL GPU with SYCL and Kiwaku's SYCL GPU context
 DRAW_OVER
 Kernel duration (ms)
 11635200

@@ -3,18 +3,6 @@ transform_reduce memory-bound RAM
 Throughput
 1073741824
 memory-bound
-kwk SIMD
-32.3 32.3 33 32.3 
-Elapsed (ms):
-133 133 130 133 
-kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
-11.8 12.4 12.4 12.4 
-Elapsed (ms):
-364 346 346 347 
-kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
-12.4 390.5 390.5 390.5 
-Elapsed (ms):
-345 11 11 11 
 hand CPU
 6.3 6.3 6.3 6.3 
 Elapsed (ms):
@@ -23,6 +11,10 @@ kwk CPU
 1.9 1.9 1.9 1.9 
 Elapsed (ms):
 2240 2240 2240 2240 
+kwk SIMD
+32.3 32.3 33 32.3 
+Elapsed (ms):
+133 133 130 133 
 seq
 1.9 1.9 1.9 1.9 
 Elapsed (ms):
