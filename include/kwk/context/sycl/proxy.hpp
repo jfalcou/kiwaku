@@ -26,6 +26,8 @@ namespace kwk::sycl
     
     auto size() const { return data.size(); }
 
+    auto& get_buffer() { return data; }
+
     // WIP
     /* If we don't want to copy data back and trash it. buffer::set_final_data() tells the
      * SYCL runtime where to put the data when the buffer is destroyed; nullptr

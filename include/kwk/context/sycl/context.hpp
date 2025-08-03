@@ -75,6 +75,7 @@ namespace kwk::sycl
     void map(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
     {
 
+      ::sycl::event my_kernel_event = 
       parent::submit([&](::sycl::handler &h) 
       {
         // Maps each sycl proxy to an accessor
@@ -102,7 +103,10 @@ namespace kwk::sycl
         // h.parallel_for(::sycl::nd_range<1>(p0.size(), 1024), [=](::sycl::item<1> i) { kumi::apply([=](auto&&... m) { f(KWK_FWD(m)[i]...); }, accs); });
       });
 
-      parent::wait();
+
+      my_kernel_event.wait();
+
+      // parent::wait();
     }
 
     template<typename Func>

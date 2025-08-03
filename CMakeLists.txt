@@ -55,10 +55,11 @@ if(KIWAKU_BUILD_DOCUMENTATION)
 endif()
 
 
-option(KIWAKU_BUILD_BENCH    "Build benchmarks." ON)
-option(KIWAKU_BENCH_SYCL     "Use SYCL in benchmark tests. You mush use a SYCL-capabable compiler." OFF)
-option(KIWAKU_BENCH_MTHREAD  "Use multi-thread in benchmark tests." OFF)
-option(KIWAKU_BENCH_EVE      "Use EVE SIMD in benchmark tests." ON)
+option(KIWAKU_BUILD_BENCH       "Build benchmarks." ON)
+option(KIWAKU_BENCH_SYCL        "Use SYCL in benchmark tests. You mush use a SYCL-capabable compiler." OFF)
+option(KIWAKU_BENCH_MTHREAD     "Use multi-thread in benchmark tests." OFF)
+option(KIWAKU_BENCH_EVE         "Use EVE SIMD in benchmark tests." ON)
+option(KIWAKU_ONLY_BENCH_GPU    "Ony bench GPU execution and EVE SIMD, to save time." OFF)
 
 ##======================================================================================================================
 ## Tests setup
@@ -75,6 +76,10 @@ endif()
 
 if(KIWAKU_BENCH_EVE)
   target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_EVE)
+endif()
+
+if(KIWAKU_ONLY_BENCH_GPU  )
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_ONLY_BENCH_GPU  )
 endif()
 
 if(KIWAKU_BENCH_SYCL)

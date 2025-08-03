@@ -37,9 +37,17 @@ namespace kwk
   constexpr auto transform_reduce_inplace(Context& ctx, In1 const& in1, auto init, Func_R R, Func_T T)
   {
     // return error for in1.shape() != in2.shape()
-    ctx.map([&](auto const& i1) { init = R(init, T(i1, i1)); }, ctx.in(in1));
+    ctx.map([&](auto const i1) { init = R(init, T(i1, i1)); }, ctx.in(in1));
     return init;
   }
+
+  // template<typename Context, typename Func_R, typename Func_T, concepts::container In1>
+  // constexpr auto transform_reduce_inplace(Context& ctx, In1 const& in1, auto init, Func_R R, Func_T T)
+  // {
+  //   // return error for in1.shape() != in2.shape()
+  //   ctx.map([&](auto const& i1) { init = R(init, T(i1, i1)); }, ctx.in(in1));
+  //   return init;
+  // }
 
   // template<typename Context, typename Func_R, typename Func_T, concepts::container In1, typename InProxy>
   // constexpr auto transform_reduce_inplace_proxy(Context& ctx, In1 const& in1, InProxy in_proxy, auto init, Func_R R, Func_T T)
