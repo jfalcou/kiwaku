@@ -1,0 +1,13 @@
+3
+transform DESPAIR_INF1-bound RAM
+Time (ms)
+281474976710656
+GPU-compute-bound
+kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+5883 6381 6368 6362 
+Elapsed (ms):
+1050 968 970 971 
+kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+8639 9697 9728 9697 
+Elapsed (ms):
+715 637 635 637 

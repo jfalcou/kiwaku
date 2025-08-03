@@ -40,6 +40,8 @@
 
 enum data_reset_t { trigo, ones };
 
+std::size_t INTERNAL_REPETITIONS = 1;
+
 template<typename DATA_TYPE>
 void transform_test ( std::string const& bench_name
                     , std::string const& file_name
@@ -58,7 +60,7 @@ void transform_test ( std::string const& bench_name
   constexpr bool enable_check = ENABLE_CHECK;
 
   // Total numer of element processed
-  double total_number_of_elements_processed = L2_length * repetitions_over_array;
+  double total_number_of_elements_processed = L2_length * repetitions_over_array * INTERNAL_REPETITIONS;
   double bandwidth_per_element_read   = sizeof(DATA_TYPE);
   double bandwidth_per_element_write  = sizeof(DATA_TYPE);
   double bandwidth_per_element_in_bytes_cpu = bandwidth_per_element_read + bandwidth_per_element_write;
@@ -117,15 +119,16 @@ void transform_test ( std::string const& bench_name
 
   std::string y_axis_title = "UNKNOWN AXIS TYPE";
 
-  if (bench_type == kwk::bench::bench_type_t::compute) y_axis_title = "Cycles per element";
-  if (bench_type == kwk::bench::bench_type_t::memory)  y_axis_title = "Throughput"; // GB/s
+  if (bench_type == kwk::bench::bench_type_t::compute)      y_axis_title = "Cycles per element";
+  if (bench_type == kwk::bench::bench_type_t::memory)       y_axis_title = "Throughput"; // GB/s
+  if (bench_type == kwk::bench::bench_type_t::GPU_compute)  y_axis_title = "Time (ms)"; // GB/s
 
   // Benchmark initialization
   kwk::bench::cbench_t b; // Processed elements, per second (higher is better)
   b.start ( kwk::bench::fprefix() + file_name
           , bench_name
           , y_axis_title
-          , total_number_of_elements_processed
+          , total_number_of_elements_processed * INTERNAL_REPETITIONS
           , bench_type
           );
   // b.set_iterations(1);
@@ -212,8 +215,6 @@ void transform_test ( std::string const& bench_name
   if (enable_gpu)
   {
     #if KIWAKU_BENCH_SYCL && TMP_ENABLE_GPU
-
-      b.set_iterations(4);
     
       // OSEF pour le manuscrit
       // #if KIWAKU_BENCH_MTHREAD
@@ -460,9 +461,9 @@ void compute_bound_test(kwk::bench::mem_type_t mem_type)
 
   std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
 
-  #if KIWAKU_ONLY_BENCH_GPU
-    repetitions_over_array = 4;
-  #endif
+  // #if KIWAKU_ONLY_BENCH_GPU
+  //   repetitions_over_array = 4;
+  // #endif
 
 
   std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
@@ -563,7 +564,7 @@ void despair_bound_test(kwk::bench::mem_type_t mem_type)
 
   if (hname == "parsys-legend")
   {
-    total_size = 4 * gio * kwk::bench::LEGEND_LOAD_FACTOR;
+    total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR;
     L2_length = 256 * kio;
     clock_speed_CPU = 4.7;
     clock_speed_GPU = 1.6; // From 1.3 to 1.8
@@ -578,17 +579,37 @@ void despair_bound_test(kwk::bench::mem_type_t mem_type)
   std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
   std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
 
+
+  INTERNAL_REPETITIONS = 512 * 2;
+
   // auto func     = [](auto in) { return in = in * 1.1f; };
   const float A = 2.71828f;
   const float B = 3.14159f;
+  // const float A = 0.674651f;
+  // const float B = 1.543217f;
   auto func = [A, B](auto in)
   {
     float x = in;
     for (std::size_t i = 0; i < 512; ++i)
-      x = ::sycl::native::cos(x * A) + ::sycl::native::sin(x * B);
+      x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
+      // x = ::sycl::native::cos(x * A) + ::sycl::native::sin(x * B);
 
     return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
   };
+
+
+  // const float A = 2.71828f;
+  // const float B = 3.14159f;
+  // auto func = [A, B](auto in)
+  // {
+  //   float x = in;
+  //   for (std::size_t i = 0; i < 512; ++i)
+  //     x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
+
+  //   return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+  // };
+
+
   auto func_eve = [](auto in) { return in = in * 1.1f; };
 
   std::string l2_str = std::to_string(L2_length / kio);
@@ -599,14 +620,14 @@ void despair_bound_test(kwk::bench::mem_type_t mem_type)
   if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
   if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
 
-  transform_test<DATA_TYPE>( "transform memory-bound " + mem_name
-                          , "transform_memory_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+  transform_test<DATA_TYPE>( "transform DESPAIR_STD_NORMAL-bound " + mem_name
+                          , "transform_DESPAIR_STD_NORMAL_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
                           , func
                           , func_eve
                           , L2_length
                           , repetitions_over_array
                           , data_reset_t::ones
-                          , ::kwk::bench::bench_type_t::memory
+                          , ::kwk::bench::bench_type_t::GPU_compute
                           , clock_speed_CPU
                           , clock_speed_GPU
                           , true

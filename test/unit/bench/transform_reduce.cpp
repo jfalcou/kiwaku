@@ -41,29 +41,32 @@ enum data_reset_t { trigo, ones };
 
 #define REDUCE_NEUTRAL_ELEMENT 0
 
+std::size_t INTERNAL_REPETITIONS = 1;
+#define DESPAIR true
+
 template<typename DATA_TYPE>
 void transform_test ( std::string const& bench_name
                     , std::string const& file_name
                     , auto func_reduce
                     , auto func_transform_generic
-                    , auto func_transform_eve
+                    , [[maybe_unused]] auto func_transform_eve
                     , std::size_t const L2_length // number of elements contained in L2 cache (number of values, NOT size in bytes)
                     , std::size_t const repetitions_over_array
                     , const data_reset_t data_reset
                     , ::kwk::bench::bench_type_t bench_type
-                    , double clock_speed_CPU // expressed in GHz
+                    , [[maybe_unused]] double clock_speed_CPU // expressed in GHz
                     , [[maybe_unused]] double clock_speed_GPU // expressed in GHz
                     , bool enable_gpu
                     )
 {
-  constexpr float MAX_ERROR = 1;
+  [[maybe_unused]] constexpr float MAX_ERROR = 1;
   constexpr bool enable_check = ENABLE_CHECK;
 
   // Total numer of element processed
-  double total_number_of_elements_processed = L2_length * repetitions_over_array;
-  double bandwidth_per_element_read   = sizeof(DATA_TYPE);
-  double bandwidth_per_element_write  = 0;
-  double bandwidth_per_element_in_bytes_cpu = bandwidth_per_element_read + bandwidth_per_element_write;
+  [[maybe_unused]] double total_number_of_elements_processed = L2_length * repetitions_over_array * INTERNAL_REPETITIONS;
+  [[maybe_unused]] double bandwidth_per_element_read   = sizeof(DATA_TYPE);
+  [[maybe_unused]] double bandwidth_per_element_write  = 0;
+  [[maybe_unused]] double bandwidth_per_element_in_bytes_cpu = bandwidth_per_element_read + bandwidth_per_element_write;
   // On GPU it varies depending on what's being measured:
   // does buffers remain from one transform call to the next?
 
@@ -127,7 +130,7 @@ void transform_test ( std::string const& bench_name
           );
   // b.set_iterations(1);
 
-
+  #if ! DESPAIR
   // ====== Generic std function, used later ======
   auto fct_std_transform = [&](auto const& policy)
   {
@@ -237,6 +240,8 @@ void transform_test ( std::string const& bench_name
   // Remember output for later verification
   std::copy(vector_inout.begin(), vector_inout.end(), truth_out.begin());
 
+  #endif // DESPAIR
+
 
   // ====== SYCL ======
   if (enable_gpu)
@@ -325,7 +330,7 @@ void transform_test ( std::string const& bench_name
 
 
 
-
+  #if ! DESPAIR
 
   // ====== hand-written sequential ======
   auto fct_hand = [&]()
@@ -382,7 +387,7 @@ void transform_test ( std::string const& bench_name
     if constexpr(enable_check) TTS_ALL_RELATIVE_EQUAL(vector_inout, truth_out, MAX_ERROR);
   #endif
 
-
+  #endif // #if ! DESPAIR
 
   
 
@@ -395,6 +400,7 @@ void transform_test ( std::string const& bench_name
 }
 
 
+
 #define ENABLE_TRIGO false
 #define ENABLE_MEMORY true
 
@@ -402,6 +408,118 @@ void transform_test ( std::string const& bench_name
 #define ENABLE_RAM true
 
 
+
+
+
+
+#if DESPAIR
+
+void compute_DESPAIR_test(kwk::bench::mem_type_t mem_type)
+{
+  ::kwk::bench::get_eve_compiler_flag();
+  using DATA_TYPE = float;
+  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // input + output
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
+  std::size_t total_size = 0;
+  std::size_t L2_length = 0; // L2 cache size, in bytes
+  double clock_speed_CPU = 0;
+  double clock_speed_GPU = 0;
+  std::string hname = sutils::get_host_name();
+  // Total data to process
+  if (hname == "parsys-legend")
+  {
+    // total_size = 128 * mio;
+    total_size = 1 * gio;
+    L2_length = 256 * kio;
+    // total_size = 256 * mio * kwk::bench::LEGEND_LOAD_FACTOR;
+    // L2_length = total_size;
+    clock_speed_CPU = 4.7;
+    clock_speed_GPU = 1.6; // From 1.3 to 1.8
+  }
+
+  if (mem_type == kwk::bench::mem_type_t::RAM)
+  {
+    L2_length = total_size;
+  }
+  // et si kwk::bench::mem_type_t::L2, alors on garde le L2_length réel
+
+
+  std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
+  std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
+
+  // auto func_transform = [](auto in1, auto in2)
+  // {
+  //   // return std::cos(in) * std::cos(in) + std::sin(in) * std::sin(in);
+  //   // eve::cos(in) * eve::cos(in / 3) + eve::sin(in / 7) * eve::sin(in / 5);
+  //   return (std::cos(in1 * 0.67465f) * std::cos(in1 * 0.921546f) + std::sin(in2 * 0.543217f) * std::sin(in2 * 0.754878f)
+  //           + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
+  // };
+
+  INTERNAL_REPETITIONS = 512 * 2;
+
+  const float A = 2.71828f;
+  const float B = 3.14159f;
+  // const float A = 0.674651f;
+  // const float B = 1.543217f;
+  auto func_transform = [A, B](auto in1, auto in2)
+  {
+    float x = in1 + in2;
+    for (std::size_t i = 0; i < 512; ++i)
+      x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
+
+    return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+  };
+
+
+
+
+  auto func_transform_eve = [](auto in1, auto in2)
+  {
+    // return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
+    return (eve::cos(in1 * 0.67465f) * eve::cos(in1 * 0.921546f) + eve::sin(in2 * 0.543217f) * eve::sin(in2 * 0.754878f)
+    + 2) ;
+  };
+
+  auto func_reduce = [](auto in1, auto in2) { return in1 + in2; };
+
+  std::string l2_str = std::to_string(L2_length / kio);
+  sutils::printer_t::head("Benchmark - transform, compute-bound (L2 " + l2_str + ")", true);
+
+  std::string mem_name = "UNKNOWN MEMORY TYPE";
+  if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
+  if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
+
+
+  transform_test<DATA_TYPE>( "transform_reduce DESPAIR_NORMAL-bound " + mem_name
+                          , "transform_reduce_DESPAIR_NORMAL_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                          , func_reduce
+                          , func_transform
+                          , func_transform_eve
+                          , L2_length
+                          , repetitions_over_array
+                          , data_reset_t::trigo
+                          , ::kwk::bench::bench_type_t::GPU_compute
+                          , clock_speed_CPU
+                          , clock_speed_GPU
+                          , true
+                          );
+  std::cout << "\n\n";
+}
+
+TTS_CASE("Benchmark - transform_reduce, DESPAIR-bound, RAM")
+{
+  compute_DESPAIR_test(kwk::bench::mem_type_t::RAM);
+};
+
+#endif // #if DESPAIR
+
+
+
+
+
+
+#if ! DESPAIR
 
 
 #if ENABLE_TRIGO
@@ -584,5 +702,7 @@ TTS_CASE("Benchmark - transform_reduce, memory-bound L2 cache")
 #endif // ENABLE_RAM
 
 #endif // ENABLE_MEMORY
+
+#endif // #if ! DESPAIR
 
 #endif // KIWAKU_BUILD_BENCH

@@ -50,7 +50,7 @@ std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
 // -march=skylake-avx512
 
 // Compute-bound vs memory-bound
-enum bench_type_t {compute, memory, unknown};
+enum bench_type_t {compute, memory, GPU_compute, unknown};
 enum mem_type_t {RAM, L2, unknown_mem};
 enum device_type_t {cpu, gpu};
 
@@ -104,7 +104,7 @@ struct cbench_t
   void stop();
 
 private:
-  std::size_t iterations_count = 4;
+  std::size_t iterations_count = 10;
   sutils::global_write_file_t current_file;
   std::size_t version = 3;
 
@@ -135,6 +135,7 @@ void cbench_t::start( std::string const& fname
   current_file << total_number_of_elements_processed << "\n";
   if (type == bench_type_t::compute) current_file << "compute-bound\n";
   if (type == bench_type_t::memory)  current_file << "memory-bound\n";
+  if (type == bench_type_t::GPU_compute)  current_file << "GPU-compute-bound\n";
   if (type == bench_type_t::unknown) current_file << "!!UNKNOWN!!-bound\n";
   // std::cout << "First line written to file!\n";
 }
@@ -267,8 +268,9 @@ void cbench_t::run_ext2 ( std::string const name
                         )
 {
   std::string unit = "";
-  if (type == bench_type_t::memory)   unit = "Mem Bandwidth GB/s";
-  if (type == bench_type_t::compute)  unit = "Cycles per element";
+  if (type == bench_type_t::memory)       unit = "Mem Bandwidth GB/s";
+  if (type == bench_type_t::compute)      unit = "Cycles per element";
+  if (type == bench_type_t::GPU_compute)  unit = "Elements per second (billions)";
 
   std::cout << "Benchmarking  " << name << " (run_ext2)   time(" << unit << "):\n";
 
@@ -317,6 +319,16 @@ void cbench_t::run_ext2 ( std::string const name
     {
       return std::round(n * 10) / 10;
     };
+
+    // En pourcentage
+    if (type == bench_type_t::GPU_compute)
+    {
+      double elems_per_second = total_number_of_elements_processed / (elapsed_s * 1000000000.); /// billion element per second
+      double max_gpu_capacity_trigo = 445; // billion element a second
+      double percent4 = std::round(elems_per_second * 10000. / max_gpu_capacity_trigo);
+      std::cout << elapsed << "(" << percent4 / 100 << "%) " << " " << std::flush; // GB/s
+      current_file << percent4 << " "; // in 100 * percent
+    }
 
     // GB/s
     if (type == bench_type_t::memory)
