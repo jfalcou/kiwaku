@@ -17,6 +17,11 @@
 
 namespace kwk
 {
+  template<typename Context, typename Out, typename In>
+  constexpr auto copy_proxy(Context& ctx, Out& out, In& in)
+  {
+    kwk::transform_proxy(ctx, [](auto i) { return i; }, out, KWK_FWD(in) );
+  }
 
   template<typename Context, concepts::container Out, concepts::container In>
   constexpr auto copy(Context& ctx, Out& out, In const& in)

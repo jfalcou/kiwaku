@@ -33,25 +33,50 @@ namespace kwk
             );
   }
 
+  //  === Version fonctionnelle pour les benchs 2025-07 et 08 === 
   // Only takes one container, equivalent to using the same container with the stl,
   // and equivalent to: kwk::transform(ctx, f, view1, view1)
   // But since SYCL does not support multiple accessors to the same buffers,
   // I just used an inout accessor.
-  template< typename Context, typename Func, concepts::container InOut>
-  constexpr void transform_inplace(Context& ctx, Func f, InOut& inout)
+  // template< typename Context, typename Func, concepts::container InOut>
+  // constexpr void transform_inplace(Context& ctx, Func f, InOut& inout)
+  // {
+  //   ctx.map ( [f](auto& o) { o = f(o); }
+  //           , ctx.inout(inout)
+  //           );
+  // }
+  // === Version fonctionnelle pour les benchs 2025-07 et 08 === 
+  // template< typename Context, typename Func, typename InOut>
+  // constexpr void transform_inplace_proxy(Context& ctx, Func f, InOut& inout)
+  // {
+  //   ctx.map ( [f](auto& o) { o = f(o); }
+  //           , inout
+  //           );
+  // }
+
+  template< typename Context, typename Func, concepts::container InOut
+          , concepts::container... Cs
+          >
+  constexpr void transform_inplace(Context& ctx, Func f, InOut& inout, Cs const&... cs)
   {
-    ctx.map ( [f](auto& o) { o = f(o); }
-            , ctx.inout(inout)
+    ctx.map ( [f](auto& io, auto const&... in) { io = f(io, in...); }
+            , ctx.inout(inout), ctx.in(cs)...
             );
   }
 
-  template< typename Context, typename Func, typename InOut>
-  constexpr void transform_inplace_proxy(Context& ctx, Func f, InOut& inout)
+
+  template< typename Context, typename Func, typename InOut
+          , typename... Cs
+          >
+  constexpr void transform_inplace_proxy(Context& ctx, Func f, InOut& inout, Cs&... cs)
   {
-    ctx.map ( [f](auto& o) { o = f(o); }
-            , inout
+    ctx.map ( [f](auto& io, auto const&... in) { io = f(io, in...); }
+            , inout, cs...
             );
   }
+
+
+
 
   template< typename Func, concepts::container Out
           , concepts::container C0, concepts::container... Cs

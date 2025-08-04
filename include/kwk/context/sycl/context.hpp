@@ -194,6 +194,20 @@ namespace kwk::sycl
     }
 
 
+    template<typename Out, typename In>
+    auto copy_proxy(Out& out, In& in)
+    {
+      // std::cout << "SYCL copy_proxy called!\n";
+      parent::submit([&](::sycl::handler &h) 
+      {
+        auto acc_out = out.access(h);
+        auto acc_in  = in.access(h);
+        h.copy(acc_in, acc_out); // source, dest
+      });
+      parent::wait();
+    }
+
+
 
     // template<typename _Tp>
     // struct custom_plus : public ::std::binary_function<_Tp, _Tp, _Tp>
@@ -635,6 +649,12 @@ namespace kwk
   find_last_if(kwk::sycl::context& ctx, Out const& out, Func f)
   {
     return ctx.find_if_v2(out, f, false);
+  }
+
+  template<typename Out, typename In>
+  auto copy_proxy(kwk::sycl::context& ctx, Out& out, In& in)
+  {
+    ctx.copy_proxy(out, in);
   }
 
 }

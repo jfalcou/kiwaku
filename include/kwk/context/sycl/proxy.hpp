@@ -51,10 +51,6 @@ namespace kwk::sycl
     {
       return ::sycl::accessor(base_proxy<T>::data, h, ::sycl::read_only);
     }
-    auto access(::sycl::handler const& h) const
-    {
-      return ::sycl::accessor(base_proxy<T>::data, h, ::sycl::read_only);
-    }
   };
 
   template<kwk::concepts::container T>
