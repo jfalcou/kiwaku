@@ -1,0 +1,11 @@
+3
+GPU compute-bound using ::sycl::cos and ::sycl::sin
+Cycles per element
+274877906944
+GPU-compute-bound
+transform
+646 645 646 645 646 
+transform_reduce
+668 663 669 670 668 
+find_if
+648 649 647 648 648 

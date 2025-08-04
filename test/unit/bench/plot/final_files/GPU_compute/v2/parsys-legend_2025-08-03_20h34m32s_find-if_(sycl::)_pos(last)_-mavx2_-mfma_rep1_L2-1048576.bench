@@ -1,0 +1,13 @@
+3
+find-if (sycl::)-bound RAM pos(last)
+UNKNOWN AXIS TYPE
+274877906944
+GPU-compute-bound
+kwk SYCL NVIDIA GeForce RTX 2080 Ti
+765 755 756 755 757 756 
+Elapsed (ms):
+765 755 756 755 757 756 
+kwk SYCL persistent proxy NVIDIA GeForce RTX 2080 Ti
+755 654 652 654 652 654 
+Elapsed (ms):
+755 654 652 654 652 654 

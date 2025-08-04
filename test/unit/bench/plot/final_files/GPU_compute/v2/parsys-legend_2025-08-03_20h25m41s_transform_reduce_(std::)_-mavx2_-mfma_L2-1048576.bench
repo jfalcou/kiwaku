@@ -1,0 +1,13 @@
+3
+transform_reduce (std::)-bound RAM
+UNKNOWN AXIS TYPE
+274877906944
+GPU-compute-bound
+kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+807 776 778 777 777 777 
+Elapsed (ms):
+807 776 778 777 777 777 
+kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+777 694 694 694 695 695 
+Elapsed (ms):
+777 694 694 694 695 695 

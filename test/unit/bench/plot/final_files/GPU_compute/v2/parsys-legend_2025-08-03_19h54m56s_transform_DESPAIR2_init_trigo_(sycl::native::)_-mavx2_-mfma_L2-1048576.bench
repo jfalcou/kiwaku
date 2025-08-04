@@ -1,0 +1,13 @@
+3
+transform DESPAIR2_init_trigo_(sycl::native::)-bound RAM
+Time (ms)
+274877906944
+GPU-compute-bound
+kwk SYCL GPU dumb NVIDIA GeForce RTX 2080 Ti
+489 474 474 475 474 474 
+Elapsed (ms):
+489 474 474 475 474 474 
+kwk SYCL GPU smart NVIDIA GeForce RTX 2080 Ti
+219 137 136 137 137 136 
+Elapsed (ms):
+219 137 136 137 137 136 
