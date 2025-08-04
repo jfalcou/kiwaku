@@ -136,6 +136,49 @@ namespace kwk::sycl
       parent::wait();
     }
 
+    template<typename Func>
+    void for_each_proxy(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
+    {
+      parent::submit([&](::sycl::handler &h) 
+      {
+        // Maps each sycl proxy to an accessor
+        auto accs = kumi::map([&](auto& b) { return b.access(h); }, kumi::tuple{p0, ps...});
+        auto kernel = [=](auto i)
+        {
+          auto kapply = [=](auto&&... m)
+          {
+            f(KWK_FWD(m)[i]...);
+          };
+          kumi::apply(kapply, accs);
+        };
+        // For each element of the input tables, call our lambda parameter with the input accessors
+        h.parallel_for(p0.size(), kernel);
+      });
+      parent::wait();
+    }
+
+    template<typename Func>
+    void for_each_index_proxy(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
+    {
+      parent::submit([&](::sycl::handler &h) 
+      {
+        // Maps each sycl proxy to an accessor
+        auto accs = kumi::map([&](auto& b) { return b.access(h); }, kumi::tuple{p0, ps...});
+        auto kernel = [=](auto i)
+        {
+          auto kapply = [=](auto&&... m)
+          {
+            f(i, KWK_FWD(m)...);
+          };
+          kumi::apply(kapply, accs);
+        };
+        // For each element of the input tables, call our lambda parameter with the input accessors
+        h.parallel_for(p0.size(), kernel);
+
+      });
+      parent::wait();
+    }
+
     // template<typename Func>
     // void map2(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&& p1)
     // {
@@ -655,6 +698,19 @@ namespace kwk
   auto copy_proxy(kwk::sycl::context& ctx, Out& out, In& in)
   {
     ctx.copy_proxy(out, in);
+  }
+
+  template<typename Func, typename C0, typename... Cs>
+  void for_each_proxy(kwk::sycl::context& ctx, Func f, C0&& c0, Cs&&... cs)
+  {
+    ctx.for_each_proxy(f, c0, cs...);
+  }
+
+
+  template<typename Func, typename C0, typename... Cs>
+  void for_each_index_proxy(kwk::sycl::context& ctx, Func f, C0&& c0, Cs&&... cs)
+  {
+    ctx.for_each_index_proxy(f, c0, cs...);
   }
 
 }
