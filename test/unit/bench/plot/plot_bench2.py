@@ -21,7 +21,7 @@ def set_axis_style(ax, labels):
 
 # title_font_size = 16  # fontsize
 
-plot_set_sizes.set_sizes()
+plot_set_sizes.set_sizes(False)
 
 max_text_width_on_axis = 16 # Legends such as "Kiwaku SYCL GPU"
 # TODO: enlever Kiwaku carrément ? SYCL c'est assez clair si je le dis dans le texte.
@@ -83,6 +83,17 @@ ALTERNATE_DRAW_OVER = True
 # python3 plot_bench2.py final_files/reduce/parsys-legend_2025-07-30_19h51m56s_reduce_L2_-mavx2_-mfma_L2-256.bench
 # python3 plot_bench2.py final_files/reduce/parsys-legend_2025-07-30_19h52m43s_reduce_RAM_-mavx2_-mfma_L2-6291456.bench
 
+# python3 plot_bench2.py final_files/GPU_compute/test.bench
+
+# fname = "parsys-legend_2025-08-03_13h39m39s_transform_DESPAIR2_init_trigo_(sycl::)_-mavx2_-mfma_L2-1048576"
+
+
+# python3 plot_bench2.py files/david_tests/cassidi/bench_CPU.txt
+
+# python3 plot_bench2.py "final_files/GPU_compute/v2/test.bench"
+# python3 plot_bench2.py "final_files/GPU_compute/v2/cb_persistent_std.bench"
+# python3 plot_bench2.py "final_files/GPU_compute/v2/cb_persistent_sycl_native.bench"
+# python3 plot_bench2.py "final_files/GPU_compute/v2/cb_persistent_sycl_base.bench"
 
 
 
@@ -91,6 +102,7 @@ unit_name = ""
 IS_MEMORY_BOUND  = False
 IS_COMPUTE_BOUND = False
 IS_KERNEL_DURATION = False
+IS_GPU_TRIGO = False
 
 CURRENT_VERSION = 0
 bench_list = []
@@ -99,7 +111,7 @@ bench_list2 = []
 # Charge le fichier de bench "path" et retourne la liste de ce qui a été lu.
 def load_file(path):
   global VERSION_ATTENDUE, CURRENT_VERSION, global_name, measured_variable, kwk_array_size, unit_name
-  global IS_MEMORY_BOUND, IS_COMPUTE_BOUND, IS_KERNEL_DURATION, DRAW_OVER, bench_list, bench_list2
+  global IS_MEMORY_BOUND, IS_COMPUTE_BOUND, IS_KERNEL_DURATION, IS_GPU_TRIGO, DRAW_OVER, bench_list, bench_list2
   
 
   with open(path) as fp:
@@ -132,6 +144,12 @@ def load_file(path):
     if (bound_type == "kernel-duration"):
       IS_KERNEL_DURATION = True
 
+    if (bound_type == "GPU-compute-bound"):
+      IS_GPU_TRIGO = True
+      print("GPU COMPUTE BOUND!")
+      print("GPU COMPUTE BOUND!")
+      print("GPU COMPUTE BOUND!")
+      print("GPU COMPUTE BOUND!")
 
     all_medians = []
     all_medians2 = []
@@ -148,6 +166,42 @@ def load_file(path):
       res["raw_values"]         = pu.list_str_to_float(pu.remove_empty_words(pu.remove_newline(fp.readline().split(" ")))) #, 1 / kwk_array_size)
       res["no-outlier_values"]  = pu.filter_outliers(res["raw_values"])
       res["median"]             = stat.median(res["raw_values"])
+
+      if IS_GPU_TRIGO:
+        trigo_calls = float(kwk_array_size) / 1000000000 # nombre d'appels trigo au total, en milliards
+        trigo_calls_per_sec = trigo_calls / (float(res["median"]) / 1000)
+
+        res["median"] = trigo_calls / (float(res["median"]) / 1000)
+
+        # 1.545 GHz * 68 * 4 = 
+        max_gpu_capacity_trigo = 420 # Number of cycles par second
+
+        cycles_per_trigo_call = max_gpu_capacity_trigo / trigo_calls_per_sec
+        #  = (number of cycles par second) / (number of trigo calls per second)
+        
+        res["median"] = cycles_per_trigo_call
+
+        # percent4 = round(trigo_calls_per_sec * 10000. / max_gpu_capacity_trigo);
+        print("cycles_per_trigo_call = " + str(cycles_per_trigo_call))
+        # print("percent = " + str(percent4 / 100))
+        # print("res[median] = " + str(res["median"]))
+
+        # En milliards d'opérations trigo par seconde
+        for i in range(len(res["no-outlier_values"])):
+          calls_per_second = trigo_calls / (res["no-outlier_values"][i] / 1000)
+          res["no-outlier_values"][i] = max_gpu_capacity_trigo / calls_per_second
+
+        # cycle par élément = nombre de cycles par seconde / nombre d'éléments par seconde 
+
+
+      # double elems_per_second = total_number_of_elements_processed / (elapsed_s * 1000000000.); /// billion element per second
+      # double max_gpu_capacity_trigo = 445; // billion element a second
+      # double percent4 = std::round(elems_per_second * 10000. / max_gpu_capacity_trigo);
+      # std::cout << elapsed << "(" << percent4 / 100 << "%) " << " " << std::flush; // GB/s
+      
+      # // current_file << percent4 << " "; // in 100 * percent
+      # current_file << elapsed << " "; // in 100 * percent
+
 
       if DRAW_OVER:
         if ALTERNATE_DRAW_OVER:

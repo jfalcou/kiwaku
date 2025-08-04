@@ -1,13 +1,18 @@
 
 import matplotlib.pyplot as plt
 
-def set_sizes():
+def set_sizes(manuscript_version = True):
   # ============= Gestion de la taille
   my_dpi = 96
   # image_ratio = 640 / 480
   # image_ratio = 640 / 120
   image_ratio = 1280 / 268
   # image_ratio = 880 / 480
+
+  if manuscript_version:
+    image_ratio = 1280 / 268
+  else:
+    image_ratio = 1280 / 480
 
   image_width = 1280 # 1280
   image_scale_factor = image_width / 1024
