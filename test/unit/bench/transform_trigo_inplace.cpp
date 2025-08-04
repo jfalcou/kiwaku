@@ -128,7 +128,7 @@ void transform_test ( std::string const& bench_name
   b.start ( kwk::bench::fprefix() + file_name
           , bench_name
           , y_axis_title
-          , total_number_of_elements_processed * INTERNAL_REPETITIONS
+          , total_number_of_elements_processed
           , bench_type
           );
   // b.set_iterations(1);
@@ -273,10 +273,8 @@ void transform_test ( std::string const& bench_name
           {
             sum += kwk_inout(i);
           }
-          std::cout << "\n\n  v1   sum = : " << sum << "\n\n";
-          
-
-          std::cout << "\n\n  v1  kwk_inout(L2_length / 2): " << kwk_inout(L2_length / 2) << "\n\n";
+          std::cout << "  v1   sum = : " << sum << "\n";
+          std::cout << "  v1  kwk_inout(L2_length / 2): " << kwk_inout(L2_length / 2) << "\n";
         } // Kiwaku proxy out of scope = SYCL buffer destruction = data back to host
         #endif
 
@@ -322,10 +320,9 @@ void transform_test ( std::string const& bench_name
           {
             sum += host_acc[i];
           }
-          std::cout << "\n\n  v2   sum = : " << sum << "\n\n";
-          
+          std::cout << "  v2   sum = : " << sum << "\n";
           // std::cout << "\n\n  v2   sum = : " << sum << "\n\n";
-          std::cout << "\n\n  v2   kwk_inout(L2_length / 2): " << kwk_inout(L2_length / 2) << "\n\n";
+          std::cout << "  v2   kwk_inout(L2_length / 2): " << kwk_inout(L2_length / 2) << "\n";
         } // Kiwaku proxy out of scope = SYCL buffer destruction = data back to host
 
       }
@@ -423,6 +420,169 @@ void transform_test ( std::string const& bench_name
 #define ENABLE_RAM true
 
 #define ENABLE_DESPAIR true
+
+
+
+
+
+#if ENABLE_DESPAIR
+
+void despair_bound_test(kwk::bench::mem_type_t mem_type, kwk::bench::trigo_function_t fct_type)
+{
+  ::kwk::bench::get_eve_compiler_flag();
+  using DATA_TYPE = float;
+  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // single input
+  [[maybe_unused]] std::size_t mio = 1024 * kio;
+  [[maybe_unused]] std::size_t gio = 1024 * mio;
+  std::size_t total_size = 0;
+  std::size_t L2_length = 0; // L2 cache size, in bytes
+  double clock_speed_CPU = 0;
+  double clock_speed_GPU = 0;
+  std::string hname = sutils::get_host_name();
+
+  if (hname == "parsys-legend")
+  {
+    total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR;
+    L2_length = 256 * kio;
+    clock_speed_CPU = 4.7;
+    clock_speed_GPU = 1.6; // From 1.3 to 1.8
+  } 
+
+  if (mem_type == kwk::bench::mem_type_t::RAM)
+  {
+    L2_length = total_size;
+  }
+
+
+  std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
+  // std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
+
+
+  const std::size_t repeat_trigo_op = 512;
+  INTERNAL_REPETITIONS = repeat_trigo_op * 2; // sin + cos = 2 operations
+
+  // auto func     = [](auto in) { return in = in * 1.1f; };
+
+
+  auto func_eve = [](auto in) { return in = in * 1.1f; };
+
+  std::string l2_str = std::to_string(L2_length / kio);
+  sutils::printer_t::head("Benchmark - transform, memory-bound (L2 " + l2_str + ")", true);
+
+  std::string mem_name = "UNKNOWN MEMORY TYPE";
+  if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
+  if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
+
+  const float A = 2.71828f;
+  const float B = 3.14159f;
+  // const float A = 0.674651f;
+  // const float B = 1.543217f;
+
+  std::string trigo_fct_name = kwk::bench::trigo_function_to_fname(fct_type);
+
+  if (fct_type == kwk::bench::trigo_function_t::sycl_base)
+  {
+    auto func = [A, B](auto in)
+    {
+      float x = in;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
+        // x = ::sycl::native::cos(x * A) + ::sycl::native::sin(x * B);
+
+      return x;
+    };
+    transform_test<DATA_TYPE>( "transform DESPAIR2_init_trigo_" + trigo_fct_name + "-bound " + mem_name
+                            , "transform_DESPAIR2_init_trigo_" + trigo_fct_name + "_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                            , func
+                            , func_eve
+                            , L2_length
+                            , repetitions_over_array
+                            , data_reset_t::ones
+                            , ::kwk::bench::bench_type_t::GPU_compute
+                            , clock_speed_CPU
+                            , clock_speed_GPU
+                            , true
+                            );
+  }
+
+  if (fct_type == kwk::bench::trigo_function_t::sycl_native)
+  {
+    auto func = [A, B](auto in)
+    {
+      float x = in;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::sycl::native::cos(x * A) + ::sycl::native::sin(x * B);
+      return x;
+    };
+    transform_test<DATA_TYPE>( "transform DESPAIR2_init_trigo_" + trigo_fct_name + "-bound " + mem_name
+                            , "transform_DESPAIR2_init_trigo_" + trigo_fct_name + "_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                            , func
+                            , func_eve
+                            , L2_length
+                            , repetitions_over_array
+                            , data_reset_t::ones
+                            , ::kwk::bench::bench_type_t::GPU_compute
+                            , clock_speed_CPU
+                            , clock_speed_GPU
+                            , true
+                            );
+  }
+
+  if (fct_type == kwk::bench::trigo_function_t::std_base)
+  {
+    auto func = [A, B](auto in)
+    {
+      float x = in;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::std::cos(x * A) + ::std::sin(x * B);
+      return x;
+    };
+    transform_test<DATA_TYPE>( "transform DESPAIR2_init_trigo_" + trigo_fct_name + "-bound " + mem_name
+                            , "transform_DESPAIR2_init_trigo_" + trigo_fct_name + "_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                            , func
+                            , func_eve
+                            , L2_length
+                            , repetitions_over_array
+                            , data_reset_t::ones
+                            , ::kwk::bench::bench_type_t::GPU_compute
+                            , clock_speed_CPU
+                            , clock_speed_GPU
+                            , true
+                            );
+  }
+
+  
+  std::cout << "\n\n";
+}
+
+TTS_CASE("Benchmark - transform, despair test")
+{
+  despair_bound_test(kwk::bench::mem_type_t::RAM, kwk::bench::trigo_function_t::sycl_native);
+  despair_bound_test(kwk::bench::mem_type_t::RAM, kwk::bench::trigo_function_t::sycl_base);
+  despair_bound_test(kwk::bench::mem_type_t::RAM, kwk::bench::trigo_function_t::std_base);
+};
+
+
+#endif // #if ENABLE_DESPAIR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -544,104 +704,6 @@ TTS_CASE("Benchmark - transform, compute-bound, L2 cache")
 #endif // ENABLE_RAM
 
 #endif // ENABLE_TRIGO
-
-
-
-#if ENABLE_DESPAIR
-
-void despair_bound_test(kwk::bench::mem_type_t mem_type)
-{
-  ::kwk::bench::get_eve_compiler_flag();
-  using DATA_TYPE = float;
-  [[maybe_unused]] std::size_t kio = 1024 / (sizeof(DATA_TYPE) * 1); // single input
-  [[maybe_unused]] std::size_t mio = 1024 * kio;
-  [[maybe_unused]] std::size_t gio = 1024 * mio;
-  std::size_t total_size = 0;
-  std::size_t L2_length = 0; // L2 cache size, in bytes
-  double clock_speed_CPU = 0;
-  double clock_speed_GPU = 0;
-  std::string hname = sutils::get_host_name();
-
-  if (hname == "parsys-legend")
-  {
-    total_size = 1 * gio * kwk::bench::LEGEND_LOAD_FACTOR;
-    L2_length = 256 * kio;
-    clock_speed_CPU = 4.7;
-    clock_speed_GPU = 1.6; // From 1.3 to 1.8
-  } 
-
-  if (mem_type == kwk::bench::mem_type_t::RAM)
-  {
-    L2_length = total_size;
-  }
-
-
-  std::size_t repetitions_over_array = total_size / L2_length; // Number of repetitions
-  std::cout << "\n======= REPEAT = " << repetitions_over_array << "\n\n";
-
-
-  INTERNAL_REPETITIONS = 512 * 2;
-
-  // auto func     = [](auto in) { return in = in * 1.1f; };
-  const float A = 2.71828f;
-  const float B = 3.14159f;
-  // const float A = 0.674651f;
-  // const float B = 1.543217f;
-  auto func = [A, B](auto in)
-  {
-    float x = in;
-    for (std::size_t i = 0; i < 512; ++i)
-      x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
-      // x = ::sycl::native::cos(x * A) + ::sycl::native::sin(x * B);
-
-    return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
-  };
-
-
-  // const float A = 2.71828f;
-  // const float B = 3.14159f;
-  // auto func = [A, B](auto in)
-  // {
-  //   float x = in;
-  //   for (std::size_t i = 0; i < 512; ++i)
-  //     x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
-
-  //   return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
-  // };
-
-
-  auto func_eve = [](auto in) { return in = in * 1.1f; };
-
-  std::string l2_str = std::to_string(L2_length / kio);
-  sutils::printer_t::head("Benchmark - transform, memory-bound (L2 " + l2_str + ")", true);
-
-
-  std::string mem_name = "UNKNOWN MEMORY TYPE";
-  if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
-  if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
-
-  transform_test<DATA_TYPE>( "transform DESPAIR_STD_NORMAL-bound " + mem_name
-                          , "transform_DESPAIR_STD_NORMAL_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
-                          , func
-                          , func_eve
-                          , L2_length
-                          , repetitions_over_array
-                          , data_reset_t::ones
-                          , ::kwk::bench::bench_type_t::GPU_compute
-                          , clock_speed_CPU
-                          , clock_speed_GPU
-                          , true
-                          );
-  std::cout << "\n\n";
-}
-
-TTS_CASE("Benchmark - transform, despair test")
-{
-  despair_bound_test(kwk::bench::mem_type_t::RAM);
-};
-
-
-#endif
 
 
 

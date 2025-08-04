@@ -333,7 +333,7 @@ enum find_test_pos { first, middle, last };
 
 #if DESPAIR
 
-void find_test_DESPAIR_bound(find_test_pos pos, bool fit_inside_L2, bool enable_gpu)
+void find_test_DESPAIR_bound(find_test_pos pos, bool fit_inside_L2, bool enable_gpu, kwk::bench::trigo_function_t fct_type)
 {
   ::kwk::bench::get_eve_compiler_flag();
 
@@ -371,22 +371,6 @@ void find_test_DESPAIR_bound(find_test_pos pos, bool fit_inside_L2, bool enable_
     return (eve::cos(in * 0.67465f) * eve::cos(in * 0.921546f) + eve::sin(in * 0.543217f) * eve::sin(in * 0.754878f) + 2);
   };
 
-  INTERNAL_REPETITIONS = 512 * 2;
-
-  const float A = 2.71828f;
-  const float B = 3.14159f;
-  // const float A = 0.674651f;
-  // const float B = 1.543217f;
-  auto convert_func = [A, B](auto in)
-  {
-    float x = in;
-    for (std::size_t i = 0; i < 512; ++i)
-      x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
-
-    return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
-  };
-
-
   std::string pos_str = "";
   std::size_t put_at_pos = 0;
   switch (pos)
@@ -406,29 +390,105 @@ void find_test_DESPAIR_bound(find_test_pos pos, bool fit_inside_L2, bool enable_
   if (fit_inside_L2) mem_name = "L2 cache ";
   else               mem_name = "RAM ";
 
-  std::string fname = "find-if_DESPAIR_NORMAL_" 
+
+  const std::size_t repeat_trigo_op = 512;
+  INTERNAL_REPETITIONS = repeat_trigo_op * 2; // sin + cos = 2 operations
+
+  const float A = 2.71828f;
+  const float B = 3.14159f;
+  // const float A = 0.674651f;
+  // const float B = 1.543217f;
+
+
+  std::string sycl_fname =  kwk::bench::trigo_function_to_fname(fct_type);
+
+  std::string fname = "find-if_" + sycl_fname + "_" 
                     + pos_str + "_" 
                     + kwk::bench::EVE_COMPILER_FLAG 
                     + "_rep" + std::to_string(repetitions_over_array)
                     + "_L2-" + l2_str + ".bench";
 
-  find_test<DATA_TYPE>("find-if DESPAIR_NORMAL-bound " + mem_name + pos_str
-                      , fname
-                      , convert_func
-                      , convert_func_eve
-                      , L2_length
-                      , repetitions_over_array
-                      , put_at_pos
-                      , kwk::bench::bench_type_t::GPU_compute
-                      , clock_speed_CPU
-                      , enable_gpu
-                      );
+  if (fct_type == kwk::bench::trigo_function_t::sycl_base)
+  {
+    auto convert_func = [A, B](auto in)
+    {
+      float x = in;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
 
+      return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+    };
+
+    find_test<DATA_TYPE>("find-if " + sycl_fname + "-bound " + mem_name + pos_str
+                        , fname
+                        , convert_func
+                        , convert_func_eve
+                        , L2_length
+                        , repetitions_over_array
+                        , put_at_pos
+                        , kwk::bench::bench_type_t::GPU_compute
+                        , clock_speed_CPU
+                        , enable_gpu
+                        );
+  }
+
+  if (fct_type == kwk::bench::trigo_function_t::sycl_native)
+  {
+    auto convert_func = [A, B](auto in)
+    {
+      float x = in;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::sycl::native::cos(x * A) + ::sycl::native::sin(x * B);
+
+      return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+    };
+
+    find_test<DATA_TYPE>("find-if " + sycl_fname + "-bound " + mem_name + pos_str
+                        , fname
+                        , convert_func
+                        , convert_func_eve
+                        , L2_length
+                        , repetitions_over_array
+                        , put_at_pos
+                        , kwk::bench::bench_type_t::GPU_compute
+                        , clock_speed_CPU
+                        , enable_gpu
+                        );
+  }
+
+  if (fct_type == kwk::bench::trigo_function_t::std_base)
+  {
+    auto convert_func = [A, B](auto in)
+    {
+      float x = in;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::std::cos(x * A) + ::std::sin(x * B);
+
+      return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+    };
+
+    find_test<DATA_TYPE>("find-if " + sycl_fname + "-bound " + mem_name + pos_str
+                        , fname
+                        , convert_func
+                        , convert_func_eve
+                        , L2_length
+                        , repetitions_over_array
+                        , put_at_pos
+                        , kwk::bench::bench_type_t::GPU_compute
+                        , clock_speed_CPU
+                        , enable_gpu
+                        );
+  }
 
   std::cout << "\n\n";
 }
 
-TTS_CASE("Benchmark - find-if, DESPAIR-bound, last pos")    { find_test_DESPAIR_bound(find_test_pos::last, false, true);   };
+TTS_CASE("Benchmark - find-if, DESPAIR-bound, last pos")
+{
+  find_test_DESPAIR_bound(find_test_pos::last, false, true, kwk::bench::trigo_function_t::sycl_native);
+  find_test_DESPAIR_bound(find_test_pos::last, false, true, kwk::bench::trigo_function_t::sycl_base);
+  find_test_DESPAIR_bound(find_test_pos::last, false, true, kwk::bench::trigo_function_t::std_base);
+};
 
 
 #endif // #if ! DESPAIR

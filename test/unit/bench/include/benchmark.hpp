@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sycl/sycl.hpp>
 #include <vector>
 #include <string>
 #include <filesystem>
@@ -54,6 +55,19 @@ enum bench_type_t {compute, memory, GPU_compute, unknown};
 enum mem_type_t {RAM, L2, unknown_mem};
 enum device_type_t {cpu, gpu};
 
+enum trigo_function_t {sycl_base, sycl_native, std_base};
+
+std::string trigo_function_to_fname(trigo_function_t const type)
+{
+  switch (type)
+  {
+    case sycl_base: return "(sycl::)"; break;
+    case sycl_native: return "(sycl::native::)"; break;
+    case std_base: return "(std::)"; break;
+    default: return "(UNKNOWN)"; break;
+  }
+}
+
 
 // Each benchmark file is for a direct comparison.
 // Each file should be loaded by the python visualizer
@@ -104,7 +118,7 @@ struct cbench_t
   void stop();
 
 private:
-  std::size_t iterations_count = 10;
+  std::size_t iterations_count = 6;
   sutils::global_write_file_t current_file;
   std::size_t version = 3;
 
@@ -270,7 +284,7 @@ void cbench_t::run_ext2 ( std::string const name
   std::string unit = "";
   if (type == bench_type_t::memory)       unit = "Mem Bandwidth GB/s";
   if (type == bench_type_t::compute)      unit = "Cycles per element";
-  if (type == bench_type_t::GPU_compute)  unit = "Elements per second (billions)";
+  if (type == bench_type_t::GPU_compute)  unit = "GPU usage"; //  "Elapsed (ms)"  Elements per second (billions)
 
   std::cout << "Benchmarking  " << name << " (run_ext2)   time(" << unit << "):\n";
 
@@ -327,7 +341,9 @@ void cbench_t::run_ext2 ( std::string const name
       double max_gpu_capacity_trigo = 445; // billion element a second
       double percent4 = std::round(elems_per_second * 10000. / max_gpu_capacity_trigo);
       std::cout << elapsed << "(" << percent4 / 100 << "%) " << " " << std::flush; // GB/s
-      current_file << percent4 << " "; // in 100 * percent
+      
+      // current_file << percent4 << " "; // in 100 * percent
+      current_file << elapsed << " "; // in 100 * percent
     }
 
     // GB/s

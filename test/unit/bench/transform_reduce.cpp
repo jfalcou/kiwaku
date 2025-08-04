@@ -414,7 +414,7 @@ void transform_test ( std::string const& bench_name
 
 #if DESPAIR
 
-void compute_DESPAIR_test(kwk::bench::mem_type_t mem_type)
+void compute_DESPAIR_test(kwk::bench::mem_type_t mem_type, kwk::bench::trigo_function_t fct_type)
 {
   ::kwk::bench::get_eve_compiler_flag();
   using DATA_TYPE = float;
@@ -456,24 +456,6 @@ void compute_DESPAIR_test(kwk::bench::mem_type_t mem_type)
   //           + 2) ; // Entre (-1 et 1) * 2 = entre -2 et 2 + 2 -> entre 0 et 4 < 2 * PI.
   // };
 
-  INTERNAL_REPETITIONS = 512 * 2;
-
-  const float A = 2.71828f;
-  const float B = 3.14159f;
-  // const float A = 0.674651f;
-  // const float B = 1.543217f;
-  auto func_transform = [A, B](auto in1, auto in2)
-  {
-    float x = in1 + in2;
-    for (std::size_t i = 0; i < 512; ++i)
-      x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
-
-    return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
-  };
-
-
-
-
   auto func_transform_eve = [](auto in1, auto in2)
   {
     // return eve::cos(in) * eve::cos(in) + eve::sin(in) * eve::sin(in);
@@ -490,26 +472,100 @@ void compute_DESPAIR_test(kwk::bench::mem_type_t mem_type)
   if (mem_type == kwk::bench::mem_type_t::L2)  mem_name = "L2 cache";
   if (mem_type == kwk::bench::mem_type_t::RAM) mem_name = "RAM";
 
+  const std::size_t repeat_trigo_op = 512;
+  INTERNAL_REPETITIONS = repeat_trigo_op * 2; // sin + cos = 2 operations
 
-  transform_test<DATA_TYPE>( "transform_reduce DESPAIR_NORMAL-bound " + mem_name
-                          , "transform_reduce_DESPAIR_NORMAL_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
-                          , func_reduce
-                          , func_transform
-                          , func_transform_eve
-                          , L2_length
-                          , repetitions_over_array
-                          , data_reset_t::trigo
-                          , ::kwk::bench::bench_type_t::GPU_compute
-                          , clock_speed_CPU
-                          , clock_speed_GPU
-                          , true
-                          );
+  const float A = 2.71828f;
+  const float B = 3.14159f;
+  // const float A = 0.674651f;
+  // const float B = 1.543217f;
+
+  std::string sycl_fname =  kwk::bench::trigo_function_to_fname(fct_type);
+
+  if (fct_type == kwk::bench::trigo_function_t::sycl_base)
+  {
+    auto func_transform = [A, B](auto in1, auto in2)
+    {
+      float x = in1 + in2;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::sycl::cos(x * A) + ::sycl::sin(x * B);
+
+      return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+    };
+    transform_test<DATA_TYPE>( "transform_reduce "+ sycl_fname + "-bound " + mem_name
+                            , "transform_reduce_"+ sycl_fname + "_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                            , func_reduce
+                            , func_transform
+                            , func_transform_eve
+                            , L2_length
+                            , repetitions_over_array
+                            , data_reset_t::trigo
+                            , ::kwk::bench::bench_type_t::GPU_compute
+                            , clock_speed_CPU
+                            , clock_speed_GPU
+                            , true
+                            );
+  }
+
+  if (fct_type == kwk::bench::trigo_function_t::sycl_native)
+  {
+    auto func_transform = [A, B](auto in1, auto in2)
+    {
+      float x = in1 + in2;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::sycl::native::cos(x * A) + ::sycl::native::sin(x * B);
+
+      return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+    };
+    transform_test<DATA_TYPE>( "transform_reduce "+ sycl_fname + "-bound " + mem_name
+                            , "transform_reduce_"+ sycl_fname + "_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                            , func_reduce
+                            , func_transform
+                            , func_transform_eve
+                            , L2_length
+                            , repetitions_over_array
+                            , data_reset_t::trigo
+                            , ::kwk::bench::bench_type_t::GPU_compute
+                            , clock_speed_CPU
+                            , clock_speed_GPU
+                            , true
+                            );
+  }
+
+  if (fct_type == kwk::bench::trigo_function_t::std_base)
+  {
+    auto func_transform = [A, B](auto in1, auto in2)
+    {
+      float x = in1 + in2;
+      for (std::size_t i = 0; i < repeat_trigo_op; ++i)
+        x = ::std::cos(x * A) + ::std::sin(x * B);
+
+      return x; //  (std::cos(in) + 2) * M_PI / 4 + 8 ; 
+    };
+    transform_test<DATA_TYPE>( "transform_reduce "+ sycl_fname + "-bound " + mem_name
+                            , "transform_reduce_"+ sycl_fname + "_" + kwk::bench::EVE_COMPILER_FLAG + "_L2-" + l2_str + ".bench"
+                            , func_reduce
+                            , func_transform
+                            , func_transform_eve
+                            , L2_length
+                            , repetitions_over_array
+                            , data_reset_t::trigo
+                            , ::kwk::bench::bench_type_t::GPU_compute
+                            , clock_speed_CPU
+                            , clock_speed_GPU
+                            , true
+                            );
+  }
+
+  
   std::cout << "\n\n";
 }
 
 TTS_CASE("Benchmark - transform_reduce, DESPAIR-bound, RAM")
 {
-  compute_DESPAIR_test(kwk::bench::mem_type_t::RAM);
+  compute_DESPAIR_test(kwk::bench::mem_type_t::RAM, kwk::bench::trigo_function_t::sycl_native);
+  compute_DESPAIR_test(kwk::bench::mem_type_t::RAM, kwk::bench::trigo_function_t::sycl_base);
+  compute_DESPAIR_test(kwk::bench::mem_type_t::RAM, kwk::bench::trigo_function_t::std_base);
 };
 
 #endif // #if DESPAIR
