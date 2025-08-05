@@ -47,10 +47,11 @@ namespace kwk::sycl
       }
     }
 
-    context()
-    {
-      print_sycl_header(true);
-    }
+    // Ne plus afficher par défaut le deader, ça induit en erreur
+    // context()
+    // {
+    //   print_sycl_header(true);
+    // }
 
     // ::kwk::sycl::in
     // auto access(auto const& proxy)
