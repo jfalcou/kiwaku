@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kwk/detail/abi.hpp>
-#include <kumi/tuple.hpp>
+#include <kumi/kumi.hpp>
 
 #if !defined(KWK_DEFAULT_SHAPE_CONSTRAINTS)
 #define KWK_DEFAULT_SHAPE_CONSTRAINTS ::kwk::basic_shape_checks

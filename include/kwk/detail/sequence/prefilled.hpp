@@ -9,7 +9,7 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/assert.hpp>
-#include <kumi/tuple.hpp>
+#include <kumi/kumi.hpp>
 #include <raberu/raberu.hpp>
 #include <kwk/detail/sequence/helpers.hpp>
 #include <kwk/utility/traits/as_dimension.hpp>

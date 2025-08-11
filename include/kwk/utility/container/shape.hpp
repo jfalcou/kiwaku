@@ -15,7 +15,7 @@
 
 #include <kwk/concepts/extent.hpp>
 #include <kwk/detail/abi.hpp>
-#include <kumi/tuple.hpp>
+#include <kumi/kumi.hpp>
 #include <kwk/detail/sequence/prefilled.hpp>
 #include <kwk/detail/sequence/shape_constraints.hpp>
 #include <kwk/settings/extent.hpp>
