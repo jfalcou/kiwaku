@@ -55,10 +55,10 @@ CPMAddPackage(NAME RABERU GITHUB_REPOSITORY SylvainJoube/raberu
                       "RABERU_QUIET ON"
               )
 
-CPMAddPackage ( NAME EVE   GITHUB_REPOSITORY SylvainJoube/eve
-                GIT_TAG main
-                OPTIONS "EVE_BUILD_TEST OFF"
-                        "EVE_BUILD_BENCHMARKS OFF"
-                        "EVE_BUILD_DOCUMENTATION OFF"
-              )
+# CPMAddPackage ( NAME EVE   GITHUB_REPOSITORY SylvainJoube/eve
+#                 GIT_TAG main
+#                 OPTIONS "EVE_BUILD_TEST OFF"
+#                         "EVE_BUILD_BENCHMARKS OFF"
+#                         "EVE_BUILD_DOCUMENTATION OFF"
+#               )
 
