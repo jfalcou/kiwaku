@@ -6,12 +6,8 @@
 */
 //==================================================================================================
 
-// export KIWAKU_BUILD_BENCH="ON"
-// export KIWAKU_BENCH_EVE="ON"
-// export KIWAKU_BENCH_SYCL="OFF"
-// export KIWAKU_BENCH_MTHREAD="OFF"
 
-#if KIWAKU_BUILD_BENCH
+#if KIWAKU_BENCH_BUILD
 
 #include "include/benchmark.hpp"
 #include "include/utils/utils.hpp"
@@ -454,4 +450,4 @@ TTS_CASE("Benchmark - transform, memory-bound")
 };
 #endif // ENABLE_MEMORY
 
-#endif // KIWAKU_BUILD_BENCH
+#endif // KIWAKU_BENCH_BUILD

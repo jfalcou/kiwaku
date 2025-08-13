@@ -6,12 +6,7 @@
 */
 //==================================================================================================
 
-// export KIWAKU_BUILD_BENCH="ON"
-// export KIWAKU_BENCH_EVE="ON"
-// export KIWAKU_BENCH_SYCL="OFF"
-// export KIWAKU_BENCH_MTHREAD="OFF"
-
-#if KIWAKU_BUILD_BENCH
+#if KIWAKU_BENCH_BUILD
 
 #include "include/benchmark.hpp"
 #include "include/utils/utils.hpp"
@@ -20,7 +15,7 @@
 #define TMP_ENABLE_GPU true
 
 
-#if KIWAKU_BENCH_SYCL
+#if KIWAKU_BENCH_SYCL_CPU || KIWAKU_BENCH_SYCL_GPU
   #include <kwk/context/sycl/context.hpp>
 #endif
 
@@ -761,4 +756,4 @@ TTS_CASE("Benchmark - transform_reduce, memory-bound L2 cache")
 
 #endif // #if ! DESPAIR
 
-#endif // KIWAKU_BUILD_BENCH
+#endif // KIWAKU_BENCH_BUILD

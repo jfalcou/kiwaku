@@ -5,12 +5,12 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
-#if KIWAKU_BUILD_BENCH
+#if KIWAKU_BENCH_BUILD
 
 #include "include/benchmark.hpp"
 #include "include/utils/utils.hpp"
 
-#if KIWAKU_BENCH_SYCL
+#if KIWAKU_BENCH_SYCL_CPU || KIWAKU_BENCH_SYCL_GPU
   #include <kwk/context/sycl/context.hpp>
 #endif
 
@@ -374,4 +374,4 @@ TTS_CASE("Benchmark - reduce, RAM memory-bound ")
                         );
 };
 
-#endif
+#endif // KIWAKU_BENCH_BUILD
