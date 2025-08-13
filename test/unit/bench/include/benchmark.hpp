@@ -51,9 +51,9 @@ std::string EVE_BACKEND_NAME  = "Kiwaku SIMD " + EVE_COMPILER_FLAG;
 // -march=skylake-avx512
 
 // Compute-bound vs memory-bound
-enum bench_type_t {compute, memory, GPU_compute, unknown};
+enum bench_type_t {compute_CPU, compute_GPU, memory, unknown};
 enum mem_type_t {RAM, L2, unknown_mem};
-enum device_type_t {cpu, gpu};
+enum device_type_t {cpu, gpu, cpu_and_gpu};
 
 enum trigo_function_t {sycl_base, sycl_native, std_base};
 
@@ -61,13 +61,34 @@ std::string trigo_function_to_fname(trigo_function_t const type)
 {
   switch (type)
   {
-    case sycl_base: return "(sycl::)"; break;
-    case sycl_native: return "(sycl::native::)"; break;
-    case std_base: return "(std::)"; break;
-    default: return "(UNKNOWN)"; break;
+    case sycl_base  : return "(sycl)"; // break;
+    case sycl_native: return "(sycl-native)";
+    case std_base   : return "(std)";
+    default         : return "(UNKNOWN)";
   }
 }
 
+std::string bench_type_to_str(bench_type_t type)
+{
+  switch (type)
+  {
+    case compute_CPU: return "CPU-compute-bound";
+    case compute_GPU: return "GPU-compute-bound";
+    case memory     : return "memory-bound";
+    case unknown    : return "!!UNKNOWN!!-bound";
+  }
+}
+
+bool is_compute_bench(bench_type_t const type)
+{
+  switch (type)
+  {
+    case compute_CPU: return true;
+    case compute_GPU: return true;
+    case memory     : return false;
+    case unknown    : return false;
+  }
+}
 
 // Each benchmark file is for a direct comparison.
 // Each file should be loaded by the python visualizer
@@ -124,6 +145,8 @@ private:
 
 };
 
+
+
 void cbench_t::start( std::string const& fname
                     , std::string const& global_name
                     , std::string const& measured_variable
@@ -147,10 +170,7 @@ void cbench_t::start( std::string const& fname
   current_file << global_name << "\n";
   current_file << measured_variable << "\n";
   current_file << total_number_of_elements_processed << "\n";
-  if (type == bench_type_t::compute) current_file << "compute-bound\n";
-  if (type == bench_type_t::memory)  current_file << "memory-bound\n";
-  if (type == bench_type_t::GPU_compute)  current_file << "GPU-compute-bound\n";
-  if (type == bench_type_t::unknown) current_file << "!!UNKNOWN!!-bound\n";
+  current_file << bench_type_to_str(type) << "\n";
   // std::cout << "First line written to file!\n";
 }
 
@@ -283,8 +303,8 @@ void cbench_t::run_ext2 ( std::string const name
 {
   std::string unit = "";
   if (type == bench_type_t::memory)       unit = "Mem Bandwidth GB/s";
-  if (type == bench_type_t::compute)      unit = "Cycles per element";
-  if (type == bench_type_t::GPU_compute)  unit = "GPU usage"; //  "Elapsed (ms)"  Elements per second (billions)
+  if (type == bench_type_t::compute_CPU)      unit = "Cycles per element";
+  if (type == bench_type_t::compute_GPU)  unit = "Elapsed (ms)"; //  "GPU usage"  Elements per second (billions)
 
   std::cout << "Benchmarking  " << name << " (run_ext2)   time(" << unit << "):\n";
 
@@ -335,7 +355,7 @@ void cbench_t::run_ext2 ( std::string const name
     };
 
     // En pourcentage
-    if (type == bench_type_t::GPU_compute)
+    if (type == bench_type_t::compute_GPU)
     {
       double elems_per_second = total_number_of_elements_processed / (elapsed_s * 1000000000.); /// billion element per second
       double max_gpu_capacity_trigo = 445; // billion element a second
@@ -360,7 +380,7 @@ void cbench_t::run_ext2 ( std::string const name
     }
 
     // Cycle per value
-    if (type == bench_type_t::compute)
+    if (type == bench_type_t::compute_CPU)
     {
       // Version validée par Hadrien
       // double frequency_hz = 4.7 * 1000000000.; // 3.4 et 4.9, expérimentalement 4,7 (via perf stat -I 1000 -- ./mon_bench) sur Legend

@@ -54,12 +54,32 @@ if(KIWAKU_BUILD_DOCUMENTATION)
   copa_setup_doxygen(${QUIET_OPTION} TARGET kiwaku-doxygen DESTINATION "${PROJECT_BINARY_DIR}/doc")
 endif()
 
+# TODO à modifier dans le code:
+# KIWAKU_BENCH_SYCL
+# KIWAKU_BENCH_MTHREAD
+# KIWAKU_ONLY_BENCH_GPU  -> KIWAKU_BENCH_SYCL_GPU_ONLY
+# KIWAKU_BUILD_BENCH -> KIWAKU_BENCH_BUILD
 
-option(KIWAKU_BUILD_BENCH       "Build benchmarks." ON)
-option(KIWAKU_BENCH_SYCL        "Use SYCL in benchmark tests. You mush use a SYCL-capabable compiler." OFF)
-option(KIWAKU_BENCH_MTHREAD     "Use multi-thread in benchmark tests." OFF)
-option(KIWAKU_BENCH_EVE         "Use EVE SIMD in benchmark tests." ON)
-option(KIWAKU_ONLY_BENCH_GPU    "Ony bench GPU execution and EVE SIMD, to save time." OFF)
+option(KIWAKU_BENCH_BUILD         "Build benchmarks." ON)
+option(KIWAKU_BENCH_ASSERT        "Use TTS to check benchmark results." ON)
+option(KIWAKU_BENCH_FAST_INIT     "Initialize arrays to the same value, and do not use random trigonometric initialization, to save time." OFF)
+option(KIWAKU_BENCH_STD_SEQ       "Benchmark std::seq execution policy." ON)
+option(KIWAKU_BENCH_STD_UNSEQ     "Benchmark std::unseq execution policy." ON)
+option(KIWAKU_BENCH_STD_PAR       "Benchmark std::par execution policy." OFF) # KIWAKU_BENCH_MTHREAD
+option(KIWAKU_BENCH_STD_PAR_UNSEQ "Benchmark std::par_unseq execution policy." OFF)
+option(KIWAKU_BENCH_HAND          "Benchmark hand-written loop (no Kiwaku)." ON)
+option(KIWAKU_BENCH_KWK_SEQ       "Benchmark Kiwaku's CPU sequential execution context." ON)
+option(KIWAKU_BENCH_KWK_SIMD      "Benchmark Kiwaku's EVE SIMD execution context." ON)
+option(KIWAKU_BENCH_KWK_SYCL_CPU  "Benchmark CPU parallel execution with SYCL. You must use a SYCL-capable compiler." OFF)
+option(KIWAKU_BENCH_KWK_SYCL_GPU  "Benchmark GPU offloading with SYCL. You must use a SYCL-capable compiler." OFF)
+
+# Anciennement DESPAIR mis directement dans le code par manque de temps
+# option(KIWAKU_BENCH_SYCL_GPU_ONLY "Ony benchmark GPU execution, to save time." OFF) #  and EVE SIMD
+
+set(KIWAKU_BENCH_CPU_CLOCK_SPEED_GHz "3.6" CACHE STRING "The average clock speed of a single CPU core under heavy load.")
+set(KIWAKU_BENCH_MEMORY_DATA_SIZE_MB "4096" CACHE STRING "The size (in megabytes) of the array used for memory-bound benchmarks.")
+set(KIWAKU_BENCH_COMPUTE_DATA_SIZE_MB "1024" CACHE STRING "The size (in megabytes) of the array used for compute-bound benchmarks.")
+set(KIWAKU_BENCH_L2_SIZE_KB "256" CACHE STRING "The size (in kilobytes) of the L2 cache of this system. Bor L2 benchmarks, this size is divided by two.")
 
 ##======================================================================================================================
 ## Tests setup
@@ -68,28 +88,49 @@ if(KIWAKU_BUILD_TEST)
   enable_testing()
   add_custom_target(kiwaku-unit)
   add_subdirectory(test)
-endif()
 
-if(KIWAKU_BUILD_BENCH)
-  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BUILD_BENCH)
-endif()
+  if(KIWAKU_BENCH_BUILD)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_BUILD)
+  endif()
+  if(KIWAKU_BENCH_ASSERT)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_ASSERT)
+  endif()
+  if(KIWAKU_BENCH_FAST_INIT)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_FAST_INIT)
+  endif()
+  if(KIWAKU_BENCH_HAND)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_HAND)
+  endif()
+  if(KIWAKU_BENCH_KWK_SEQ)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_KWK_SEQ)
+  endif()
+  if(KIWAKU_BENCH_KWK_SIMD)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_KWK_SIMD)
+  endif()
+  if(KIWAKU_BENCH_STD_SEQ)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_STD_SEQ)
+  endif()
+  if(KIWAKU_BENCH_STD_UNSEQ)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_STD_UNSEQ)
+  endif()
+  if(KIWAKU_BENCH_STD_PAR)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_STD_PAR)
+  endif()
+  if(KIWAKU_BENCH_STD_PAR_UNSEQ)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_STD_PAR_UNSEQ)
+  endif()
+  if(KIWAKU_BENCH_KWK_SYCL_CPU)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_KWK_SYCL_CPU)
+  endif()
+  if(KIWAKU_BENCH_KWK_SYCL_GPU)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_KWK_SYCL_GPU)
+  endif()
 
-if(KIWAKU_BENCH_EVE)
-  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_EVE)
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_CPU_CLOCK_SPEED_GHz=${KIWAKU_BENCH_CPU_CLOCK_SPEED_GHz})
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_MEMORY_DATA_SIZE_MB=${KIWAKU_BENCH_MEMORY_DATA_SIZE_MB})
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_COMPUTE_DATA_SIZE_MB=${KIWAKU_BENCH_COMPUTE_DATA_SIZE_MB})
+  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_L2_SIZE_KB=${KIWAKU_BENCH_L2_SIZE_KB})
 endif()
-
-if(KIWAKU_ONLY_BENCH_GPU  )
-  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_ONLY_BENCH_GPU  )
-endif()
-
-if(KIWAKU_BENCH_SYCL)
-  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_SYCL)
-endif()
-
-if(KIWAKU_BENCH_MTHREAD)
-  target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BENCH_MTHREAD)
-endif()
-
 # add_executable(find_1d test/unit/bench/find_1d.cpp)
 
 # target_link_libraries(find_1d PRIVATE kiwaku::kiwaku raberu::raberu kumi::kumi)
