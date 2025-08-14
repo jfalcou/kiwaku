@@ -103,7 +103,7 @@ TTS_CASE("Check for kwk::transform_reduce(kwk::sycl::default_context, In1, In2) 
 
 TTS_CASE("SYCL disabled, kwk::numeric with SYCL context skipped.")
 {
-  TTS_EQUAL(true, true);
+  TTS_PASS("SYCL disabled, skipping test.");
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL

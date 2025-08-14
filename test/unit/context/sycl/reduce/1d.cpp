@@ -61,7 +61,7 @@ TTS_CASE("Check for kwk::reduce(kwk::sycl::default_context, in, func) and kwk::r
 
 TTS_CASE("SYCL disabled, kwk::reduce with SYCL context skipped.")
 {
-  TTS_EQUAL(true, true);
+  TTS_PASS("SYCL disabled, skipping test.");
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL
