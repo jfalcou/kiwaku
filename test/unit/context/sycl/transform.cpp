@@ -5,12 +5,12 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
+#include "test.hpp"
 
 #if KIWAKU_BUILD_TEST_SYCL
 
 #include <kwk/algorithm/algos/transform.hpp>
 #include <kwk/container.hpp>
-#include "test.hpp"
 #include <algorithm>
 #include <kwk/context/sycl/context.hpp>
 
@@ -188,6 +188,13 @@ TTS_CASE("Check for kwk::transform(kwk::sycl::default_context, value, new_value)
                 );
 
   TTS_ALL_EQUAL(output, check);
+};
+
+#else // KIWAKU_BUILD_TEST_SYCL
+
+TTS_CASE("SYCL disabled, kwk::transform with SYCL context skipped.")
+{
+  TTS_EQUAL(true, true);
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL

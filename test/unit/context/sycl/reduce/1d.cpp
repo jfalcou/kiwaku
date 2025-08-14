@@ -5,13 +5,14 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
+#include "test.hpp"
+
 #if KIWAKU_BUILD_TEST_SYCL
 
 #include <kwk/context/sycl/context.hpp>
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/algorithm/algos/reduce.hpp>
 #include <kwk/container.hpp>
-#include "test.hpp"
 #include <numeric>
 
 // clear && ninja algorithm.algos.context.sycl.reduce.1d.exe && ./unit/algorithm.algos.context.sycl.reduce.1d.exe
@@ -54,6 +55,13 @@ TTS_CASE("Check for kwk::reduce(kwk::sycl::default_context, in, func) and kwk::r
   TTS_EQUAL(res, res_std);
   TTS_EQUAL(static_cast<decltype(view_in)::value_type>(res2), res_std + 87);
   // TTS_EQUAL(count, input_size);
+};
+
+#else // KIWAKU_BUILD_TEST_SYCL
+
+TTS_CASE("SYCL disabled, kwk::reduce with SYCL context skipped.")
+{
+  TTS_EQUAL(true, true);
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL
