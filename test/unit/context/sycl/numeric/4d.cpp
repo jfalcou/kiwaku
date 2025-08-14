@@ -5,13 +5,14 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //==================================================================================================
+#include "test.hpp"
+
 #if KIWAKU_BUILD_TEST_SYCL
 
 #include <cstdlib>
 #include <kwk/context/sycl/context.hpp>
 #include <kwk/algorithm/algos/numeric.hpp>
 #include <kwk/container.hpp>
-#include "test.hpp"
 #include <numeric>
 
 
@@ -108,6 +109,13 @@ TTS_CASE("Check for kwk::transform_reduce(kwk::sycl::default_context, In1, In2) 
 
   TTS_EQUAL(typeid(res), typeid(double));
   TTS_RELATIVE_EQUAL(res, chk, FLOAT_TOLERANCE_PERCENT);
+};
+
+#else // KIWAKU_BUILD_TEST_SYCL
+
+TTS_CASE("SYCL disabled, kwk::numeric with SYCL context skipped.")
+{
+  TTS_EQUAL(true, true);
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL

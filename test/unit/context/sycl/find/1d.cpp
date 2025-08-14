@@ -5,13 +5,14 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //======================================================================================================================
+#include "test.hpp"
+
 #if KIWAKU_BUILD_TEST_SYCL
 
 #include <kwk/context/sycl/context.hpp>
 #include <cstdlib>
 #include <kwk/algorithm/algos/find.hpp>
 #include <kwk/container.hpp>
-#include "test.hpp"
 #include <optional>
 
 TTS_CASE("Check for kwk::find(kwk::sycl::default_context, In, value) 1D")
@@ -359,6 +360,11 @@ TTS_CASE("Check for kwk::find_last_if_not(kwk::sycl::default_context, In, func) 
     if (res.has_value()) TTS_EQUAL(res.value(), kwk::position<1>{0});
     else                 TTS_FAIL("find_last_if_not returned std::nullopt and not the expected valid value.");
   }
+};
+
+TTS_CASE("SYCL disabled, kwk::find with SYCL context skipped.")
+{
+  TTS_EQUAL(true, true);
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL

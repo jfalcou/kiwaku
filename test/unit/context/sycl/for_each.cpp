@@ -5,11 +5,12 @@
   SPDX-License-Identifier: BSL-1.0
 */
 //======================================================================================================================
+#include "test.hpp"
+
 #if KIWAKU_BUILD_TEST_SYCL
 
 #include <kwk/algorithm/algos/for_each.hpp>
 #include <kwk/container.hpp>
-#include "test.hpp"
 #include <kwk/context/sycl/context.hpp>
 #include <kwk/context/cpu/context.hpp>
 
@@ -88,6 +89,13 @@ TTS_CASE("Check for kwk::for_each(kwk::sycl, func, container) 4D")
   kwk::for_each(kwk::sycl::default_context, [&](auto const& e1, auto& e2) { e2 = e1 * 3 + 5; }, view_input, view_output);
 
   TTS_ALL_EQUAL(expected_output, output);
+};
+
+#else // KIWAKU_BUILD_TEST_SYCL
+
+TTS_CASE("SYCL disabled, kwk::for_each with SYCL context skipped.")
+{
+  TTS_EQUAL(true, true);
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL
