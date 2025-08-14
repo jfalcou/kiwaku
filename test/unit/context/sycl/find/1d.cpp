@@ -364,7 +364,7 @@ TTS_CASE("Check for kwk::find_last_if_not(kwk::sycl::default_context, In, func) 
 
 TTS_CASE("SYCL disabled, kwk::find with SYCL context skipped.")
 {
-  TTS_EQUAL(true, true);
+  TTS_PASS("SYCL disabled, skipping test.");
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL

@@ -194,7 +194,7 @@ TTS_CASE("Check for kwk::transform(kwk::sycl::default_context, value, new_value)
 
 TTS_CASE("SYCL disabled, kwk::transform with SYCL context skipped.")
 {
-  TTS_EQUAL(true, true);
+  TTS_PASS("SYCL disabled, skipping test.");
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL

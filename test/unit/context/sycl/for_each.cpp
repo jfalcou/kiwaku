@@ -95,7 +95,7 @@ TTS_CASE("Check for kwk::for_each(kwk::sycl, func, container) 4D")
 
 TTS_CASE("SYCL disabled, kwk::for_each with SYCL context skipped.")
 {
-  TTS_EQUAL(true, true);
+  TTS_PASS("SYCL disabled, skipping test.");
 };
 
 #endif // KIWAKU_BUILD_TEST_SYCL
