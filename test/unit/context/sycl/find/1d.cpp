@@ -367,4 +367,5 @@ TTS_CASE("SYCL disabled, kwk::find with SYCL context skipped.")
   TTS_PASS("SYCL disabled, skipping test.");
 };
 
+
 #endif // KIWAKU_BUILD_TEST_SYCL

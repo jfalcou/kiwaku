@@ -13,6 +13,7 @@
 #include <kwk/context/sycl/context.hpp>
 #include <kwk/algorithm/algos/numeric.hpp>
 #include <kwk/container.hpp>
+
 #include <numeric>
 
 
