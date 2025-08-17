@@ -14,6 +14,8 @@
 #include <array>
 #include <concepts>
 #include <type_traits>
+#include <kwk/utility/position.hpp>
+#include <utility>
 
 namespace kwk
 {
@@ -53,4 +55,33 @@ namespace kwk
                         };
     }(std::make_integer_sequence<int, shape<Desc...>::static_order - 1 >{});
   }
+
+  //================================================================================================
+  //! @ingroup utility
+  //! @brief  Computes a kiwaku position from a linear index and a shape
+  //!
+  //! Behavior is undefined if idx is out of the index space defined by shp.
+  //!
+  //! @param idx  Linear index to convert into a nD coordinate set
+  //! @param shp  Shape used as a reference
+  //! @return A kwk::position<shape<Desc...>::static_order> containing the
+  //! multi-dimensional position corresponding to idx
+  //================================================================================================
+  template<std::integral Idx,auto... Desc>
+  KWK_CONST constexpr
+  auto coordinates_to_position( Idx idx, shape<Desc...> const shp) noexcept
+  {
+    auto coords_array = kwk::coordinates(idx, shp);
+
+    kwk::position<shape<Desc...>::static_order> pos =
+        [&]<std::size_t... I>(std::index_sequence<I...>) {
+            // The pack expansion coords_array[I]... becomes coords_array[0],
+            // coords_array[1], ..., which initializes the position struct.
+            return kwk::position<shape<Desc...>::static_order>{static_cast<int>(coords_array[I])...};
+    }(std::make_index_sequence<shape<Desc...>::static_order>{}); // The lambda is called immediately here.
+
+    return pos;
+  }
+
+
 }
