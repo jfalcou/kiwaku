@@ -48,7 +48,6 @@ namespace kwk::sycl
     template<typename Func>
     void map(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
     {
-
       ::sycl::event my_kernel_event = 
       parent::submit([&](::sycl::handler &h) 
       {
