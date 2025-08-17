@@ -13,9 +13,10 @@
 #include <kwk/context/base.hpp>
 #include <kwk/context/cpu/context.hpp>
 #include <kwk/utility/position.hpp>
-#include <kwk/context/sycl/internal/sycl_tools.hpp>
+#include <kwk/utility/coordinates.hpp>
 #include <cmath>
 #include <functional>
+#include <ostream>
 
 
 
@@ -32,44 +33,39 @@ namespace kwk::sycl
     static auto inout(kwk::concepts::container auto& c)       { return kwk::sycl::inout{c}; }
 
 
-    void print_sycl_header()
+    std::ostream& print_sycl_header(std::ostream& os = std::cout)
     {
-      std::cout << "\n\n============ SYCL RUNTIME ============" << std::endl;
+      os << "\n\n============ SYCL RUNTIME ============" << std::endl;
       auto device = parent::get_device();
       auto deviceName = device.get_info<::sycl::info::device::name>();
-      std::cout << "   Device Name:    " << deviceName << std::endl;
+      os << "   Device Name:    " << deviceName << std::endl;
       auto platformName =  device.get_platform().get_info<::sycl::info::platform::name>();
-      std::cout << "   Platform Name:  " << platformName << "\n\n\n";
+      os << "   Platform Name:  " << platformName << "\n\n\n";
+      return os;
     }
 
 
     template<typename Func>
     void map(Func f, concepts::sycl::proxy auto&& p0, concepts::sycl::proxy auto&&... ps)
     {
-
       ::sycl::event my_kernel_event = 
       parent::submit([&](::sycl::handler &h) 
       {
         // Maps each sycl proxy to an accessor
         auto accs = kumi::map([&](auto&& b) { return b.access(h); }, kumi::tuple{p0, ps...});
 
-        // Function passed to SYCL parallel_for
-        auto kernel = [=](auto i)
-        {
-          // Maps each accessor m to m[i]
-          auto kapply = [=](auto&&... m)
-          {
-            f(KWK_FWD(m)[i]...);
-          };
-
-          kumi::apply(kapply, accs);
-        };
-
-        // For each element of the input tables, call our lambda parameter with the input accessors
-        h.parallel_for(p0.size(), kernel);
-
-        // Same code, but more compact:
-        // h.parallel_for(p0.size(), [=](auto i) { kumi::apply([=](auto&&... m) { f(KWK_FWD(m)[i]...); }, accs); });
+        // // For each element of the input tables, call our lambda parameter with the input accessors
+        h.parallel_for( p0.size()
+                      , [=](auto i)
+                        { 
+                          kumi::apply ( [=](auto&&... m) 
+                                        { 
+                                          f(KWK_FWD(m)[i]...); 
+                                        }
+                                      , accs
+                                      ); 
+                        }
+                      );
       });
 
       my_kernel_event.wait();
@@ -152,8 +148,8 @@ namespace kwk::sycl
       }
       catch (::sycl::exception const &e)
       {
-        std::cout << "An exception is caught for SYCL reduce.\n";
-        std::terminate();
+        // Rethrow the original exception
+        throw;
       }
     }
 
@@ -171,8 +167,8 @@ namespace kwk::sycl
       }
       catch (::sycl::exception const &e)
       {
-        std::cout << "An exception is caught for SYCL reduce.\n";
-        std::terminate();
+        // Rethrow the original exception
+        throw;
       }
     }
 
@@ -209,8 +205,8 @@ namespace kwk::sycl
       }
       catch (::sycl::exception const &e)
       {
-        std::cout << "An exception is caught for SYCL transform_reduce.\n";
-        std::terminate();
+        // Rethrow the original exception
+        throw;
       }
     }
 
@@ -218,12 +214,6 @@ namespace kwk::sycl
     template<typename Func_R, typename Func_T, concepts::container In1, concepts::container In2>
     constexpr auto transform_reduce(In1 const& in1, In2 const& in2, auto init, Func_R R, Func_T T)
     {
-      // transform_reduce
-      // init = R(init, T(i1, i2));
-
-      // reduce
-      // init = R(init, i);
-
       try
       {
         auto result = init;
@@ -255,8 +245,8 @@ namespace kwk::sycl
       }
       catch (::sycl::exception const &e)
       {
-        std::cout << "An exception is caught for SYCL transform_reduce.\n";
-        std::terminate();
+        // Rethrow the original exception
+        throw;
       }
     }
 
@@ -354,15 +344,16 @@ namespace kwk::sycl
       }
       catch (::sycl::exception const &e)
       {
-        std::cout << "An exception is caught for SYCL transform_reduce.\n";
-        std::terminate();
+        // Rethrow the original exception
+        throw;
       }
 
       if (result != -1)
       {
-        // TODO: change to kwk::coordinates(it, out.shape());
-        return std::optional<kwk::position<In::static_order>>{kwk::utils::tools::linear_to_pos(result, in)};
-      } else {
+        return std::optional<kwk::position<In::static_order>>{kwk::coordinates_to_position(result, in.shape())};
+      }
+      else
+      {
         return std::nullopt;
       }
     }
@@ -403,7 +394,8 @@ namespace kwk::sycl
 namespace kwk
 {
 
-  // TODO: at some point, change all "for_each" functions into "transform" to match the C++ standard semantics.
+  // TODO: at some point, use the right names for the "for_each", "transform" and "map" functions
+  // to match the C++ standard semantics.
   // Right now, the map / for_each / transform functions have very confusing names.
 
   template<typename Func, concepts::container C0, concepts::container... Cs>
