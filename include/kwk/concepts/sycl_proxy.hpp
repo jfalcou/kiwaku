@@ -15,6 +15,7 @@
 #include <kwk/container/settings/category.hpp>
 #include <type_traits>
 #include <sycl/sycl.hpp>
+#include <kwk/concepts/proxy.hpp>
 
 namespace kwk::concepts
 {
@@ -25,7 +26,7 @@ namespace kwk::concepts
     // Un proxy doit avoir une méthode .size() pour en donner le nombre d'éléments
     // et une méthode pour retourner créer un accesseur vers ses données.
     template<typename T>
-    concept proxy = requires(T& t, ::sycl::handler& h)
+    concept proxy = ::kwk::concepts::proxy<T> && requires(T& t, ::sycl::handler& h)
     {
       { t.size()    };
       { t.access(h) };

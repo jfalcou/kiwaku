@@ -11,6 +11,7 @@
 #include <kwk/concepts/sycl_proxy.hpp>
 #include <kwk/context/sycl/proxy.hpp>
 #include <kwk/context/base.hpp>
+#include <kwk/payload/payload.hpp>
 #include <kwk/context/cpu/context.hpp>
 #include <kwk/utility/position.hpp>
 #include <kwk/context/sycl/internal/sycl_tools.hpp>
@@ -236,6 +237,40 @@ namespace kwk::sycl
       map([&](auto... is) { return f(KWK_FWD(c0)(is...), KWK_FWD(cs)(is...)...); }, c0.shape() );
       // return f;
     }
+
+
+    template<concepts::payload P0>
+    auto payload_to_proxy(P0&& payload)
+    {
+      if constexpr(requires(P0&& p) { p.in_payload(); })    { return in(payload.container); }
+      if constexpr(requires(P0&& p) { p.out_payload(); })   { return out(payload.container); }
+      if constexpr(requires(P0&& p) { p.inout_payload(); }) { return inout(payload.container); }
+    }
+
+    template<typename Func, concepts::payload P0, concepts::payload... Ps>
+    auto with(Func f, P0&& p0, Ps&&... ps)
+    {
+
+      // Maps each payload to a sycl proxy
+      auto proxies = kumi::map([&](auto& p) { return payload_to_proxy(p); }, kumi::tuple{p0, ps...});
+
+      // Passes each SYCL proxy to the user function
+      kumi::apply(f, proxies);
+
+      // TODO: return the return value of kumi::apply?
+
+      // auto kernel = [=](auto i)
+      // {
+      //   auto kapply = [=](auto&&... m)
+      //   {
+      //     f(i, KWK_FWD(m)...);
+      //   };
+
+      //   kumi::apply(kapply, accs);
+      // };
+    }
+
+
 
 
     template<typename Out, typename In>
@@ -712,6 +747,12 @@ namespace kwk
   void for_each_index_proxy(kwk::sycl::context& ctx, Func f, C0&& c0, Cs&&... cs)
   {
     ctx.for_each_index_proxy(f, c0, cs...);
+  }
+
+  template<typename Func, concepts::payload P0, concepts::payload... Ps>
+  auto with(kwk::sycl::context& ctx, Func f, P0&& p0, Ps&&... ps)
+  {
+    ctx.with(f, p0, ps...);
   }
 
 }
