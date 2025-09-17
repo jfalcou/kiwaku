@@ -7,6 +7,8 @@
 //==================================================================================================
 #pragma once
 
+#include <cstddef>
+
 namespace kwk::concepts
 {
   template<typename T>
