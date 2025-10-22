@@ -87,7 +87,7 @@ jobs:
         run: cd build && ctest --output-on-failure -j 2
 
   gcc-macosx:
-    runs-on: [macos-14]
+    runs-on: [macos-15]
     strategy:
       fail-fast: false
       matrix:
@@ -108,7 +108,7 @@ jobs:
         run: cd build && ctest --output-on-failure -j 2
 
   android:
-    runs-on: [macos-14]
+    runs-on: [macos-15]
     strategy:
       fail-fast: false
       matrix:
