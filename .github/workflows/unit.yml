@@ -92,8 +92,8 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-        - { opts: -O0                -Wno-psabi }
-        - { opts: -O3 -flto -DNDEBUG -Wno-psabi }
+        - { opts: -O0                -Wno-psabi -nostdinc++ -isystem /opt/homebrew/include/c++/14 -isystem /opt/homebrew/include/c++/14/aarch64-apple-darwin24 -DEVE_NO_FORCEINLINE }
+        - { opts: -O3 -flto -DNDEBUG -Wno-psabi -nostdinc++ -isystem /opt/homebrew/include/c++/14 -isystem /opt/homebrew/include/c++/14/aarch64-apple-darwin24 -DEVE_NO_FORCEINLINE }
     steps:
       - name: Fetch current branch
         uses: actions/checkout@v4
@@ -101,7 +101,7 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" \
-                   -DKIWAKU_BUILD_TEST_SIMD=ON -nostdinc++ -isystem /opt/homebrew/include/c++/14 -isystem /opt/homebrew/include/c++/14/aarch64-apple-darwin24 -DEVE_NO_FORCEINLINE 
+                   -DKIWAKU_BUILD_TEST_SIMD=ON      
       - name: Compiling Unit Tests
         run:  cd build && make kiwaku-test -j 2
       - name: Running Unit Tests
@@ -122,7 +122,7 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" \
-                   -DANDROID_ABI=arm64-v8a -DANDROID_PLATEFORM=android-28 \
+                   -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-28 \
                    -DKIWAKU_BUILD_TEST_SIMD=ON
       - name: Compiling Unit Tests
         run:  cd build && make kiwaku-test -j 2
