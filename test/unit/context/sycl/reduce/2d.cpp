@@ -47,9 +47,9 @@ TTS_CASE("Check for kwk::reduce(kwk::sycl::default_context, in, func) and kwk::r
 
   auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0, d1)};
 
-  auto res = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; });
-  auto res2 = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; }, 87);
-  auto res_std = std::reduce(input.begin(), input.end(), 0, [&](auto e1, auto e2) { return e1 + e2 + 1; });
+  auto res = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2; });
+  auto res2 = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2; }, 87);
+  auto res_std = std::reduce(input.begin(), input.end(), 0, [&](auto e1, auto e2) { return e1 + e2; });
 
   // TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(res, res_std);

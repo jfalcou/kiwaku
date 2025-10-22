@@ -275,11 +275,11 @@ TTS_CASE("Check for kwk::none_of(in, func) False")
 
 
 
-#else // KIWAKU_BUILD_TEST_SIMD
+#else
 
-TTS_CASE("SYCL disabled, kwk::for_each with SYCL context skipped.")
+TTS_CASE("EVE disabled, kwk::for_each with EVE context skipped.")
 {
-  TTS_PASS("SYCL disabled, skipping test.");
+  TTS_PASS("EVE disabled, skipping test.");
 };
 
-#endif // KIWAKU_BUILD_TEST_SIMD
+#endif

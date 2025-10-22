@@ -20,7 +20,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options( kiwaku_docs INTERFACE /W3 /EHsc /bigobj  /Zc:preprocessor)
 else()
-  target_compile_options( kiwaku_docs INTERFACE -Wshadow -Wall -Wextra -Wconversion -Wunused-variable) #  -Werror
+    target_compile_options( kiwaku_docs INTERFACE -Wshadow -Wall -Wextra -Wconversion -Wunused-variable) #  -Werror
 endif()
 
 target_include_directories( kiwaku_docs INTERFACE

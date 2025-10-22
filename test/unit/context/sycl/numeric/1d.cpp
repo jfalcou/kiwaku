@@ -44,9 +44,8 @@ TTS_CASE("Check for kwk::transform_reduce(kwk::sycl::default_context, In1, In2, 
                                       // Transform function
                                     , [](auto i1, auto i2) { return (i1 * i2); });
 
-  TTS_EQUAL(typeid(res), typeid(float));
+  TTS_TYPE_IS(decltype(res), (float));
   TTS_RELATIVE_EQUAL(res, chk, FLOAT_TOLERANCE_PERCENT);
-  // TTS_EXPECT(floats_are_same(res, chk));
 };
 
 
