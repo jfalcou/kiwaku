@@ -31,7 +31,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G Ninja -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}"
+          cmake .. -G Ninja -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" \
+                   -DKIWAKU_BUILD_TEST_SIMD=ON
       - name: Compile Unit Tests
         run: cd build && ninja kiwaku-test -j 2
       - name: Run Unit Tests
@@ -55,7 +56,8 @@ jobs:
       - name: Running CMake for clang++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.cfg.linker }}"
+          cmake .. -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.cfg.linker }}" \
+                   -DKIWAKU_BUILD_TEST_SIMD=ON
       - name: Compiling Unit Tests
         run:  cd build && make kiwaku-test -j 2
       - name: Running Unit Tests
@@ -77,7 +79,8 @@ jobs:
       - name: Running CMake for clang++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.cfg.linker }}"
+          cmake .. -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.cfg.linker }}" \
+                   -DKIWAKU_BUILD_TEST_SIMD=ON 
       - name: Compiling Unit Tests
         run:  cd build && make kiwaku-test -j 2
       - name: Running Unit Tests
@@ -97,7 +100,8 @@ jobs:
       - name: Running CMake for g++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}"
+          cmake .. -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" \
+                   -DKIWAKU_BUILD_TEST_SIMD=ON
       - name: Compiling Unit Tests
         run:  cd build && make kiwaku-test -j 2
       - name: Running Unit Tests
@@ -117,7 +121,8 @@ jobs:
       - name: Running CMake for g++ with ${{ matrix.cfg.opts }}
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" -DANDROID_ABI=arm64-v8a
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake -DCMAKE_CXX_FLAGS="${{ matrix.cfg.opts }}" -DANDROID_ABI=arm64-v8a \
+                   -DKIWAKU_BUILD_TEST_SIMD=ON
       - name: Compiling Unit Tests
         run:  cd build && make kiwaku-test -j 2
 
