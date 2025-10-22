@@ -15,15 +15,6 @@
 #include <kwk/algorithm/algos/find.hpp>
 #include <kwk/container.hpp>
 
-/*
-#include <cstdlib>
-#include <kwk/algorithm/algos/find.hpp>
-#include <kwk/container.hpp>
-#include "test.hpp"
-#include <optional>
-#include <kwk/context/cpu/context.hpp>
-*/
-
 TTS_CASE("Check for kwk::find(kwk::simd, In, value) 1D")
 {
   // Empty array
@@ -352,11 +343,11 @@ TTS_CASE("Check for kwk::find_last_if_not(kwk::simd, In, func) 1D")
 };
 
 
-#else // KIWAKU_BUILD_TEST_SIMD
+#else
 
-TTS_CASE("SYCL disabled, kwk::for_each with SYCL context skipped.")
+TTS_CASE("EVE disabled, kwk::for_each with EVE context skipped.")
 {
-  TTS_PASS("SYCL disabled, skipping test.");
+  TTS_PASS("EVE disabled, skipping test.");
 };
 
-#endif // KIWAKU_BUILD_TEST_SIMD
+#endif

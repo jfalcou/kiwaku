@@ -30,7 +30,6 @@ TTS_CASE("Check for kwk::reduce(kwk::sycl::default_context, in) 1D")
   auto res = kwk::reduce(kwk::sycl::default_context, view_in);
   auto res_std = std::reduce(input.begin(), input.end());
 
-  // TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(res, res_std);
 };
 
@@ -46,22 +45,19 @@ TTS_CASE("Check for kwk::reduce(kwk::sycl::default_context, in, func) and kwk::r
 
   auto view_in  = kwk::view{kwk::source = input , kwk::of_size(d0)};
 
-  // std::size_t count = 0;
-  auto res = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; });
-  auto res2 = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2 + 1; }, 87);
-  auto res_std = std::reduce(input.begin(), input.end(), 0, [&](auto e1, auto e2) { return e1 + e2 + 1; });
+  auto res = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2 ; });
+  auto res2 = kwk::reduce(kwk::sycl::default_context, view_in, [&](auto e1, auto e2) { return e1 + e2; }, 87);
+  auto res_std = std::reduce(input.begin(), input.end(), 0, [&](auto e1, auto e2) { return e1 + e2; });
 
-  // TTS_RELATIVE_EQUAL(res, res_std, FLOAT_TOLERANCE_PERCENT);
   TTS_EQUAL(res, res_std);
   TTS_EQUAL(static_cast<decltype(view_in)::value_type>(res2), res_std + 87);
-  // TTS_EQUAL(count, input_size);
 };
 
-#else // KIWAKU_BUILD_TEST_SYCL
+#else
 
 TTS_CASE("SYCL disabled, kwk::reduce with SYCL context skipped.")
 {
   TTS_PASS("SYCL disabled, skipping test.");
 };
 
-#endif // KIWAKU_BUILD_TEST_SYCL
+#endif
