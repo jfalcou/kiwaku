@@ -14,7 +14,7 @@ namespace kwk::__
   template<typename... Coords>
   constexpr auto setup_linear_interpolation(Coords... p) noexcept
   {
-    return kumi::fold_right
+    return kumi::fold_left
     ( [](auto acc, auto v)
       {
         // Extarct integral and decimal parts of current coordinate

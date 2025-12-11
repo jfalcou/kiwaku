@@ -176,7 +176,7 @@ namespace kwk
     if constexpr(sizeof...(D) == 1) return stride{s.template axis<0>() = fixed<1>};
     else
     {
-      auto const d  = kumi::fold_left ( [](auto a, auto m){ return push_front(a, m * front(a)); }
+      auto const d  = kumi::fold_right ( [](auto m, auto a){ return push_front(a, m * front(a)); }
                                       , kumi::pop_front(s)
                                       , kumi::tuple{fixed<1>}
                                       );
