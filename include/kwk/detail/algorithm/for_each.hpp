@@ -24,7 +24,7 @@ namespace kwk
     template<typename Func, typename Dims>
     constexpr auto for_each(Func f, Dims const& ds)
     {
-      auto loops = kumi::fold_left ( [](auto acc, auto m)
+      auto loops = kumi::fold_right ( [](auto m, auto acc)
                                       {
                                         return [=](auto... is)
                                         {

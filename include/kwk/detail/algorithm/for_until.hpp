@@ -20,7 +20,7 @@ namespace kwk
     constexpr auto for_until(Func f, Dims const& ds)
     {
       bool found = false;
-      auto loops = kumi::fold_left ( [&found](auto acc, auto m)
+      auto loops = kumi::fold_right ( [&found](auto m, auto acc)
                                       {
                                         return [&found,acc,m](auto... is)
                                         {

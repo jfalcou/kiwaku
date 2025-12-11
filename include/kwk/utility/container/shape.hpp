@@ -388,7 +388,7 @@ namespace kwk
     else
     {
       auto [head,tail] = kumi::split(s, kumi::index<sz-N+1>);
-      auto value = kumi::fold_right( [](auto acc, auto v) { return acc * v; }, pop_front(head), get<0>(head));
+      auto value = kumi::fold_right( [](auto v, auto acc) { return acc * v; }, pop_front(head), get<0>(head));
       return of_size(kumi::push_front(tail,value));
     }
   }
