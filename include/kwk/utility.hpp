@@ -23,6 +23,7 @@ namespace kwk
 #include <kwk/utility/memory.hpp>
 
 #include <kwk/utility/coordinates.hpp>
+#include <kwk/utility/position.hpp>
 #include <kwk/utility/end.hpp>
 #include <kwk/utility/fixed.hpp>
 #include <kwk/utility/joker.hpp>

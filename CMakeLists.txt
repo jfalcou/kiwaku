@@ -7,8 +7,10 @@ cmake_minimum_required(VERSION 3.22)
 project(kiwaku LANGUAGES CXX)
 
 ##======================================================================================================================
-option( KIWAKU_BUILD_TEST           "Build tests   for Kiwaku"            ON  )
-option( KIWAKU_BUILD_DOCUMENTATION  "Build Doxygen for Kiwaku"            OFF )
+option( KIWAKU_BUILD_TEST           "Build tests   for Kiwaku"                          ON  )
+option( KIWAKU_BUILD_TEST_SYCL      "Build Kiwaku  SYCL tests"                          OFF )
+option( KIWAKU_BUILD_TEST_SIMD      "Build Kiwaku  SIMD EVE tests"                      OFF )
+option( KIWAKU_BUILD_DOCUMENTATION  "Build Doxygen for Kiwaku"                          OFF )
 
 ##======================================================================================================================
 include(${PROJECT_SOURCE_DIR}/cmake/dependencies.cmake)
@@ -61,5 +63,13 @@ if(KIWAKU_BUILD_TEST)
   enable_testing()
   add_custom_target(kiwaku-unit)
   add_subdirectory(test)
+
+  if(KIWAKU_BUILD_TEST_SYCL)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BUILD_TEST_SYCL)
+  endif()
+
+  if(KIWAKU_BUILD_TEST_SIMD)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BUILD_TEST_SIMD)
+  endif()
 endif()
 
