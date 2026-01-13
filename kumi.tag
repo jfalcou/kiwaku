@@ -768,6 +768,13 @@
       <arglist>(Idx idx, shape&lt; Desc... &gt; const shp) noexcept</arglist>
     </member>
     <member kind="function">
+      <type>constexpr auto</type>
+      <name>coordinates_to_position</name>
+      <anchorfile>group__utility_ga03d00a0337002972c296b8f53a98151f.html</anchorfile>
+      <anchor>ga03d00a0337002972c296b8f53a98151f</anchor>
+      <arglist>(Idx idx, shape&lt; Desc... &gt; const shp) noexcept</arglist>
+    </member>
+    <member kind="function">
       <type>void</type>
       <name>deallocate</name>
       <anchorfile>namespacekwk_a6bfff93b539e2372e57e30dcbf35d4e2.html</anchorfile>
@@ -791,23 +798,23 @@
     <member kind="function">
       <type>constexpr auto</type>
       <name>for_each</name>
-      <anchorfile>group__algorithms_ga16aa3f9107d2e0c6c06a728253bcfa9a.html</anchorfile>
-      <anchor>ga16aa3f9107d2e0c6c06a728253bcfa9a</anchor>
-      <arglist>(Func &amp;&amp;f, C0 &amp;&amp;c0, Cs &amp;&amp;... cs)</arglist>
+      <anchorfile>group__algorithms_ga33f271444bad07bc261a65d55ece942f.html</anchorfile>
+      <anchor>ga33f271444bad07bc261a65d55ece942f</anchor>
+      <arglist>(Func f, C0 &amp;&amp;c0, Cs &amp;&amp;... cs)</arglist>
     </member>
     <member kind="function">
       <type>constexpr auto</type>
       <name>for_each</name>
-      <anchorfile>group__algorithms_ga19dd0b9a886b89ddb3f143f5c567729c.html</anchorfile>
-      <anchor>ga19dd0b9a886b89ddb3f143f5c567729c</anchor>
-      <arglist>(Func &amp;&amp;f, shape&lt; S... &gt; const &amp;shp)</arglist>
+      <anchorfile>group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html</anchorfile>
+      <anchor>ga54e01e5eeaba1ca902e3360ba9d6adc6</anchor>
+      <arglist>(Func f, shape&lt; S... &gt; const &amp;shp)</arglist>
     </member>
     <member kind="function">
       <type>constexpr auto</type>
       <name>for_each_index</name>
-      <anchorfile>group__algorithms_ga77ac360814df6bb39e9adfd4e3e9508b.html</anchorfile>
-      <anchor>ga77ac360814df6bb39e9adfd4e3e9508b</anchor>
-      <arglist>(Context &amp;ctx, Func &amp;&amp;f, Container &amp;&amp;c)</arglist>
+      <anchorfile>group__algorithms_ga975e3dc64e11f4f61bd8ab424e535335.html</anchorfile>
+      <anchor>ga975e3dc64e11f4f61bd8ab424e535335</anchor>
+      <arglist>(Context &amp;ctx, Func f, Container &amp;&amp;c)</arglist>
     </member>
     <member kind="function">
       <type>constexpr auto</type>
@@ -1215,23 +1222,23 @@
     <member kind="function">
       <type>constexpr auto</type>
       <name>kwk::for_each</name>
-      <anchorfile>group__algorithms_ga16aa3f9107d2e0c6c06a728253bcfa9a.html</anchorfile>
-      <anchor>ga16aa3f9107d2e0c6c06a728253bcfa9a</anchor>
-      <arglist>(Func &amp;&amp;f, C0 &amp;&amp;c0, Cs &amp;&amp;... cs)</arglist>
+      <anchorfile>group__algorithms_ga33f271444bad07bc261a65d55ece942f.html</anchorfile>
+      <anchor>ga33f271444bad07bc261a65d55ece942f</anchor>
+      <arglist>(Func f, C0 &amp;&amp;c0, Cs &amp;&amp;... cs)</arglist>
     </member>
     <member kind="function">
       <type>constexpr auto</type>
       <name>kwk::for_each</name>
-      <anchorfile>group__algorithms_ga19dd0b9a886b89ddb3f143f5c567729c.html</anchorfile>
-      <anchor>ga19dd0b9a886b89ddb3f143f5c567729c</anchor>
-      <arglist>(Func &amp;&amp;f, shape&lt; S... &gt; const &amp;shp)</arglist>
+      <anchorfile>group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html</anchorfile>
+      <anchor>ga54e01e5eeaba1ca902e3360ba9d6adc6</anchor>
+      <arglist>(Func f, shape&lt; S... &gt; const &amp;shp)</arglist>
     </member>
     <member kind="function">
       <type>constexpr auto</type>
       <name>kwk::for_each_index</name>
-      <anchorfile>group__algorithms_ga77ac360814df6bb39e9adfd4e3e9508b.html</anchorfile>
-      <anchor>ga77ac360814df6bb39e9adfd4e3e9508b</anchor>
-      <arglist>(Context &amp;ctx, Func &amp;&amp;f, Container &amp;&amp;c)</arglist>
+      <anchorfile>group__algorithms_ga975e3dc64e11f4f61bd8ab424e535335.html</anchorfile>
+      <anchor>ga975e3dc64e11f4f61bd8ab424e535335</anchor>
+      <arglist>(Context &amp;ctx, Func f, Container &amp;&amp;c)</arglist>
     </member>
   </compound>
   <compound kind="group">
@@ -1346,6 +1353,13 @@
       <name>kwk::coordinates</name>
       <anchorfile>group__utility_ga824074c3406ec30c3c748dc0ce1260ac.html</anchorfile>
       <anchor>ga824074c3406ec30c3c748dc0ce1260ac</anchor>
+      <arglist>(Idx idx, shape&lt; Desc... &gt; const shp) noexcept</arglist>
+    </member>
+    <member kind="function">
+      <type>constexpr auto</type>
+      <name>kwk::coordinates_to_position</name>
+      <anchorfile>group__utility_ga03d00a0337002972c296b8f53a98151f.html</anchorfile>
+      <anchor>ga03d00a0337002972c296b8f53a98151f</anchor>
       <arglist>(Idx idx, shape&lt; Desc... &gt; const shp) noexcept</arglist>
     </member>
     <member kind="function">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::for_each</title>
+<title>Kiwaku: kwk::coordinates_to_position</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -94,7 +94,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__algorithms_ga19dd0b9a886b89ddb3f143f5c567729c.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__utility_ga03d00a0337002972c296b8f53a98151f.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,27 +120,27 @@ $(document).ready(function(){initNavTree('group__algorithms_ga19dd0b9a886b89ddb3
 </div>
 
 <div class="contents">
-<a id="ga19dd0b9a886b89ddb3f143f5c567729c" name="ga19dd0b9a886b89ddb3f143f5c567729c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga19dd0b9a886b89ddb3f143f5c567729c">&#9670;&#160;</a></span>for_each() <span class="overload">[2/2]</span></h2>
+<a id="ga03d00a0337002972c296b8f53a98151f" name="ga03d00a0337002972c296b8f53a98151f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga03d00a0337002972c296b8f53a98151f">&#9670;&#160;</a></span>coordinates_to_position()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Func , auto... S&gt; </div>
+template&lt;std::integral Idx, auto... Desc&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr auto kwk::for_each </td>
+          <td class="memname">constexpr auto kwk::coordinates_to_position </td>
           <td>(</td>
-          <td class="paramtype">Func &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
+          <td class="paramtype">Idx&#160;</td>
+          <td class="paramname"><em>idx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; Desc... &gt; const&#160;</td>
           <td class="paramname"><em>shp</em>&#160;</td>
         </tr>
         <tr>
@@ -151,24 +151,22 @@ template&lt;typename Func , auto... S&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Simple walkthrough over all possible indexes. </p>
-<p>Applies the given function object <code>f</code> to every coordinates that are valid inside the given <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> <code>shp</code>. Coordinates are iterated in order of the optimal memory access.</p>
+<p>Computes a kiwaku position from a linear index and a shape. </p>
+<p>Behavior is undefined if idx is out of the index space defined by shp.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>Function object, to be applied to a variadic list of integral coordinates. The signature of the function should be equivalent to the following: <div class="fragment"><div class="line"><span class="keywordtype">void</span> f(std::integral <span class="keyword">auto</span>... is);</div>
-</div><!-- fragment --></td></tr>
-    <tr><td class="paramname">shp</td><td>A <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> used as boundaries for the coordinates </td></tr>
+    <tr><td class="paramname">idx</td><td>Linear index to convert into a nD coordinate set </td></tr>
+    <tr><td class="paramname">shp</td><td>Shape used as a reference </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The function object <code>f</code> which could have been modified.</dd></dl>
-<h2 class="groupheader">Example </h2>
-<div class="fragment"></div><!-- fragment --> 
+<dl class="section return"><dt>Returns</dt><dd>A kwk::position&lt;<a class="el" href="structkwk_1_1shape.html#aef516befd154a7361b535d04bd2759fc" title="Compile-time value for Order.">shape&lt;Desc...&gt;::static_order</a>&gt; containing the multi-dimensional position corresponding to idx </dd></dl>
+
 </div>
 </div>
 </div><!-- contents -->

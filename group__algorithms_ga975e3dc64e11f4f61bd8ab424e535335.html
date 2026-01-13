@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: Namespace Members</title>
+<title>Kiwaku: kwk::for_each_index</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -94,7 +94,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('namespacemembers_func.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__algorithms_ga975e3dc64e11f4f61bd8ab424e535335.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,31 +120,70 @@ $(document).ready(function(){initNavTree('namespacemembers_func.html',''); initR
 </div>
 
 <div class="contents">
-<div class="textblock">Here is a list of all documented namespace functions with links to the namespaces they belong to:</div><ul>
-<li>allocate()&#160;:&#160;<a class="el" href="namespacekwk_a897c0c275002e635427cf0c945c0915f.html#a897c0c275002e635427cf0c945c0915f">kwk</a></li>
-<li>as_stride()&#160;:&#160;<a class="el" href="namespacekwk_a0906c6f19e631291a05d91ed76d7da24.html#a0906c6f19e631291a05d91ed76d7da24">kwk</a></li>
-<li>compress()&#160;:&#160;<a class="el" href="namespacekwk_ac9d9ba85008a66e30a04039b551834b8.html#ac9d9ba85008a66e30a04039b551834b8">kwk</a></li>
-<li>coordinates()&#160;:&#160;<a class="el" href="group__utility_ga824074c3406ec30c3c748dc0ce1260ac.html#ga824074c3406ec30c3c748dc0ce1260ac">kwk</a></li>
-<li>coordinates_to_position()&#160;:&#160;<a class="el" href="group__utility_ga03d00a0337002972c296b8f53a98151f.html#ga03d00a0337002972c296b8f53a98151f">kwk</a></li>
-<li>deallocate()&#160;:&#160;<a class="el" href="namespacekwk_a6bfff93b539e2372e57e30dcbf35d4e2.html#a6bfff93b539e2372e57e30dcbf35d4e2">kwk</a></li>
-<li>end_t()&#160;:&#160;<a class="el" href="namespacekwk.html#a45cc145ad95771a2681d1f685bf185e5">kwk</a></li>
-<li>for_each()&#160;:&#160;<a class="el" href="group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html#ga54e01e5eeaba1ca902e3360ba9d6adc6">kwk</a></li>
-<li>for_each_index()&#160;:&#160;<a class="el" href="group__algorithms_ga975e3dc64e11f4f61bd8ab424e535335.html#ga975e3dc64e11f4f61bd8ab424e535335">kwk</a></li>
-<li>linear_index()&#160;:&#160;<a class="el" href="group__utility_gae66b60c6f375d79b5f9a1d7a70b27197.html#gae66b60c6f375d79b5f9a1d7a70b27197">kwk</a></li>
-<li>of_size()&#160;:&#160;<a class="el" href="namespacekwk_af1fd6102366cab9dbb5f43470f227aac.html#af1fd6102366cab9dbb5f43470f227aac">kwk</a></li>
-<li>operator&quot;&quot;_c()&#160;:&#160;<a class="el" href="group__utility_ga2ec3b967a56cb24a680d64cb87f2952c.html#ga2ec3b967a56cb24a680d64cb87f2952c">kwk</a></li>
-<li>shape()&#160;:&#160;<a class="el" href="namespacekwk.html#a4ba16b4bab496b5eb5af6e0e457fcfa5">kwk</a></li>
-<li>stride()&#160;:&#160;<a class="el" href="namespacekwk.html#aa090076284bbdd664ad5562af3577722">kwk</a></li>
-<li>table()&#160;:&#160;<a class="el" href="namespacekwk.html#a236dd1c8c8f7cfeab0592cb9852af044">kwk</a></li>
-<li>view()&#160;:&#160;<a class="el" href="namespacekwk.html#a9ec29968c1acb9f44d35cb468e6229ab">kwk</a></li>
-<li>with_strides()&#160;:&#160;<a class="el" href="namespacekwk_af811af24909a4a34f72e7bcff3b21f8f.html#af811af24909a4a34f72e7bcff3b21f8f">kwk</a></li>
-</ul>
+<a id="ga975e3dc64e11f4f61bd8ab424e535335" name="ga975e3dc64e11f4f61bd8ab424e535335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga975e3dc64e11f4f61bd8ab424e535335">&#9670;&#160;</a></span>for_each_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Context , typename Func , concepts::container Container&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto kwk::for_each_index </td>
+          <td>(</td>
+          <td class="paramtype">Context &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Func&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Container &amp;&amp;&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Simple walkthrough over all elements of a container and their coordinates. </p>
+<p>Applies the given function object <code>f</code> to every elements of a given kwk::container and their current coordinates. Elements are iterated in order of the optimal memory access.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>Function object, to be applied to an element of <code>c</code> and its coordinates. The signature of the function should be equivalent to the following: <div class="fragment"><div class="line"><span class="keywordtype">void</span> f(T&amp;&amp; v, std::integral <span class="keyword">auto</span>... is);</div>
+</div><!-- fragment --> with <code>T</code> convertible to the container's <code>value_type</code>. </td></tr>
+    <tr><td class="paramname">c</td><td>A kwk::container on which elements <code>f</code> will be applied. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The function object <code>f</code> which could have been modified.</dd></dl>
+<h2 class="groupheader">Example </h2>
+<div class="fragment"></div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.20-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="namespacekwk.html">kwk</a></li>
   </ul>
 </div>
 </div> <!-- DOXYSTRAP RELATED -->

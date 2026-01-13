@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kiwaku: kwk::for_each_index</title>
+<title>Kiwaku: kwk::for_each</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -94,7 +94,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__algorithms_ga77ac360814df6bb39e9adfd4e3e9508b.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('group__algorithms_ga54e01e5eeaba1ca902e3360ba9d6adc6.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -120,34 +120,28 @@ $(document).ready(function(){initNavTree('group__algorithms_ga77ac360814df6bb39e
 </div>
 
 <div class="contents">
-<a id="ga77ac360814df6bb39e9adfd4e3e9508b" name="ga77ac360814df6bb39e9adfd4e3e9508b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga77ac360814df6bb39e9adfd4e3e9508b">&#9670;&#160;</a></span>for_each_index()</h2>
+<a id="ga54e01e5eeaba1ca902e3360ba9d6adc6" name="ga54e01e5eeaba1ca902e3360ba9d6adc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga54e01e5eeaba1ca902e3360ba9d6adc6">&#9670;&#160;</a></span>for_each() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Context , typename Func , concepts::container Container&gt; </div>
+template&lt;typename Func , auto... S&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr auto kwk::for_each_index </td>
+          <td class="memname">constexpr auto kwk::for_each </td>
           <td>(</td>
-          <td class="paramtype">Context &amp;&#160;</td>
-          <td class="paramname"><em>ctx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Func &amp;&amp;&#160;</td>
+          <td class="paramtype">Func&#160;</td>
           <td class="paramname"><em>f</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Container &amp;&amp;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structkwk_1_1shape.html">shape</a>&lt; S... &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>shp</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -162,13 +156,13 @@ template&lt;typename Context , typename Func , concepts::container Container&gt;
 </table>
 </div><div class="memdoc">
 
-<p>Simple walkthrough over all elements of a container and their coordinates. </p>
-<p>Applies the given function object <code>f</code> to every elements of a given kwk::container and their current coordinates. Elements are iterated in order of the optimal memory access.</p>
+<p>Simple walkthrough over all possible indexes. </p>
+<p>Applies the given function object <code>f</code> to every coordinates that are valid inside the given <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> <code>shp</code>. Coordinates are iterated in order of the optimal memory access.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>Function object, to be applied to an element of <code>c</code> and its coordinates. The signature of the function should be equivalent to the following: <div class="fragment"><div class="line"><span class="keywordtype">void</span> f(T&amp;&amp; v, std::integral <span class="keyword">auto</span>... is);</div>
-</div><!-- fragment --> with <code>T</code> convertible to the container's <code>value_type</code>. </td></tr>
-    <tr><td class="paramname">c</td><td>A kwk::container on which elements <code>f</code> will be applied. </td></tr>
+    <tr><td class="paramname">f</td><td>Function object, to be applied to a variadic list of integral coordinates. The signature of the function should be equivalent to the following: <div class="fragment"><div class="line"><span class="keywordtype">void</span> f(std::integral <span class="keyword">auto</span>... is);</div>
+</div><!-- fragment --></td></tr>
+    <tr><td class="paramname">shp</td><td>A <a class="el" href="structkwk_1_1shape.html" title="Fixed order shape with mixed size capability.">kwk::shape</a> used as boundaries for the coordinates </td></tr>
   </table>
   </dd>
 </dl>
