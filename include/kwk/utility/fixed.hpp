@@ -115,7 +115,7 @@ namespace kwk
     //! The underlying type is computed from the actual value to be the smallest fitting type.
     //! This means, for example, that `123_c` is an instance of `kwk::constant<unsigned char,123>`.
     //==============================================================================================
-    template<char... c> KWK_TRIVIAL constexpr auto operator"" _c() noexcept
+    template<char... c> KWK_TRIVIAL constexpr auto operator""_c() noexcept
     {
       return fixed<__::clamp<__::b10<c...>()>()>;
     }
