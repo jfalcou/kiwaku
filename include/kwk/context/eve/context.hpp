@@ -1,8 +1,5 @@
 #pragma once
 
-//#include <kumi/tuple.hpp>
-//#include <kwk/kwk.hpp>
-
 #include <kwk/concepts/container.hpp>
 #include <kwk/context/base.hpp>
 #include <kwk/context/cpu/context.hpp>
@@ -16,46 +13,6 @@
 
 /// Depending on the eve version
 #include <eve/module/algo.hpp> 
-
-namespace kwk::tools
-{
-    template<concepts::container Container>
-    std::optional<kwk::position<Container::static_order>>
-    linear_to_pos(int index, Container const& container)
-    {
-        auto shp = container.shape();
-
-        std::vector<int> pos;
-        pos.resize(shp.nbdims());
-        std::fill(pos.begin(), pos.end(), -1);
-
-        if (index != -1)
-        {
-            // Now convert back linear index to Kiwaku position :
-            // dim 0 is the outer dimension, and dim 1 the innermost
-            for (int dim = 0; dim < shp.nbdims(); ++dim)
-            {
-                int divide_by = 1;
-                for (int dim2 = dim + 1; dim2 < shp.nbdims(); ++dim2)
-                {
-                    int d = shp[dim2];
-                    divide_by *= d;
-                }
-                pos[dim] = index / divide_by;
-                index -= pos[dim] * divide_by;
-            }
-        }
-
-        // kwk::position<shp::static_order> kwk_pos;
-        kwk::position<Container::static_order> kwk_pos;
-        for (int dim = 0; dim < shp.nbdims(); ++dim)
-        {
-            kwk_pos[dim] = pos[dim];
-        }
-
-        return kwk_pos;
-    }
-}
 
 namespace kwk
 {
@@ -558,7 +515,7 @@ namespace kwk
             if(find < r_in.end())
             {
                 auto linear_pos  = find - r_in.begin();
-                return std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
+                return std::optional<coords_t>{kwk::coordinates_to_position(linear_pos, in.shape())};
             }
             return std::optional<coords_t>{std::nullopt};
         }
@@ -575,7 +532,7 @@ namespace kwk
                 if(find < r_in.end())
                 {
                     auto linear_pos = find - rmd;
-                    pos = std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
+                    pos = std::optional<coords_t>{kwk::coordinates_to_position(linear_pos, in.shape())};
 
                     return true;
                 }
@@ -631,7 +588,7 @@ namespace kwk
             if(find < r_in.end())
             {
                 auto linear_pos  = find - r_in.begin();
-                return std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
+                return std::optional<coords_t>{kwk::coordinates_to_position(linear_pos, in.shape())};
             }
             return std::optional<coords_t>{std::nullopt};
         }
@@ -648,7 +605,7 @@ namespace kwk
                 if(find < r_in.end())
                 {
                     auto linear_pos = find - rmd;
-                    pos = std::optional<coords_t>{kwk::tools::linear_to_pos(linear_pos, in)};
+                    pos = std::optional<coords_t>{kwk::coordinates_to_position(linear_pos, in.shape())};
 
                     return true;
                 }
