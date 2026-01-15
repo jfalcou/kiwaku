@@ -130,7 +130,6 @@ TTS_CASE("Check for kwk::copy_if(func, out, in) 2D")
   
   auto d = kwk::view{kwk::source = data, kwk::of_size(2,3)};
   auto r = kwk::view{kwk::source = rdata, kwk::of_size(2,3)};
-  auto v = kwk::view{kwk::source = vdata, kwk::of_size(2,3)}; 
 
   kwk::copy_if(kwk::simd,[&](auto e)
   {
