@@ -495,13 +495,6 @@ namespace kwk
         return find_if(kwk::simd, in, [&](auto e){return e == value;});
     }
 
-    template<typename tuple_t>
-    constexpr auto get_array_from_tuple(tuple_t&& tuple)
-    {
-        constexpr auto get_array = [](auto&& ... x){ return std::array{std::forward<decltype(x)>(x) ... }; };
-        return kumi::apply(get_array, std::forward<tuple_t>(tuple));
-    }
-
     //
     template<concepts::container In, typename Func>
     constexpr auto find_if([[maybe_unused]] kwk::eve::context const& ctx, In const& in, Func f)
