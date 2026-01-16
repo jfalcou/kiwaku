@@ -8,7 +8,8 @@ project(kiwaku LANGUAGES CXX)
 
 ##======================================================================================================================
 option( KIWAKU_BUILD_TEST           "Build tests   for Kiwaku"                          ON  )
-option( KIWAKU_BUILD_TEST_SYCL      "Build tests   for Kiwaku, including SYCL tests"    OFF )
+option( KIWAKU_BUILD_TEST_SYCL      "Build Kiwaku  SYCL tests"                          OFF )
+option( KIWAKU_BUILD_TEST_SIMD      "Build Kiwaku  SIMD EVE tests"                      OFF )
 option( KIWAKU_BUILD_DOCUMENTATION  "Build Doxygen for Kiwaku"                          OFF )
 
 ##======================================================================================================================
@@ -33,6 +34,12 @@ if(NOT KIWAKU_QUIET)
     message(STATUS "[${PROJECT_NAME}] - Building in ${CMAKE_BUILD_TYPE} mode")
   endif()
   message(STATUS "[${PROJECT_NAME}] - Unit tests : ${KIWAKU_BUILD_TEST} (via KIWAKU_BUILD_TEST)")
+  if(KIWAKU_BUILD_TEST_SIMD)
+      message(STATUS "[${PROJECT_NAME}] - SIMD tests : ${KIWAKU_BUILD_TEST_SIMD} (via KIWAKU_BUILD_TEST_SIMD)")
+  endif()
+  if(KIWAKU_BUILD_TEST_SYCL)
+      message(STATUS "[${PROJECT_NAME}] - SYCL tests : ${KIWAKU_BUILD_TEST_SYCL} (via KIWAKU_BUILD_TEST_SYCL)")
+  endif()
   message(STATUS "[${PROJECT_NAME}] - Doxygen    : ${KIWAKU_BUILD_DOCUMENTATION} (via KIWAKU_BUILD_DOCUMENTATION)")
   set(QUIET_OPTION "")
 else()
@@ -65,6 +72,10 @@ if(KIWAKU_BUILD_TEST)
 
   if(KIWAKU_BUILD_TEST_SYCL)
     target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BUILD_TEST_SYCL)
+  endif()
+
+  if(KIWAKU_BUILD_TEST_SIMD)
+    target_compile_definitions(kiwaku_test INTERFACE KIWAKU_BUILD_TEST_SIMD)
   endif()
 endif()
 
