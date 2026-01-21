@@ -18,15 +18,5 @@ namespace kwk
   //====================================================================================================================
 }
 
-#include <kwk/utility/container.hpp>
-#include <kwk/utility/traits.hpp>
-#include <kwk/utility/memory.hpp>
-
-#include <kwk/utility/coordinates.hpp>
-#include <kwk/utility/position.hpp>
-#include <kwk/utility/end.hpp>
-#include <kwk/utility/fixed.hpp>
-#include <kwk/utility/joker.hpp>
-#include <kwk/utility/linear_index.hpp>
-#include <kwk/utility/ratio.hpp>
-#include <kwk/utility/slicer.hpp>
+#include <kwk/utility/memory/any_allocator.hpp>
+#include <kwk/utility/memory/heap_allocator.hpp>

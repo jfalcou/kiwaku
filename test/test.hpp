@@ -13,11 +13,11 @@
 
 int main(int argc, char const** argv)
 {
-  std::cout << "[Kiwaku] - Assertions: ";
+  printf("[Kiwaku] - Assertions: ");
 #ifdef NDEBUG
-  std::cout << "Disabled\n";
+  printf("Disabled\n");
 #else
-  std::cout << "Enabled\n";
+  printf("Enabled\n");
 #endif
 
   kwk_entry_point(argc, argv);
