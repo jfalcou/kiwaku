@@ -61,4 +61,3 @@ CPMAddPackage ( NAME EVE   GITHUB_REPOSITORY jfalcou/eve
                         "EVE_BUILD_BENCHMARKS OFF"
                         "EVE_BUILD_DOCUMENTATION OFF"
               )
-
