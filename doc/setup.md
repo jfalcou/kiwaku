@@ -1,4 +1,4 @@
-Installation and Quick Start {#about}
+Installation and Quick Start {#setup}
 ============================
 Installation & Quick Start {#install}
 ==========================
