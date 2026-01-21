@@ -64,4 +64,4 @@ namespace kwk
   {
     return kwk::reduce(cpu, in);
   }
-} // namespace kwk
+}

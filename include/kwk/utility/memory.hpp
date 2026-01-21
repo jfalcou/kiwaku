@@ -10,12 +10,13 @@
 namespace kwk
 {
   //====================================================================================================================
-  //! @defgroup utility Miscellaneous Helpers
-  //! @brief Quality of Life helpers
+  //! @defgroup memory Memory Utilities
+  //! @ingroup utility
+  //! @brief Memory Management utilities
   //!
-  //! This module defines various functions, types and variables for improving Quality of Life when
-  //! using **KIWAKU** in user's code.
+  //! This module defines various functions, types and variables to handle memory in a more flexible way.
   //====================================================================================================================
 }
 
-#include <kwk/utility/memory.hpp>
+#include <kwk/utility/memory/any_allocator.hpp>
+#include <kwk/utility/memory/heap_allocator.hpp>

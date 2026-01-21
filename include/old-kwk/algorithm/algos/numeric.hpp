@@ -215,4 +215,4 @@ namespace kwk
     inclusive_scan(cpu, in, out, init);
   }
 
-} // namespace kwk
+}

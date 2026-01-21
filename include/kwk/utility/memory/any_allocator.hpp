@@ -122,4 +122,4 @@ namespace kwk
   {
     return a.get()->do_deallocate(ptr);
   }
-} // namespace kwk
+}

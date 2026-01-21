@@ -11,6 +11,10 @@
 
 namespace kwk
 {
+  struct heap_allocator
+  {
+  };
+
   //================================================================================================
   //! @ingroup memory
   //! @brief Malloc based allocator
@@ -18,9 +22,7 @@ namespace kwk
   //! Model of the kwk::concepts::allocator concept. kwk::heap allocates and
   //! deallocates memory block on the heap using `malloc` and `free`.
   //================================================================================================
-  inline constexpr struct heap_allocator
-  {
-  } heap = {};
+  inline constexpr heap_allocator heap = {};
 
   //================================================================================================
   //! @ingroup memory
@@ -48,4 +50,4 @@ namespace kwk
   {
     if (ptr) free(ptr);
   }
-} // namespace kwk
+}

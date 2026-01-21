@@ -24,4 +24,4 @@ namespace kwk::concepts
     { allocate(alloc, size) };
     { deallocate(alloc, ptr) };
   };
-} // namespace kwk::concepts
+}

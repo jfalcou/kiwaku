@@ -49,4 +49,6 @@ namespace kwk::__
   };
 
   template<typename T> inline constexpr auto name_of = typename_t<T>::name();
-} // namespace kwk::__
+}
+
+::__

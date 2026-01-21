@@ -84,7 +84,7 @@ namespace kwk
         (stream << ... << args);
         KWK_ASSERT_TERMINATION(condition);
     }
-} // namespace kwk
+}
 
 
 #if !defined( KIWAKU_ASSERT_USE_DBG_BREAK )

@@ -86,4 +86,4 @@ namespace kwk
   /// @brief Pre-defined type settings for std::uint64_t
   /// @relates type
   constexpr inline auto uint64 = as<std::uint64_t>;
-} // namespace kwk
+}
