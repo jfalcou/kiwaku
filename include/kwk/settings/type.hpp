@@ -20,7 +20,6 @@ namespace kwk
     @brief    Type setting for KIWAKU containers
 
     @tparam   T Type to be used within the container
-    @see      as
   **/
   //================================================================================================
   template<typename T> struct type
@@ -42,7 +41,7 @@ namespace kwk
     @brief    Helper to create type settings for KIWAKU containers
 
     @tparam   T Type to be used within the container
-    @see      type
+    @relates  type
   **/
   //================================================================================================
   template<typename T> constexpr inline type<T> as{};
