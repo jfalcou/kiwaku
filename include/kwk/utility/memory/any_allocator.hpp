@@ -1,10 +1,10 @@
-//==================================================================================================
+//======================================================================================================================
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 
 #include <cstddef>
@@ -15,15 +15,16 @@
 
 namespace kwk
 {
-  //================================================================================================
-  //! @ingroup memory
-  //! @brief Opaque allocator type
-  //!
-  //! Model of the kwk::concepts::allocator concept. kwk::any_allocator is a
-  //! type-erased object able to contains any allocator type modeling
-  //! kwk::concepts::allocator. It is meant to be used as a non-dependent type in
-  //! containers or other functions one may want to be non-template
-  //================================================================================================
+  //====================================================================================================================
+  /**
+    @ingroup memory
+    @brief Opaque allocator type
+
+    kwk::any_allocator is a type-erased object that can store and use any allocator satisfying the
+    kwk::concepts::allocator concept. It provides a uniform interface to allocate and deallocate memory
+    without exposing the underlying allocator type.
+  */
+  //====================================================================================================================
   struct any_allocator
   {
   private:
@@ -100,24 +101,30 @@ namespace kwk
     std::unique_ptr<api_t> object;
   };
 
-  //================================================================================================
-  //! @ingroup memory
-  //! @brief  Allocates data from an opaque allocator instance
-  //! @param  a Allocator to use for the allocation
-  //! @param  n Number of bytes to allocate
-  //! @return A pointer to the newly allocated memory.
-  //================================================================================================
+  //====================================================================================================================
+  /**
+    @ingroup memory
+    @brief  Allocates data from an opaque allocator instance
+
+    @param  a Allocator to use for the allocation
+    @param  n Number of bytes to allocate
+    @return A pointer to the newly allocated memory.
+  */
+  //====================================================================================================================
   [[nodiscard]] inline auto allocate(any_allocator& a, std::size_t n)
   {
     return a.get()->do_allocate(n);
   }
 
-  //================================================================================================
-  //! @ingroup memory
-  //! @brief  Deallocates data from an opaque allocator instance
-  //! @param  a Allocator to use for the allocation
-  //! @param  ptr Pointer to the data to deallocates
-  //================================================================================================
+  //====================================================================================================================
+  /**
+    @ingroup memory
+    @brief  Deallocates data from an opaque allocator instance
+
+    @param  a Allocator to use for the allocation
+    @param  ptr Pointer to the data to deallocates
+  */
+  //====================================================================================================================
   inline void deallocate(any_allocator& a, void* ptr)
   {
     return a.get()->do_deallocate(ptr);
