@@ -1,4 +1,4 @@
-<img src="https://github.com/jfalcou/kiwaku/raw/main/doc/logo.png" alt="" data-canonical-src="https://github.com/jfalcou/eve/kiwaku/main/doc/logo.png" align="left"  width="15%" height="15%" />
+<img src="https://raw.githubusercontent.com/jfalcou/kiwaku/refs/heads/main/doc/logo.svg" data-canonical-src="https://jfalcou.github.io/kiwaku/doc/logo.svg" width="8%" align="left"/>
 
 # Kiwaku - Containers Well Made
 
