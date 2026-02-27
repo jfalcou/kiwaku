@@ -15,4 +15,5 @@ namespace kwk
   //====================================================================================================================
 }
 
+#include <kwk/settings/options.hpp>
 #include <kwk/settings/kind.hpp>
