@@ -6,9 +6,9 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kwk/settings/type.hpp>
+#include <kwk/settings/kind.hpp>
 
-TTS_CASE("Predefined type settings")
+TTS_CASE("Predefined kind settings")
 {
   TTS_TYPE_IS(decltype(kwk::real32)::element_type, float);
   TTS_TYPE_IS(decltype(kwk::real64)::element_type, double);
