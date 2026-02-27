@@ -23,6 +23,17 @@
   DoxygenAwesomeParagraphLink.init()
   DoxygenAwesomeFragmentCopyButton.init()
   SendToGodbolt.init("kiwaku:kumi:eve:raberu","clang1600","-O3 -std=c++20 -DNEDBUG")
+
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("*").forEach(function(el) {
+        if (el.children.length === 0 && el.textContent.includes("kwk_implementation_defined")) {
+            el.innerHTML = el.innerHTML.replace(
+                /kwk_implementation_defined/g,
+                '<span class="comment" title="This type is implementation defined and not part of the public API">/*implementation defined*/</span>'
+            );
+        }
+    });
+});
 </script>
 $treeview
 $search
