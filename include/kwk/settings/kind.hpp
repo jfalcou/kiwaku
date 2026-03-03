@@ -7,9 +7,6 @@
 //======================================================================================================================
 #pragma once
 
-#include <cstdint>
-#include <kumi/kumi.hpp>
-
 namespace kwk
 {
   namespace _
@@ -23,7 +20,7 @@ namespace kwk
       friend constexpr auto to_str(kind_id) { return kumi::str{"Kind"}; }
     };
 
-    template<typename T> struct kind_option : kumi::identifier<kind_id>
+    template<typename T> struct kind_option
     {
       using element_type = T;
       using type = kind_option<T>;
@@ -68,7 +65,7 @@ namespace kwk
     @see  kind
   **/
   //====================================================================================================================
-  template<typename T> constexpr _::kind_option<T> as(T = ())
+  template<typename T> constexpr _::kind_option<T> as(T = {})
   {
     return {};
   }

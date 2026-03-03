@@ -7,12 +7,10 @@
 //======================================================================================================================
 #pragma once
 
-/// @brief Main **KIWAKU** namespace
-namespace kwk
-{
-}
+#include <cstddef>
+#include <cstdlib>
+#include <cstdint>
+#include <memory>
 
-#include <kwk/detail.hpp>
-#include <kwk/utility.hpp>
-#include <kwk/concepts.hpp>
-#include <kwk/settings.hpp>
+
+#include <kumi/kumi.hpp>

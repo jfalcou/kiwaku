@@ -7,11 +7,8 @@
 //======================================================================================================================
 #pragma once
 
-#include <cstddef>
-#include <cstdlib>
 #include <kwk/concepts/allocator.hpp>
 #include <kwk/detail/abi.hpp>
-#include <memory>
 
 namespace kwk
 {

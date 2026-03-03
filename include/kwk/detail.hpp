@@ -7,12 +7,6 @@
 //======================================================================================================================
 #pragma once
 
-/// @brief Main **KIWAKU** namespace
-namespace kwk
-{
-}
-
-#include <kwk/detail.hpp>
-#include <kwk/utility.hpp>
-#include <kwk/concepts.hpp>
-#include <kwk/settings.hpp>
+#include <kwk/detail/abi.hpp>
+#include <kwk/detail/dependencies.hpp>
+#include <kwk/detail/settings.hpp>
