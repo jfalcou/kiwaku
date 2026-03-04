@@ -66,7 +66,6 @@ namespace kwk
       template<typename Other> constexpr pointer_option(Other* o = {}) : data_(std::data(o)){}
     };
 
-
     template<typename T, auto S> struct array_option : source_option<T>
     {  
       using value_type      = std::remove_const_t<T>;

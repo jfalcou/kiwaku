@@ -11,12 +11,7 @@ namespace kwk::concepts
 {
   /// Concept for types supporting calls to standard begin/end/size interface.
   template<typename Range>
-  concept range = requires(Range && r)
-  {
-    { std::begin(r) };
-    { std::end(r)   };
-    { std::size(r)  };
-  };
+  concept range = kumi::concepts::container<Range>;
 
   /// Concept for Range types providing access to a contiguous block of data
   template<typename Range>
@@ -31,10 +26,10 @@ namespace kwk::concepts
 
   /// Concept for types exposing a compile-time size value
   template<typename T>
-  concept has_static_size = kumi::concepts::static_container<T> && (!std::same_as<kumi::container_size<T>, kumi::_::invalid>);
+  concept has_static_size = contiguous_range<T> && kumi::has_static_size_v<std::remove_cvref_t<T>>;
 
   /// Concept for Contiguous Range exposing a compile-time size value
   template<typename T>
-  concept contiguous_static_range = contiguous_range<T> && has_static_size<T>;
+  concept contiguous_static_range = kumi::concepts::static_container<T> && has_static_size<T>;
 
 }

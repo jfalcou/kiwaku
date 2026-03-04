@@ -38,3 +38,5 @@ namespace kwk
 #include <kwk/settings/kind.hpp>
 #include <kwk/settings/base_index.hpp>
 #include <kwk/settings/source.hpp>
+#include <kwk/settings/size.hpp>
+#include <kwk/settings/stride.hpp>
