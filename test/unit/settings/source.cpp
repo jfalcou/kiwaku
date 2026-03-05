@@ -6,6 +6,9 @@
 */
 //==================================================================================================
 #include "test.hpp"
+#include <kwk/detail.hpp>
+#include <kwk/concepts.hpp>
+#include <kwk/utility.hpp>
 #include <kwk/settings/options.hpp>
 #include <kwk/settings/source.hpp>
 
