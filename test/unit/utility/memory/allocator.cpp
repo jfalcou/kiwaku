@@ -6,9 +6,10 @@
 */
 //==================================================================================================
 #include "test.hpp"
+#include <kwk/detail.hpp>
+#include <kwk/concepts.hpp>
 #include <kwk/utility/memory/any_allocator.hpp>
 #include <kwk/utility/memory/heap_allocator.hpp>
-#include <kwk/concepts/allocator.hpp>
 
 struct box
 {
