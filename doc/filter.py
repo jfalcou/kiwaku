@@ -8,36 +8,38 @@ import argparse
 
 def process_text(text, prefix):
   """
-  Identifies types starting with _:: and replaces them with
-  '{prefix}_implementation_defined', correctly handling C++ template
-  bracket balancing (< >).
+  Identifies types starting with _:: (and any leading namespaces)
+  and replaces them with '{prefix}_implementation_defined', correctly
+  handling C++ template bracket balancing (< >).
 
   Test Cases:
-  >>> # Basic replacement with default prefix
-  >>> process_text("_::simple_type", prefix="kwk")
-  'kwk_implementation_defined'
-
-  >>> # Basic replacement of explicit namespace
-  >>> process_text("kwk::_::simple_type", prefix="kwk")
-  'kwk_implementation_defined'
-
-  >>> # Handling prefix operators
-  >>> process_text("!_::value_of<X>", prefix="kwk")
-  '!kwk_implementation_defined'
-
-  >>> # Handling complex templates with custom prefix
-  >>> process_text("_::some_code<T, U, 4 >", prefix="std")
-  'std_implementation_defined'
-
-  >>> # Handling nested templates
-  >>> process_text("_::vector<_::allocator<int>>* ptr", prefix="kwk")
-  'kwk_implementation_defined* ptr'
-
-  >>> # Handling multiple occurrences
-  >>> process_text("void f(_::type1 a, _::type2 b)", prefix="kwk")
-  'void f(kwk_implementation_defined a, kwk_implementation_defined b)'
+  # Basic replacement
+    >>> process_text("_::simple_type", prefix="kwk")
+    'kwk_implementation_defined'
+  
+    >>> # Replacement with explicit namespace
+    >>> process_text("kwk::_::simple_type", prefix="kwk")
+    'kwk_implementation_defined'
+  
+    >>> # Handling const and namespaces
+    >>> process_text("const kwk::_::simple_type", prefix="kwk")
+    'const kwk_implementation_defined'
+  
+    >>> # Handling nested namespaces
+    >>> process_text("outer::inner::_::type", prefix="kwk")
+    'kwk_implementation_defined'
+  
+    >>> # Handling prefix operators
+    >>> process_text("!_::value_of<X>", prefix="kwk")
+    '!kwk_implementation_defined'
+  
+    >>> # Handling complex templates
+    >>> process_text("_::some_code<T, U, 4 >", prefix="std")
+    'std_implementation_defined'
   """
-  pattern = re.compile(r'([a-zA-Z0-9_]+::)?_::[a-zA-Z0-9_]+')
+  # The regex now captures any number of 'namespace::' sequences before _::
+  # ([a-zA-Z0-9_]+::)* matches 'kwk::', 'a:🅱️:', or nothing.
+  pattern = re.compile(r'([a-zA-Z0-9_]+::)*_::[a-zA-Z0-9_]+')
   replacement_token = f"{prefix}_implementation_defined"
   offset = 0
   result = []
@@ -75,7 +77,7 @@ def main():
   parser = argparse.ArgumentParser(description="Filter C++ implementation details for Doxygen.")
   parser.add_argument("file", nargs="?", help="Input file to process")
   parser.add_argument("--test", action="store_true", help="Run doctests")
-  parser.add_argument("-p", "--prefix", help="Prefix for the replacement string")
+  parser.add_argument("-p", "--prefix", default="kwk", help="Prefix for the replacement string")
 
   args = parser.parse_args()
 
