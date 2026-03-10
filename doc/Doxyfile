@@ -1109,7 +1109,7 @@ EXAMPLE_RECURSIVE      = NO
 
 IMAGE_PATH             =
 
-INPUT_FILTER = "./filter.sh"
+INPUT_FILTER = "python3 filter.py --prefix kwk"
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis. Doxygen will compare the file name with each pattern and apply the
