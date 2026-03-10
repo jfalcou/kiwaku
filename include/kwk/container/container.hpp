@@ -16,40 +16,41 @@
 
 namespace kwk
 {
-  template<auto Tag, typename Builder>
-  struct  container : private Builder::metadata, Builder::memory, Builder::accessor
+  template<auto Tag, typename Builder> struct container : private Builder::metadata, Builder::memory, Builder::accessor
   {
-    using data_t            = typename Builder::memory;
-    using access_t          = typename Builder::accessor;
-    using meta_t            = typename Builder::metadata;
-    using value_type        = typename data_t::value_type;
-    using reference         = typename data_t::reference;
-    using const_reference   = typename data_t::const_reference;
-    using pointer           = typename data_t::pointer;
-    using const_pointer     = typename data_t::const_pointer;
-    using shape_type        = typename access_t::shape_type;
-    using container_kind    = decltype(Tag);
+    using data_t = typename Builder::memory;
+    using access_t = typename Builder::accessor;
+    using meta_t = typename Builder::metadata;
+    using value_type = typename data_t::value_type;
+    using reference = typename data_t::reference;
+    using const_reference = typename data_t::const_reference;
+    using pointer = typename data_t::pointer;
+    using const_pointer = typename data_t::const_pointer;
+    using shape_type = typename access_t::shape_type;
+    using container_kind = decltype(Tag);
 
-    static constexpr std::int32_t static_order          = access_t::static_order;
-    static constexpr bool         has_label             = meta_t::has_label;
-    static constexpr bool         preserve_reachability = Builder::preserve_reachability;
+    static constexpr std::int32_t static_order = access_t::static_order;
+    static constexpr bool has_label = meta_t::has_label;
+    static constexpr bool preserve_reachability = Builder::preserve_reachability;
 
-    constexpr container( container_kind ) noexcept
-            : meta_t{}, data_t{}, access_t{}
-    {}
+    constexpr container(container_kind) noexcept : meta_t{}, data_t{}, access_t{} {}
 
-    constexpr container( rbr::concepts::option auto const&... params )
-            : container{ rbr::merge(rbr::settings(params...), rbr::settings(Tag)) }
-    {}
+    constexpr container(rbr::concepts::option auto const&... params)
+      : container{rbr::merge(rbr::settings(params...), rbr::settings(Tag))}
+    {
+    }
 
-    constexpr container(rbr::concepts::settings auto const& params)
-            : meta_t{ params }, data_t{ params }, access_t{ params }
-    {}
+    constexpr container(rbr::concepts::settings auto const& params) : meta_t{params}, data_t{params}, access_t{params}
+    {
+    }
 
-    static constexpr  auto  kind()        noexcept  { return Tag;                   }
-    static constexpr  auto  order()       noexcept  { return static_order;          }
-    constexpr         auto  numel() const noexcept  { return this->shape().numel(); }
-    constexpr         bool  empty() const noexcept  { return this->size() == 0;     }
+    static constexpr auto kind() noexcept { return Tag; }
+
+    static constexpr auto order() noexcept { return static_order; }
+
+    constexpr auto numel() const noexcept { return this->shape().numel(); }
+
+    constexpr bool empty() const noexcept { return this->size() == 0; }
 
     using meta_t::label;
 
@@ -60,12 +61,9 @@ namespace kwk
       access_t::swap(other);
     }
 
-    friend void swap(container& a,container& b) noexcept { a.swap(b); }
+    friend void swap(container& a, container& b) noexcept { a.swap(b); }
 
-    KWK_TRIVIAL static constexpr auto archetype() noexcept
-    {
-      return rbr::settings(as<value_type>, shape_type{});
-    }
+    KWK_TRIVIAL static constexpr auto archetype() noexcept { return rbr::settings(as<value_type>, shape_type{}); }
 
     KWK_TRIVIAL static constexpr auto archetype(auto tag) noexcept
     {
@@ -85,80 +83,77 @@ namespace kwk
     friend std::ostream& operator<<(std::ostream& os, container const& v)
     {
       auto spaces = has_label ? "  " : "";
-      auto lbl    = [&]() { if constexpr(has_label) os << v.label() << ":\n"; };
+      auto lbl = [&]() {
+        if constexpr (has_label) os << v.label() << ":\n";
+      };
 
       lbl();
-      if( v.empty() ) return os << spaces << "[ ]";
+      if (v.empty()) return os << spaces << "[ ]";
 
       auto shp = v.shape();
-      for_each_index( [&](auto e, auto... is)
-                      {
-                        auto idx = kumi::tuple{is...};
-                        if constexpr( container::static_order >= 3)
-                        {
-                          auto panel = kumi::extract(idx,kumi::index<container::static_order-2>);
-                          if(     panel == kumi::tuple{0,0}
-                              &&  kumi::get<container::static_order-3>(idx) > 0
-                            )
-                          os << '\n';
-                        }
+      for_each_index(
+        [&](auto e, auto... is) {
+          auto idx = kumi::tuple{is...};
+          if constexpr (container::static_order >= 3)
+          {
+            auto panel = kumi::extract(idx, kumi::index<container::static_order - 2>);
+            if (panel == kumi::tuple{0, 0} && kumi::get<container::static_order - 3>(idx) > 0) os << '\n';
+          }
 
-                        if(back(idx) == 0) os << spaces << "[ ";
-                        os << e << ' ';
-                        if(back(idx) == kumi::back(shp)-1) os << "]\n";
-                      }
-                    , v
-                    );
+          if (back(idx) == 0) os << spaces << "[ ";
+          os << e << ' ';
+          if (back(idx) == kumi::back(shp) - 1) os << "]\n";
+        },
+        v);
 
       return os;
     }
 
-    template<kumi::sized_product_type<static_order> Pos>
-    decltype(auto) operator()(Pos p) const noexcept
+    template<kumi::concepts::sized_product_type<static_order> Pos> decltype(auto) operator()(Pos p) const noexcept
     {
       return kumi::apply([&](auto... i) -> decltype(auto) { return (*this)(i...); }, p);
     }
 
-    template<kumi::sized_product_type<static_order> Pos>
-    decltype(auto) operator()(Pos p) noexcept
+    template<kumi::concepts::sized_product_type<static_order> Pos> decltype(auto) operator()(Pos p) noexcept
     {
       return kumi::apply([&](auto... i) -> decltype(auto) { return (*this)(i...); }, p);
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order) decltype(auto) operator()(Is... is) const noexcept
+    requires(sizeof...(Is) == static_order)
+    decltype(auto) operator()(Is... is) const noexcept
     {
-      return data(static_cast<data_t const&>(*this))[ access_t::index(is...) ];
+      return data(static_cast<data_t const&>(*this))[access_t::index(is...)];
     }
 
     template<std::integral... Is>
-    requires(sizeof...(Is) == static_order) decltype(auto) operator()(Is... is) noexcept
+    requires(sizeof...(Is) == static_order)
+    decltype(auto) operator()(Is... is) noexcept
     {
-      return data(static_cast<data_t&>(*this))[ access_t::index(is...) ];
+      return data(static_cast<data_t&>(*this))[access_t::index(is...)];
     }
 
     template<concepts::slicer... Slicers>
-    requires( (sizeof...(Slicers) <= static_order) && (!std::integral<Slicers> || ...))
+    requires((sizeof...(Slicers) <= static_order) && (!std::integral<Slicers> || ...))
     auto operator()(Slicers... slice) const noexcept
     {
       auto shp = this->shape();
       auto str = compress<sizeof...(slice)>(this->stride());
 
-      if constexpr(preserve_reachability && kwk::preserve_reachability<Slicers...>)
+      if constexpr (preserve_reachability && kwk::preserve_reachability<Slicers...>)
         return make_view(source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...));
       else
-        return make_view( source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...), unreachable);
+        return make_view(source = this->get_data() + origin(shp, slice...), shp(slice...), str(slice...), unreachable);
     }
 
-    constexpr auto get_data() const  noexcept { return data(static_cast<data_t const&>(*this)); }
-    constexpr auto get_data()        noexcept { return data(static_cast<data_t&>(*this)); }
+    constexpr auto get_data() const noexcept { return data(static_cast<data_t const&>(*this)); }
+
+    constexpr auto get_data() noexcept { return data(static_cast<data_t&>(*this)); }
   };
 
-  template<std::size_t I, auto Tag, typename B>
-  constexpr auto dim(container<Tag,B> const& v) noexcept
+  template<std::size_t I, auto Tag, typename B> constexpr auto dim(container<Tag, B> const& v) noexcept
   {
-    if constexpr(I<container<Tag,B>::static_order) return get<I>(v.shape());
+    if constexpr (I < container<Tag, B>::static_order) return get<I>(v.shape());
     else return 1;
   }
 }
-

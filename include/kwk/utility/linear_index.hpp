@@ -27,12 +27,10 @@ namespace kwk
   //! @return The linear index equivalent to (idx...) for the current shape
   //================================================================================================
   template<auto... S, std::integral... Index>
-  KWK_CONST constexpr auto linear_index( shape<S...> sh, Index... idx ) noexcept
+  KWK_CONST constexpr auto linear_index(shape<S...> sh, Index... idx) noexcept
   {
-    KIWAKU_ASSERT ( sh.contains(idx...)
-                  , "Linearizing out of bounds indexes "
-                    << kumi::tuple{idx...} << " within shape " << sh
-                  );
+    KIWAKU_ASSERT(sh.contains(idx...),
+                  "Linearizing out of bounds indexes " << kumi::tuple{idx...} << " within shape " << sh);
     return as_stride(sh).linearize(idx...);
   }
 
@@ -44,10 +42,10 @@ namespace kwk
   //! @param idx  Individual list of indexes representing the order N index to linearize
   //! @return The linear index equivalent to (idx...) for the current shape
   //================================================================================================
-  template<auto... S, kumi::sized_product_type<shape<S...>::static_order> Indexes>
-  KWK_CONST constexpr auto linear_index( shape<S...> sh, Indexes idx ) noexcept
+  template<auto... S, kumi::concepts::sized_product_type<shape<S...>::static_order> Indexes>
+  KWK_CONST constexpr auto linear_index(shape<S...> sh, Indexes idx) noexcept
   {
-    return kumi::apply( [&](auto... i) { return linear_index(sh,i...); }, idx);
+    return kumi::apply([&](auto... i) { return linear_index(sh, i...); }, idx);
   }
 
   //================================================================================================
@@ -59,15 +57,14 @@ namespace kwk
   //! @return The linear index equivalent to (indexes[0], ...) for the current shape
   //================================================================================================
   template<auto... S, kwk::concepts::range Indexes>
-  requires( !kumi::sized_product_type<Indexes,shape<S...>::static_order> )
-  constexpr auto linear_index( shape<S...> const& sh, Indexes const& indexes) noexcept
+  requires(!kumi::concepts::sized_product_type<Indexes, shape<S...>::static_order>)
+  constexpr auto linear_index(shape<S...> const& sh, Indexes const& indexes) noexcept
   {
-    return [&]<std::size_t... I>(std::index_sequence<I...>  const&)
-    {
-      auto            b     = indexes.begin();
-      auto constexpr  deref = [](auto,auto& p) { return *p++; };
+    return [&]<std::size_t... I>(std::index_sequence<I...> const&) {
+      auto b = indexes.begin();
+      auto constexpr deref = [](auto, auto& p) { return *p++; };
 
-      return linear_index(sh, kumi::tuple{deref(I,b)...} );
+      return linear_index(sh, kumi::tuple{deref(I, b)...});
     }(std::make_index_sequence<shape<S...>::static_order>{});
   }
 }
