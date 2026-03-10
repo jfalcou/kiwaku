@@ -41,6 +41,12 @@ namespace kwk
       using type = source_option<T>;
       using identifier_type = source_id;
 
+      using value_type = std::remove_const_t<T>;
+      using reference = std::add_lvalue_reference<T>;
+      using const_reference = std::add_lvalue_reference<T const>;
+      using point = std::add_pointer_t<T>;
+      using const_pointer = std::add_pointer_t<T const>;
+
       static constexpr auto name() { return kumi::str{"Source"}; }
 
       template<typename CharT, typename Traits>
@@ -54,12 +60,6 @@ namespace kwk
     template<typename P> struct pointer_option : source_option<P>
     {
       using base = source_option<P>;
-      using value_type = std::remove_const_t<P>;
-      using reference = std::add_lvalue_reference<P>;
-      using const_reference = std::add_lvalue_reference<P const>;
-      using point = std::add_pointer_t<P>;
-      using const_poinder = std::add_pointer_t<P const>;
-
       P* data_;
 
       constexpr pointer_option(P* p = nullptr) : data_(p) {}
@@ -72,12 +72,6 @@ namespace kwk
     template<typename T, auto S> struct array_option : source_option<T>
     {
       using base = source_option<T>;
-      using value_type = std::remove_const_t<T>;
-      using reference = std::add_lvalue_reference<T>;
-      using const_reference = std::add_lvalue_reference<T const>;
-      using point = std::add_pointer_t<T>;
-      using const_poinder = std::add_pointer_t<T const>;
-
       T* data_;
 
       constexpr array_option(T* p = nullptr) : data_(p) {}
@@ -88,7 +82,6 @@ namespace kwk
     template<typename T> struct range_option : source_option<T>
     {
       using base = source_option<T>;
-
       T* data_;
       std::size_t size_;
 
