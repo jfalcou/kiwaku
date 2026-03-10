@@ -17,6 +17,10 @@ def process_text(text, prefix):
   >>> process_text("_::simple_type", prefix="kwk")
   'kwk_implementation_defined'
 
+  >>> # Basic replacement of explicit namespace
+  >>> process_text("kwk::_::simple_type", prefix="kwk")
+  'kwk_implementation_defined'
+
   >>> # Handling prefix operators
   >>> process_text("!_::value_of<X>", prefix="kwk")
   '!kwk_implementation_defined'
@@ -33,7 +37,7 @@ def process_text(text, prefix):
   >>> process_text("void f(_::type1 a, _::type2 b)", prefix="kwk")
   'void f(kwk_implementation_defined a, kwk_implementation_defined b)'
   """
-  pattern = re.compile(r'_::[a-zA-Z0-9_]+')
+  pattern = re.compile(r'([a-zA-Z0-9_]+::)?_::[a-zA-Z0-9_]+')
   replacement_token = f"{prefix}_implementation_defined"
   offset = 0
   result = []
