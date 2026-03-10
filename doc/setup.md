@@ -1,116 +1,105 @@
-Installation and Quick Start {#setup}
-============================
-Installation & Quick Start {#install}
-==========================
+# Installation and Quick Start {#setup}
 
-# Pre-requisites
+## Prerequisites
 
-**KIWAKU** requires a C++20 compliant compiler. Here is the current minimal compiler version supported:
+**KIWAKU** requires a C++20 compliant compiler. Below are the minimum supported versions:
 
-| Compiler       | Version        |
-| -------------- | -------------- |
-| g++            | 11  or above   |
-| clang++        | 14  or above   |
+| Compiler | Version |
+| :--- | :--- |
+| **g++** | 13 or above |
+| **clang++** | 19 or above |
+| **MSVC** | 19.38 (VS 2022 17.8) or above |
 
-<br/>
-# Retrieving the source
+## Retrieving the Source
 
-## Github
-**KIWAKU** is available on GitHub and can be retrieved via the following command:
-<br/>
+### GitHub
+Clone the repository to get the latest stable version from the `main` branch:
 
-@verbatim
-$ git clone  https://github.com/jfalcou/kiwaku.git
-@endverbatim
+```bash
+git clone https://github.com/jfalcou/kiwaku.git
+```
 
-This retrieves the `main` branch which contains the latest stable version. Development happens
-live on `main` so if you need stability, use a tagged versions.
+**Note:** Development happens live on `main`. For production environments, we recommend checking out a specific [tagged version](https://github.com/jfalcou/kiwaku/releases).
 
-## CPM
-You can install **KIWAKU** directly via [CPM](https://github.com/cpm-cmake/CPM.cmake). After
-[adding CPM to your CMake setup](https://github.com/cpm-cmake/CPM.cmake#adding-cpm), just
-add the following commands:
+### CPM (CMake Package Manager)
+
+If you use [CPM](https://github.com/cpm-cmake/CPM.cmake), add the following to your `CMakeLists.txt`:
 
 ```cmake
 include(CPM)
 
-CPMAddPackage(
-        NAME eve
-        URL https://github.com/jfalcou/kiwaku
-)
+CPMAddPackage( NAME kiwaku
+               GITHUB_REPOSITORY jfalcou/kiwaku
+               GIT_TAG main
+             )
 ```
 
-# Installation from Source
-If you didn't fetched **KIWAKU** from a package manager, you'll need to install it via our CMake
-system.
+## Installation from Source
 
-## Setting up the Library
-Create a `build` directory here and enter it. Once in the `build` directory, you can use  **CMake**
-to generate the build system for **KIWAKU**.
+If you are not using a package manager, use the CMake build system. We recommend [Ninja](https://ninja-build.org/) for faster builds.
 
-We recommend using [Ninja](https://ninja-build.org/) but any build system is fine.
+### Setting up the Library
 
-@verbatim
-$ mkdir build
-$ cd build
-$ cmake .. -G Ninja
-@endverbatim
+Use the following commands to configure and build the project. Modern CMake allows you to do this without manually changing directories:
 
-Once **CMake** completes, you can use the `install` target to build and install **KIWAKU**. By default,
-the library will be installed in the `/usr/local`directory, thus requiring root privileges on Linux.
+```bash
+# Configure the build
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install
 
-@verbatim
-$ ninja install
-@endverbatim
+# Install the library
+cmake --build build --target install
+```
 
-You can select an alternative installation path by specifying the `CMAKE_INSTALL_PREFIX` option at configuration time.
+On Linux, the default is `/usr/local` (requires `sudo`), use `-DCMAKE_INSTALL_PREFIX` to specify a local installation folder.
 
-@verbatim
-$ cmake .. -G Ninja -DCMAKE_INSTALL_PREFIX=path/to/install
-$ ninja install
-@endverbatim
+### Building the Documentation
 
-## Building the Documentation
-You can rebuild **KIWAKU** documentation if you have the latest version of Doxygen installed
-using the `doxygen` target:
-<br/>
+If you have **Doxygen** installed, you can generate the HTML documentation:
 
-@code
-ninja kwk-doxygen
-@endcode
+```bash
+cmake --build build --target kiwaku-doxygen
+```
 
-The resulting HTML files will be available in the `doc` folder.
+The resulting files will be available in the `doc` folder.
 
-# Using the library
-## Compilation
+## Using the Library
 
-Once installed, you can compile the following code to check if everything is alright.
+### Compilation
 
-@include integration/main.cpp
+Once installed, you can verify your setup with a simple test file (e.g., `test.cpp`):
 
-To do so, use your C++20 aware favorite compiler, for example g++.
+```cpp
+#include <kwk/kwk.hpp>
+#include <iostream>
 
-@verbatim
-$ g++ test.cpp -std=c++20 -O3 -DNDEBUG -I/path/to/install/include -o output
-@endverbatim
+int main()
+{
+  auto m = kwk::matrix( kwk::of_size(4, 3), [](auto i, auto j)
+  {
+    return 1 + j + i * 3;
+  });
 
-Don't forget the `--std=c++20` option to be sure to activate C++20 support. If you use a different compiler, check your compiler user's manual to use the proper option.
+  std::cout << "Test matrix:\n" << m << std::endl;
+}
+```
 
-You can notice we use the `-O3 -DNEDBUG` options. This is required if you want to be sure to get the best performance out of **KIWAKU**.
+To compile using **g++**:
 
-The `-DNDEBUG` setting can be omitted but then asserts will be inserted into the code to prevent logic errors.
+```bash
+g++ test.cpp -std=c++20 -O3 -DNDEBUG -I/path/to/install/include -o output
+```
 
-## Execution
+### Execution
 
-Once done, execute the binary adn you should be looking at the following results:
+Run the binary to check the results:
 
-@verbatim
+```bash
 $ ./output
- Test matrix:
-    [ 1 2 3 ]
-    [ 4 5 6 ]
-    [ 7 8 9 ]
-    [ 10 11 12 ]
-@endverbatim
+Test matrix:
+  [ 1 2 3 ]
+  [ 4 5 6 ]
+  [ 7 8 9 ]
+  [ 10 11 12 ]
+```
 
-That's it, **KIWAKU** is properly installed and ready to use.
+**KIWAKU** is now properly installed and ready for use.
