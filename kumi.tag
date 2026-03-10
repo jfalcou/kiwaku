@@ -113,8 +113,8 @@
     <member kind="function">
       <type>constexpr</type>
       <name>shape</name>
-      <anchorfile>structkwk_1_1shape_aeba960aa4cd8a10d78d08b902bab9f98.html</anchorfile>
-      <anchor>aeba960aa4cd8a10d78d08b902bab9f98</anchor>
+      <anchorfile>structkwk_1_1shape_a2ea4c35b9329dbdd066abc6f3986f3c1.html</anchorfile>
+      <anchor>a2ea4c35b9329dbdd066abc6f3986f3c1</anchor>
       <arglist>(T... d) noexcept</arglist>
     </member>
     <member kind="function">
@@ -127,8 +127,8 @@
     <member kind="function">
       <type></type>
       <name>explicit</name>
-      <anchorfile>structkwk_1_1shape_a521109d8051702c60bb4a0c2b8bff23a.html</anchorfile>
-      <anchor>a521109d8051702c60bb4a0c2b8bff23a</anchor>
+      <anchorfile>structkwk_1_1shape_ad684c480fb186cd5878235a5cc8be4e5.html</anchorfile>
+      <anchor>ad684c480fb186cd5878235a5cc8be4e5</anchor>
       <arglist>(static_order !=sizeof...(D2)) const expr shape(shape&lt; D2... &gt; const &amp;other) noexcept</arglist>
     </member>
     <member kind="function">
@@ -155,8 +155,8 @@
     <member kind="function">
       <type>constexpr auto</type>
       <name>operator()</name>
-      <anchorfile>structkwk_1_1shape_acb9e3582270f53c087a2ebbd8cf5f288.html</anchorfile>
-      <anchor>acb9e3582270f53c087a2ebbd8cf5f288</anchor>
+      <anchorfile>structkwk_1_1shape_ab71fee9c1441dd393f86f4812f316413.html</anchorfile>
+      <anchor>ab71fee9c1441dd393f86f4812f316413</anchor>
       <arglist>(Slicers const &amp;... s) const noexcept</arglist>
     </member>
     <member kind="function">
@@ -238,7 +238,7 @@
       <type>constexpr auto</type>
       <name>linearize</name>
       <anchorfile>structkwk_1_1stride.html</anchorfile>
-      <anchor>ae51cf0a1e1fd47613929afe91753bc98</anchor>
+      <anchor>a46e1723618e953c866a041ed3a3a1973</anchor>
       <arglist>(Is... is) const noexcept</arglist>
     </member>
     <member kind="function">
@@ -756,8 +756,8 @@
     <member kind="function">
       <type>constexpr auto</type>
       <name>compress</name>
-      <anchorfile>namespacekwk_a84e058edb95a77ea7690c14f343b06d7.html</anchorfile>
-      <anchor>a84e058edb95a77ea7690c14f343b06d7</anchor>
+      <anchorfile>namespacekwk_ace7d01421d9445cc848356101b2ec6f3.html</anchorfile>
+      <anchor>ace7d01421d9445cc848356101b2ec6f3</anchor>
       <arglist>(shape&lt; D... &gt; const &amp;s) noexcept</arglist>
     </member>
     <member kind="function">
@@ -819,8 +819,8 @@
     <member kind="function">
       <type>constexpr auto</type>
       <name>linear_index</name>
-      <anchorfile>group__utility_gae18793767c7f746a447cdb28c9237756.html</anchorfile>
-      <anchor>gae18793767c7f746a447cdb28c9237756</anchor>
+      <anchorfile>group__utility_ga613fbca2c1e136d2561b4b572dcd599f.html</anchorfile>
+      <anchor>ga613fbca2c1e136d2561b4b572dcd599f</anchor>
       <arglist>(shape&lt; S... &gt; const &amp;sh, Indexes const &amp;indexes) noexcept</arglist>
     </member>
     <member kind="function">
@@ -1365,8 +1365,8 @@
     <member kind="function">
       <type>constexpr auto</type>
       <name>kwk::linear_index</name>
-      <anchorfile>group__utility_gae18793767c7f746a447cdb28c9237756.html</anchorfile>
-      <anchor>gae18793767c7f746a447cdb28c9237756</anchor>
+      <anchorfile>group__utility_ga613fbca2c1e136d2561b4b572dcd599f.html</anchorfile>
+      <anchor>ga613fbca2c1e136d2561b4b572dcd599f</anchor>
       <arglist>(shape&lt; S... &gt; const &amp;sh, Indexes const &amp;indexes) noexcept</arglist>
     </member>
     <member kind="function">
