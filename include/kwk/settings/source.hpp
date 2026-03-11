@@ -11,7 +11,7 @@ namespace kwk
 {
   namespace _
   {
-    template<typename T, auto S> struct array_option;
+    template<typename T, std::size_t S> struct array_option;
     template<typename T> struct pointer_option;
     template<typename T> struct range_option;
 
@@ -44,7 +44,7 @@ namespace kwk
       using value_type = std::remove_const_t<T>;
       using reference = std::add_lvalue_reference<T>;
       using const_reference = std::add_lvalue_reference<T const>;
-      using point = std::add_pointer_t<T>;
+      using pointer = std::add_pointer_t<T>;
       using const_pointer = std::add_pointer_t<T const>;
 
       static constexpr auto name() { return kumi::str{"Source"}; }
@@ -69,7 +69,7 @@ namespace kwk
       constexpr auto operator()(base::identifier_type) const { return *this; }
     };
 
-    template<typename T, auto S> struct array_option : source_option<T>
+    template<typename T, std::size_t S> struct array_option : source_option<T>
     {
       using base = source_option<T>;
       T* data_;
