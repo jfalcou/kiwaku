@@ -37,6 +37,7 @@ namespace kwk
 
 #include <kwk/settings/allocator.hpp>
 #include <kwk/settings/axis.hpp>
+#include <kwk/settings/generator.hpp>
 #include <kwk/settings/indexing.hpp>
 #include <kwk/settings/kind.hpp>
 #include <kwk/settings/source.hpp>

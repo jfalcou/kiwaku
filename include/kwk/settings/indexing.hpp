@@ -39,6 +39,10 @@ namespace kwk
     };
   }
 
+  //================================================================================================
+  //! @ingroup  settings
+  //! @brief    Indexing setting for kwk::table
+  //================================================================================================
   inline constexpr _::indexing_id indexing{};
 
   template<typename T> constexpr _::indexing_option<T> strategy(T = {})
@@ -46,6 +50,10 @@ namespace kwk
     return {};
   }
 
+  // These objects are to be implemented properly. They are used as placeholders atm
+  // The idea seems to be that each of them expose some operator[] taking either pos or
+  // pos + shape and return the index of the element to index in the storage or smth along
+  // those lines, essentially serving as the Pi function over a fiber
   struct canonical_
   {
   };
@@ -87,28 +95,20 @@ namespace kwk
   };
 
   // Basic strategies
-  constexpr inline auto canonical = strategy<canonical_>();
-  constexpr inline auto safe = strategy<safe_>();
+  inline constexpr auto canonical = strategy<canonical_>();
+  inline constexpr auto safe = strategy<safe_>();
 
   // Interpolation strategies
-  constexpr inline auto linear = strategy<linear_>();
-  constexpr inline auto nearest = strategy<nearest_>();
-  constexpr inline auto affine = strategy<affine_>();
+  inline constexpr auto linear = strategy<linear_>();
+  inline constexpr auto nearest = strategy<nearest_>();
+  inline constexpr auto affine = strategy<affine_>();
 
   // Space filling curves
-  constexpr inline auto morton = strategy<morton_>();
-  constexpr inline auto hilbert = strategy<hilbert_>();
+  inline constexpr auto morton = strategy<morton_>();
+  inline constexpr auto hilbert = strategy<hilbert_>();
 
   // Boundary condition
-  constexpr inline auto clamp = strategy<clamp_>();
-  constexpr inline auto tile = strategy<tile_>();
-  constexpr inline auto mirror = strategy<mirror_>();
-
-  /// Feels like these are fibers
-  // Interpolation
-  // Space filling curves
-  // wrapping : clamp, periodic, ? mirrored ?
-
-  // To be opposed to strides -> metric tensor
-  // which describe the canonical space
+  inline constexpr auto clamp = strategy<clamp_>();
+  inline constexpr auto tile = strategy<tile_>();
+  inline constexpr auto mirror = strategy<mirror_>();
 }
