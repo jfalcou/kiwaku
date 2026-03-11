@@ -26,7 +26,7 @@ namespace kwk
     @tparam Values A kumi::record containing the values of the options.
   **/
   //====================================================================================================================
-  template<int Flags, kumi::concepts::record_type Values> struct options : Values
+  template<int Flags, kumi::concepts::product_type Values> struct options : Values
   {
   private:
     auto& self() { return static_cast<Values&>(*this); }
@@ -103,5 +103,19 @@ namespace kwk
 
   /// Deduction guide for options, allows to construct an options object from a list of fields.
   template<kumi::concepts::field... Os>
+  requires(kumi::concepts::uniquely_named<Os...>)
   options(Os const&...) -> options<(_::as_flags<Os> | ... | 0), decltype(_::as_values(Os{}...))>;
+
+  /// Catch invalid option construction
+  template<typename T>
+  requires(!kumi::concepts::record_type<T>)
+  struct options<-1, T>
+  {
+    static_assert(kumi::concepts::record_type<T>, "Duplicate setting in options definition");
+    template<typename... Os> options(Os const&...) = delete;
+  };
+
+  template<kumi::concepts::field... Os>
+  requires(!kumi::concepts::uniquely_named<Os...>)
+  options(Os const&...) -> options<-1, kumi::tuple<Os...>>;
 }
