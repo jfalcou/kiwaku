@@ -106,9 +106,13 @@ namespace kwk
     }
   }
 
-  //================================================================================================
-  //! @ingroup  settings
-  //! @brief    Source setting for kwk::table and kwk::view
-  //================================================================================================
+  //====================================================================================================================
+  /**
+    @ingroup  settings-source
+    @brief Identifier for the source setting for containers
+
+    Identifies the source setting for KIWAKU containers, which specifies the source of the data for the container.
+  **/
+  //====================================================================================================================
   inline constexpr _::source_id source{};
 }

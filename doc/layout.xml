@@ -154,7 +154,8 @@
   </file>
   <!-- Layout definition for a group page -->
   <group>
-    <briefdescription visible="yes"/>
+    <briefdescription visible="no"/>
+    <detaileddescription title="Description"/>
     <groupgraph visible="$GROUP_GRAPHS"/>
     <memberdecl>
       <nestedgroups visible="yes" title=""/>

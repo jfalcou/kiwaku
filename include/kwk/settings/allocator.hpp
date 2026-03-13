@@ -15,12 +15,14 @@ namespace kwk
 
     struct allocator_id : kumi::identifier<allocator_id>
     {
-      template<concepts::allocator T> constexpr auto operator=(T const& cnst) const noexcept 
-      { 
-        return allocator_option<T>{ cnst }; 
+      template<concepts::allocator T> constexpr auto operator=(T const& cnst) const noexcept
+      {
+        return allocator_option<T>{cnst};
       }
 
-      template<typename T> requires (!concepts::allocator<T> ) constexpr auto operator=(T const&) const = delete;
+      template<typename T>
+      requires(!concepts::allocator<T>)
+      constexpr auto operator=(T const&) const = delete;
 
       friend constexpr auto to_str(allocator_id) { return kumi::str{"Allocator"}; }
     };
@@ -30,7 +32,7 @@ namespace kwk
       using element_type = T;
       using type = allocator_option<T>;
       using identifier_type = allocator_id;
-      
+
       T value;
 
       constexpr auto operator()(identifier_type) const { return *this; }
@@ -45,10 +47,12 @@ namespace kwk
       }
     };
   }
-  
-  //================================================================================================
-  //! @ingroup  settings
-  //! @brief    Allocator setting for kwk::table
-  //================================================================================================
+
+  /**
+    @ingroup  settings-allocator
+    @brief Identifier for the allocator setting for containers
+
+    Identifies the allocator setting for KIWAKU containers, which specifies the allocator used by the container.
+  **/
   inline constexpr _::allocator_id allocator{};
-} 
+}
