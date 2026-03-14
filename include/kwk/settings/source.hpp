@@ -69,6 +69,11 @@ namespace kwk
       constexpr auto operator()(base::identifier_type) const { return *this; }
     };
 
+    template<typename P> constexpr auto storage(pointer_option<P> const& source)
+    {
+      return source.data_;
+    }
+
     template<typename T, std::size_t S> struct array_option : source_option<T>
     {
       using base = source_option<T>;
@@ -78,6 +83,11 @@ namespace kwk
 
       constexpr auto operator()(base::identifier_type) const { return *this; }
     };
+
+    template<typename T, std::size_t S> constexpr auto storage(array_option<T, S> const& source)
+    {
+      return source.data_;
+    }
 
     template<typename T> struct range_option : source_option<T>
     {
@@ -89,6 +99,11 @@ namespace kwk
 
       constexpr auto operator()(base::identifier_type) const { return *this; }
     };
+
+    template<typename T> constexpr auto storage(range_option<T> const& source)
+    {
+      return source.data_;
+    }
   }
 
   //================================================================================================

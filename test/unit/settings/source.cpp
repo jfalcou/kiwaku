@@ -40,25 +40,31 @@ TTS_CASE("Check if special source case behave as expected")
   {
     auto opt = kwk::options(kwk::source = a);
     TTS_TYPE_IS(std::remove_cvref_t<decltype(opt[kwk::source])>, (kwk::_::array_option<int, 10>));
+    TTS_EQUAL(storage(opt[kwk::source]), a.data());
   }
   {
     auto opt = kwk::options(kwk::source = f_sp);
     TTS_TYPE_IS(decltype(opt[kwk::source]), (kwk::_::array_option<int, 5>));
+    TTS_EQUAL(storage(opt[kwk::source]), f_sp.data());
   }
   {
     auto opt = kwk::options(kwk::source = v);
     TTS_TYPE_IS(decltype(opt[kwk::source]), (kwk::_::range_option<float>));
+    TTS_EQUAL(storage(opt[kwk::source]), v.data());
   }
   {
     auto opt = kwk::options(kwk::source = d_sp);
     TTS_TYPE_IS(decltype(opt[kwk::source]), (kwk::_::range_option<float>));
+    TTS_EQUAL(storage(opt[kwk::source]), d_sp.data());
   }
   {
     auto opt = kwk::options(kwk::source = c_array);
     TTS_TYPE_IS(decltype(opt[kwk::source]), (kwk::_::array_option<long, 10>));
+    TTS_EQUAL(storage(opt[kwk::source]), &c_array[0]);
   }
   {
     auto opt = kwk::options(kwk::source = ptr);
     TTS_TYPE_IS(decltype(opt[kwk::source]), (kwk::_::pointer_option<double>));
+    TTS_EQUAL(storage(opt[kwk::source]), ptr);
   }
 };
