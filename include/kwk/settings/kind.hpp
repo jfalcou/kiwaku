@@ -9,7 +9,7 @@
 
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<typename T> struct kind_option;
 
@@ -25,10 +25,11 @@ namespace kwk
       using element_type = T;
       using type = kind_option<T>;
       using identifier_type = kind_id;
+      using label_type = kumi::str;
 
       constexpr auto operator()(identifier_type) const { return *this; }
 
-      static constexpr auto name() { return kumi::str{"Kind"}; }
+      static constexpr label_type label() { return kumi::str{"Kind"}; }
 
       template<typename CharT, typename Traits>
       friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
@@ -64,7 +65,7 @@ namespace kwk
     Identifies the kind setting for KIWAKU containers, which specifies the type to be used within the container.
   **/
   //====================================================================================================================
-  inline constexpr _::kind_id kind = {};
+  inline constexpr __::kind_id kind = {};
 
   //====================================================================================================================
   /**
@@ -75,7 +76,7 @@ namespace kwk
     @see  kind
   **/
   //====================================================================================================================
-  template<typename T> constexpr _::kind_option<T> as(T = {})
+  template<typename T> constexpr __::kind_option<T> as(T = {})
   {
     return {};
   }

@@ -9,7 +9,7 @@
 
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<kumi::concepts::record_type T> struct axis_option;
 
@@ -44,5 +44,5 @@ namespace kwk
     };
   }
 
-  inline constexpr _::axis_id axis{};
+  inline constexpr __::axis_id axis{};
 }

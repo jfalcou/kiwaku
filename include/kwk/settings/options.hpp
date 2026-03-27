@@ -6,8 +6,6 @@
 */
 //======================================================================================================================
 #pragma once
-#include <kwk/detail/abi.hpp>
-#include <kwk/detail/settings.hpp>
 
 namespace kwk
 {
@@ -44,7 +42,7 @@ namespace kwk
 
       @param os A variadic list of fields, which can be either flags or values.
     **/
-    template<kumi::concepts::field... Os> constexpr options(Os const&... os) : Values(_::as_values(os...)) {}
+    template<kumi::concepts::field... Os> constexpr options(Os const&... os) : Values(__::as_values(os...)) {}
 
     /**
       @brief Inserts the activated flags and the values of the options in an output stream.
@@ -77,7 +75,7 @@ namespace kwk
     **/
     template<kumi::concepts::identifier T> static constexpr bool contains(T const& kw) noexcept
     {
-      if constexpr (_::is_enumerated<T>::value) return validate<T>();
+      if constexpr (__::is_enumerated<T>::value) return validate<T>();
       else return kumi::contains(Values{}, kw);
     }
 
@@ -95,7 +93,7 @@ namespace kwk
     **/
     template<kumi::concepts::identifier T> constexpr auto operator[](T const& kw) const noexcept
     {
-      if constexpr (_::is_enumerated<T>::value) return validate<T>();
+      if constexpr (__::is_enumerated<T>::value) return validate<T>();
       else if constexpr (contains(T{})) return self()[kw];
       else return kumi::none;
     }
@@ -104,7 +102,7 @@ namespace kwk
   /// Deduction guide for options, allows to construct an options object from a list of fields.
   template<kumi::concepts::field... Os>
   requires(kumi::concepts::uniquely_named<Os...>)
-  options(Os const&...) -> options<(_::as_flags<Os> | ... | 0), decltype(_::as_values(Os{}...))>;
+  options(Os const&...) -> options<(__::as_flags<Os> | ... | 0), decltype(__::as_values(Os{}...))>;
 
   /// Catch invalid option construction
   template<typename T>

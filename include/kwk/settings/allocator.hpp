@@ -9,7 +9,7 @@
 
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<typename T> struct allocator_option;
 
@@ -54,5 +54,5 @@ namespace kwk
 
     Identifies the allocator setting for KIWAKU containers, which specifies the allocator used by the container.
   **/
-  inline constexpr _::allocator_id allocator{};
+  inline constexpr __::allocator_id allocator{};
 }

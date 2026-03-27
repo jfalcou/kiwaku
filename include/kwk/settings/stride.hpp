@@ -9,7 +9,7 @@
 
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<kumi::concepts::projection_map T> struct stride_option;
 
@@ -44,5 +44,5 @@ namespace kwk
     };
   }
 
-  inline constexpr _::stride_id stride{};
+  inline constexpr __::stride_id stride{};
 }

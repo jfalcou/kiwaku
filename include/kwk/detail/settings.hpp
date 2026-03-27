@@ -7,10 +7,7 @@
 //======================================================================================================================
 #pragma once
 
-#include <kumi/kumi.hpp>
-#include <iosfwd>
-
-namespace kwk::_
+namespace kwk::__
 {
   /*
     A flag acts as both an identifier and a boolean value. It is identified by its name and a type.

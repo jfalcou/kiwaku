@@ -9,7 +9,7 @@
 
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<typename T> struct indexing_option;
 
@@ -43,9 +43,9 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Indexing setting for kwk::table
   //================================================================================================
-  inline constexpr _::indexing_id indexing{};
+  inline constexpr __::indexing_id indexing{};
 
-  template<typename T> constexpr _::indexing_option<T> strategy(T = {})
+  template<typename T> constexpr __::indexing_option<T> strategy(T = {})
   {
     return {};
   }

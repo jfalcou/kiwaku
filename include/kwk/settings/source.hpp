@@ -7,9 +7,11 @@
 //======================================================================================================================
 #pragma once
 
+#include <kwk/concepts/range.hpp>
+
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<typename T, std::size_t S> struct array_option;
     template<typename T> struct pointer_option;
@@ -40,6 +42,7 @@ namespace kwk
       using element_type = T;
       using type = source_option<T>;
       using identifier_type = source_id;
+      using label_type = kumi::str;
 
       using value_type = std::remove_const_t<T>;
       using reference = std::add_lvalue_reference<T>;
@@ -47,7 +50,7 @@ namespace kwk
       using pointer = std::add_pointer_t<T>;
       using const_pointer = std::add_pointer_t<T const>;
 
-      static constexpr auto name() { return kumi::str{"Source"}; }
+      static constexpr label_type label() { return kumi::str{"Source"}; }
 
       template<typename CharT, typename Traits>
       friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
@@ -114,5 +117,5 @@ namespace kwk
     Identifies the source setting for KIWAKU containers, which specifies the source of the data for the container.
   **/
   //====================================================================================================================
-  inline constexpr _::source_id source{};
+  inline constexpr __::source_id source{};
 }

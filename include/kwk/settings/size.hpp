@@ -9,7 +9,7 @@
 
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<kumi::concepts::projection_map T> struct size_option;
 
@@ -44,5 +44,5 @@ namespace kwk
     };
   }
 
-  inline constexpr _::size_id size{};
+  inline constexpr __::size_id size{};
 }

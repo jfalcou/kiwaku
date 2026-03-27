@@ -12,7 +12,7 @@ namespace kwk
 {
 }
 
-#include <kwk/detail.hpp>
+#include <kwk/configuration.hpp>
 #include <kwk/concepts.hpp>
 #include <kwk/utility.hpp>
 #include <kwk/settings.hpp>

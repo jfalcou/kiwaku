@@ -6,8 +6,7 @@
 */
 //==================================================================================================
 #include "test.hpp"
-#include <kwk/settings/options.hpp>
-#include <kwk/settings/kind.hpp>
+#include <kwk/settings.hpp>
 
 TTS_CASE("Predefined kind settings")
 {

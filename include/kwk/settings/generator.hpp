@@ -9,7 +9,7 @@
 
 namespace kwk
 {
-  namespace _
+  namespace __
   {
     template<typename T> struct generator_option;
 
@@ -49,5 +49,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Generator setting for kwk::table and kwk::view
   //================================================================================================
-  inline constexpr _::generator_id generator{};
+  inline constexpr __::generator_id generator{};
 }

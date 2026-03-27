@@ -52,13 +52,14 @@ namespace kwk
   //====================================================================================================================
 }
 
+#include <kwk/detail/detail.hpp>
 #include <kwk/settings/options.hpp>
 
 #include <kwk/settings/allocator.hpp>
-//#include <kwk/settings/axis.hpp>
+// #include <kwk/settings/axis.hpp>
 #include <kwk/settings/generator.hpp>
 #include <kwk/settings/indexing.hpp>
 #include <kwk/settings/kind.hpp>
-//#include <kwk/settings/size.hpp>
+// #include <kwk/settings/size.hpp>
 #include <kwk/settings/source.hpp>
-//#include <kwk/settings/stride.hpp>
+// #include <kwk/settings/stride.hpp>
