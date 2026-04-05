@@ -28,7 +28,7 @@ namespace kwk
 
       virtual void* do_allocate(std::size_t) = 0;
       virtual void do_deallocate(void*) = 0;
-      virtual std::unique_ptr<api_t> clone() const = 0;
+      virtual api_t* clone() const = 0;
     };
 
     template<concepts::allocator T> struct model_t final : api_t
@@ -43,56 +43,36 @@ namespace kwk
 
       void do_deallocate(void* b) override { deallocate(object, b); }
 
-      std::unique_ptr<api_t> clone() const override { return std::make_unique<model_t>(object); }
+      api_t* clone() const override { return new model_t(object); }
 
     private:
       T object;
     };
 
   public:
-    /// Default constructor
     any_allocator() = default;
 
-    /// Move constructor
-    any_allocator(any_allocator&& a) = default;
+    template<typename T> any_allocator(T&& other) : object(new model_t<std::decay_t<T>>(KWK_FWD(other))) {}
 
-    /// Move assignment operator
-    any_allocator& operator=(any_allocator&& other) = default;
-
-    /// Copy constructor
-    any_allocator(any_allocator const& a) : object(a.object->clone()) {}
-
-    /// Copy assignment operator
-    any_allocator& operator=(any_allocator const& other)
-    {
-      any_allocator that(other);
-      swap(that);
-      return *this;
-    }
-
-    /// Constructor from an arbitrary allocator type
-    template<typename T> any_allocator(T&& other) : object(std::make_unique<model_t<std::decay_t<T>>>(KWK_FWD(other)))
-    {
-    }
-
-    /// Assignment from an arbitrary allocator
     template<typename T> any_allocator& operator=(T&& other)
     {
-      any_allocator that(KWK_FWD(other));
-      swap(that);
+      object = clone_ptr<api_t>(new model_t<std::decay_t<T>>(KWK_FWD(other)));
       return *this;
     }
 
-    /// Swap the contents of two instance of kwk::heap_allocator
-    void swap(any_allocator& other) noexcept { object.swap(other.object); }
+    any_allocator(any_allocator&&) = default;
+    any_allocator& operator=(any_allocator&&) = default;
+    any_allocator(any_allocator const&) = default;
+    any_allocator& operator=(any_allocator const&) = default;
+
+    void swap(any_allocator& other) noexcept { std::swap(object, other.object); }
 
     friend void swap(any_allocator& a, any_allocator& b) noexcept { a.swap(b); }
 
-    /// Access to internal allocator pointer
     api_t* get() const { return object.get(); }
 
   private:
-    std::unique_ptr<api_t> object;
+    __::clone_ptr<api_t> object;
   };
 
   //====================================================================================================================

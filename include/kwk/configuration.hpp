@@ -20,5 +20,8 @@ namespace kwk::config
 {
   /// @brief Maximum number of dimensions for KIWAKU's containers
   inline constexpr int max_dimensions = 32;
+
+  /// @brief Default size type for KIWAKU's shapes and containers
+  using default_size_type = int;
 }
 #endif

@@ -8,6 +8,7 @@
 #include "test.hpp"
 #include <kwk/concepts.hpp>
 #include <kwk/utility.hpp>
+#include <algorithm>
 
 struct box
 {

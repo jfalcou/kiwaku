@@ -10,7 +10,8 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstdint>
-#include <memory>
-
+#include <iterator>
+#include <type_traits>
+#include <concepts>
 
 #include <kumi/kumi.hpp>

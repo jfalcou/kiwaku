@@ -20,3 +20,4 @@ namespace kwk
 
 #include <kwk/detail/detail.hpp>
 #include <kwk/utility/memory.hpp>
+#include <kwk/utility/shape.hpp>

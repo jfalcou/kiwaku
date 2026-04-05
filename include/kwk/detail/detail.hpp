@@ -9,5 +9,6 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/dependencies.hpp>
+#include <kwk/detail/clone_ptr.hpp>
 #include <kwk/detail/settings.hpp>
 #include <kwk/detail/mixed_sequence.hpp>
