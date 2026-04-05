@@ -1,0 +1,144 @@
+//======================================================================================================================
+/*
+  KIWAKU - Containers Well Made
+  Copyright : KIWAKU Project Contributors
+  SPDX-License-Identifier: BSL-1.0
+*/
+//======================================================================================================================
+#pragma once
+
+#include <kwk/utility/shape_descriptor.hpp>
+
+namespace kwk
+{
+  namespace __
+  {
+    template<int N>
+    struct normalize_dim : std::conditional<N == 0, kwk::config::default_size_type, std::integral_constant<int, N>>
+    {
+    };
+
+    template<kwk::shape_descriptor S> struct as_sequence
+    {
+      static constexpr auto build()
+      {
+        return []<std::size_t... I>(std::index_sequence<I...>) {
+          return kwk::__::mixed_sequence(typename normalize_dim<S.dims[I]>::type{}...);
+        }(std::make_index_sequence<S.ndim>{});
+      }
+
+      using type = decltype(build());
+    };
+  }
+
+  //====================================================================================================================
+  /**
+    @brief Shape of multi-dimensional container
+
+    Template class representing the shape (dimensions) of multi-dimensional containers in KIWAKU.
+    A shape can have both compile-time known dimensions and runtime dimensions, as specified
+    by the shape descriptor template parameter.
+
+    The shape class provides a unified interface to access dimension sizes, regardless of whether they are static or
+    dynamic. Static dimensions are stored as compile-time constants, while dynamic dimensions are stored in an internal
+    array.
+
+    To do so, shape is parameterized by a shape_descriptor that defines the structure of the shape, including
+    the number of dimensions and which dimensions are static vs dynamic. The shape_descriptor is a compile-time
+    construct that encodes this information in its type. It can either be a single integral constant representing
+    the number of dynamic dimensions, or a list of dimensions where static dimensions are represented by
+    their compile-time values and dynamic dimensions are represented by the KIWAKU wildcard: `kwk::_`.
+
+    For examples, consider the following shape descriptors:
+    @code
+    // A shape with 4 dynamic dimensions
+    kwk::shape<4> shp_4_dyn;
+
+    // A shape where the first two dimensions are static (3 and 4) and the last dimension is dynamic (`kwk::_`)
+    kwk::shape<{3, 4, kwk::_}> shp_3_4_dyn;
+
+    // A shape where the first dimension is static (5) and the next two dimensions are dynamic
+    kwk::shape<{5, kwk::_, kwk::_}> shp_5_dyn_dyn;
+
+    // A shape where all dimensions are static (2, 3, and 4)
+    kwk::shape<{2, 3, 4}> shp_2_3_4;
+    @endcode
+
+    Beware that `shape<4>`and `shape<{4}>` are not the same : the first one is a shape with 4 dynamic dimensions
+    while the second one is a shape with 1 static dimension of size 4.
+
+    @tparam Descriptor A shape_descriptor that defines the structure of the shape, including
+                      the number of dimensions and which dimensions are static vs dynamic.
+    @tparam SizeType   The type used to store runtime dimension sizes (default: int).
+
+    @see shape_descriptor
+  **/
+  //====================================================================================================================
+  template<shape_descriptor Descriptor, typename SizeType = kwk::config::default_size_type> struct shape
+  {
+    /// @brief The shape descriptor associated with this shape
+    static constexpr auto descriptor = Descriptor;
+
+    /// @brief Number of dimensions in this shape
+    static constexpr auto ndim = Descriptor.ndim;
+
+    /// @brief Default constructor
+    constexpr shape() = default;
+
+    /// @brief Internal type for efficient storage of hybrid static/dynamic dimensions
+    using storage_type = __::as_sequence<Descriptor>::type;
+
+    /**
+      @brief Constructor from dimension sizes
+
+      Constructs a shape with a set of dimension sizes.
+      Does not participate in overload resolution if the provided sizes do not match the expected structure of the shape
+      (e.g., static dimensions must match their compile-time values) or if they are not convertible to the specified
+      SizeType.
+
+      @param s Dimension sizes, which quantity must match ndim.
+    **/
+    template<std::convertible_to<SizeType>... S>
+    requires(sizeof...(S) == Descriptor.ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
+    constexpr shape(S... s) : data_{s...}
+    {
+    }
+
+    /**
+      @brief Constructor from partial dimension sizes
+
+      Constructs a shape with a set of dimension sizes, where the number of provided sizes is less than ndim.
+      The missing dimensions are filled with zeros. Does not participate in overload resolution if the provided sizes
+      do not match the expected descriptor of the shape (e.g., static dimensions must match their compile-time values)
+      or if they are not convertible to the specified SizeType.
+
+      @param s Dimension sizes, which quantity must be less than ndim.
+    **/
+    template<std::convertible_to<SizeType>... S>
+    requires(sizeof...(S) < Descriptor.ndim)
+    constexpr shape(S... s)
+      : data_{[&]<std::size_t... I>(std::index_sequence<I...>) {
+          return storage_type{s..., kumi::index<I * 0>...};
+        }(std::make_index_sequence<Descriptor.ndim - sizeof...(S)>{})}
+    {
+    }
+
+    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape const& s) { return get<I>(s.data_); }
+
+    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape& s) { return get<I>(s.data_); }
+
+  private:
+    storage_type data_;
+  };
+}
+
+template<kwk::shape_descriptor Descriptor, typename SizeType>
+struct std::tuple_size<kwk::shape<Descriptor, SizeType>> : std::integral_constant<std::size_t, Descriptor.ndim>
+{
+};
+
+template<std::size_t I, kwk::shape_descriptor Descriptor, typename SizeType>
+struct std::tuple_element<I, kwk::shape<Descriptor, SizeType>>
+{
+  using type = decltype(get<I>(std::declval<kwk::shape<Descriptor, SizeType>>()));
+};
