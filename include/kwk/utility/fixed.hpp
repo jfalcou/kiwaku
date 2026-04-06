@@ -8,7 +8,6 @@
 #pragma once
 
 #include <kwk/configuration.hpp>
-#include <bit>
 #include <cstdint>
 #include <iosfwd>
 
