@@ -81,25 +81,25 @@ namespace kwk
     /// @brief Binary addition operator that computes the sum of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator+(constant, constant<M>) noexcept
     {
-      return constant<N + M>{};
+      return constant<static_cast<std::int64_t>(N) + static_cast<std::int64_t>(M)>{};
     }
 
     /// @brief Binary subtraction operator that computes the difference of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator-(constant, constant<M>) noexcept
     {
-      return constant<N - M>{};
+      return constant<static_cast<std::int64_t>(N) - static_cast<std::int64_t>(M)>{};
     }
 
     /// @brief Binary multiplication operator that computes the product of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator*(constant, constant<M>) noexcept
     {
-      return constant<N * M>{};
+      return constant<static_cast<std::int64_t>(N) * static_cast<std::int64_t>(M)>{};
     }
 
     /// @brief Binary division operator that computes the quotient of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator/(constant, constant<M>) noexcept
     {
-      return constant<N / M>{};
+      return constant<static_cast<std::int64_t>(N) / static_cast<std::int64_t>(M)>{};
     }
 
     /// @brief Equality operator that compares the values of two constants at compile time.
@@ -113,7 +113,7 @@ namespace kwk
     @related constant
   **/
   //================================================================================================
-  template<auto N> inline constexpr auto fixed = constant<__::clamp<N>()>{};
+  template<auto N> inline constexpr auto fixed = constant<N>{};
 
   inline namespace literals
   {
@@ -129,7 +129,7 @@ namespace kwk
     //==============================================================================================
     template<char... c> KWK_TRIVIAL constexpr auto operator""_c() noexcept
     {
-      return fixed<__::clamp<__::b10<c...>()>()>;
+      return fixed<__::b10<c...>()>;
     }
   }
 }
