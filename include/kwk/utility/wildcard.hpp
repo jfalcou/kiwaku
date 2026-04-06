@@ -15,7 +15,7 @@ namespace kwk
     {
       static constexpr int value = 0;
 
-      consteval operator int() const noexcept { return 0; }
+      consteval operator int() const noexcept { return value; }
     };
   }
 

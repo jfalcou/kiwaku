@@ -14,6 +14,7 @@ namespace kwk
 {
   //====================================================================================================================
   /**
+    @ingroup shape-utility
     @brief Shape hybrid descriptor
 
     Helper class that describes the shape of multi-dimensional containers in KIWAKU.
@@ -76,4 +77,29 @@ namespace kwk
     /// @brief Equality comparison operator (default implementation)
     consteval bool operator==(shape_descriptor const&) const = default;
   };
+
+  namespace __
+  {
+    // Build the descriptor from a pack of types
+    template<typename... Ts> consteval shape_descriptor make_descriptor()
+    {
+      auto val = []<typename T>() {
+        if constexpr (is_dynamic_dim<T>::value) return _;
+        else return T::value;
+      };
+
+      shape_descriptor d;
+      d.ndim = sizeof...(Ts);
+
+      int i = 0;
+      ((d.dims[i++] = val.template operator()<Ts>()), ...);
+
+      // Re-evaluate fully_dynamic flag
+      d.fully_dynamic = true;
+      for (int j = 0; j < d.ndim; ++j)
+        if (d.dims[j] != _) d.fully_dynamic = false;
+
+      return d;
+    }
+  }
 }
