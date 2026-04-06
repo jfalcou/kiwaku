@@ -19,8 +19,9 @@ namespace kwk
     };
   }
 
-  /// Global wildcard instance
+  /// @brief Global wildcard instance
   inline constexpr __::wildcard_t _{};
 
+  /// @brief Checks if a type is the wildcard type
   template<typename T> inline constexpr bool is_wildcard = std::same_as<std::remove_cvref_t<T>, __::wildcard_t>;
 }
