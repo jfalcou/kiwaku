@@ -20,24 +20,6 @@ namespace kwk
 }
 
 #include <kwk/detail/detail.hpp>
+#include <kwk/utility/fixed.hpp>
 #include <kwk/utility/memory.hpp>
 #include <kwk/utility/shape.hpp>
-
-namespace kwk
-{
-  inline namespace literals
-  {
-#if !defined(KWK_DOXYGEN_INVOKED)
-    using kumi::operator""_c;
-#else
-    //==================================================================================================================
-    /**
-      @ingroup utility
-      @brief Forms a integral constant literal of the desired value.
-      @return An implementation-defined integral constant for the specified integral value
-    **/
-    //==================================================================================================================
-    template<char... c> constexpr _::_ operator""_c() noexcept;
-#endif
-  }
-}
