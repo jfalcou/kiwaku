@@ -9,6 +9,14 @@
 
 namespace kwk
 {
+  //====================================================================================================================
+  /**
+  @ingroup settings
+  @defgroup settings-kind  Container Data Type
+  @brief Components related to the data type of the container elements
+  **/
+  //===================================================================================================================
+
   namespace __
   {
     template<typename T> struct kind_option;

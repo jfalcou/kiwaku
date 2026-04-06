@@ -11,6 +11,14 @@
 
 namespace kwk
 {
+  //====================================================================================================================
+  /**
+    @ingroup settings
+    @defgroup settings-source  Container Source
+    @brief Components related to the source of the container
+  **/
+  //====================================================================================================================
+
   namespace __
   {
     template<typename T, std::size_t S> struct array_option;

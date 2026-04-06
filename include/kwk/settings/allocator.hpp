@@ -11,6 +11,16 @@
 
 namespace kwk
 {
+  //====================================================================================================================
+  /**
+    @defgroup settings-allocator  Container Allocator
+    @ingroup settings
+
+    This group includes components that define the allocator used by KIWAKU containers, allowing users to specify
+    custom memory management strategies for their containers.
+  **/
+  //====================================================================================================================
+
   namespace __
   {
     template<typename T> struct allocator_option;

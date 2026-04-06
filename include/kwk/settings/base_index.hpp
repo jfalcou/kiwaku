@@ -11,6 +11,14 @@
 
 namespace kwk
 {
+  //====================================================================================================================
+  /**
+    @ingroup settings
+    @defgroup settings-base-index  Container Base Index
+    @brief Components related to the base index of the container
+  **/
+  //====================================================================================================================
+
   struct base_index_id : kumi::identifier<base_index_id>
   {
     using kumi::identifier<base_index_id>::operator=;

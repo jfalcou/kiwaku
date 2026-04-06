@@ -11,7 +11,7 @@ namespace kwk
 {
   //====================================================================================================================
   /**
-    @ingroup options
+    @ingroup settings
     @class options
     @brief A set of options represented as a kumi::record containing a combination of flags and values.
 
