@@ -65,7 +65,7 @@ namespace kwk
 
     template<typename C, typename Ct> friend auto& operator<<(std::basic_ostream<C, Ct>& os, constant)
     {
-      return os << '\'' << +N << '\'';
+      return os << '\'' << +value << '\'';
     }
 
     /// @brief Unary minus operator that negates the constant value.
@@ -81,29 +81,40 @@ namespace kwk
     /// @brief Binary addition operator that computes the sum of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator+(constant, constant<M>) noexcept
     {
-      return constant<static_cast<std::int64_t>(N) + static_cast<std::int64_t>(M)>{};
+      return constant<value + constant<M>::value>{};
     }
 
     /// @brief Binary subtraction operator that computes the difference of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator-(constant, constant<M>) noexcept
     {
-      return constant<static_cast<std::int64_t>(N) - static_cast<std::int64_t>(M)>{};
+      return constant<value - constant<M>::value>{};
     }
 
     /// @brief Binary multiplication operator that computes the product of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator*(constant, constant<M>) noexcept
     {
-      return constant<static_cast<std::int64_t>(N) * static_cast<std::int64_t>(M)>{};
+      return constant<value * constant<M>::value>{};
     }
 
     /// @brief Binary division operator that computes the quotient of two constants at compile time.
     template<auto M> KWK_TRIVIAL friend constexpr auto operator/(constant, constant<M>) noexcept
     {
-      return constant<static_cast<std::int64_t>(N) / static_cast<std::int64_t>(M)>{};
+      return constant<value / constant<M>::value>{};
     }
 
     /// @brief Equality operator that compares the values of two constants at compile time.
-    template<auto M> friend constexpr bool operator==(constant, constant<M>) noexcept { return N == M; }
+    template<auto M> friend constexpr bool operator==(constant, constant<M>) noexcept
+    {
+      return std::cmp_equal(value, constant<M>::value);
+    }
+
+    /// @brief Equality operator that compares the values of two constants at compile time.
+    template<auto M> friend constexpr std::strong_ordering operator<=>(constant, constant<M>) noexcept
+    {
+      if (std::cmp_less(value, constant<M>::value)) return std::strong_ordering::less;
+      else if (std::cmp_greater(value, constant<M>::value)) return std::strong_ordering::greater;
+      else return std::strong_ordering::equal;
+    }
   };
 
   //================================================================================================
