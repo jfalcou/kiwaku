@@ -11,6 +11,13 @@
 
 namespace kwk
 {
+  namespace config
+  {
+    template<typename T> struct source_management
+    {
+    };
+  }
+
   //====================================================================================================================
   /**
     @ingroup settings
@@ -18,29 +25,18 @@ namespace kwk
     @brief Components related to the source of the container
   **/
   //====================================================================================================================
-
   namespace __
   {
-    template<typename T, std::size_t S> struct array_option;
-    template<typename T> struct pointer_option;
-    template<typename T> struct range_option;
-
     struct source_id : kumi::identifier<source_id>
     {
-      template<kwk::concepts::contiguous_static_range R> constexpr auto operator=(R&& r) const noexcept
+      template<typename T>
+      constexpr auto operator=(T&& t) const noexcept
+      requires(requires { config::source_management<T>::preprocess_source(KWK_FWD(t)); })
       {
-        return array_option<kumi::container_type_t<R>, kumi::container_size_v<R>>{&KWK_FWD(r[0])};
+        return config::source_management<T>::preprocess_source(KWK_FWD(t));
       }
 
-      template<kwk::concepts::contiguous_range R> constexpr auto operator=(R&& r) const noexcept
-      {
-        return range_option{std::data(KWK_FWD(r)), std::size(KWK_FWD(r))};
-      }
-
-      template<concepts::pointer P> constexpr auto operator=(P&& p) const noexcept
-      {
-        return pointer_option{KWK_FWD(p)};
-      }
+      template<typename T> constexpr auto operator=(T&& t) const = delete;
 
       friend constexpr auto to_str(source_id) { return kumi::str{"Source"}; };
     };
@@ -60,61 +56,13 @@ namespace kwk
 
       static constexpr label_type label() { return kumi::str{"Source"}; }
 
-      template<typename CharT, typename Traits>
-      friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-                                                           source_option const&) noexcept
-      {
-        return os << "Source: " << kumi::_::typer<T*>();
-      }
+      constexpr auto data() const { return data_; }
+
+      constexpr auto data() { return data_; }
+
+      pointer data_;
     };
 
-    template<typename P> struct pointer_option : source_option<P>
-    {
-      using base = source_option<P>;
-      P* data_;
-
-      constexpr pointer_option(P* p = nullptr) : data_(p) {}
-
-      template<typename Other> constexpr pointer_option(Other* o = {}) : data_(std::data(o)) {}
-
-      constexpr auto operator()(base::identifier_type) const { return *this; }
-    };
-
-    template<typename P> constexpr auto storage(pointer_option<P> const& source)
-    {
-      return source.data_;
-    }
-
-    template<typename T, std::size_t S> struct array_option : source_option<T>
-    {
-      using base = source_option<T>;
-      T* data_;
-
-      constexpr array_option(T* p = nullptr) : data_(p) {}
-
-      constexpr auto operator()(base::identifier_type) const { return *this; }
-    };
-
-    template<typename T, std::size_t S> constexpr auto storage(array_option<T, S> const& source)
-    {
-      return source.data_;
-    }
-
-    template<typename T> struct range_option : source_option<T>
-    {
-      using base = source_option<T>;
-      T* data_;
-      std::size_t size_;
-
-      constexpr range_option(T* p = nullptr, std::size_t s = 0) : data_(p), size_(s) {}
-
-      constexpr auto operator()(base::identifier_type) const { return *this; }
-    };
-
-    template<typename T> constexpr auto storage(range_option<T> const& source)
-    {
-      return source.data_;
-    }
   }
 
   //====================================================================================================================
@@ -127,3 +75,7 @@ namespace kwk
   //====================================================================================================================
   inline constexpr __::source_id source{};
 }
+
+#include <kwk/settings/source/pointer_source.hpp>
+#include <kwk/settings/source/array_source.hpp>
+#include <kwk/settings/source/range_source.hpp>

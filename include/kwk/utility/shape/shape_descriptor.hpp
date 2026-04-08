@@ -74,6 +74,8 @@ namespace kwk
       }
     }
 
+    consteval void add_rank(__::rank r) { dims[ndim++] = r.value; }
+
     /// @brief Equality comparison operator (default implementation)
     consteval bool operator==(shape_descriptor const&) const = default;
   };

@@ -73,10 +73,10 @@ namespace kwk
       @param  kw An instance of the flag or value to check.
       @return `true` if the flag is activated or if the value is present, `false` otherwise.
     **/
-    template<kumi::concepts::identifier T> static constexpr bool contains(T const& kw) noexcept
+    template<kumi::concepts::identifier T> static constexpr bool contains(T const&) noexcept
     {
       if constexpr (__::is_enumerated<T>::value) return validate<T>();
-      else return kumi::contains(Values{}, kw);
+      else return kumi::result::contains_t<Values, T>{};
     }
 
     /**
@@ -120,7 +120,7 @@ namespace kwk
   /// Deduction guide for options, allows to construct an options object from a list of fields.
   template<kumi::concepts::field... Os>
   requires(kumi::concepts::uniquely_named<Os...>)
-  options(Os const&...) -> options<(__::as_flags<Os> | ... | 0), decltype(__::as_values(Os{}...))>;
+  options(Os const&...) -> options<(__::as_flags<Os> | ... | 0), decltype(__::as_values(std::declval<Os>()...))>;
 
   /// Catch invalid option construction
   template<typename T>

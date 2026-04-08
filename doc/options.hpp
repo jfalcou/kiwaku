@@ -1,5 +1,7 @@
 #error This file is for documentation only - DO NOT INCLUDE
+
 /**
+
 @page options Options in kiwaku
 
 In kiwaku, instead of having different container types, one has a single type that differs in behavior depending on the 
