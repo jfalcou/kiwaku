@@ -103,12 +103,48 @@ namespace kwk
     }
   }
 
-  /// @brief
-  inline constexpr auto _1D = shape_descriptor{_};
-  inline constexpr auto _2D = shape_descriptor{_, _};
-  inline constexpr auto _3D = shape_descriptor{_, _, _};
-  inline constexpr auto _4D = shape_descriptor{_, _, _, _};
+  //====================================================================================================================
+  /**
+    @ingroup shape-utility
+    @brief Describe a  N-dimensions shape
+    @relates shape_descriptor
+  **/
+  //====================================================================================================================
+  template<int N> inline constexpr auto _nD = shape_descriptor{__::rank{N}};
 
-  template<int N> inline constexpr auto _ND = shape_descriptor{__::rank{N}};
+  //====================================================================================================================
+  /**
+    @ingroup shape-utility
+    @brief Describe a  1D shape
+    @relates shape_descriptor
+  **/
+  //====================================================================================================================
+  inline constexpr auto _1D = _nD<1>;
 
+  //====================================================================================================================
+  /**
+    @ingroup shape-utility
+    @brief Describe a  2D shape
+    @relates shape_descriptor
+  **/
+  //====================================================================================================================
+  inline constexpr auto _2D = _nD<2>;
+
+  //====================================================================================================================
+  /**
+    @ingroup shape-utility
+    @brief Describe a  3D shape
+    @relates shape_descriptor
+  **/
+  //====================================================================================================================
+  inline constexpr auto _3D = _nD<3>;
+
+  //====================================================================================================================
+  /**
+    @ingroup shape-utility
+    @brief Describe a  4D shape
+    @relates shape_descriptor
+  **/
+  //====================================================================================================================
+  inline constexpr auto _4D = _nD<4>;
 }

@@ -17,6 +17,14 @@ namespace kwk
     This module defines various functions, types and variables for improving Quality of Life when using **KIWAKU**.
   **/
   //====================================================================================================================
+
+  //====================================================================================================================
+  //! @defgroup meta-utility Meta-programming Utilities
+  //! @ingroup utility
+  //! @brief Meta-programming utilities
+  //!
+  //! This module defines various functions, types and variables to perform compile-time tasks.
+  //====================================================================================================================
 }
 
 #include <kwk/detail/detail.hpp>

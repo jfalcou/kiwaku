@@ -48,7 +48,7 @@ namespace kwk
 
   //====================================================================================================================
   /**
-    @ingroup utility
+    @ingroup shape-utility
     @brief Stride of multi-dimensional container
 
     The `stride` class template represents the stride of a multi-dimensional container, which is used to compute the

@@ -43,7 +43,7 @@ namespace kwk
 
   //====================================================================================================================
   /**
-    @ingroup utility
+    @ingroup meta-utility
     @brief Compile-time constant wrapper
 
     This type is a compile-time constant wrapper that provides some additional features over `std::integral_constant`:
@@ -119,7 +119,7 @@ namespace kwk
 
   //================================================================================================
   /**
-    @ingroup utility
+    @ingroup meta-utility
     @brief Provides a short-cut to define a compile-time constant value from a literal integer
     @related constant
   **/
@@ -130,7 +130,7 @@ namespace kwk
   {
     //==============================================================================================
     /**
-      @ingroup utility
+      @ingroup meta-utility
       @brief User-defined literal suffix for compile-time constant
 
       The underlying type is computed from the actual value to be the smallest fitting type.
