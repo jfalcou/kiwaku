@@ -16,6 +16,18 @@ namespace kwk
       static constexpr int value = 0;
 
       consteval operator int() const noexcept { return value; }
+
+      KWK_TRIVIAL friend constexpr bool operator==(wildcard_t, wildcard_t) { return true; }
+
+      KWK_TRIVIAL friend constexpr bool operator==(wildcard_t, auto) { return false; }
+
+      KWK_TRIVIAL friend constexpr bool operator==(auto, wildcard_t) { return false; }
+
+      KWK_TRIVIAL friend constexpr wildcard_t operator*(wildcard_t, wildcard_t) noexcept { return {}; }
+
+      KWK_TRIVIAL friend constexpr wildcard_t operator*(wildcard_t, auto) noexcept { return {}; }
+
+      KWK_TRIVIAL friend constexpr wildcard_t operator*(auto, wildcard_t) noexcept { return {}; }
     };
   }
 
