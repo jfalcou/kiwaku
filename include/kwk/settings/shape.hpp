@@ -7,8 +7,6 @@
 //======================================================================================================================
 #pragma once
 
-#include <kwk/utility/shape.hpp>
-
 namespace kwk
 {
   //====================================================================================================================
@@ -22,7 +20,10 @@ namespace kwk
   {
     struct shape_id : kumi::identifier<shape_id>
     {
-      // friend constexpr auto to_str(shape_id) { return kumi::str{"Shape"}; }
+    };
+
+    struct stride_id : kumi::identifier<stride_id>
+    {
     };
   }
 }

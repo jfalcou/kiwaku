@@ -15,6 +15,8 @@ namespace kwk
 {
   namespace __
   {
+    struct stride_id;
+
     //==================================================================================================================
     // Compute stride descriptor from a shape descriptor at compile time
     //==================================================================================================================
@@ -64,6 +66,19 @@ namespace kwk
   //====================================================================================================================
   template<shape_descriptor Descriptor, typename SizeType = kwk::config::default_size_type> struct stride
   {
+
+    //==================================================================================================================
+    // Shape is a field over itself
+    //==================================================================================================================
+    using element_type = stride;
+    using type = stride;
+    using identifier_type = __::stride_id;
+    using label_type = kumi::str;
+
+    constexpr auto operator()(identifier_type const&) const { return *this; }
+
+    static constexpr label_type label() { return kumi::str{"Stride"}; }
+
     static constexpr auto descriptor = Descriptor;
     static constexpr auto ndim = Descriptor.ndim;
 
