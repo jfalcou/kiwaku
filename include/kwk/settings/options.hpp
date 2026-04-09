@@ -80,6 +80,26 @@ namespace kwk
     }
 
     /**
+      @brief Returns the content of a flag or value in the options or a default value.
+
+      Returns if either:
+        + A given flag is activated in the options, in which case it returns `true`.
+        + A given identifier is present in the options, in which case it returns its associated value.
+        + Otherwise, it returns `other`.
+
+      @param kw     The identifier to look up.
+      @param other  Value to use when identifier is not present.
+      @return The value associated with the identifier if it is present in the options, `true` if it is an activated
+              flag, or `other` otherwise.
+    **/
+    template<kumi::concepts::identifier T, typename U> constexpr auto field_or(T const& kw, U other = {}) const noexcept
+    {
+      if constexpr (__::is_enumerated<T>::value) return validate<T>();
+      else if constexpr (contains(T{})) return self()[kw];
+      else return other;
+    }
+
+    /**
       @brief Returns the content of a flag or value in the options.
 
       Returns if either:
@@ -93,9 +113,7 @@ namespace kwk
     **/
     template<kumi::concepts::identifier T> constexpr auto operator[](T const& kw) const noexcept
     {
-      if constexpr (__::is_enumerated<T>::value) return validate<T>();
-      else if constexpr (contains(T{})) return self()[kw];
-      else return kumi::none;
+      return field_or(kw, kumi::none);
     }
   };
 
