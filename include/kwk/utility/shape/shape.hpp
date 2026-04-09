@@ -8,13 +8,15 @@
 #pragma once
 
 #include <kwk/utility/shape/shape_descriptor.hpp>
+#include <kwk/utility/fixed.hpp>
 
 namespace kwk
 {
   namespace __
   {
-    template<int N>
-    struct normalize_dim : std::conditional<N == 0, kwk::config::default_size_type, std::integral_constant<int, N>>
+    struct shape_id;
+
+    template<int N> struct normalize_dim : std::conditional<N == 0, kwk::config::default_size_type, constant<N>>
     {
     };
 
@@ -41,13 +43,13 @@ namespace kwk
     by the shape descriptor template parameter.
 
     The @ref shape class provides a unified interface to access dimension sizes, regardless of whether they are static
-  or dynamic. Static dimensions are stored as compile-time constants, while dynamic dimensions are stored in an internal
-    array.
+    or dynamic. Static dimensions are stored as compile-time constants, while dynamic dimensions are stored in an
+    internal array.
 
     To do so, @ref shape is parameterized by a @ref shape_descriptor that defines the structure of the @ref shape,
-  including the number of dimensions and which dimensions are static vs dynamic. The @ref shape_descriptor is a
-  compile-time construct that encodes this information in its type. It can either be a single integral constant
-  representing the number of dynamic dimensions, or a list of dimensions where static dimensions are represented by
+    including the number of dimensions and which dimensions are static vs dynamic. The @ref shape_descriptor is a
+    compile-time construct that encodes this information in its type. It can either be a single integral constant
+    representing the number of dynamic dimensions, or a list of dimensions where static dimensions are represented by
     their compile-time values and dynamic dimensions are represented by the KIWAKU wildcard: `kwk::_`.
 
     For examples, consider the following shape descriptors:
@@ -95,8 +97,21 @@ namespace kwk
     @see shape_descriptor
   **/
   //====================================================================================================================
-  template<shape_descriptor Descriptor, typename SizeType = kwk::config::default_size_type> struct shape
+  template<shape_descriptor Descriptor, typename SizeType = kwk::config::default_size_type>
+  struct shape : private __::as_sequence<Descriptor>::type
   {
+    //==================================================================================================================
+    // Shape is a field over itself
+    //==================================================================================================================
+    using element_type = shape;
+    using type = shape;
+    using identifier_type = __::shape_id;
+    using label_type = kumi::str;
+
+    constexpr auto operator()(identifier_type const&) const { return *this; }
+
+    static constexpr label_type label() { return kumi::str{"Shape"}; }
+
     /// @brief The shape descriptor associated with this shape
     static constexpr auto descriptor = Descriptor;
 
@@ -121,7 +136,7 @@ namespace kwk
     **/
     template<std::convertible_to<SizeType>... S>
     requires(sizeof...(S) == Descriptor.ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
-    constexpr shape(S... s) : data_{s...}
+    constexpr shape(S... s) : storage_type{s...}
     {
     }
 
@@ -138,18 +153,27 @@ namespace kwk
     template<std::convertible_to<SizeType>... S>
     requires(sizeof...(S) < Descriptor.ndim)
     constexpr shape(S... s)
-      : data_{[&]<std::size_t... I>(std::index_sequence<I...>) {
+      : storage_type{[&]<std::size_t... I>(std::index_sequence<I...>) {
           return storage_type{s..., kumi::index<I * 0>...};
         }(std::make_index_sequence<Descriptor.ndim - sizeof...(S)>{})}
     {
     }
 
-    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape const& s) { return get<I>(s.data_); }
+    storage_type const& self() const { return static_cast<storage_type const&>(*this); }
 
-    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape& s) { return get<I>(s.data_); }
+    storage_type& self() { return static_cast<storage_type&>(*this); }
 
-  private:
-    storage_type data_;
+    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape const& s)
+    {
+      if constexpr (I >= s.ndim) return fixed<1>;
+      else return get<I>(s.self());
+    }
+
+    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape& s)
+    {
+      if constexpr (I >= s.ndim) return fixed<1>;
+      else return get<I>(s.self());
+    }
   };
 
   template<typename... S> shape(S...) -> shape<__::make_descriptor<S...>()>;
