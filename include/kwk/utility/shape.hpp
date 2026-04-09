@@ -20,3 +20,4 @@ namespace kwk
 
 #include <kwk/utility/shape/shape_descriptor.hpp>
 #include <kwk/utility/shape/shape.hpp>
+#include <kwk/utility/shape/stride.hpp>
