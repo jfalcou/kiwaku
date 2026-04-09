@@ -102,4 +102,10 @@ namespace kwk
       return d;
     }
   }
+
+  /// @brief
+  inline constexpr auto _1D = shape_descriptor{_};
+  inline constexpr auto _2D = shape_descriptor{_, _};
+  inline constexpr auto _3D = shape_descriptor{_, _, _};
+  inline constexpr auto _4D = shape_descriptor{_, _, _, _};
 }
