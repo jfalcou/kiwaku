@@ -12,6 +12,14 @@
 
 namespace kwk
 {
+  namespace __
+  {
+    struct rank
+    {
+      int value;
+    };
+  }
+
   //====================================================================================================================
   /**
     @ingroup shape-utility
@@ -39,18 +47,10 @@ namespace kwk
     /// @brief Default constructor creating an empty shape descriptor
     consteval shape_descriptor() = default;
 
-    /**
-      @brief Constructor for fully dynamic shapes
-
-      Creates a shape descriptor with the specified number of dimensions,
-      where all dimensions are marked as dynamic (wildcards).
-
-      @param v Number of dimensions (must be >= 0 and <= max_dimensions)
-    **/
-    consteval shape_descriptor(int v) : ndim(v), fully_dynamic(true)
+    consteval shape_descriptor(__::rank r) : ndim(r.value), fully_dynamic(true)
     {
       // assert(v >= 0 && v <= kwk::config::max_dimensions);
-      for (int i = 0; i < v; ++i) dims[i] = _;
+      for (int i = 0; i < ndim; ++i) dims[i] = _;
     }
 
     /**
@@ -108,4 +108,7 @@ namespace kwk
   inline constexpr auto _2D = shape_descriptor{_, _};
   inline constexpr auto _3D = shape_descriptor{_, _, _};
   inline constexpr auto _4D = shape_descriptor{_, _, _, _};
+
+  template<int N> inline constexpr auto _ND = shape_descriptor{__::rank{N}};
+
 }
