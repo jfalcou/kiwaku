@@ -36,6 +36,8 @@ TTS_CASE("Check if special source behave as expected")
   auto sv = std::vector<int>{3, 4, 5, 6};
   auto d_sp = std::span<float>{v};
   long c_array[10] = {};
+  long md_c_array[10][20][30] = {};
+  auto md_array = std::array<std::array<std::array<long, 30>, 20>, 10>{};
   double* ptr;
 
   {
@@ -73,6 +75,18 @@ TTS_CASE("Check if special source behave as expected")
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, long);
     TTS_EQUAL(storage(opt[kwk::source]), c_array);
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{10_c});
+  }
+  {
+    auto opt = kwk::options(kwk::source = md_c_array);
+    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, long[20][30]);
+    TTS_EQUAL(storage(opt[kwk::source]), md_c_array);
+    TTS_EQUAL(shape_of(opt[kwk::source]), (kwk::shape{30_c, 20_c, 10_c}));
+  }
+  {
+    auto opt = kwk::options(kwk::source = md_array);
+    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, (std::array<std::array<long, 30>, 20>));
+    TTS_EQUAL(storage(opt[kwk::source]), md_array.data());
+    TTS_EQUAL(shape_of(opt[kwk::source]), (kwk::shape{30_c, 20_c, 10_c}));
   }
   {
     auto opt = kwk::options(kwk::source = ptr);
