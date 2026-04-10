@@ -38,8 +38,8 @@ namespace kwk::__
 
 namespace kwk::config
 {
-  template<kwk::concepts::pointer P> struct source_management<P>
+  template<kwk::concepts::pointer P> struct preprocess_source<P>
   {
-    static constexpr auto preprocess_source(P p) noexcept { return kwk::__::pointer_option<P>{p}; }
+    static constexpr auto from(P p) noexcept { return kwk::__::pointer_option<P>{p}; }
   };
 }

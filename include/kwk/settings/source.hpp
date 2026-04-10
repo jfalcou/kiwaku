@@ -13,7 +13,7 @@ namespace kwk
 {
   namespace config
   {
-    template<typename T> struct source_management
+    template<typename T> struct preprocess_source
     {
     };
   }
@@ -31,9 +31,9 @@ namespace kwk
     {
       template<typename T>
       constexpr auto operator=(T&& t) const noexcept
-      requires(requires { config::source_management<T>::preprocess_source(KWK_FWD(t)); })
+      requires(requires { config::preprocess_source<T>::from(KWK_FWD(t)); })
       {
-        return config::source_management<T>::preprocess_source(KWK_FWD(t));
+        return config::preprocess_source<T>::from(KWK_FWD(t));
       }
 
       template<typename T> constexpr auto operator=(T&& t) const = delete;

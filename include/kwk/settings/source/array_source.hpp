@@ -44,8 +44,8 @@ namespace kwk::__
 
 namespace kwk::config
 {
-  template<kwk::concepts::contiguous_static_range R> struct source_management<R>
+  template<kwk::concepts::contiguous_static_range R> struct preprocess_source<R>
   {
-    static constexpr auto preprocess_source(R&& r) noexcept { return kwk::__::array_option<R>(KWK_FWD(r)); }
+    static constexpr auto from(R&& r) noexcept { return kwk::__::array_option<R>(KWK_FWD(r)); }
   };
 }
