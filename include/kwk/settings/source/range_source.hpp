@@ -14,6 +14,12 @@ namespace kwk::__
     using source_type = std::remove_cvref_t<R>;
     using base = source_option<container_member_t<R>>;
 
+    using value_type = std::remove_cvref_t<container_member_t<R>>;
+    using reference = std::add_lvalue_reference<value_type>;
+    using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
+    using pointer = std::add_pointer_t<value_type>;
+    using const_pointer = std::add_pointer_t<value_type const>;
+
     constexpr range_option() : base{nullptr}, size_(0) {};
 
     constexpr range_option(source_type& r) : base{std::data(r)}, size_(std::size(r)) {}
@@ -36,7 +42,7 @@ namespace kwk::__
     std::size_t size_;
   };
 
-  template<typename T> constexpr auto storage(range_option<T> const& source)
+  template<typename T> constexpr auto source_pointer(range_option<T> const& source)
   {
     return source.data();
   }

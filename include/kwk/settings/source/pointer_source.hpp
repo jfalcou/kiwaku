@@ -15,6 +15,12 @@ namespace kwk::__
     using source_type = std::remove_cvref_t<P>;
     using base = source_option<std::remove_pointer_t<source_type>>;
 
+    using value_type = std::remove_pointer_t<source_type>;
+    using reference = std::add_lvalue_reference<value_type>;
+    using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
+    using pointer = P;
+    using const_pointer = P const;
+
     constexpr auto operator()(base::identifier_type) const { return *this; }
 
     template<typename CharT, typename Traits>
@@ -25,7 +31,7 @@ namespace kwk::__
     }
   };
 
-  template<typename P> constexpr auto storage(pointer_option<P> const& source)
+  template<typename P> constexpr auto source_pointer(pointer_option<P> const& source)
   {
     return source.data();
   }

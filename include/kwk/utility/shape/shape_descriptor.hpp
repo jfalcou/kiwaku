@@ -83,7 +83,7 @@ namespace kwk
   namespace __
   {
     // Build the descriptor from a pack of types
-    template<typename... Ts> consteval shape_descriptor make_descriptor()
+    template<std::convertible_to<config::default_size_type>... Ts> consteval shape_descriptor make_descriptor()
     {
       auto val = []<typename T>() {
         if constexpr (is_dynamic_dim<T>::value) return _;

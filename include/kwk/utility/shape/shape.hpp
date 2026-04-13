@@ -165,13 +165,13 @@ namespace kwk
 
     template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape const& s)
     {
-      if constexpr (I >= s.ndim) return fixed<1>;
+      if constexpr (I >= shape::ndim) return fixed<1>;
       else return get<I>(s.self());
     }
 
     template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(shape& s)
     {
-      if constexpr (I >= s.ndim) return fixed<1>;
+      if constexpr (I >= shape::ndim) return fixed<1>;
       else return get<I>(s.self());
     }
   };
