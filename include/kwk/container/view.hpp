@@ -1,0 +1,86 @@
+//======================================================================================================================
+/*
+  KIWAKU - Containers Well Made
+  Copyright : KIWAKU Project Contributors
+  SPDX-License-Identifier: BSL-1.0
+*/
+//======================================================================================================================
+#pragma once
+
+#include <kwk/container/traits.hpp>
+
+namespace kwk
+{
+  //====================================================================================================================
+  // view: The main container-view class
+  // Private inheritance of both shape and stride guarantees Empty Base Class Optimization
+  //====================================================================================================================
+  template<typename Source, view_options Opts> struct view : private shape<Opts.shape_>, private stride<Opts.stride_>
+  {
+  private:
+    struct build_tag
+    {
+    };
+
+    template<typename Src, typename Shp, typename Str>
+    constexpr view(build_tag, Src&& src, Shp&& shp, Str&& str)
+      : shape_type(std::forward<Shp>(shp)), stride_type(std::forward<Str>(str)),
+        target_(source_pointer(std::forward<Src>(src)))
+    {
+    }
+
+  public:
+    using shape_type = kwk::shape<Opts.shape_>;
+    using stride_type = kwk::stride<Opts.stride_>;
+
+    using value_type = container_base_t<Source>;
+    using reference = std::add_lvalue_reference<value_type>;
+    using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
+    using pointer = std::add_pointer_t<value_type>;
+    using const_pointer = std::add_pointer_t<value_type const>;
+
+    static constexpr auto ndim = shape_type::ndim;
+    static constexpr auto kind = as<value_type>();
+    static constexpr auto itemsize = sizeof(value_type);
+
+    template<int Flags, kumi::concepts::product_type Values>
+    requires(Opts.valid_)
+    constexpr view(options<Flags, Values> const& opts)
+      : view(build_tag{},
+             opts[kwk::source],
+             __::view_traits<options<Flags, Values>>::get_shape(opts),
+             __::view_traits<options<Flags, Values>>::get_stride(opts))
+    {
+    }
+
+    template<kumi::concepts::field... Options>
+    requires(Opts.valid_)
+    constexpr view(Options const&... opts) : view(options{opts...})
+    {
+    }
+
+    template<kumi::concepts::field... Options>
+    requires(!Opts.valid_)
+    constexpr view(Options const&...) = delete;
+
+    constexpr shape_type const& shape() const { return static_cast<shape_type const&>(*this); }
+
+    constexpr stride_type const& stride() const { return static_cast<stride_type const&>(*this); }
+
+    constexpr pointer data() const { return target_; }
+
+  private:
+    pointer target_;
+  };
+
+  //====================================================================================================================
+  // Deduction Guides
+  //====================================================================================================================
+  template<kumi::concepts::field... Opts>
+  view(Opts const&... opts) -> view<typename __::view_traits<__::make_bag_t<Opts...>>::source_type,
+                                    __::view_traits<__::make_bag_t<Opts...>>::make_options()>;
+
+  template<int Flags, kumi::concepts::product_type Values>
+  view(options<Flags, Values> const& opts) -> view<typename __::view_traits<options<Flags, Values>>::source_type,
+                                                   __::view_traits<options<Flags, Values>>::make_options()>;
+}

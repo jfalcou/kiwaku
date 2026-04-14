@@ -16,3 +16,4 @@ namespace kwk
 #include <kwk/concepts.hpp>
 #include <kwk/utility.hpp>
 #include <kwk/settings.hpp>
+#include <kwk/container.hpp>
