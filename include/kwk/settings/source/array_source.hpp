@@ -9,10 +9,10 @@
 
 namespace kwk::__
 {
-  template<kwk::concepts::contiguous_static_range R> struct array_option : source_option<container_member_t<R>>
+  template<kwk::concepts::contiguous_static_range R> struct array_option : source_option<container_base_t<R>>
   {
-    using source_type = std::remove_cvref_t<container_member_t<R>>;
-    using base = source_option<container_member_t<R>>;
+    using source_type = std::remove_cvref_t<R>;
+    using base = source_option<container_base_t<R>>;
 
     using value_type = std::remove_cvref_t<container_member_t<R>>;
     using reference = std::add_lvalue_reference<value_type>;
@@ -21,9 +21,9 @@ namespace kwk::__
     using const_pointer = std::add_pointer_t<value_type const>;
 
     constexpr array_option() : base{nullptr} {};
-    constexpr array_option(source_type& r) : base{&r[0]} {};
-    constexpr array_option(source_type const& r) : base{&r[0]} {};
-    constexpr array_option(source_type&& r) = delete;
+    constexpr array_option(source_type& r) : base{container_base_address(r)} {};
+    constexpr array_option(source_type const& r) : base{container_base_address(r)} {};
+    constexpr array_option(source_type&& r) : base{container_base_address(r)} {};
 
     static constexpr auto size = kumi::container_size_v<R>;
 

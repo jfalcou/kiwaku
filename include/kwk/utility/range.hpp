@@ -14,7 +14,6 @@ namespace kwk
   //====================================================================================================================
   template<typename T> struct container_member : kumi::container_type<T>
   {
-    using type = kumi::container_type_t<T>;
   };
 
   template<typename T> struct container_member<T const>
@@ -47,4 +46,16 @@ namespace kwk
   };
 
   template<typename T> inline constexpr auto container_shape_v = container_shape<T>::value;
+
+  template<typename T> constexpr auto* container_base_address(T& val)
+  {
+    using type = std::remove_cvref_t<T>;
+    if constexpr (kumi::concepts::static_container<type>) return container_base_address(val[0]);
+    else if constexpr (concepts::range<T>) return std::data(val);
+    else if constexpr (concepts::pointer<T>) return val;
+    else return &val;
+  }
+
+  template<typename T>
+  using container_base_t = std::remove_pointer_t<decltype(container_base_address(std::declval<T&>()))>;
 }

@@ -26,7 +26,7 @@ namespace kwk::__
 
     constexpr range_option(source_type const& r) : base{std::data(r)}, size_(std::size(r)) {}
 
-    constexpr range_option(source_type&& r) = delete;
+    constexpr range_option(source_type&& r) : base{std::data(r)}, size_(std::size(r)) {}
 
     constexpr auto operator()(base::identifier_type) const { return *this; }
 
@@ -49,8 +49,7 @@ namespace kwk::__
 
   template<typename T> constexpr auto shape_of(range_option<T> const& t)
   {
-    // int due to shape taking int atm
-    return kwk::shape{static_cast<int>(t.size())};
+    return kwk::shape{t.size()};
   }
 }
 
