@@ -43,55 +43,55 @@ TTS_CASE("Check if special source behave as expected")
   {
     auto opt = kwk::options(kwk::source = a);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, int);
-    TTS_EQUAL(storage(opt[kwk::source]), a.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), a.data());
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{10_c});
   }
   {
     auto opt = kwk::options(kwk::source = f_sp);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, int);
-    TTS_EQUAL(storage(opt[kwk::source]), f_sp.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), f_sp.data());
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{5_c});
   }
   {
     auto opt = kwk::options(kwk::source = v);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, float);
-    TTS_EQUAL(storage(opt[kwk::source]), v.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), v.data());
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{kwk::_});
   }
   {
     auto opt = kwk::options(kwk::source = sv);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, int);
-    TTS_EQUAL(storage(opt[kwk::source]), sv.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), sv.data());
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{4});
   }
   {
     auto opt = kwk::options(kwk::source = d_sp);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, float);
-    TTS_EQUAL(storage(opt[kwk::source]), d_sp.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), d_sp.data());
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{kwk::_});
   }
   {
     auto opt = kwk::options(kwk::source = c_array);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, long);
-    TTS_EQUAL(storage(opt[kwk::source]), c_array);
+    TTS_EQUAL(source_pointer(opt[kwk::source]), c_array);
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{10_c});
   }
   {
     auto opt = kwk::options(kwk::source = md_c_array);
-    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, long[20][30]);
-    TTS_EQUAL(storage(opt[kwk::source]), md_c_array);
+    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, long);
+    TTS_EQUAL(source_pointer(opt[kwk::source]), md_c_array[0][0]);
     TTS_EQUAL(shape_of(opt[kwk::source]), (kwk::shape{30_c, 20_c, 10_c}));
   }
   {
     auto opt = kwk::options(kwk::source = md_array);
-    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, (std::array<std::array<long, 30>, 20>));
-    TTS_EQUAL(storage(opt[kwk::source]), md_array.data());
+    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, long);
+    TTS_EQUAL(source_pointer(opt[kwk::source]), md_array[0][0].data());
     TTS_EQUAL(shape_of(opt[kwk::source]), (kwk::shape{30_c, 20_c, 10_c}));
   }
   {
     auto opt = kwk::options(kwk::source = ptr);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, double);
-    TTS_EQUAL(storage(opt[kwk::source]), ptr);
+    TTS_EQUAL(source_pointer(opt[kwk::source]), ptr);
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{kwk::_});
   }
 };
@@ -101,11 +101,11 @@ TTS_CASE("Check if source option behave as expected with const qualified contain
   auto const r = std::list<int>{};
   TTS_EXPECT_NOT_COMPILES(r, { kwk::options(kwk::source = r); });
 
-  auto base_a = std::array<int, 10>{};
+  auto const base_a = std::array<int, 10>{};
   auto base_v = std::vector<float>{};
 
   auto const a = std::array<int, 10>{};
-  auto const f_sp = std::span<int, 5>{base_a.data(), 5};
+  auto const f_sp = std::span<int const, 5>{base_a.data(), 5};
   auto const v = std::vector<float>{};
   auto const d_sp = std::span<float>{base_v};
   long const c_array[10] = {};
@@ -114,31 +114,31 @@ TTS_CASE("Check if source option behave as expected with const qualified contain
   {
     auto opt = kwk::options(kwk::source = a);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, int const);
-    TTS_EQUAL(storage(opt[kwk::source]), a.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), a.data());
   }
   {
     auto opt = kwk::options(kwk::source = f_sp);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, int const);
-    TTS_EQUAL(storage(opt[kwk::source]), f_sp.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), f_sp.data());
   }
   {
     auto opt = kwk::options(kwk::source = v);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, float const);
-    TTS_EQUAL(storage(opt[kwk::source]), v.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), v.data());
   }
   {
     auto opt = kwk::options(kwk::source = d_sp);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, float const);
-    TTS_EQUAL(storage(opt[kwk::source]), d_sp.data());
+    TTS_EQUAL(source_pointer(opt[kwk::source]), d_sp.data());
   }
   {
     auto opt = kwk::options(kwk::source = c_array);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, long const);
-    TTS_EQUAL(storage(opt[kwk::source]), c_array);
+    TTS_EQUAL(source_pointer(opt[kwk::source]), c_array);
   }
   {
     auto opt = kwk::options(kwk::source = ptr);
     TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, double const);
-    TTS_EQUAL(storage(opt[kwk::source]), ptr);
+    TTS_EQUAL(source_pointer(opt[kwk::source]), ptr);
   }
 };

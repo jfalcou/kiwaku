@@ -15,6 +15,7 @@ namespace kwk::__
     using base = source_option<container_member_t<R>>;
 
     using value_type = std::remove_cvref_t<container_member_t<R>>;
+
     using reference = std::add_lvalue_reference<value_type>;
     using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
     using pointer = std::add_pointer_t<value_type>;

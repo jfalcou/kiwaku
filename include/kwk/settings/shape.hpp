@@ -39,7 +39,7 @@ namespace kwk
 
       template<typename Func>
       requires(std::is_empty_v<Func>)
-      constexpr auto operator=(Func f) const noexcept
+      constexpr auto operator=(Func) const noexcept
       {
         return storage_order_option<storage_order_t<Func{}>>{};
       }

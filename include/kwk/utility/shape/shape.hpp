@@ -92,13 +92,11 @@ namespace kwk
 
     @tparam Descriptor  A shape_descriptor that defines the structure of the shape, including
                         the number of dimensions and which dimensions are static vs dynamic.
-    @tparam SizeType    The type used to store runtime dimension sizes (default: int).
 
     @see shape_descriptor
   **/
   //====================================================================================================================
-  template<shape_descriptor Descriptor, typename SizeType = kwk::config::default_size_type>
-  struct shape : private __::as_sequence<Descriptor>::type
+  template<shape_descriptor Descriptor> struct shape : private __::as_sequence<Descriptor>::type
   {
     //==================================================================================================================
     // Shape is a field over itself
@@ -107,6 +105,7 @@ namespace kwk
     using type = shape;
     using identifier_type = __::shape_id;
     using label_type = kumi::str;
+    using size_type = kwk::config::default_size_type;
 
     constexpr auto operator()(identifier_type const&) const { return *this; }
 
@@ -134,7 +133,7 @@ namespace kwk
 
       @param s Dimension sizes, which quantity must match ndim.
     **/
-    template<std::convertible_to<SizeType>... S>
+    template<std::convertible_to<size_type>... S>
     requires(sizeof...(S) == Descriptor.ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
     constexpr shape(S... s) : storage_type{s...}
     {
@@ -150,7 +149,7 @@ namespace kwk
 
       @param s Dimension sizes, which quantity must be less than ndim.
     **/
-    template<std::convertible_to<SizeType>... S>
+    template<std::convertible_to<size_type>... S>
     requires(sizeof...(S) < Descriptor.ndim)
     constexpr shape(S... s)
       : storage_type{[&]<std::size_t... I>(std::index_sequence<I...>) {
@@ -180,14 +179,13 @@ namespace kwk
 }
 
 #if !defined(KWK_DOXYGEN_INVOKED)
-template<kwk::shape_descriptor Descriptor, typename SizeType>
-struct std::tuple_size<kwk::shape<Descriptor, SizeType>> : std::integral_constant<std::size_t, Descriptor.ndim>
+template<kwk::shape_descriptor Descriptor>
+struct std::tuple_size<kwk::shape<Descriptor>> : std::integral_constant<std::size_t, Descriptor.ndim>
 {
 };
 
-template<std::size_t I, kwk::shape_descriptor Descriptor, typename SizeType>
-struct std::tuple_element<I, kwk::shape<Descriptor, SizeType>>
+template<std::size_t I, kwk::shape_descriptor Descriptor> struct std::tuple_element<I, kwk::shape<Descriptor>>
 {
-  using type = decltype(get<I>(std::declval<kwk::shape<Descriptor, SizeType>>()));
+  using type = decltype(get<I>(std::declval<kwk::shape<Descriptor>>()));
 };
 #endif

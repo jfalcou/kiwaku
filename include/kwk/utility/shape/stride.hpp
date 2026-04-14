@@ -97,7 +97,7 @@ namespace kwk
     // Arbitrary Layout Construct
     template<shape_descriptor ShapeDesc, storage_order_descriptor Order>
     requires(__::make_stride_descriptor(ShapeDesc, Order) == Descriptor)
-    constexpr stride(shape<ShapeDesc, SizeType> const& shp, storage_order_t<Order> order)
+    constexpr stride(shape<ShapeDesc> const& shp, storage_order_t<Order> order)
       : stride(shp, order, std::make_index_sequence<ShapeDesc.ndim>{})
     {
     }
@@ -115,8 +115,7 @@ namespace kwk
     }
 
   private:
-    template<std::size_t K, shape_descriptor ShapeDesc>
-    static constexpr auto get_dim_val(shape<ShapeDesc, SizeType> const& shp)
+    template<std::size_t K, shape_descriptor ShapeDesc> static constexpr auto get_dim_val(shape<ShapeDesc> const& shp)
     {
       if constexpr (ShapeDesc.dims[K] != static_cast<int>(kwk::_)) return kwk::fixed<ShapeDesc.dims[K]>;
       else return get<K>(shp);
@@ -126,41 +125,40 @@ namespace kwk
     // Helper for Arbitrary layout: stride[I] = product of dimensions following it in the permutation
     //==================================================================================================================
     template<std::size_t I, shape_descriptor ShapeDesc, storage_order_descriptor Order>
-    static constexpr auto get_stride_val(shape<ShapeDesc, SizeType> const& shp, storage_order_t<Order>)
+    static constexpr auto get_stride_val(shape<ShapeDesc> const& shp, storage_order_t<Order>)
     {
-      constexpr std::size_t ndim = ShapeDesc.ndim;
+      constexpr std::size_t nbdim = ShapeDesc.ndim;
 
       constexpr auto perm = []() {
-        std::array<int, ndim> p{};
-        for (std::size_t k = 0; k < ndim; ++k) p[k] = Order.generator(k, ndim);
+        std::array<int, nbdim> p{};
+        for (std::size_t k = 0; k < nbdim; ++k) p[k] = Order.generator(k, ndim);
         return p;
       }();
 
       constexpr std::size_t pos = [&]() {
-        for (std::size_t k = 0; k < ndim; ++k)
+        for (std::size_t k = 0; k < nbdim; ++k)
           if (perm[k] == I) return k;
         return ndim;
       }();
 
-      if constexpr (pos >= ndim - 1) { return kwk::fixed<1>; }
+      if constexpr (pos >= nbdim - 1) { return kwk::fixed<1>; }
       else
       {
         return [&]<std::size_t... K>(std::index_sequence<K...>) {
           return (kwk::fixed<1> * ... * get_dim_val<perm[pos + 1 + K]>(shp));
-        }(std::make_index_sequence<ndim - 1 - pos>{});
+        }(std::make_index_sequence<nbdim - 1 - pos>{});
       }
     }
 
     template<shape_descriptor ShapeDesc, storage_order_descriptor Order, std::size_t... I>
-    constexpr stride(shape<ShapeDesc, SizeType> const& shp, storage_order_t<Order> order, std::index_sequence<I...>)
+    constexpr stride(shape<ShapeDesc> const& shp, storage_order_t<Order> order, std::index_sequence<I...>)
       : storage_type{get_stride_val<I>(shp, order)...}
     {
     }
   };
 
-  template<shape_descriptor ShapeDesc, typename SizeType, storage_order_descriptor Order>
-  stride(shape<ShapeDesc, SizeType> const&, storage_order_t<Order>)
-    -> stride<__::make_stride_descriptor(ShapeDesc, Order), SizeType>;
+  template<shape_descriptor ShapeDesc, storage_order_descriptor Order>
+  stride(shape<ShapeDesc> const&, storage_order_t<Order>) -> stride<__::make_stride_descriptor(ShapeDesc, Order)>;
 
   template<std::convertible_to<kwk::config::default_size_type>... S>
   requires(sizeof...(S) > 0)

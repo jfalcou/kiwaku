@@ -47,15 +47,14 @@ namespace kwk
 
   template<typename T> inline constexpr auto container_shape_v = container_shape<T>::value;
 
-  template<typename T> constexpr auto* container_base_address(T& val)
+  template<typename T> constexpr auto* container_base_address(T&& val)
   {
-    using type = std::remove_cvref_t<T>;
-    if constexpr (kumi::concepts::static_container<type>) return container_base_address(val[0]);
-    else if constexpr (concepts::range<T>) return std::data(val);
-    else if constexpr (concepts::pointer<T>) return val;
-    else return &val;
+    if constexpr (kumi::concepts::static_container<T>) return container_base_address(KWK_FWD(val)[0]);
+    else if constexpr (concepts::range<T>) return std::data(KWK_FWD(val));
+    else if constexpr (concepts::pointer<T>) return KWK_FWD(val);
+    else return &KWK_FWD(val);
   }
 
   template<typename T>
-  using container_base_t = std::remove_pointer_t<decltype(container_base_address(std::declval<T&>()))>;
+  using container_base_t = std::remove_pointer_t<decltype(container_base_address(std::declval<T>()))>;
 }
