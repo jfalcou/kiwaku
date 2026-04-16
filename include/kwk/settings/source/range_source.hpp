@@ -9,17 +9,14 @@
 
 namespace kwk::__
 {
+  ///@brief range_option provides a way to represent an arbirary struct to extract it's properties for view/table
+  /// construction
   template<kwk::concepts::contiguous_range R> struct range_option : source_option<container_member_t<R>>
   {
+    using type = R;
     using source_type = std::remove_cvref_t<R>;
     using base = source_option<container_member_t<R>>;
-
     using value_type = std::remove_cvref_t<container_member_t<R>>;
-
-    using reference = std::add_lvalue_reference<value_type>;
-    using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
-    using pointer = std::add_pointer_t<value_type>;
-    using const_pointer = std::add_pointer_t<value_type const>;
 
     constexpr range_option() : base{nullptr}, size_(0) {};
 
@@ -43,11 +40,16 @@ namespace kwk::__
     std::size_t size_;
   };
 
+  ///@brief Range option deduction guide
+  template<kwk::concepts::contiguous_range R> range_option(R&& r) -> range_option<R>;
+
+  ///@brief Helper to retrieve a pointer to the begining of a range_option
   template<typename T> constexpr auto source_pointer(range_option<T> const& source)
   {
     return source.data();
   }
 
+  ///@brief Helper to retrieve the shape of a range_option
   template<typename T> constexpr auto shape_of(range_option<T> const& t)
   {
     return kwk::shape{t.size()};
@@ -58,6 +60,6 @@ namespace kwk::config
 {
   template<kwk::concepts::contiguous_range R> struct preprocess_source<R>
   {
-    static constexpr auto from(R&& r) noexcept { return kwk::__::range_option<R>{KWK_FWD(r)}; }
+    static constexpr auto from(R&& r) noexcept { return kwk::__::range_option{KWK_FWD(r)}; }
   };
 }

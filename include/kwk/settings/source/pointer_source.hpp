@@ -9,17 +9,14 @@
 
 namespace kwk::__
 {
-  template<kwk::concepts::pointer P>
-  struct pointer_option : source_option<std::remove_pointer_t<std::remove_cvref_t<P>>>
+  ///@brief pointer_option provides a way to represent a pointer to extract it's properties for view/table
+  /// construction
+  template<kwk::concepts::pointer P> struct pointer_option : source_option<std::remove_pointer_t<P>>
   {
+    using type = P;
     using source_type = std::remove_cvref_t<P>;
-    using base = source_option<std::remove_pointer_t<source_type>>;
-
+    using base = source_option<std::remove_pointer_t<P>>;
     using value_type = std::remove_pointer_t<source_type>;
-    using reference = std::add_lvalue_reference<value_type>;
-    using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
-    using pointer = P;
-    using const_pointer = P const;
 
     constexpr auto operator()(base::identifier_type) const { return *this; }
 
@@ -31,21 +28,27 @@ namespace kwk::__
     }
   };
 
+  ///@brief Range option deduction guide
+  template<kwk::concepts::pointer P> pointer_option(P p) -> pointer_option<P>;
+
+  ///@brief Helper to retrieve the pointer of a pointer_option
   template<typename P> constexpr auto source_pointer(pointer_option<P> const& source)
   {
     return source.data();
   }
 
+  ///@brief Helper to retrieve a the shape of a pointer_option
   template<typename P> constexpr auto shape_of(pointer_option<P> const&)
   {
     return shape{kwk::_};
   }
+
 }
 
 namespace kwk::config
 {
   template<kwk::concepts::pointer P> struct preprocess_source<P>
   {
-    static constexpr auto from(P p) noexcept { return kwk::__::pointer_option<P>{p}; }
+    static constexpr auto from(P p) noexcept { return kwk::__::pointer_option{p}; }
   };
 }

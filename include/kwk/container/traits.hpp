@@ -34,7 +34,7 @@ namespace kwk
     template<typename Bag, bool isValid = Bag::contains(kwk::source)> struct view_traits
     {
       using source_t = std::remove_cvref_t<decltype(std::declval<Bag>()[kwk::source])>;
-      using source_type = typename source_t::source_type;
+      using source_type = typename source_t::type;
 
       static constexpr auto get_shape(Bag const& bag)
       {

@@ -34,6 +34,7 @@ namespace kwk
     using stride_type = kwk::stride<Opts.stride_>;
 
     using value_type = container_base_t<Source>;
+
     using reference = std::add_lvalue_reference<value_type>;
     using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
     using pointer = std::add_pointer_t<value_type>;
@@ -66,6 +67,8 @@ namespace kwk
     constexpr shape_type const& shape() const { return static_cast<shape_type const&>(*this); }
 
     constexpr stride_type const& stride() const { return static_cast<stride_type const&>(*this); }
+
+    constexpr auto size() const { return shape().size(); };
 
     constexpr pointer data() const { return target_; }
 

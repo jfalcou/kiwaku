@@ -52,7 +52,7 @@ namespace kwk
     if constexpr (kumi::concepts::static_container<T>) return container_base_address(KWK_FWD(val)[0]);
     else if constexpr (concepts::range<T>) return std::data(KWK_FWD(val));
     else if constexpr (concepts::pointer<T>) return KWK_FWD(val);
-    else return &KWK_FWD(val);
+    else return &val;
   }
 
   template<typename T>

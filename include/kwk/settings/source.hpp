@@ -47,7 +47,11 @@ namespace kwk
       using type = source_option<T>;
       using identifier_type = source_id;
       using label_type = kumi::str;
+
+      using reference = std::add_lvalue_reference<T>;
+      using const_reference = std::add_lvalue_reference<std::add_const_t<T>>;
       using pointer = std::add_pointer_t<T>;
+      using const_pointer = std::add_pointer_t<T const>;
 
       static constexpr label_type label() { return kumi::str{"Source"}; }
 

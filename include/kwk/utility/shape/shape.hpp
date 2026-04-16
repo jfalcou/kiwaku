@@ -167,11 +167,11 @@ namespace kwk
     //==================================================================================================================
     /// Assignment operator
     //==================================================================================================================
-    constexpr shape& operator=(shape const& other) & noexcept
-    {
-      this->self() = other.self();
-      return *this;
-    }
+    // constexpr shape& operator=(shape const& other) & noexcept
+    //{
+    //  this->self() = other.self();
+    //  return *this;
+    //}
 
     //==================================================================================================================
     /// Equality comparison operator
