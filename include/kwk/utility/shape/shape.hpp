@@ -107,6 +107,9 @@ namespace kwk
     using label_type = kumi::str;
     using size_type = kwk::config::default_size_type;
 
+    /// @brief Internal type for efficient storage of hybrid static/dynamic dimensions
+    using storage_type = __::as_sequence<Descriptor>::type;
+
     constexpr auto operator()(identifier_type const&) const { return *this; }
 
     static constexpr label_type label() { return kumi::str{"Shape"}; }
@@ -117,11 +120,14 @@ namespace kwk
     /// @brief Number of dimensions in this shape
     static constexpr auto ndim = Descriptor.ndim;
 
+    /// @brief Total number of elements the current shape represents
+    constexpr size_type size() const noexcept
+    {
+      return kumi::fold_left([](auto a, auto b) { return a * b; }, *this, fixed<1>);
+    }
+
     /// @brief Default constructor
     constexpr shape() = default;
-
-    /// @brief Internal type for efficient storage of hybrid static/dynamic dimensions
-    using storage_type = __::as_sequence<Descriptor>::type;
 
     /**
       @brief Constructor from dimension sizes
@@ -158,6 +164,24 @@ namespace kwk
     {
     }
 
+    //==================================================================================================================
+    /// Assignment operator
+    //==================================================================================================================
+    constexpr shape& operator=(shape const& other) & noexcept
+    {
+      this->self() = other.self();
+      return *this;
+    }
+
+    //==================================================================================================================
+    /// Equality comparison operator
+    //==================================================================================================================
+    template<shape_descriptor D> friend constexpr bool operator==(shape const& a, shape<D> const& b) noexcept
+    {
+      if constexpr (Descriptor.ndim != D.ndim) return false;
+      else return kumi::to_tuple(a) == kumi::to_tuple(b);
+    }
+
     storage_type const& self() const { return static_cast<storage_type const&>(*this); }
 
     storage_type& self() { return static_cast<storage_type&>(*this); }
@@ -175,7 +199,30 @@ namespace kwk
     }
   };
 
+  //@brief Deduction guide
   template<typename... S> shape(S...) -> shape<__::make_descriptor<S...>()>;
+
+  //@brief Squeeze the current shape by removing trivial dimensions
+  template<shape_descriptor D> constexpr auto squeeze(shape<D> const& s)
+  {
+    constexpr auto descriptor = __::squeeze_descriptor(D);
+    return [&]<std::size_t... I>(std::index_sequence<I...>) {
+      return shape{get<descriptor.dims[I]>(s)...};
+    }(std::make_index_sequence<descriptor.ndim>{});
+  }
+
+  //@brief Extends the current shape by adding trivial dimensions
+  // template<shape_descriptor D1, shape_descriptor D2>
+  // constexpr auto expand(shape<D1> const& source, shape<D2> const& target)
+  //{
+  //  static_assert(shape<D1>::ndim <= shape<D2>::ndim, "[Kiwaku] - Cannot broadcast to smaller shape");
+  //}
+
+  //@brief Check if two shapes are isomorph, ie they describe the same data space
+  template<shape_descriptor D1, shape_descriptor D2> constexpr bool equivalent(shape<D1> const& a, shape<D2> const& b)
+  {
+    return squeeze(a) == squeeze(b);
+  }
 }
 
 #if !defined(KWK_DOXYGEN_INVOKED)

@@ -65,13 +65,13 @@ namespace kwk
     @brief Stride of multi-dimensional container (Supports Arbitrary Layouts)
   **/
   //====================================================================================================================
-  template<shape_descriptor Descriptor, typename SizeType = kwk::config::default_size_type>
-  struct stride : private __::as_sequence<Descriptor>::type
+  template<shape_descriptor Descriptor> struct stride : private __::as_sequence<Descriptor>::type
   {
     using element_type = stride;
     using type = stride;
     using identifier_type = __::stride_id;
     using label_type = kumi::str;
+    using size_type = kwk::config::default_size_type;
 
     constexpr auto operator()(identifier_type const&) const { return *this; }
 
@@ -84,10 +84,16 @@ namespace kwk
 
     constexpr stride() = default;
 
-    template<std::convertible_to<SizeType>... S>
+    template<std::convertible_to<size_type>... S>
     requires(sizeof...(S) == Descriptor.ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
     constexpr stride(S... s) : storage_type{s...}
     {
+    }
+
+    template<shape_descriptor D> friend constexpr bool operator==(stride const& a, stride<D> const& b) noexcept
+    {
+      if constexpr (Descriptor.ndim != D.ndim) return false;
+      else return kumi::to_tuple(a) == kumi::to_tuple(b); // Descriptor == D;
     }
 
     storage_type const& self() const { return static_cast<storage_type const&>(*this); }
@@ -104,13 +110,13 @@ namespace kwk
 
     template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(stride const& s)
     {
-      if constexpr (I >= s.ndim) return kwk::fixed<0>;
+      if constexpr (I >= stride::ndim) return kwk::fixed<0>;
       else return get<I>(s.self());
     }
 
     template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(stride& s)
     {
-      if constexpr (I >= s.ndim) return kwk::fixed<0>;
+      if constexpr (I >= stride::ndim) return kwk::fixed<0>;
       else return get<I>(s.self());
     }
 
@@ -127,26 +133,26 @@ namespace kwk
     template<std::size_t I, shape_descriptor ShapeDesc, storage_order_descriptor Order>
     static constexpr auto get_stride_val(shape<ShapeDesc> const& shp, storage_order_t<Order>)
     {
-      constexpr std::size_t nbdim = ShapeDesc.ndim;
+      constexpr int nbdim = ShapeDesc.ndim;
 
       constexpr auto perm = []() {
         std::array<int, nbdim> p{};
-        for (std::size_t k = 0; k < nbdim; ++k) p[k] = Order.generator(k, ndim);
+        for (int k = 0; k < nbdim; ++k) p[static_cast<std::size_t>(k)] = Order.generator(k, ndim);
         return p;
       }();
 
-      constexpr std::size_t pos = [&]() {
-        for (std::size_t k = 0; k < nbdim; ++k)
-          if (perm[k] == I) return k;
+      constexpr int pos = [&]() {
+        for (int k = 0; k < nbdim; ++k)
+          if (static_cast<std::size_t>(perm[static_cast<std::size_t>(k)]) == I) return k;
         return ndim;
       }();
 
       if constexpr (pos >= nbdim - 1) { return kwk::fixed<1>; }
       else
       {
-        return [&]<std::size_t... K>(std::index_sequence<K...>) {
+        return [&]<int... K>(std::integer_sequence<int, K...>) {
           return (kwk::fixed<1> * ... * get_dim_val<perm[pos + 1 + K]>(shp));
-        }(std::make_index_sequence<nbdim - 1 - pos>{});
+        }(std::make_integer_sequence<int, nbdim - 1 - pos>{});
       }
     }
 
@@ -169,14 +175,13 @@ namespace kwk
 // Structured Binding Support
 //======================================================================================================================
 #if !defined(KWK_DOXYGEN_INVOKED)
-template<kwk::shape_descriptor Descriptor, typename SizeType>
-struct std::tuple_size<kwk::stride<Descriptor, SizeType>> : std::integral_constant<std::size_t, Descriptor.ndim>
+template<kwk::shape_descriptor Descriptor>
+struct std::tuple_size<kwk::stride<Descriptor>> : std::integral_constant<std::size_t, Descriptor.ndim>
 {
 };
 
-template<std::size_t I, kwk::shape_descriptor Descriptor, typename SizeType>
-struct std::tuple_element<I, kwk::stride<Descriptor, SizeType>>
+template<std::size_t I, kwk::shape_descriptor Descriptor> struct std::tuple_element<I, kwk::stride<Descriptor>>
 {
-  using type = decltype(get<I>(std::declval<kwk::stride<Descriptor, SizeType>>()));
+  using type = decltype(get<I>(std::declval<kwk::stride<Descriptor>>()));
 };
 #endif

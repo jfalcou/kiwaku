@@ -74,6 +74,7 @@ namespace kwk
       }
     }
 
+    /// @brief Add a rank to the current shape_descriptor
     consteval void add_rank(__::rank r) { dims[ndim++] = r.value; }
 
     /// @brief Equality comparison operator (default implementation)
@@ -103,50 +104,62 @@ namespace kwk
 
       return d;
     }
+
+    //@brief Simply stores the indexes of non trivial dimension to be used as an index-map
+    consteval shape_descriptor squeeze_descriptor(shape_descriptor sd)
+    {
+      shape_descriptor d;
+      for (int i = 0; i < sd.ndim; ++i)
+        if (sd.dims[i] != 1) d.dims[d.ndim++] = i;
+      return d;
+    }
   }
 
-  //====================================================================================================================
-  /**
-    @ingroup shape-utility
-    @brief Describe a  N-dimensions shape
-    @relates shape_descriptor
-  **/
-  //====================================================================================================================
-  template<int N> inline constexpr auto _nD = shape_descriptor{__::rank{N}};
+  inline namespace literals
+  {
+    //====================================================================================================================
+    /**
+      @ingroup shape-utility
+      @brief Describe a  N-dimensions shape
+      @relates shape_descriptor
+    **/
+    //====================================================================================================================
+    template<int N> inline constexpr auto _nD = shape_descriptor{__::rank{N}};
 
-  //====================================================================================================================
-  /**
-    @ingroup shape-utility
-    @brief Describe a  1D shape
-    @relates shape_descriptor
-  **/
-  //====================================================================================================================
-  inline constexpr auto _1D = _nD<1>;
+    //====================================================================================================================
+    /**
+      @ingroup shape-utility
+      @brief Describe a  1D shape
+      @relates shape_descriptor
+    **/
+    //====================================================================================================================
+    inline constexpr auto _1D = _nD<1>;
 
-  //====================================================================================================================
-  /**
-    @ingroup shape-utility
-    @brief Describe a  2D shape
-    @relates shape_descriptor
-  **/
-  //====================================================================================================================
-  inline constexpr auto _2D = _nD<2>;
+    //====================================================================================================================
+    /**
+      @ingroup shape-utility
+      @brief Describe a  2D shape
+      @relates shape_descriptor
+    **/
+    //====================================================================================================================
+    inline constexpr auto _2D = _nD<2>;
 
-  //====================================================================================================================
-  /**
-    @ingroup shape-utility
-    @brief Describe a  3D shape
-    @relates shape_descriptor
-  **/
-  //====================================================================================================================
-  inline constexpr auto _3D = _nD<3>;
+    //====================================================================================================================
+    /**
+      @ingroup shape-utility
+      @brief Describe a  3D shape
+      @relates shape_descriptor
+    **/
+    //====================================================================================================================
+    inline constexpr auto _3D = _nD<3>;
 
-  //====================================================================================================================
-  /**
-    @ingroup shape-utility
-    @brief Describe a  4D shape
-    @relates shape_descriptor
-  **/
-  //====================================================================================================================
-  inline constexpr auto _4D = _nD<4>;
+    //====================================================================================================================
+    /**
+      @ingroup shape-utility
+      @brief Describe a  4D shape
+      @relates shape_descriptor
+    **/
+    //====================================================================================================================
+    inline constexpr auto _4D = _nD<4>;
+  }
 }
