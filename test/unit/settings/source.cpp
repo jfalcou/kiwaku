@@ -38,7 +38,7 @@ TTS_CASE("Check if special source behave as expected")
   long c_array[10] = {};
   long md_c_array[10][20][30] = {};
   auto md_array = std::array<std::array<std::array<long, 30>, 20>, 10>{};
-  double* ptr;
+  float* ptr = &v[0];
 
   {
     auto opt = kwk::options(kwk::source = a);
@@ -90,7 +90,7 @@ TTS_CASE("Check if special source behave as expected")
   }
   {
     auto opt = kwk::options(kwk::source = ptr);
-    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, double);
+    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, float);
     TTS_EQUAL(source_pointer(opt[kwk::source]), ptr);
     TTS_EQUAL(shape_of(opt[kwk::source]), kwk::shape{kwk::_});
   }
@@ -109,7 +109,7 @@ TTS_CASE("Check if source option behave as expected with const qualified contain
   auto const v = std::vector<float>{};
   auto const d_sp = std::span<float>{base_v};
   long const c_array[10] = {};
-  double const* ptr;
+  float const* ptr = &v[0];
 
   {
     auto opt = kwk::options(kwk::source = a);
@@ -138,7 +138,7 @@ TTS_CASE("Check if source option behave as expected with const qualified contain
   }
   {
     auto opt = kwk::options(kwk::source = ptr);
-    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, double const);
+    TTS_TYPE_IS(decltype(opt[kwk::source])::element_type, float const);
     TTS_EQUAL(source_pointer(opt[kwk::source]), ptr);
   }
 };

@@ -14,7 +14,7 @@ namespace kwk::__
   //====================================================================================================================
   // Compute a compile-time map of dynamic/static dimensions
   //====================================================================================================================
-  template<typename T> consteval auto compute_storage_map()
+  template<kumi::concepts::product_type T> consteval auto compute_storage_map()
   {
     struct storage_map
     {
