@@ -127,7 +127,7 @@ namespace kwk
     }
 
     /// @brief Default constructor
-    constexpr shape() = default;
+    constexpr shape() : storage_type() {}
 
     /**
       @brief Constructor from dimension sizes

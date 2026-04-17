@@ -23,6 +23,13 @@
 // Faster than std::forward
 #define KWK_FWD(...) static_cast<decltype(__VA_ARGS__)&&>(__VA_ARGS__)
 
+// Force empty base optimiation (MSVC related)
+#if defined(_MSC_VER)
+#define KWK_STRUCT_ABI __declspec(empty_bases)
+#else
+#define KWK_STRUCT_ABI
+#endif
+
 // Force a function to be inline
 #if defined(KWK_NO_FORCEINLINE)
 #define KWK_TRIVIAL inline

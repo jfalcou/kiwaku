@@ -15,7 +15,8 @@ namespace kwk
   // view: The main container-view class
   // Private inheritance of both shape and stride guarantees Empty Base Class Optimization
   //====================================================================================================================
-  template<typename Source, view_options Opts> struct view : private shape<Opts.shape_>, private stride<Opts.stride_>
+  template<typename Source, view_options Opts>
+  struct KWK_STRUCT_ABI view : private shape<Opts.shape_>, private stride<Opts.stride_>
   {
   private:
     struct build_tag
