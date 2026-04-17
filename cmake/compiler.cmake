@@ -9,7 +9,7 @@
 ##======================================================================================================================
 add_library(kiwaku_opts INTERFACE)
 
-target_compile_features ( kiwaku_opts INTERFACE cxx_std_20 )
+target_compile_features ( kiwaku_opts INTERFACE cxx_std_23 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   if(CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")

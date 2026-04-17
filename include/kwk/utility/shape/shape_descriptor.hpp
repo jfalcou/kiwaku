@@ -78,7 +78,7 @@ namespace kwk
     constexpr void add_rank(__::rank r) { dims[ndim++] = r.value; }
 
     /// @brief Equality comparison operator (default implementation)
-    consteval bool operator==(shape_descriptor const&) const = default;
+    constexpr bool operator==(shape_descriptor const&) const = default;
   };
 
   namespace __

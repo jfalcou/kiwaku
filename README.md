@@ -8,7 +8,7 @@
 [![Discord](https://img.shields.io/discord/692734675726237696?style=plastic)](https://discord.com/channels/692734675726237696/692735274291298424)
 
 
-C++20 and onward collection of high performance data containers and related tools
+C++23 and onward collection of high performance data containers and related tools
 
 ## License
 
