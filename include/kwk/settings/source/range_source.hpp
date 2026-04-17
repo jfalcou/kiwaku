@@ -18,7 +18,7 @@ namespace kwk::__
     using base = source_option<container_member_t<R>>;
     using value_type = std::remove_cvref_t<container_member_t<R>>;
 
-    constexpr range_option() : base{nullptr}, size_(0) {};
+    constexpr range_option() : base{nullptr}, size_(0) {}
 
     constexpr range_option(source_type& r) : base{std::data(r)}, size_(std::size(r)) {}
 

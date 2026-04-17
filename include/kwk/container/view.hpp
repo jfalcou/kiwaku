@@ -68,7 +68,7 @@ namespace kwk
 
     constexpr stride_type const& stride() const { return static_cast<stride_type const&>(*this); }
 
-    constexpr auto size() const { return shape().size(); };
+    constexpr auto size() const { return shape().size(); }
 
     constexpr pointer data() const { return target_; }
 

@@ -18,10 +18,13 @@ namespace kwk::__
     using base = source_option<container_base_t<R>>;
     using value_type = std::remove_cvref_t<container_member_t<R>>;
 
-    constexpr array_option() : base{nullptr} {};
-    constexpr array_option(source_type& r) : base{container_base_address(r)} {};
-    constexpr array_option(source_type const& r) : base{container_base_address(r)} {};
-    constexpr array_option(source_type&& r) : base{container_base_address(r)} {};
+    constexpr array_option() : base{nullptr} {}
+
+    constexpr array_option(source_type& r) : base{container_base_address(r)} {}
+
+    constexpr array_option(source_type const& r) : base{container_base_address(r)} {}
+
+    constexpr array_option(source_type&& r) : base{container_base_address(r)} {}
 
     static constexpr auto size = kumi::container_size_v<R>;
 

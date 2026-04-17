@@ -50,12 +50,12 @@ namespace kwk
     template<typename T> constexpr bool operator==(kind_option<T>, kind_option<T>)
     {
       return true;
-    };
+    }
 
     template<typename T, typename U> constexpr bool operator==(kind_option<T>, kind_option<U>)
     {
       return false;
-    };
+    }
   }
 
   //====================================================================================================================

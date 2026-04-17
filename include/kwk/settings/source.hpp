@@ -38,7 +38,7 @@ namespace kwk
 
       template<typename T> constexpr auto operator=(T&& t) const = delete;
 
-      friend constexpr auto to_str(source_id) { return kumi::str{"Source"}; };
+      friend constexpr auto to_str(source_id) { return kumi::str{"Source"}; }
     };
 
     template<typename T> struct source_option
