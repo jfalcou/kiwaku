@@ -93,7 +93,7 @@ namespace kwk
     template<shape_descriptor D> friend constexpr bool operator==(stride const& a, stride<D> const& b) noexcept
     {
       if constexpr (Descriptor.ndim != D.ndim) return false;
-      else return kumi::to_tuple(a) == kumi::to_tuple(b); // Descriptor == D;
+      else return kumi::to_tuple(a) == kumi::to_tuple(b);
     }
 
     storage_type const& self() const { return static_cast<storage_type const&>(*this); }
@@ -169,6 +169,16 @@ namespace kwk
   template<std::convertible_to<kwk::config::default_size_type>... S>
   requires(sizeof...(S) > 0)
   stride(S...) -> stride<__::make_descriptor<S...>()>;
+
+  //@brief utility to linearize a position based on the stride
+  template<shape_descriptor SD, std::convertible_to<std::ptrdiff_t>... Is>
+  constexpr auto linearize(stride<SD> const& s, Is... is) noexcept
+  requires(sizeof...(Is) == stride<SD>::ndim)
+  {
+    return [&]<std::size_t... I>(std::index_sequence<I...>) {
+      return (0 + ... + (get<I>(s) * is));
+    }(std::make_index_sequence<stride<SD>::ndim>{});
+  }
 }
 
 //======================================================================================================================

@@ -71,7 +71,26 @@ namespace kwk
 
     constexpr auto size() const { return shape().size(); }
 
-    constexpr pointer data() const { return target_; }
+    constexpr pointer data(this auto&& self) { return KWK_FWD(self).target_; }
+
+    //==================================================================================================================
+    /*
+      Access operators
+    */
+    //==================================================================================================================
+    template<kumi::concepts::product_type Pos>
+    decltype(auto) operator[](this auto&& self, Pos p) noexcept
+    requires(kumi::size_v<Pos> == ndim)
+    {
+      return kumi::apply([&](auto... i) -> decltype(auto) { return KWK_FWD(self)(i...); }, p);
+    }
+
+    template<std::integral... Is>
+    decltype(auto) operator[](this auto&& self, Is... is) noexcept
+    requires(sizeof...(Is) == ndim)
+    {
+      return KWK_FWD(self).data()[linearize(self.stride(), is...)];
+    }
 
   private:
     pointer target_;
