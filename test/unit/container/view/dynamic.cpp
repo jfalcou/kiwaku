@@ -27,7 +27,9 @@ TTS_CASE("Build a view with dynamic shape settings from a C array")
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
-  for (int i = 0; i < v.size(); ++i) TTS_EQUAL(v[i], ref[i]);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(v.size()); ++i) TTS_EQUAL(v[i], ref[i]);
+  TTS_EXPECT_COMPILES(v, { v[0] = 3.f; });
+
   // TTS_EXPECT_NOT( v.shape().is_fully_static                );
 
   sz = 4;
@@ -39,7 +41,8 @@ TTS_CASE("Build a view with dynamic shape settings from a C array")
   TTS_EQUAL(w.shape(), kwk::shape{sz});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));
 
-  for (int i = 0; i < w.size(); ++i) TTS_EQUAL(w[i], cref[i]);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(w.size()); ++i) TTS_EQUAL(w[i], cref[i]);
+  TTS_EXPECT_NOT_COMPILES(w, { w[0] = 3.f; });
 
   // TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 };
@@ -60,7 +63,9 @@ TTS_CASE("Build a 1D view with dynamic shape settings from std::array")
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
-  for (int i = 0; i < v.size(); ++i) TTS_EQUAL(v[i], ref[i]);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(v.size()); ++i) TTS_EQUAL(v[i], ref[i]);
+  TTS_EXPECT_COMPILES(v, { v[0] = 3.f; });
+
   // TTS_EXPECT_NOT( v.shape().is_fully_static                   );
 
   sz = 4;
@@ -72,7 +77,8 @@ TTS_CASE("Build a 1D view with dynamic shape settings from std::array")
   TTS_EQUAL(w.shape(), kwk::shape{sz});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));
 
-  for (int i = 0; i < w.size(); ++i) TTS_EQUAL(w[i], cref[i]);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(w.size()); ++i) TTS_EQUAL(w[i], cref[i]);
+  TTS_EXPECT_NOT_COMPILES(w, { w[0] = 3.f; });
   // TTS_EXPECT_NOT( w.shape().is_fully_static                   );
 };
 
@@ -92,7 +98,8 @@ TTS_CASE("Build a 1D view with dynamic shape settings from a ContiguousRange")
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
-  for (int i = 0; i < v.size(); ++i) TTS_EQUAL(v[i], ref[i]);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(v.size()); ++i) TTS_EQUAL(v[i], ref[i]);
+  TTS_EXPECT_COMPILES(v, { v[0] = 3.f; });
   // TTS_EXPECT_NOT( v.shape().is_fully_static                );
 
   sz = 5;
@@ -104,7 +111,8 @@ TTS_CASE("Build a 1D view with dynamic shape settings from a ContiguousRange")
   TTS_EQUAL(w.shape(), kwk::shape{sz});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));
 
-  for (int i = 0; i < w.size(); ++i) TTS_EQUAL(w[i], cref[i]);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(w.size()); ++i) TTS_EQUAL(w[i], cref[i]);
+  TTS_EXPECT_NOT_COMPILES(w, { w[0] = 3.f; });
   // TTS_EXPECT_NOT( w.shape().is_fully_static                );
 };
 
@@ -124,20 +132,20 @@ TTS_CASE("Build a 1D view with dynamic shape settings from a pointer")
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
-  for (int i = 0; i < v.size(); ++i) TTS_EQUAL(v[i], ref[i]);
-
+  for (std::size_t i = 0; i < static_cast<std::size_t>(v.size()); ++i) TTS_EQUAL(v[i], ref[i]);
+  TTS_EXPECT_COMPILES(v, { v[0] = 3.f; });
   // TTS_EXPECT_NOT( v.shape().is_fully_static                );
 
   sz = 5;
   auto w = kwk::view{kwk::source = cref.data(), kwk::shape{sz}};
 
   TTS_EQUAL(sizeof(w), 2 * sizeof(void*));
-  TTS_EQUAL(v.ndim, 1);
+  TTS_EQUAL(w.ndim, 1);
   TTS_EQUAL(w.size(), 5);
   TTS_EQUAL(w.shape(), kwk::shape{sz});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));
 
-  for (int i = 0; i < w.size(); ++i) TTS_EQUAL(w[i], cref[i]);
-
+  for (std::size_t i = 0; i < static_cast<std::size_t>(w.size()); ++i) TTS_EQUAL(w[i], cref[i]);
+  TTS_EXPECT_NOT_COMPILES(w, { w[0] = 3.f; });
   // TTS_EXPECT_NOT( w.shape().is_fully_static                );
 };
