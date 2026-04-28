@@ -28,6 +28,12 @@ namespace kwk
       KWK_TRIVIAL friend constexpr wildcard_t operator*(wildcard_t, auto) noexcept { return {}; }
 
       KWK_TRIVIAL friend constexpr wildcard_t operator*(auto, wildcard_t) noexcept { return {}; }
+
+      template<typename CharT, typename Traits>
+      friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, wildcard_t) noexcept
+      {
+        return os << "_";
+      }
     };
   }
 

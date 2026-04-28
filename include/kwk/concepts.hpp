@@ -22,3 +22,4 @@ namespace kwk
 #include <kwk/detail/detail.hpp>
 #include <kwk/concepts/allocator.hpp>
 #include <kwk/concepts/range.hpp>
+#include <kwk/concepts/value.hpp>

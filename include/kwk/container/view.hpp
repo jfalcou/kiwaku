@@ -25,8 +25,7 @@ namespace kwk
 
     template<typename Src, typename Shp, typename Str>
     constexpr view(build_tag, Src&& src, Shp&& shp, Str&& str)
-      : shape_type(std::forward<Shp>(shp)), stride_type(std::forward<Str>(str)),
-        target_(source_pointer(std::forward<Src>(src)))
+      : shape_type(KWK_FWD(shp)), stride_type(KWK_FWD(str)), target_(source_pointer(KWK_FWD(src)))
     {
     }
 
@@ -65,11 +64,11 @@ namespace kwk
     requires(!Opts.valid_)
     constexpr view(Options const&...) = delete;
 
-    constexpr shape_type const& shape() const { return static_cast<shape_type const&>(*this); }
+    constexpr shape_type const& shape() const noexcept { return static_cast<shape_type const&>(*this); }
 
-    constexpr stride_type const& stride() const { return static_cast<stride_type const&>(*this); }
+    constexpr stride_type const& stride() const noexcept { return static_cast<stride_type const&>(*this); }
 
-    constexpr auto size() const { return shape().size(); }
+    constexpr auto size() const noexcept { return shape().size(); }
 
     constexpr pointer data(this auto&& self) { return KWK_FWD(self).target_; }
 
@@ -78,18 +77,26 @@ namespace kwk
       Access operators
     */
     //==================================================================================================================
-    template<kumi::concepts::product_type Pos>
-    decltype(auto) operator[](this auto&& self, Pos p) noexcept
-    requires(kumi::size_v<Pos> == ndim)
+    template<kumi::concepts::product_type T>
+    decltype(auto) operator[](this auto&& self, T t) noexcept
+    requires(kumi::size_v<T> == ndim)
     {
-      return kumi::apply([&](auto... i) -> decltype(auto) { return KWK_FWD(self)(i...); }, p);
+      return kumi::apply([&](auto... i) -> decltype(auto) { return std::forward_like<decltype(self)>(self)(i...); }, t);
     }
 
     template<std::integral... Is>
     decltype(auto) operator[](this auto&& self, Is... is) noexcept
     requires(sizeof...(Is) == ndim)
     {
-      return KWK_FWD(self).data()[linearize(self.stride(), is...)];
+      return std::forward_like<decltype(self)>(self.data()[linearize(self.stride(), is...)]);
+    }
+
+    template<concepts::slicer... S>
+    auto operator[](this auto&& self, S const&... s) noexcept
+    requires(sizeof...(S) == ndim)
+    {
+      return kwk::view{kwk::source = self.data() + kwk::origin(self.shape(), storage_order_t<Opts.order_>{}, s...),
+                       kwk::reshape(self.shape(), s...), kwk::restride(self.stride(), s...)};
     }
 
   private:

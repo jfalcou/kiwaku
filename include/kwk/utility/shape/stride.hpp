@@ -120,6 +120,15 @@ namespace kwk
       else return get<I>(s.self());
     }
 
+    template<typename CharT, typename Traits>
+    friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+                                                         stride const& s) noexcept
+    {
+      os << "(";
+      kumi::for_each([&](auto e) { os << " " << +e; }, s);
+      return os << " )";
+    }
+
   private:
     template<std::size_t K, shape_descriptor ShapeDesc> static constexpr auto get_dim_val(shape<ShapeDesc> const& shp)
     {
@@ -157,14 +166,15 @@ namespace kwk
     }
 
     template<shape_descriptor ShapeDesc, storage_order_descriptor Order, std::size_t... I>
-    constexpr stride(shape<ShapeDesc> const& shp, storage_order_t<Order> order, std::index_sequence<I...>)
+    constexpr stride(shape<ShapeDesc> const& shp, storage_order_t<Order> const& order, std::index_sequence<I...>)
       : storage_type{get_stride_val<I>(shp, order)...}
     {
     }
   };
 
   template<shape_descriptor ShapeDesc, storage_order_descriptor Order>
-  stride(shape<ShapeDesc> const&, storage_order_t<Order>) -> stride<__::make_stride_descriptor(ShapeDesc, Order)>;
+  stride(shape<ShapeDesc> const&, storage_order_t<Order> const&)
+    -> stride<__::make_stride_descriptor(ShapeDesc, Order)>;
 
   template<std::convertible_to<kwk::config::default_size_type>... S>
   requires(sizeof...(S) > 0)

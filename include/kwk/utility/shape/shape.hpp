@@ -197,6 +197,14 @@ namespace kwk
       if constexpr (I >= shape::ndim) return fixed<1>;
       else return get<I>(s.self());
     }
+
+    template<typename CharT, typename Traits>
+    friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, shape const& s) noexcept
+    {
+      os << "(";
+      kumi::for_each([&](auto e) { os << " " << +e; }, s);
+      return os << " )";
+    }
   };
 
   //@brief Deduction guide
