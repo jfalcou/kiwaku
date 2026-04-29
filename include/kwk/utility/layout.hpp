@@ -18,6 +18,8 @@ namespace kwk
   //====================================================================================================================
 }
 
-#include <kwk/utility/shape/shape_descriptor.hpp>
-#include <kwk/utility/shape/shape.hpp>
-#include <kwk/utility/shape/stride.hpp>
+#include <kwk/utility/layout/shape_descriptor.hpp>
+#include <kwk/utility/layout/storage_order.hpp>
+#include <kwk/utility/layout/shape.hpp>
+#include <kwk/utility/layout/stride.hpp>
+#include <kwk/utility/layout/slicer.hpp>

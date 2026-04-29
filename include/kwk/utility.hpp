@@ -31,6 +31,5 @@ namespace kwk
 #include <kwk/utility/fixed.hpp>
 #include <kwk/utility/ratio.hpp>
 #include <kwk/utility/memory.hpp>
-#include <kwk/utility/shape.hpp>
-#include <kwk/utility/slicer/slicer.hpp>
+#include <kwk/utility/layout.hpp>
 #include <kwk/utility/range.hpp>

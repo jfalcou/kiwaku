@@ -7,11 +7,6 @@
 //======================================================================================================================
 #pragma once
 
-#include <kwk/utility/shape/shape_descriptor.hpp>
-#include <kwk/utility/shape/shape.hpp>
-#include <kwk/utility/shape/storage_order.hpp>
-#include <kwk/utility/fixed.hpp>
-#include <kwk/settings/shape.hpp>
 #include <array>
 
 namespace kwk

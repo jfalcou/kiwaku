@@ -7,9 +7,6 @@
 //======================================================================================================================
 #pragma once
 
-#include <kwk/utility/shape/shape_descriptor.hpp>
-#include <kwk/utility/fixed.hpp>
-
 namespace kwk
 {
   namespace __

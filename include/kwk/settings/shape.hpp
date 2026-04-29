@@ -7,7 +7,7 @@
 //======================================================================================================================
 #pragma once
 
-#include <kwk/utility/shape/storage_order.hpp>
+#include <kwk/utility/layout/storage_order.hpp>
 
 namespace kwk
 {

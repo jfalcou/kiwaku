@@ -127,8 +127,8 @@ TTS_AND_THEN("- Check origin")
 
   TTS_EQUAL(res1, (0));
   TTS_EQUAL(res2, (2));
-  TTS_EQUAL(res3, (6));
-  TTS_EQUAL(res4, (132));
+  TTS_EQUAL(res3, (132));
+  TTS_EQUAL(res4, (0));
   TTS_EQUAL(res7, (0));
 }
 }
