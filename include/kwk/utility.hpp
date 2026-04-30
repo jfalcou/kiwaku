@@ -28,8 +28,7 @@ namespace kwk
 }
 
 #include <kwk/detail/detail.hpp>
-#include <kwk/utility/fixed.hpp>
-#include <kwk/utility/ratio.hpp>
+#include <kwk/utility/numeric.hpp>
 #include <kwk/utility/memory.hpp>
 #include <kwk/utility/layout.hpp>
 #include <kwk/utility/range.hpp>

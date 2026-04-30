@@ -32,6 +32,7 @@ namespace kwk
   public:
     using shape_type = kwk::shape<Opts.shape_>;
     using stride_type = kwk::stride<Opts.stride_>;
+    using source_type = Source;
 
     using value_type = container_base_t<Source>;
 
@@ -44,9 +45,14 @@ namespace kwk
     static constexpr auto kind = as<value_type>();
     static constexpr auto itemsize = sizeof(value_type);
 
+    //==================================================================================================================
+    /*
+      Constructors
+    */
+    //==================================================================================================================
     template<int Flags, kumi::concepts::product_type Values>
     requires(Opts.valid_)
-    constexpr view(options<Flags, Values> const& opts)
+    KWK_TRIVIAL constexpr view(options<Flags, Values> const& opts)
       : view(build_tag{},
              opts[kwk::source],
              __::view_traits<options<Flags, Values>>::get_shape(opts),
@@ -56,21 +62,32 @@ namespace kwk
 
     template<kumi::concepts::field... Options>
     requires(Opts.valid_)
-    constexpr view(Options const&... opts) : view(options{opts...})
+    KWK_TRIVIAL constexpr view(Options const&... opts) : view(options{opts...})
     {
     }
 
     template<kumi::concepts::field... Options>
     requires(!Opts.valid_)
-    constexpr view(Options const&...) = delete;
+    constexpr view(Options const&...) = delete("View options are invalid, the source parameter is missing");
 
-    constexpr shape_type const& shape() const noexcept { return static_cast<shape_type const&>(*this); }
+    //==================================================================================================================
+    /*
+      Properties
+    */
+    //==================================================================================================================
+    [[nodiscard]] KWK_TRIVIAL constexpr shape_type const& shape() const noexcept
+    {
+      return static_cast<shape_type const&>(*this);
+    }
 
-    constexpr stride_type const& stride() const noexcept { return static_cast<stride_type const&>(*this); }
+    [[nodiscard]] KWK_TRIVIAL constexpr stride_type const& stride() const noexcept
+    {
+      return static_cast<stride_type const&>(*this);
+    }
 
-    constexpr auto size() const noexcept { return shape().size(); }
+    [[nodiscard]] KWK_TRIVIAL constexpr auto size() const noexcept { return shape().size(); }
 
-    constexpr pointer data(this auto&& self) { return KWK_FWD(self).target_; }
+    [[nodiscard]] KWK_TRIVIAL constexpr pointer data(this auto&& self) { return KWK_FWD(self).target_; }
 
     //==================================================================================================================
     /*
@@ -78,10 +95,12 @@ namespace kwk
     */
     //==================================================================================================================
     template<kumi::concepts::product_type T>
-    decltype(auto) operator[](this auto&& self, T t) noexcept
+    decltype(auto) operator[](this auto&& self, T&& t) noexcept
     requires(kumi::size_v<T> == ndim)
     {
-      return kumi::apply([&](auto... i) -> decltype(auto) { return std::forward_like<decltype(self)>(self)(i...); }, t);
+      return kumi::apply(
+        [&](auto&&... i) -> decltype(auto) { return std::forward_like<decltype(self)>(self)(KWK_FWD(i)...); },
+        KWK_FWD(t));
     }
 
     template<std::integral... Is>
@@ -95,8 +114,13 @@ namespace kwk
     auto operator[](this auto&& self, S const&... s) noexcept
     requires(sizeof...(S) == ndim)
     {
-      return kwk::view{kwk::source = self.data() + kwk::origin(self.shape(), storage_order_t<Opts.order_>{}, s...),
-                       kwk::reshape(self.shape(), s...), kwk::restride(self.stride(), s...)};
+      auto src = (kwk::source = self.data() + kwk::origin(self.shape(), storage_order_t<Opts.order_>{}, s...));
+      auto shp = kwk::reshape(self.shape(), s...);
+      auto strd = kwk::restride(self.stride(), s...);
+
+      constexpr auto opts = __::view_traits<
+        __::make_bag_t<decltype(kwk::source = std::declval<Source>()), decltype(shp), decltype(strd)>>::make_options();
+      return kwk::view<Source, opts>{src, shp, strd};
     }
 
   private:

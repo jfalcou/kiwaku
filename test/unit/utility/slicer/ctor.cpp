@@ -7,7 +7,6 @@
 //==================================================================================================
 #include "test.hpp"
 #include <kwk/kwk.hpp>
-#include <iostream>
 
 using kwk::_;
 
@@ -27,13 +26,13 @@ TTS_CASE("Slice behavior - Ensure dynamic informations are kept")
   auto sl6 = kwk::slicer{_, _, 2};
   auto sl7 = kwk::slicer{_, 3, _};
 
-  TTS_EQUAL(sizeof(sl1), (3 * sizeof(0)));
-  TTS_EQUAL(sizeof(sl2), (3 * sizeof(0)));
-  TTS_EQUAL(sizeof(sl3), (2 * sizeof(0)));
+  TTS_EQUAL(sizeof(sl1), (3 * sizeof(int)));
+  TTS_EQUAL(sizeof(sl2), (3 * sizeof(int)));
+  TTS_EQUAL(sizeof(sl3), (2 * sizeof(int)));
   TTS_EQUAL(sizeof(sl4), sizeof(kwk::_));
-  TTS_EQUAL(sizeof(sl5), (2 * sizeof(0)));
-  TTS_EQUAL(sizeof(sl6), (sizeof(0)));
-  TTS_EQUAL(sizeof(sl7), (sizeof(0)));
+  TTS_EQUAL(sizeof(sl5), (2 * sizeof(int)));
+  TTS_EQUAL(sizeof(sl6), (sizeof(int)));
+  TTS_EQUAL(sizeof(sl7), (sizeof(int)));
 
   auto res1 = kwk::reshape(shp1, sl1);
   auto res2 = kwk::reshape(shp2, sl1, sl2);
@@ -134,3 +133,41 @@ TTS_AND_THEN("- Check origin")
 }
 }
 ;
+#include <iostream>
+
+TTS_CASE("Slice behavior - Ensure specific slice behave as intended")
+{
+  auto shp1 = kwk::shape{7};
+
+  auto sl1 = kwk::at(4);
+  auto sl2 = kwk::every(3);
+  auto sl3 = kwk::first(5);
+  auto sl4 = kwk::last(2);
+  auto sl5 = kwk::drop_last(3);
+  auto sl6 = kwk::drop_first(4);
+  auto sl7 = kwk::between(2, 5);
+
+  TTS_EQUAL(sizeof(sl1), (2 * sizeof(int)));
+  TTS_EQUAL(sizeof(sl2), (sizeof(int)));
+  TTS_EQUAL(sizeof(sl3), (sizeof(int)));
+  TTS_EQUAL(sizeof(sl4), (2 * sizeof(int)));
+  TTS_EQUAL(sizeof(sl5), (2 * sizeof(int)));
+  TTS_EQUAL(sizeof(sl6), (sizeof(int)));
+  TTS_EQUAL(sizeof(sl7), (2 * sizeof(int)));
+
+  auto res1 = kwk::reshape(shp1, sl1);
+  auto res2 = kwk::reshape(shp1, sl2);
+  auto res3 = kwk::reshape(shp1, sl3);
+  auto res4 = kwk::reshape(shp1, sl4);
+  auto res5 = kwk::reshape(shp1, sl5);
+  auto res6 = kwk::reshape(shp1, sl6);
+  auto res7 = kwk::reshape(shp1, sl7);
+
+  TTS_EQUAL(res1, (kwk::shape{1}));
+  TTS_EQUAL(res2, (kwk::shape{3}));
+  TTS_EQUAL(res3, (kwk::shape{5}));
+  TTS_EQUAL(res4, (kwk::shape{2}));
+  TTS_EQUAL(res5, (kwk::shape{4}));
+  TTS_EQUAL(res6, (kwk::shape{3}));
+  TTS_EQUAL(res7, (kwk::shape{3}));
+};

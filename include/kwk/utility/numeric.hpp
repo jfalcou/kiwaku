@@ -10,16 +10,15 @@
 namespace kwk
 {
   //====================================================================================================================
-  //! @defgroup layout-utility Layout Utilities
+  //! @defgroup numeric-utility Numeric Utilities
   //! @ingroup utility
-  //! @brief Layout Management utilities
+  //! @brief Arithmetic Operation utilities
   //!
-  //! This module defines various functions, types and variables to handle container layout in a flexible way.
+  //! This module defines various functions, types and variables to handle arithmetic in a flexible way.
   //====================================================================================================================
 }
 
-#include <kwk/utility/layout/shape_descriptor.hpp>
-#include <kwk/utility/layout/storage_order.hpp>
-#include <kwk/utility/layout/shape.hpp>
-#include <kwk/utility/layout/stride.hpp>
-#include <kwk/utility/layout/slicer.hpp>
+#include <kwk/utility/numeric/fixed.hpp>
+#include <kwk/utility/numeric/ratio.hpp>
+#include <kwk/utility/numeric/wildcard.hpp>
+#include <kwk/utility/numeric/extremum.hpp>

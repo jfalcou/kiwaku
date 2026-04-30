@@ -33,6 +33,7 @@ TTS_CASE("Indexing Behavior")
   auto sl2 = kwk::to_slicer(2);
   auto sl3 = kwk::to_slicer(2_c);
   auto sl4 = kwk::slicer{2, 6, 2};
+  auto sl5 = kwk::end / 2;
 
   auto vs1 = v[sl1];
   for (std::size_t i = 0; i < static_cast<std::size_t>(vs1.size()); ++i) TTS_EQUAL(vs1[i], ref[i]);
@@ -45,4 +46,13 @@ TTS_CASE("Indexing Behavior")
 
   auto vs4 = v[sl4];
   for (auto i = sl4.begin(); i < sl4.end(); i += sl4.step()) TTS_EQUAL(vs4[(i - sl4.begin()) / sl4.step()], ref[i]);
+
+  auto vs5 = v[sl5];
+  for (std::size_t i = 0; i < static_cast<std::size_t>(vs5.size()); ++i) TTS_EQUAL(vs5[i], ref[i]);
+
+  TTS_TYPE_IS(decltype(vs1)::source_type, decltype(v)::source_type, );
+  TTS_TYPE_IS(decltype(vs2)::source_type, decltype(v)::source_type, );
+  TTS_TYPE_IS(decltype(vs3)::source_type, decltype(v)::source_type, );
+  TTS_TYPE_IS(decltype(vs4)::source_type, decltype(v)::source_type, );
+  TTS_TYPE_IS(decltype(vs5)::source_type, decltype(v)::source_type, );
 };

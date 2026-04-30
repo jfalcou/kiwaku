@@ -7,7 +7,7 @@
 //======================================================================================================================
 #pragma once
 
-#include <kwk/utility/wildcard.hpp>
+#include <kwk/utility/numeric/wildcard.hpp>
 
 namespace kwk::__
 {

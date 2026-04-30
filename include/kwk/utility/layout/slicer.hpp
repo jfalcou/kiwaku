@@ -7,40 +7,42 @@
 //======================================================================================================================
 #pragma once
 
-#include <kwk/utility/fixed.hpp>
+#include <kwk/utility/numeric/fixed.hpp>
 
 namespace kwk
 {
 
-  namespace concepts
-  {
-    template<typename T>
-    concept interval = kumi::concepts::sized_product_type<T, 3>;
-
-    template<typename T>
-    concept slicer = requires(T const& t) { to_slicer(t); };
-
-    // template<typename T>
-    // concept extremum = std::integral<>
-  }
-
-  template<typename Begin, typename End, typename Step> struct slicer : __::mixed_sequence<Begin, End, Step>
+  template<typename Begin, typename End, typename Step> struct slicer : private __::mixed_sequence<Begin, End, Step>
   {
     using parent = __::mixed_sequence<Begin, End, Step>;
 
     constexpr slicer(Begin b, End e, Step s) : parent{b, e, s} {}
 
-    constexpr auto begin() const noexcept { return get<0>(*this); }
+    constexpr auto begin(this auto&& self) noexcept { return get<0>(KWK_FWD(self)); }
 
-    constexpr auto end() const noexcept { return get<1>(*this); }
+    constexpr auto end(this auto&& self) noexcept { return get<1>(KWK_FWD(self)); }
 
-    constexpr auto step() const noexcept { return get<2>(*this); }
+    constexpr auto step(this auto&& self) noexcept { return get<2>(KWK_FWD(self)); }
 
     template<std::size_t I>
     requires(I < 3)
     friend constexpr decltype(auto) get(slicer const& self) noexcept
     {
       return get<I>(static_cast<parent const&>(self));
+    }
+
+    template<std::size_t I>
+    requires(I < 3)
+    friend constexpr decltype(auto) get(slicer& self) noexcept
+    {
+      return get<I>(static_cast<parent&>(self));
+    }
+
+    template<std::size_t I>
+    requires(I < 3)
+    friend constexpr decltype(auto) get(slicer&& self) noexcept
+    {
+      return get<I>(static_cast<parent&&>(KWK_FWD(self)));
     }
 
     template<typename CharT, typename Traits>
@@ -74,8 +76,11 @@ namespace kwk
     return slicer{fixed<T::value>, fixed<T::value + 1>, fixed<1>};
   }
 
-  // constexpr auto to_slicer(concepts::extremum auto const& t)    noexcept { return slicer{ t.offset(), t.ratio(), _};
-  // }
+  constexpr auto to_slicer(kwk::concepts::extremum auto const& t) noexcept
+  {
+    return slicer{t.offset(), t.ratio(), _};
+  }
+
   template<typename T>
   constexpr auto to_slicer(T const&) noexcept
   requires(is_wildcard<T>)
@@ -84,24 +89,16 @@ namespace kwk
   }
 
   // @brief helper to deduplicate code
-  template<typename S, typename D> constexpr auto handle(S const& s, [[maybe_unused]] D dim, auto def)
+  template<typename S, typename D> constexpr auto handle(S const& s, D dim, auto def)
   {
-    // if constexpr ( std::is_invocable_v<S, D> ) return s(dim);
-    // else
-    if constexpr (concepts::static_constant<S>) return s;
+    if constexpr (std::is_invocable_v<S, D>) return s(dim);
+    else if constexpr (kwk::concepts::static_constant<S>) return s;
     else if constexpr (std::integral<S>) return s;
     else return def;
   }
 
-  template<concepts::slicer S> constexpr auto __reindex(auto dim, S const& s)
+  template<typename B, typename E, typename S> constexpr auto slice_extent(auto dim, slicer<B, E, S> const& slc)
   {
-    auto sl = to_slicer(s);
-    return handle(sl.begin(), dim, fixed<0>);
-  }
-
-  template<concepts::slicer S> constexpr auto __reshape(auto dim, S const& s)
-  {
-    auto sl = to_slicer(s);
     auto eval = [&]<typename Len, typename Step>(Len l, Step st) {
       auto fix = [&](auto v, auto n) {
         auto w = (n < 0) ? -n : n;
@@ -112,20 +109,17 @@ namespace kwk
       else return (st == 0) ? 0 : fix(l, st);
     };
 
-    auto begin = handle(sl.begin(), dim, fixed<0>);
-    auto end = handle(sl.end(), dim, dim);
-    auto step = handle(sl.step(), dim, fixed<1>);
+    auto b = handle(slc.begin(), dim, fixed<0>);
+    auto e = handle(slc.end(), dim, dim);
+    auto s = handle(slc.step(), dim, fixed<1>);
 
-    return (step >= 0) ? eval(end - begin, step) : eval(begin + 1_c, step);
+    return (s >= 0) ? eval(e - b, s) : eval(b + 1_c, s);
   }
 
-  template<concepts::slicer S>
-  // requires( !concepts::extremum<S> )
-  constexpr auto __restride(auto dim, S const& s)
+  template<typename B, typename E, typename S> constexpr auto slice_stride(auto strd, slicer<B, E, S> const& slc)
   {
-    auto sl = to_slicer(s);
-    if constexpr (is_wildcard<decltype(sl.step())>) return dim;
-    else return sl.step() * dim;
+    if constexpr (is_wildcard<S>) return strd;
+    else return slc.step() * strd;
   }
 
   // Computes the offset to add to the base pointer of a container to retrieve the sliced container
@@ -133,30 +127,65 @@ namespace kwk
   constexpr auto origin(shape<D> const& s, storage_order_t<C> const& so, S const&... slices) noexcept
   requires(D.ndim == sizeof...(S))
   {
-    auto sliced = kumi::map([&](auto shp, auto slc) { return __reindex(shp, slc); }, s,
-                            kumi::forward_as_tuple(to_slicer(slices)...));
-
-    auto res = kumi::apply([](auto&&... elts) { return kwk::shape{KWK_FWD(elts)...}; }, sliced);
-
-    return kumi::apply([&](auto&&... elts) { return linearize(kwk::stride{res, so}, elts...); }, sliced);
+    auto pos = kumi::apply(
+      [](auto&&... elts) {
+        return kwk::shape{handle(get<1>(KWK_FWD(elts)).begin(), get<0>(KWK_FWD(elts)), fixed<0>)...};
+      },
+      kumi::zip(kumi::to_tuple(s), kumi::forward_as_tuple(to_slicer(slices)...)));
+    return linearize(kwk::stride{pos, so}, pos);
   }
 
   template<shape_descriptor D, concepts::slicer... S>
   constexpr auto reshape(shape<D> const& s, S const&... slices) noexcept
   requires(D.ndim == sizeof...(S))
   {
-    auto sliced = kumi::map([&](auto shp, auto slc) { return __reshape(shp, slc); }, s,
-                            kumi::forward_as_tuple(to_slicer(slices)...));
-    return kumi::apply([](auto&&... elts) { return kwk::shape{KWK_FWD(elts)...}; }, sliced);
+    return kumi::apply(
+      [](auto&&... elts) { return kwk::shape{slice_extent(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
+      kumi::zip(kumi::to_tuple(s), kumi::forward_as_tuple(to_slicer(slices)...)));
   }
 
   template<shape_descriptor D, concepts::slicer... S>
-  constexpr auto restride(stride<D> const& s, S const&... slices) noexcept
+  constexpr auto restride(stride<D> const& strd, S const&... slices) noexcept
   requires(D.ndim == sizeof...(S))
   {
-    auto sliced = kumi::map([&](auto strd, auto slc) { return __restride(strd, slc); }, s,
-                            kumi::forward_as_tuple(to_slicer(slices)...));
-    return kumi::apply([](auto&&... elts) { return kwk::stride{KWK_FWD(elts)...}; }, sliced);
+    return kumi::apply(
+      [](auto&&... elts) { return kwk::stride{slice_stride(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
+      kumi::zip(kumi::to_tuple(strd), kumi::forward_as_tuple(to_slicer(slices)...)));
+  }
+
+  constexpr auto at(std::integral auto i)
+  {
+    return kwk::slicer{i, i + 1, _};
+  }
+
+  constexpr auto every(std::integral auto s)
+  {
+    return kwk::slicer{_, _, s};
+  }
+
+  constexpr auto first(std::integral auto i)
+  {
+    return kwk::slicer{_, i, _};
+  }
+
+  constexpr auto last(std::integral auto i)
+  {
+    return kwk::slicer{kwk::end - i, _, _};
+  }
+
+  constexpr auto drop_first(std::integral auto i)
+  {
+    return kwk::slicer{i, _, _};
+  }
+
+  constexpr auto drop_last(std::integral auto i)
+  {
+    return kwk::slicer{_, kwk::end - i, _};
+  }
+
+  template<typename Begin, typename End> constexpr auto between(Begin b, End e)
+  {
+    return kwk::slicer{b, e, _};
   }
 }
 

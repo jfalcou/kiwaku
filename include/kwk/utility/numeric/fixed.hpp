@@ -8,8 +8,6 @@
 #pragma once
 
 #include <kwk/configuration.hpp>
-#include <cstdint>
-#include <iosfwd>
 
 namespace kwk
 {
@@ -111,8 +109,8 @@ namespace kwk
     /// @brief Equality operator that compares the values of two constants at compile time.
     template<auto M> friend constexpr std::strong_ordering operator<=>(constant, constant<M>) noexcept
     {
-      if (std::cmp_less(value, constant<M>::value)) return std::strong_ordering::less;
-      else if (std::cmp_greater(value, constant<M>::value)) return std::strong_ordering::greater;
+      if constexpr (std::cmp_less(value, constant<M>::value)) return std::strong_ordering::less;
+      else if constexpr (std::cmp_greater(value, constant<M>::value)) return std::strong_ordering::greater;
       else return std::strong_ordering::equal;
     }
   };

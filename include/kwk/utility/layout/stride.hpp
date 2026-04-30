@@ -175,14 +175,22 @@ namespace kwk
   requires(sizeof...(S) > 0)
   stride(S...) -> stride<__::make_descriptor<S...>()>;
 
+  // @brief : computes the linear position considering a stride and a tuple representing the MD position by
+  // performing a dot product between them
+  template<shape_descriptor SD, kumi::concepts::product_type T>
+  KWK_TRIVIAL constexpr auto linearize(stride<SD> const& s, T&& t)
+  {
+    return kumi::inner_product(s, KWK_FWD(t), 0);
+  }
+
   //@brief utility to linearize a position based on the stride
   template<shape_descriptor SD, std::convertible_to<std::ptrdiff_t>... Is>
-  constexpr auto linearize(stride<SD> const& s, Is... is) noexcept
+  KWK_TRIVIAL constexpr auto linearize(stride<SD> const& s, Is... is) noexcept
   requires(sizeof...(Is) == stride<SD>::ndim)
   {
-    return [&]<std::size_t... I>(std::index_sequence<I...>) {
-      return (0 + ... + (get<I>(s) * is));
-    }(std::make_index_sequence<stride<SD>::ndim>{});
+    // conversion to ptrdiff_t is a bit to harsh, it avoid conversions warning from unsigned position to
+    // signed one when going through kumi::inner_product
+    return linearize(s, kumi::tuple{std::ptrdiff_t(is)...});
   }
 }
 
