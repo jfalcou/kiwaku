@@ -68,7 +68,7 @@ namespace kwk
 
     template<kumi::concepts::field... Options>
     requires(!Opts.valid_)
-    constexpr view(Options const&...) = delete("View options are invalid, the source parameter is missing");
+    constexpr view(Options const&...) = delete;
 
     //==================================================================================================================
     /*

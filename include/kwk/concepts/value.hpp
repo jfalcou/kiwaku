@@ -16,21 +16,15 @@ namespace kwk::concepts
   };
 
   template<typename T>
-  concept arithmetic_constant = requires(T) {
-    { T::value };
-    typename T::value_type;
-    std::integral<typename T::value_type> || std::floating_point<typename T::value_type>;
+  concept arithmetic_constant = static_constant<T> && requires(T) {
+    requires std::integral<typename T::value_type> || std::floating_point<typename T::value_type>;
   };
 
   template<typename T>
-  concept integral_arithmetic_value = requires(T) {
-    { T::value };
-    typename T::value_type;
-    std::integral<typename T::value_type>;
-  } || std::integral<T>;
+  concept arithmetic_value = arithmetic_constant<T> || std::integral<T> || std::floating_point<T>;
 
   template<typename T>
-  concept arithmetic_value = arithmetic_constant<T> || std::integral<T> || std::floating_point<T>;
+  concept integral_arithmetic_value = (static_constant<T> && std::integral<typename T::value_type>) || std::integral<T>;
 
   template<typename T>
   concept extremum = requires(T x, std::ptrdiff_t I) {
