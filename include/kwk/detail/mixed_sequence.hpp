@@ -160,7 +160,7 @@ namespace kwk::__
 
     template<std::size_t I, typename P> KWK_TRIVIAL static constexpr decltype(auto) get_impl(P&& p)
     {
-      if constexpr (mapping[I] == -1) return kumi::get<I>(base_tuple{});
+      if constexpr (mapping[I] == -1) return kumi::element_t<I, base_tuple>{};
       else return kumi::get<mapping[I]>(KWK_FWD(p));
     }
 
