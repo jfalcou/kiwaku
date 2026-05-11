@@ -68,10 +68,9 @@ namespace kwk
   **/
   //====================================================================================================================
   inline constexpr __::source_id source{};
-
-  template<typename Source> struct source_traits;
 }
 
 #include <kwk/settings/source/pointer_source.hpp>
 #include <kwk/settings/source/array_source.hpp>
 #include <kwk/settings/source/range_source.hpp>
+//#include <kwk/settings/source/generator_source.hpp>

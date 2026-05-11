@@ -44,14 +44,4 @@ namespace kwk
   **/
   //====================================================================================================================
   inline constexpr __::wildcard_t _{};
-
-  //====================================================================================================================
-  /**
-    @ingroup utility
-    @brief Checks if a type is the wildcard type
-
-    @tparam T Type to analyze.
-  **/
-  //====================================================================================================================
-  template<typename T> inline constexpr bool is_wildcard = std::same_as<std::remove_cvref_t<T>, __::wildcard_t>;
 }

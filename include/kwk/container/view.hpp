@@ -30,16 +30,16 @@ namespace kwk
     }
 
   public:
-    using shape_type = kwk::shape<Opts.shape_>;
+    using shape_type  = kwk::shape<Opts.shape_>;
     using stride_type = kwk::stride<Opts.stride_>;
     using source_type = Source;
 
     using value_type = container_base_t<Source>;
 
-    using reference = std::add_lvalue_reference<value_type>;
+    using reference       = std::add_lvalue_reference<value_type>;
     using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
-    using pointer = std::add_pointer_t<value_type>;
-    using const_pointer = std::add_pointer_t<value_type const>;
+    using pointer         = std::add_pointer_t<value_type>;
+    using const_pointer   = std::add_pointer_t<value_type const>;
 
     static constexpr auto ndim = shape_type::ndim;
     static constexpr auto kind = as<value_type>();
@@ -63,6 +63,12 @@ namespace kwk
     template<kumi::concepts::field... Options>
     requires(Opts.valid_)
     KWK_TRIVIAL constexpr view(Options const&... opts) : view(options{opts...})
+    {
+    }
+
+    template<kwk::concepts::collection<decltype(kwk::source = std::declval<source_type>()), shape_type, stride_type> C>
+    KWK_TRIVIAL constexpr view(C const& other) 
+      : view(build_tag{}, other.data(), other.shape(), other.stride())
     {
     }
 
@@ -122,7 +128,7 @@ namespace kwk
         __::make_bag_t<decltype(kwk::source = std::declval<Source>()), decltype(shp), decltype(strd)>>::make_options();
       return kwk::view<Source, opts>{src, shp, strd};
     }
-
+    
   private:
     pointer target_;
   };

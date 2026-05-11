@@ -30,5 +30,4 @@ namespace kwk::concepts
   /// Concept for Contiguous Range exposing a compile-time size value
   template<typename T>
   concept contiguous_static_range = kumi::concepts::static_container<T> && has_static_size<T>;
-
 }

@@ -7,6 +7,7 @@
 //======================================================================================================================
 #pragma once
 
+#include <kwk/traits.hpp>
 #include <kwk/concepts.hpp>
 
 namespace kwk
@@ -26,6 +27,15 @@ namespace kwk
 
     KWK_TRIVIAL constexpr auto operator()(auto n) const noexcept { return (n * factor() + offset()) / divisor(); }
 
+    KWK_TRIVIAL constexpr auto operator-() const noexcept { return kwk::extremum{o, -r}; }
+
+    KWK_TRIVIAL constexpr auto operator+() const noexcept { return *this; }
+
+    template<typename Of, typename Ra> KWK_TRIVIAL friend constexpr bool operator==(extremum lhs, extremum<Of, Ra> rhs)
+    {
+      return (lhs.offset() == rhs.offset()) && (lhs.ratio() == rhs.ratio());
+    }
+
     template<typename CharT, typename Traits>
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, extremum t)
     {
@@ -35,56 +45,47 @@ namespace kwk
       if (t.offset() != 0) os << t.offset();
       return os;
     }
-
-    KWK_TRIVIAL constexpr auto operator-() const noexcept { return kwk::extremum{o, -r}; }
-
-    KWK_TRIVIAL constexpr auto operator+() const noexcept { return *this; }
-
-    template<typename Of, typename Ra> KWK_TRIVIAL friend constexpr bool operator==(extremum lhs, extremum<Of, Ra> rhs)
-    {
-      return (lhs.offset() == rhs.offset()) && (lhs.ratio() == rhs.ratio());
-    }
   };
 
   template<typename O, typename R, kwk::concepts::arithmetic_value V>
-  constexpr auto operator+(extremum<O, R> e, V v) noexcept
+  KWK_TRIVIAL constexpr auto operator+(extremum<O, R> e, V v) noexcept
   {
     return extremum{e.offset() + v * e.divisor(), e.ratio()};
   }
 
   template<typename O, typename R, kwk::concepts::arithmetic_value V>
-  constexpr auto operator+(V v, extremum<O, R> e) noexcept
+  KWK_TRIVIAL constexpr auto operator+(V v, extremum<O, R> e) noexcept
   {
     return e + v;
   }
 
   template<typename O, typename R, kwk::concepts::arithmetic_value V>
-  constexpr auto operator-(extremum<O, R> e, V v) noexcept
+  KWK_TRIVIAL constexpr auto operator-(extremum<O, R> e, V v) noexcept
   {
     // Prevent overflow when end - large_unsigned occurs
     return extremum{e.offset() - v * e.divisor(), e.ratio()};
   }
 
   template<typename O, typename R, kwk::concepts::arithmetic_value V>
-  constexpr auto operator-(V v, extremum<O, R> e) noexcept
+  KWK_TRIVIAL constexpr auto operator-(V v, extremum<O, R> e) noexcept
   {
     return extremum{v * e.divisor() - e.offset(), -e.ratio()};
   }
 
   template<typename O, typename R, kwk::concepts::arithmetic_value V>
-  constexpr auto operator*(extremum<O, R> e, V v) noexcept
+  KWK_TRIVIAL constexpr auto operator*(extremum<O, R> e, V v) noexcept
   {
     return extremum{e.offset() * v, e.ratio() * v};
   }
 
   template<typename O, typename R, kwk::concepts::arithmetic_value V>
-  constexpr auto operator*(V v, extremum<O, R> e) noexcept
+  KWK_TRIVIAL constexpr auto operator*(V v, extremum<O, R> e) noexcept
   {
     return e * v;
   }
 
   template<typename O, typename R, kwk::concepts::arithmetic_value V>
-  constexpr auto operator/(extremum<O, R> e, V v) noexcept
+  KWK_TRIVIAL constexpr auto operator/(extremum<O, R> e, V v) noexcept
   {
     return extremum{e.offset(), e.ratio() / v};
   }
