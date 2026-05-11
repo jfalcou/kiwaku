@@ -27,9 +27,9 @@ namespace kwk
   template<int Flags, kumi::concepts::product_type Values> struct options : Values
   {
   private:
-    auto& self() { return static_cast<Values&>(*this); }
+    constexpr auto& self() { return static_cast<Values&>(*this); }
 
-    auto const& self() const { return static_cast<Values const&>(*this); }
+    constexpr auto const& self() const { return static_cast<Values const&>(*this); }
 
     template<typename T> static constexpr bool validate() { return (Flags & (1 << T::enumerated_value)) != 0; }
 

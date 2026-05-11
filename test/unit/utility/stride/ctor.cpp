@@ -9,6 +9,7 @@
 #include <kwk/kwk.hpp>
 
 #include <iostream>
+
 TTS_CASE("Stride construction from scalar/shapes and storage order")
 {
   using namespace kwk::literals;

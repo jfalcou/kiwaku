@@ -13,6 +13,7 @@ namespace kwk
 }
 
 #include <kwk/configuration.hpp>
+#include <kwk/traits.hpp>
 #include <kwk/concepts.hpp>
 #include <kwk/utility.hpp>
 #include <kwk/settings.hpp>

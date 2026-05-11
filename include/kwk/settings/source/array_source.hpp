@@ -50,7 +50,7 @@ namespace kwk::__
   ///@brief Helper to retrieve a the shape of an array_option
   template<typename T> constexpr auto shape_of(array_option<T> const&)
   {
-    return kwk::shape<container_shape_v<T>>{};
+    return container_shape_v<T>;
   }
 }
 

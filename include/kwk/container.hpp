@@ -20,4 +20,5 @@ namespace kwk
 }
 
 #include <kwk/detail/detail.hpp>
+#include <kwk/container/collection.hpp>
 #include <kwk/container/view.hpp>

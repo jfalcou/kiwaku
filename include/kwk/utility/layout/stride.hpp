@@ -17,21 +17,21 @@ namespace kwk
   //====================================================================================================================
   template<auto... D> struct stride : private __::as_sequence<D...>::type
   {
-    using element_type    = stride;
-    using type            = stride;
+    using element_type = stride;
+    using type = stride;
     using identifier_type = __::stride_id;
-    using label_type      = kumi::str;
-    using size_type       = kwk::config::default_size_type;
+    using label_type = kumi::str;
+    using size_type = kwk::config::default_size_type;
 
     constexpr auto operator()(identifier_type const&) const { return *this; }
 
     static constexpr label_type label() { return kumi::str{"Stride"}; }
 
-    //static constexpr auto descriptor = Descriptor;
+    // static constexpr auto descriptor = Descriptor;
     static constexpr auto ndim = sizeof...(D);
 
     /// @brief Dynamic property of this shape
-    static constexpr bool fully_dynamic = ((D == kwk::_) && ...); 
+    static constexpr bool fully_dynamic = ((D == kwk::_) && ...);
 
     using storage_type = __::as_sequence<D...>::type;
 
@@ -43,7 +43,8 @@ namespace kwk
     {
     }
 
-    template<auto... StrideDims> friend constexpr bool operator==(stride const& a, stride<StrideDims...> const& b) noexcept
+    template<auto... StrideDims>
+    friend constexpr bool operator==(stride const& a, stride<StrideDims...> const& b) noexcept
     {
       if constexpr (stride::ndim != stride<StrideDims...>::ndim) return false;
       else return kumi::to_tuple(a) == kumi::to_tuple(b);
@@ -80,46 +81,37 @@ namespace kwk
   stride(S...) -> stride<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
 
   /// @brief Transforms an abritrary product type into a stride
-  template<kumi::concepts::product_type T>
-  constexpr auto as_stride(T&& t)
+  template<kumi::concepts::product_type T> constexpr auto as_stride(T&& t)
   {
-    return kumi::apply([](auto &&... elt)
-    {
-      auto v_or_t = []<typename V>(V && v)
-      {
-        if constexpr( kumi::concepts::product_type<V> ) return to_stride(KWK_FWD(v));
-        else return KWK_FWD(v);
-      };
-      return stride{v_or_t(KWK_FWD(elt))...};
-    }, KWK_FWD(t));
+    return kumi::apply(
+      [](auto&&... elt) {
+        auto v_or_t = []<typename V>(V&& v) {
+          if constexpr (kumi::concepts::product_type<V>) return to_stride(KWK_FWD(v));
+          else return KWK_FWD(v);
+        };
+        return stride{v_or_t(KWK_FWD(elt))...};
+      },
+      KWK_FWD(t));
   }
 
- //==================================================================================================================
- // Compute a stride from a product type representing the shape and a custom layout permutation at compile time
- //==================================================================================================================
+  //==================================================================================================================
+  // Compute a stride from a product type representing the shape and a custom layout permutation at compile time
+  //==================================================================================================================
   template<kumi::concepts::product_type T, storage_order_descriptor order>
-  constexpr auto to_stride(T && t, storage_order_t<order> const&)
+  constexpr auto to_stride(T&& t, storage_order_t<order> const&)
   {
     if constexpr (kumi::concepts::empty_product_type<T>) return kwk::stride{};
-    else 
+    else
     {
       constexpr auto N = kumi::size_v<T>;
-      constexpr auto perm = kumi::generate<N>([&](auto i)
-      {
-        return kumi::index<order.generator(i, N)>;
-      });
+      constexpr auto perm = kumi::generate<N>([&](auto i) { return kumi::index<order.generator(i, N)>; });
 
-      auto permuted = kumi::apply([&]<std::size_t... I>(kumi::index_t<I>...)
-      {
-        return kumi::reorder<I...>(KUMI_FWD(t));
-      }, perm);
-      
+      auto permuted =
+        kumi::apply([&]<std::size_t... I>(kumi::index_t<I>...) { return kumi::reorder<I...>(KUMI_FWD(t)); }, perm);
+
       auto tmp = kumi::exclusive_scan_right(kumi::function::multiplies, permuted, fixed<1>);
 
-      return as_stride(kumi::generate<N>([&](auto i)
-      {
-        return kumi::get<order.generator(i,N)>(tmp);
-      }));
+      return as_stride(kumi::generate<N>([&](auto i) { return kumi::get<order.generator(i, N)>(tmp); }));
     }
   }
 

@@ -19,7 +19,7 @@ TTS_CASE("Shape behavior - Mixed 1D")
   shape<7> shape_s;
   shape<_> shape_di = {27};
   shape<_> shape_d7 = {7};
-  auto shape_si = shape{7_c}; 
+  auto shape_si = shape{7_c};
 
   TTS_EQUAL(sizeof(shape_d), 1 * sizeof(kwk::config::default_size_type));
   TTS_EQUAL(sizeof(shape_s), 1UL);
@@ -188,9 +188,7 @@ template<int N, std::size_t... I> struct sizes<N, std::index_sequence<I...>>
 
 TTS_CASE_TPL("Building a nD shape with kwk::kwk::shape{a1,...,an}", sizes<10>)<typename T>(::tts::type<T>)
 {
-  auto f = []<std::size_t... Idx>(std::index_sequence<Idx...> const&) {
-    return kwk::shape{3 * (1 + Idx)...};
-  };
+  auto f = []<std::size_t... Idx>(std::index_sequence<Idx...> const&) { return kwk::shape{3 * (1 + Idx)...}; };
 
   auto sh = f(std::make_index_sequence<T::value>{});
   TTS_EQUAL(sh.ndim, T::value);

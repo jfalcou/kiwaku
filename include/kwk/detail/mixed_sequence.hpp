@@ -39,35 +39,35 @@ namespace kwk::__
   //====================================================================================================================
   // Internal type for axis identifier
   //====================================================================================================================
-  consteval auto get_digits(std::integral auto n)
-  {
-    std::size_t size = 1;
-    while (n >= 10) n /= 10, size++;
-    return size;
-  }
+  // consteval auto get_digits(std::integral auto n)
+  //{
+  //  std::size_t size = 1;
+  //  while (n >= 10) n /= 10, size++;
+  //  return size;
+  //}
 
-  template<int N> struct axis_t : kumi::identifier<axis_t<N>>
-  {
-    using kumi::identifier<axis_t<N>>::operator=;
+  // template<int N> struct axis_t : kumi::identifier<axis_t<N>>
+  //{
+  //   using kumi::identifier<axis_t<N>>::operator=;
 
-    friend constexpr kumi::str to_str(axis_t) noexcept
-    {
-      constexpr auto size = get_digits(N);
+  //  friend constexpr kumi::str to_str(axis_t) noexcept
+  //  {
+  //    constexpr auto size = get_digits(N);
 
-      struct
-      {
-        char t[size + 6 + 1] = {'a', 'x', 'i', 's', '('};
-        std::size_t multiplier = {1};
-      } that{};
+  //    struct
+  //    {
+  //      char t[size + 6 + 1] = {'a', 'x', 'i', 's', '('};
+  //      std::size_t multiplier = {1};
+  //    } that{};
 
-      [&]<std::size_t... I>(std::index_sequence<I...>) {
-        ((that.t[size - I - 1 + 5] = char('0' + ((N / that.multiplier) % 10)), that.multiplier *= 10), ...);
-      }(std::make_index_sequence<size>{});
+  //    [&]<std::size_t... I>(std::index_sequence<I...>) {
+  //      ((that.t[size - I - 1 + 5] = char('0' + ((N / that.multiplier) % 10)), that.multiplier *= 10), ...);
+  //    }(std::make_index_sequence<size>{});
 
-      that.t[size + 5] = ')';
-      return kumi::str{that.t};
-    }
-  };
+  //    that.t[size + 5] = ')';
+  //    return kumi::str{that.t};
+  //  }
+  //};
 
   //====================================================================================================================
   // Traits for computing the record type with only dynamic axis inside
@@ -91,20 +91,19 @@ namespace kwk::__
     static constexpr auto stored_rank = kumi::size_v<parent>;
     static constexpr auto mapping = compute_storage_map<base_tuple>();
 
-    template<typename Us> static consteval bool follow_mapping()
+    template<kumi::concepts::product_type U> static consteval bool follow_mapping()
     {
-      // Checks if the tuple Us can be used to construct the dynamic part of the sequence which means that :
+      // Checks if the tuple U can be used to construct the dynamic part of the sequence which means that :
       //  + -1 in mapping means the size is static and the corresponding type in Us... must be an integral constant
       //  with the same value or a wildcard.
       //  + otherwise, the type in Us... must be convertible to the corresponding type in the mixed_type tuple.
       bool valid = true;
 
       auto check = [&]<std::size_t I>(kumi::index_t<I>) {
-        using u_type = std::remove_cvref_t<kumi::element_t<I, Us>>;
+        using u_type = std::remove_cvref_t<kumi::element_t<I, U>>;
         using is_u_dyn = is_dynamic_dim<u_type>;
 
-        if constexpr (mapping[I] == -1)
-          return is_wildcard<u_type> || (!is_u_dyn::value && u_type::value == kumi::get<I>(base_tuple{}));
+        if constexpr (mapping[I] == -1) return (!is_u_dyn::value && u_type::value == kumi::get<I>(base_tuple{}));
         else return std::convertible_to<u_type, kumi::element_t<mapping[I], parent>>;
       };
 

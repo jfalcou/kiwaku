@@ -33,12 +33,13 @@ namespace kwk
   //====================================================================================================================
   template<typename T> struct container_shape
   {
-    static constexpr auto value = kwk::shape{};//kwk::shape_descriptor{};
+    static constexpr auto value = kwk::shape{}; // kwk::shape_descriptor{};
   };
 
   template<kwk::concepts::range T> struct container_shape<T>
   {
-    static constexpr auto value = add_rank(container_shape<kumi::container_type_t<T>>::value, kumi::container_size_v<T>);
+    static constexpr auto value =
+      add_rank(container_shape<kumi::container_type_t<T>>::value, kumi::container_size_v<T>);
   };
 
   template<typename T> inline constexpr auto container_shape_v = container_shape<T>::value;

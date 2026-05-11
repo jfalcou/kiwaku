@@ -14,12 +14,12 @@ namespace kwk
     template<auto N> struct normalize_dim : std::conditional<N == kwk::_, kwk::config::default_size_type, constant<N>>
     {
     };
-    
+
     template<concepts::extent auto... x> struct as_sequence
     {
       using type = decltype(kwk::__::mixed_sequence(std::declval<typename normalize_dim<x>::type>()...));
     };
-    
+
     template<typename T> consteval auto make_dimension()
     {
       if constexpr (is_dynamic_dim<T>::value) return _;
@@ -29,10 +29,13 @@ namespace kwk
     //@brief Simply stores the indexes of non trivial dimension to be used as an index-map
     consteval auto squeeze_dimensions(concepts::extent auto... Dims)
     {
-      struct { std::size_t data[sizeof...(Dims)], count = {}; } d{};
-      [&]<std::size_t...I>(std::index_sequence<I...>)
+      struct
       {
-        ((void)((Dims != 1) ? (d.data[d.count++] = I) : 0),...); 
+        std::size_t data[sizeof...(Dims)], count = {};
+      } d{};
+
+      [&]<std::size_t... I>(std::index_sequence<I...>) {
+        ((void)((Dims != 1) ? (d.data[d.count++] = I) : 0), ...);
       }(std::make_index_sequence<sizeof...(Dims)>{});
       return d;
     }
@@ -121,19 +124,16 @@ namespace kwk
     static constexpr label_type label() { return kumi::str{"Shape"}; }
 
     /// @brief The shape descriptor associated with this shape
-    //static constexpr auto descriptor = Descriptor;
+    // static constexpr auto descriptor = Descriptor;
 
     /// @brief Number of dimensions in this shape
-    static constexpr auto ndim = sizeof...(x);//Descriptor.ndim;
+    static constexpr auto ndim = sizeof...(x); // Descriptor.ndim;
 
     /// @brief Dynamic property of this shape
-    static constexpr bool fully_dynamic = ((x == kwk::_) && ...); 
+    static constexpr bool fully_dynamic = ((x == kwk::_) && ...);
 
     /// @brief Total number of elements the current shape represents
-    constexpr size_type size() const noexcept
-    {
-      return kumi::fold_left(kumi::function::multiplies, *this, fixed<1>);
-    }
+    constexpr size_type size() const noexcept { return kumi::fold_left(kumi::function::multiplies, *this, fixed<1>); }
 
     /// @brief Default constructor
     constexpr shape() : storage_type() {}
@@ -176,8 +176,7 @@ namespace kwk
     //==================================================================================================================
     /// Assignment operator
     //==================================================================================================================
-    template<concepts::extent auto... Dims>
-    constexpr shape& operator=(shape<Dims...> const& other) & noexcept
+    template<concepts::extent auto... Dims> constexpr shape& operator=(shape<Dims...> const& other) & noexcept
     {
       this->self() = other.self();
       return *this;
@@ -218,21 +217,20 @@ namespace kwk
   };
 
   //@brief Deduction guide
-  template<concepts::extent... S> shape(S &&...) -> shape<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
+  template<concepts::extent... S> shape(S&&...) -> shape<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
 
-  /// @brief Transforms an abritrary product type into a shape 
-  template<kumi::concepts::product_type T>
-  constexpr auto as_shape(T&& t)
+  /// @brief Transforms an abritrary product type into a shape
+  template<kumi::concepts::product_type T> constexpr auto as_shape(T&& t)
   {
-    return kumi::apply([](auto &&... elt)
-    {
-      auto v_or_t = []<typename V>(V && v)
-      {
-        if constexpr( kumi::concepts::product_type<V> ) return to_shape(KWK_FWD(v));
-        else return KWK_FWD(v);
-      };
-      return shape{v_or_t(KWK_FWD(elt))...};
-    }, KWK_FWD(t));
+    return kumi::apply(
+      [](auto&&... elt) {
+        auto v_or_t = []<typename V>(V&& v) {
+          if constexpr (kumi::concepts::product_type<V>) return to_shape(KWK_FWD(v));
+          else return KWK_FWD(v);
+        };
+        return shape{v_or_t(KWK_FWD(elt))...};
+      },
+      KWK_FWD(t));
   }
 
   //@brief Squeeze the current shape by removing trivial dimensions
@@ -244,13 +242,9 @@ namespace kwk
     }(std::make_index_sequence<pos.count>{});
   }
 
-  template<auto... D, concepts::extent Dim> 
-  constexpr auto add_rank(shape<D...> const& s, Dim N)
+  template<auto... D, concepts::extent Dim> constexpr auto add_rank(shape<D...> const& s, Dim N)
   {
-    return kumi::apply([&](auto &&... elts)
-    {
-      return shape{KWK_FWD(elts)..., N};
-    }, s);
+    return kumi::apply([&](auto&&... elts) { return shape{KWK_FWD(elts)..., N}; }, s);
   }
 
   //@brief Extends the current shape by adding trivial dimensions
@@ -276,7 +270,7 @@ namespace kwk
     **/
     //====================================================================================================================
     inline constexpr shape<kwk::_> _1D{};
-  
+
     //====================================================================================================================
     /**
       @ingroup shape-utility
@@ -285,7 +279,7 @@ namespace kwk
     **/
     //====================================================================================================================
     inline constexpr shape<kwk::_, kwk::_> _2D{};
-  
+
     //====================================================================================================================
     /**
       @ingroup shape-utility
@@ -294,7 +288,7 @@ namespace kwk
     **/
     //====================================================================================================================
     inline constexpr shape<kwk::_, kwk::_, kwk::_> _3D{};
-  
+
     //====================================================================================================================
     /**
       @ingroup shape-utility
@@ -303,7 +297,7 @@ namespace kwk
     **/
     //====================================================================================================================
     inline constexpr shape<kwk::_, kwk::_, kwk::_, kwk::_> _4D{};
-    
+
     //====================================================================================================================
     /**
       @ingroup shape-utility
@@ -312,17 +306,15 @@ namespace kwk
     **/
     //====================================================================================================================
     template<std::convertible_to<std::size_t> auto N>
-    inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...>)
-    {
-      auto eval = [](auto, auto const& v){ return v; };
-      return shape<eval(I,kwk::_)...>{};
+    inline constexpr auto _nD = []<std::size_t... I>(std::index_sequence<I...>) {
+      auto eval = [](auto, auto const& v) { return v; };
+      return shape<eval(I, kwk::_)...>{};
     }(std::make_index_sequence<N>{});
   }
 }
 
 #if !defined(KWK_DOXYGEN_INVOKED)
-template<auto... D>
-struct std::tuple_size<kwk::shape<D...>> : std::integral_constant<std::size_t, sizeof...(D)>
+template<auto... D> struct std::tuple_size<kwk::shape<D...>> : std::integral_constant<std::size_t, sizeof...(D)>
 {
 };
 

@@ -56,7 +56,7 @@ namespace kwk
   //====================================================================================================================
   template<storage_order_descriptor O> struct storage_order_t
   {
-  //==================================================================================================================
+    //==================================================================================================================
     // Shape is a field over itself
     //==================================================================================================================
     using element_type = storage_order_t;
@@ -85,9 +85,9 @@ namespace kwk
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
                                                          storage_order_t const&) noexcept
     {
-      //if constexpr (row_major_order == O)         return os << "Storage Order : Row Major";
-      //else if constexpr (column_major_order == O) return os << "Storage Order : Column Major";
-      //else 
+      // if constexpr (row_major_order == O)         return os << "Storage Order : Row Major";
+      // else if constexpr (column_major_order == O) return os << "Storage Order : Column Major";
+      // else
       return os << "Storage Order : Custom";
     }
   };

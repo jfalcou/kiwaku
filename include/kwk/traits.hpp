@@ -11,19 +11,13 @@ namespace kwk
 {
   //====================================================================================================================
   /**
-    @defgroup settings  Container Settings
+    @defgroup traits Traits
+    @brief Contains various traits used throughout KIWAKU.
 
-    This group includes components that define various settings for KIWAKU containers.
-  **/
+    This module gathers the various traits used within KIWAKU.
+  */
   //====================================================================================================================
 }
 
 #include <kwk/detail/detail.hpp>
-#include <kwk/settings/options.hpp>
-
-#include <kwk/settings/allocator.hpp>
-#include <kwk/settings/generator.hpp>
-#include <kwk/settings/indexing.hpp>
-#include <kwk/settings/kind.hpp>
-#include <kwk/settings/layout.hpp>
-#include <kwk/settings/source.hpp>
+#include <kwk/traits/traits.hpp>

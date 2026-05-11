@@ -20,12 +20,12 @@ TTS_CASE("Indexing Behavior")
   float const cref[7] = {1, 2, 3, 4, 5, 6, 7};
 
   auto sz = 7;
-  auto v = kwk::view{kwk::source = ref, kwk::shape{sz}};
+  auto v = kwk::view(kwk::source = ref, kwk::shape{sz});
 
   for (std::size_t i = 0; i < static_cast<std::size_t>(v.size()); ++i) TTS_EQUAL(v[i], ref[i]);
   TTS_EXPECT_COMPILES(v, { v[0] = 3.f; });
 
-  auto w = kwk::view{kwk::source = cref, kwk::shape{sz}};
+  auto w = kwk::view(kwk::source = cref, kwk::shape{sz});
   for (std::size_t i = 0; i < static_cast<std::size_t>(w.size()); ++i) TTS_EQUAL(w[i], cref[i]);
   TTS_EXPECT_NOT_COMPILES(w, { w[0] = 3.f; });
 

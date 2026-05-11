@@ -11,7 +11,7 @@
 #include <array>
 #include <vector>
 
-TTS_CASE("Build a view with dynamic shape settings from a C array")
+TTS_CASE("Build a view with static shape settings from a C array")
 {
   using namespace kwk::literals;
 
@@ -19,25 +19,25 @@ TTS_CASE("Build a view with dynamic shape settings from a C array")
   float const cref[7] = {1, 2, 3, 4, 5, 6, 7};
 
   auto sz = 7_c;
-  auto v = kwk::view{kwk::source = ref, kwk::shape{sz}};
+  auto v = kwk::view(kwk::source = ref, kwk::shape{sz});
 
   TTS_EQUAL(sizeof(v), sizeof(void*));
-  TTS_EQUAL(v.ndim, 1);
+  TTS_EQUAL(v.ndim, 1UL);
   TTS_EQUAL(v.size(), 7);
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
   auto sz2 = 4_c;
-  auto w = kwk::view{kwk::source = cref, kwk::shape{sz2}};
+  auto w = kwk::view(kwk::source = cref, kwk::shape{sz2});
 
   TTS_EQUAL(sizeof(w), sizeof(void*));
-  TTS_EQUAL(w.ndim, 1);
+  TTS_EQUAL(w.ndim, 1UL);
   TTS_EQUAL(w.size(), 4);
   TTS_EQUAL(w.shape(), kwk::shape{sz2});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));
 };
 
-TTS_CASE("Build a 1D view with dynamic shape settings from std::array")
+TTS_CASE("Build a 1D view with static shape settings from std::array")
 {
   using namespace kwk::literals;
 
@@ -45,25 +45,27 @@ TTS_CASE("Build a 1D view with dynamic shape settings from std::array")
   std::array<float, 7> const cref = {1, 2, 3, 4, 5, 6, 7};
 
   auto sz = 7_c;
-  auto v = kwk::view{kwk::source = ref, kwk::shape{sz}};
+  auto v = kwk::view(kwk::source = ref, kwk::shape{sz});
 
   TTS_EQUAL(sizeof(v), sizeof(void*));
-  TTS_EQUAL(v.ndim, 1);
+  TTS_EQUAL(v.ndim, 1UL);
   TTS_EQUAL(v.size(), 7);
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
   auto sz2 = 4_c;
-  auto w = kwk::view{kwk::source = cref, kwk::shape{sz2}};
+  auto w = kwk::view(kwk::source = cref, kwk::shape{sz2});
 
   TTS_EQUAL(sizeof(w), sizeof(void*));
-  TTS_EQUAL(w.ndim, 1);
+  TTS_EQUAL(w.ndim, 1UL);
   TTS_EQUAL(w.size(), 4);
   TTS_EQUAL(w.shape(), kwk::shape{sz2});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));
 };
 
-TTS_CASE("Build a 1D view with dynamic shape settings from a ContiguousRange")
+#include <iostream>
+
+TTS_CASE("Build a 1D view with static shape settings from a ContiguousRange")
 {
   using namespace kwk::literals;
 
@@ -71,25 +73,25 @@ TTS_CASE("Build a 1D view with dynamic shape settings from a ContiguousRange")
   std::vector<float> const cref = {1, 2, 3, 4, 5, 6, 7};
 
   auto sz = 7_c;
-  auto v = kwk::view{kwk::source = ref, kwk::shape{sz}};
+  auto v = kwk::view(kwk::source = ref, kwk::shape{sz});
 
   TTS_EQUAL(sizeof(v), sizeof(void*));
-  TTS_EQUAL(v.ndim, 1);
+  TTS_EQUAL(v.ndim, 1UL);
   TTS_EQUAL(v.size(), 7);
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
   auto sz2 = 5_c;
-  auto w = kwk::view{kwk::source = cref, kwk::shape{sz2}};
+  auto w = kwk::view(kwk::source = cref, kwk::shape{sz2});
 
   TTS_EQUAL(sizeof(w), sizeof(void*));
-  TTS_EQUAL(w.ndim, 1);
+  TTS_EQUAL(w.ndim, 1UL);
   TTS_EQUAL(w.size(), 5);
   TTS_EQUAL(w.shape(), kwk::shape{sz2});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));
 };
 
-TTS_CASE("Build a 1D view with dynamic shape settings from a pointer")
+TTS_CASE("Build a 1D view with static shape settings from a pointer")
 {
   using namespace kwk::literals;
 
@@ -97,19 +99,19 @@ TTS_CASE("Build a 1D view with dynamic shape settings from a pointer")
   std::vector<float> const cref = {1, 2, 3, 4, 5, 6, 7};
 
   auto sz = 7_c;
-  auto v = kwk::view{kwk::source = ref.data(), kwk::shape{sz}};
+  auto v = kwk::view(kwk::source = ref.data(), kwk::shape{sz});
 
   TTS_EQUAL(sizeof(v), sizeof(void*));
-  TTS_EQUAL(v.ndim, 1);
+  TTS_EQUAL(v.ndim, 1UL);
   TTS_EQUAL(v.size(), 7);
   TTS_EQUAL(v.shape(), kwk::shape{sz});
   TTS_EQUAL(v.kind, (kwk::as<float>()));
 
   auto sz2 = 5_c;
-  auto w = kwk::view{kwk::source = cref.data(), kwk::shape{sz2}};
+  auto w = kwk::view(kwk::source = cref.data(), kwk::shape{sz2});
 
   TTS_EQUAL(sizeof(w), sizeof(void*));
-  TTS_EQUAL(w.ndim, 1);
+  TTS_EQUAL(w.ndim, 1UL);
   TTS_EQUAL(w.size(), 5);
   TTS_EQUAL(w.shape(), kwk::shape{sz2});
   TTS_EQUAL(w.kind, (kwk::as<float const>()));

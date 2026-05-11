@@ -9,21 +9,18 @@
 
 namespace kwk
 {
+
   //====================================================================================================================
   /**
-    @defgroup settings  Container Settings
+    @ingroup utility
+    @brief Checks if a type is the wildcard type
 
-    This group includes components that define various settings for KIWAKU containers.
+    @tparam T Type to analyze.
   **/
   //====================================================================================================================
+  template<typename T> struct is_wildcard : std::is_same<std::remove_cvref_t<T>, __::wildcard_t>
+  {
+  };
+
+  template<typename T> constexpr bool is_wildcard_v = is_wildcard<T>::value;
 }
-
-#include <kwk/detail/detail.hpp>
-#include <kwk/settings/options.hpp>
-
-#include <kwk/settings/allocator.hpp>
-#include <kwk/settings/generator.hpp>
-#include <kwk/settings/indexing.hpp>
-#include <kwk/settings/kind.hpp>
-#include <kwk/settings/layout.hpp>
-#include <kwk/settings/source.hpp>

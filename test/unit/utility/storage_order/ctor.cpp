@@ -12,7 +12,7 @@ TTS_CASE("Storage order construction")
 {
   using kwk::storage_order;
 
-  auto so1 = (storage_order = [](auto i, auto){ return i; });
-  
+  auto so1 = (storage_order = [](auto i, auto) { return i; });
+
   TTS_EQUAL(sizeof(so1), 1UL);
 };

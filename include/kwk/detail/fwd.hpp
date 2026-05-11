@@ -7,9 +7,10 @@
 //======================================================================================================================
 #pragma once
 
-#include <kwk/detail/abi.hpp>
-#include <kwk/detail/dependencies.hpp>
-#include <kwk/detail/fwd.hpp>
-#include <kwk/detail/clone_ptr.hpp>
-#include <kwk/detail/settings.hpp>
-#include <kwk/detail/mixed_sequence.hpp>
+namespace kwk::__
+{
+  struct shape_id;
+  struct stride_id;
+  struct storage_order_id;
+  struct wildcard_t;
+}
