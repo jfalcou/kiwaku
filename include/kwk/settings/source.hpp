@@ -73,4 +73,4 @@ namespace kwk
 #include <kwk/settings/source/pointer_source.hpp>
 #include <kwk/settings/source/array_source.hpp>
 #include <kwk/settings/source/range_source.hpp>
-//#include <kwk/settings/source/generator_source.hpp>
+// #include <kwk/settings/source/generator_source.hpp>

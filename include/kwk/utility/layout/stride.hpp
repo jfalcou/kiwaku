@@ -104,14 +104,16 @@ namespace kwk
     else
     {
       constexpr auto N = kumi::size_v<T>;
-      constexpr auto perm = kumi::generate<N>([&](auto i) { return kumi::index<order.generator(i, N)>; });
+      constexpr auto perm =
+        kumi::generate<N>([&](auto i) { return kumi::index<order.generator(static_cast<int>(i), N)>; });
 
       auto permuted =
         kumi::apply([&]<std::size_t... I>(kumi::index_t<I>...) { return kumi::reorder<I...>(KUMI_FWD(t)); }, perm);
 
       auto tmp = kumi::exclusive_scan_right(kumi::function::multiplies, permuted, fixed<1>);
 
-      return as_stride(kumi::generate<N>([&](auto i) { return kumi::get<order.generator(i, N)>(tmp); }));
+      return as_stride(
+        kumi::generate<N>([&](auto i) { return kumi::get<order.generator(static_cast<int>(i), N)>(tmp); }));
     }
   }
 

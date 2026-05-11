@@ -180,6 +180,12 @@ namespace kwk::__
     }
   };
 
+  template<> struct mixed_sequence<>
+  {
+    static constexpr auto rank = 0;
+    static constexpr auto stored_rank = 0;
+  };
+
   template<typename... Ts> mixed_sequence(Ts const&...) -> mixed_sequence<Ts...>;
 }
 

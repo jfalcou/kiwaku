@@ -10,13 +10,12 @@
 namespace kwk::concepts
 {
   template<typename T>
-  concept collection_like = requires(T const& t)
-  {
+  concept collection_like = requires(T const& t) {
     typename T::value_type;
     typename T::source_type;
-    { t.ndim()   };
-    { t.kind()   };
-    { t.shape()  };
+    { t.ndim() };
+    { t.kind() };
+    { t.shape() };
   };
 
   template<typename T, typename... Opts>
