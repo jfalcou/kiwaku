@@ -7,101 +7,51 @@
 //======================================================================================================================
 #pragma once
 
-#include <array>
-
 namespace kwk
 {
-  namespace __
-  {
-    struct stride_id;
-
-    //==================================================================================================================
-    // Compute stride descriptor from a shape descriptor and a custom layout permutation at compile time
-    //==================================================================================================================
-    consteval shape_descriptor make_stride_descriptor(shape_descriptor s_desc, storage_order_descriptor order)
-    {
-      shape_descriptor st_desc;
-      st_desc.ndim = s_desc.ndim;
-
-      if (s_desc.ndim > 0)
-      {
-        // Generate the permutation array dynamically based on the shape's ndim
-        int perm[kwk::config::max_dimensions] = {};
-        for (int i = 0; i < s_desc.ndim; ++i) { perm[i] = order.generator(i, s_desc.ndim); }
-
-        // Fastest varying dimension (the last one in the permutation) has stride 1
-        st_desc.dims[perm[s_desc.ndim - 1]] = 1;
-
-        // Compute strides backwards according to permutation mapping
-        for (int i = s_desc.ndim - 2; i >= 0; --i)
-        {
-          int curr_dim = perm[i];
-          int prev_dim = perm[i + 1];
-
-          if (st_desc.dims[prev_dim] == 0 || s_desc.dims[prev_dim] == 0)
-            st_desc.dims[curr_dim] = 0; // Propagate dynamic dimensionality
-          else st_desc.dims[curr_dim] = st_desc.dims[prev_dim] * s_desc.dims[prev_dim];
-        }
-      }
-
-      st_desc.fully_dynamic = true;
-      for (int i = 0; i < st_desc.ndim; ++i)
-      {
-        if (st_desc.dims[i] != 0) st_desc.fully_dynamic = false;
-      }
-
-      return st_desc;
-    }
-  }
-
   //====================================================================================================================
   /**
     @ingroup shape-utility
     @brief Stride of multi-dimensional container (Supports Arbitrary Layouts)
   **/
   //====================================================================================================================
-  template<shape_descriptor Descriptor> struct stride : private __::as_sequence<Descriptor>::type
+  template<auto... D> struct stride : private __::as_sequence<D...>::type
   {
-    using element_type = stride;
-    using type = stride;
+    using element_type    = stride;
+    using type            = stride;
     using identifier_type = __::stride_id;
-    using label_type = kumi::str;
-    using size_type = kwk::config::default_size_type;
+    using label_type      = kumi::str;
+    using size_type       = kwk::config::default_size_type;
 
     constexpr auto operator()(identifier_type const&) const { return *this; }
 
     static constexpr label_type label() { return kumi::str{"Stride"}; }
 
-    static constexpr auto descriptor = Descriptor;
-    static constexpr auto ndim = Descriptor.ndim;
+    //static constexpr auto descriptor = Descriptor;
+    static constexpr auto ndim = sizeof...(D);
 
-    using storage_type = __::as_sequence<Descriptor>::type;
+    /// @brief Dynamic property of this shape
+    static constexpr bool fully_dynamic = ((D == kwk::_) && ...); 
+
+    using storage_type = __::as_sequence<D...>::type;
 
     constexpr stride() = default;
 
     template<std::convertible_to<size_type>... S>
-    requires(sizeof...(S) == Descriptor.ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
+    requires(sizeof...(S) == ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
     constexpr stride(S... s) : storage_type{s...}
     {
     }
 
-    template<shape_descriptor D> friend constexpr bool operator==(stride const& a, stride<D> const& b) noexcept
+    template<auto... StrideDims> friend constexpr bool operator==(stride const& a, stride<StrideDims...> const& b) noexcept
     {
-      if constexpr (Descriptor.ndim != D.ndim) return false;
+      if constexpr (stride::ndim != stride<StrideDims...>::ndim) return false;
       else return kumi::to_tuple(a) == kumi::to_tuple(b);
     }
 
     storage_type const& self() const { return static_cast<storage_type const&>(*this); }
 
     storage_type& self() { return static_cast<storage_type&>(*this); }
-
-    // Arbitrary Layout Construct
-    template<shape_descriptor ShapeDesc, storage_order_descriptor Order>
-    requires(__::make_stride_descriptor(ShapeDesc, Order) == Descriptor)
-    constexpr stride(shape<ShapeDesc> const& shp, storage_order_t<Order> order)
-      : stride(shp, order, std::make_index_sequence<ShapeDesc.ndim>{})
-    {
-    }
 
     template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(stride const& s)
     {
@@ -123,70 +73,68 @@ namespace kwk
       kumi::for_each([&](auto e) { os << " " << +e; }, s);
       return os << " )";
     }
-
-  private:
-    template<std::size_t K, shape_descriptor ShapeDesc> static constexpr auto get_dim_val(shape<ShapeDesc> const& shp)
-    {
-      if constexpr (ShapeDesc.dims[K] != static_cast<int>(kwk::_)) return kwk::fixed<ShapeDesc.dims[K]>;
-      else return get<K>(shp);
-    }
-
-    //==================================================================================================================
-    // Helper for Arbitrary layout: stride[I] = product of dimensions following it in the permutation
-    //==================================================================================================================
-    template<std::size_t I, shape_descriptor ShapeDesc, storage_order_descriptor Order>
-    static constexpr auto get_stride_val(shape<ShapeDesc> const& shp, storage_order_t<Order>)
-    {
-      constexpr int nbdim = ShapeDesc.ndim;
-
-      constexpr auto perm = []() {
-        std::array<int, nbdim> p{};
-        for (int k = 0; k < nbdim; ++k) p[static_cast<std::size_t>(k)] = Order.generator(k, ndim);
-        return p;
-      }();
-
-      constexpr int pos = [&]() {
-        for (int k = 0; k < nbdim; ++k)
-          if (static_cast<std::size_t>(perm[static_cast<std::size_t>(k)]) == I) return k;
-        return ndim;
-      }();
-
-      if constexpr (pos >= nbdim - 1) { return kwk::fixed<1>; }
-      else
-      {
-        return [&]<int... K>(std::integer_sequence<int, K...>) {
-          return (kwk::fixed<1> * ... * get_dim_val<perm[pos + 1 + K]>(shp));
-        }(std::make_integer_sequence<int, nbdim - 1 - pos>{});
-      }
-    }
-
-    template<shape_descriptor ShapeDesc, storage_order_descriptor Order, std::size_t... I>
-    constexpr stride(shape<ShapeDesc> const& shp, storage_order_t<Order> const& order, std::index_sequence<I...>)
-      : storage_type{get_stride_val<I>(shp, order)...}
-    {
-    }
   };
 
-  template<shape_descriptor ShapeDesc, storage_order_descriptor Order>
-  stride(shape<ShapeDesc> const&, storage_order_t<Order> const&)
-    -> stride<__::make_stride_descriptor(ShapeDesc, Order)>;
-
-  template<std::convertible_to<kwk::config::default_size_type>... S>
+  template<concepts::extent... S>
   requires(sizeof...(S) > 0)
-  stride(S...) -> stride<__::make_descriptor<S...>()>;
+  stride(S...) -> stride<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
+
+  /// @brief Transforms an abritrary product type into a stride
+  template<kumi::concepts::product_type T>
+  constexpr auto as_stride(T&& t)
+  {
+    return kumi::apply([](auto &&... elt)
+    {
+      auto v_or_t = []<typename V>(V && v)
+      {
+        if constexpr( kumi::concepts::product_type<V> ) return to_stride(KWK_FWD(v));
+        else return KWK_FWD(v);
+      };
+      return stride{v_or_t(KWK_FWD(elt))...};
+    }, KWK_FWD(t));
+  }
+
+ //==================================================================================================================
+ // Compute a stride from a product type representing the shape and a custom layout permutation at compile time
+ //==================================================================================================================
+  template<kumi::concepts::product_type T, storage_order_descriptor order>
+  constexpr auto to_stride(T && t, storage_order_t<order> const&)
+  {
+    if constexpr (kumi::concepts::empty_product_type<T>) return kwk::stride{};
+    else 
+    {
+      constexpr auto N = kumi::size_v<T>;
+      constexpr auto perm = kumi::generate<N>([&](auto i)
+      {
+        return kumi::index<order.generator(i, N)>;
+      });
+
+      auto permuted = kumi::apply([&]<std::size_t... I>(kumi::index_t<I>...)
+      {
+        return kumi::reorder<I...>(KUMI_FWD(t));
+      }, perm);
+      
+      auto tmp = kumi::exclusive_scan_right(kumi::function::multiplies, permuted, fixed<1>);
+
+      return as_stride(kumi::generate<N>([&](auto i)
+      {
+        return kumi::get<order.generator(i,N)>(tmp);
+      }));
+    }
+  }
 
   // @brief : computes the linear position considering a stride and a tuple representing the MD position by
   // performing a dot product between them
-  template<shape_descriptor SD, kumi::concepts::product_type T>
-  KWK_TRIVIAL constexpr auto linearize(stride<SD> const& s, T&& t)
+  template<auto... StrideDims, kumi::concepts::product_type T>
+  KWK_TRIVIAL constexpr auto linearize(stride<StrideDims...> const& s, T&& t)
   {
     return kumi::inner_product(s, KWK_FWD(t), 0);
   }
 
   //@brief utility to linearize a position based on the stride
-  template<shape_descriptor SD, std::convertible_to<std::ptrdiff_t>... Is>
-  KWK_TRIVIAL constexpr auto linearize(stride<SD> const& s, Is... is) noexcept
-  requires(sizeof...(Is) == stride<SD>::ndim)
+  template<auto... StrideDims, std::convertible_to<std::ptrdiff_t>... Is>
+  KWK_TRIVIAL constexpr auto linearize(stride<StrideDims...> const& s, Is... is) noexcept
+  requires(sizeof...(Is) == sizeof...(StrideDims))
   {
     // conversion to ptrdiff_t is a bit to harsh, it avoid conversions warning from unsigned position to
     // signed one when going through kumi::inner_product
@@ -198,13 +146,13 @@ namespace kwk
 // Structured Binding Support
 //======================================================================================================================
 #if !defined(KWK_DOXYGEN_INVOKED)
-template<kwk::shape_descriptor Descriptor>
-struct std::tuple_size<kwk::stride<Descriptor>> : std::integral_constant<std::size_t, Descriptor.ndim>
+template<auto... StrideDims>
+struct std::tuple_size<kwk::stride<StrideDims...>> : std::integral_constant<std::size_t, sizeof...(StrideDims)>
 {
 };
 
-template<std::size_t I, kwk::shape_descriptor Descriptor> struct std::tuple_element<I, kwk::stride<Descriptor>>
+template<std::size_t I, auto... StrideDims> struct std::tuple_element<I, kwk::stride<StrideDims...>>
 {
-  using type = decltype(get<I>(std::declval<kwk::stride<Descriptor>>()));
+  using type = decltype(get<I>(std::declval<kwk::stride<StrideDims...>>()));
 };
 #endif

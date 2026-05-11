@@ -23,8 +23,8 @@ namespace kwk::concepts
   //====================================================================================================================
   template<typename T>
   concept static_constant = requires(T) {
-    { T::value };
-    typename T::value_type;
+    { std::remove_cvref_t<T>::value };
+    typename std::remove_cvref_t<T>::value_type;
   };
 
   //====================================================================================================================
@@ -43,7 +43,7 @@ namespace kwk::concepts
   //====================================================================================================================
   template<typename T>
   concept arithmetic_constant = static_constant<T> && requires(T) {
-    requires std::integral<typename T::value_type> || std::floating_point<typename T::value_type>;
+    requires std::integral<typename std::remove_cvref_t<T>::value_type> || std::floating_point<typename std::remove_cvref_t<T>::value_type>;
   };
 
   //====================================================================================================================
@@ -63,7 +63,7 @@ namespace kwk::concepts
   **/
   //====================================================================================================================
   template<typename T>
-  concept arithmetic_value = arithmetic_constant<T> || std::integral<T> || std::floating_point<T>;
+  concept arithmetic_value = arithmetic_constant<T> || std::integral<std::remove_cvref_t<T>> || std::floating_point<std::remove_cvref_t<T>>;
  
   //====================================================================================================================
   /**
@@ -80,7 +80,41 @@ namespace kwk::concepts
   **/
   //====================================================================================================================
   template<typename T>
-  concept integral_arithmetic_value = (static_constant<T> && std::integral<typename T::value_type>) || std::integral<T>;
+  concept integral_arithmetic_value = (static_constant<T> && std::integral<typename std::remove_cvref_t<T>::value_type>) || std::integral<std::remove_cvref_t<T>>;
+
+  //====================================================================================================================
+  /**
+    @ingroup concepts
+    @brief Concept specifying a type represent an extent. 
+
+    A type `T` models `kwk::concepts::extent` if it models : `kwk::static_constant` with inner type 
+    modeling `std::integral` or is simply models `std::integral`.
+
+    ## Example types:
+    + std::integral_constant<std::size_t,1>;
+    + kwk::fixed<1>;
+    + kwk::_
+    + int
+  **/
+  //====================================================================================================================
+  template<typename T>
+  concept extent = kwk::is_wildcard_v<std::remove_cvref_t<T>> || integral_arithmetic_value<T>;
+
+  //====================================================================================================================
+  /**
+    @ingroup concepts
+    @brief Concept specifying a type represent an extent. 
+
+    A type `T` models `kwk::concepts::dynamic_extent` if it models : `kwk::static_constant` with inner type 
+    modeling `std::integral` or is simply models `std::integral`.
+
+    ## Example types:
+    + kwk::_
+    + int
+  **/
+  //====================================================================================================================
+  template<typename T>
+  concept dynamic_extent = kwk::is_wildcard_v<std::remove_cvref_t<T>> || integral_arithmetic_value<T>; 
 
   //====================================================================================================================
   /**

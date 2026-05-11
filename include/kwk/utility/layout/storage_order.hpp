@@ -27,7 +27,7 @@ namespace kwk
 
     /**
       @brief Construct a storage order from a stateless lambda.
-      @param f A staetless function taking (index, ndim) and returning the dimension mapping.
+      @param f A stateless function taking (index, ndim) and returning the dimension mapping.
     **/
     template<typename Func>
     requires(std::is_empty_v<Func>)
@@ -56,6 +56,18 @@ namespace kwk
   //====================================================================================================================
   template<storage_order_descriptor O> struct storage_order_t
   {
+  //==================================================================================================================
+    // Shape is a field over itself
+    //==================================================================================================================
+    using element_type = storage_order_t;
+    using type = storage_order_t;
+    using identifier_type = __::storage_order_id;
+    using label_type = kumi::str;
+
+    constexpr auto operator()(identifier_type const&) const { return *this; }
+
+    static constexpr label_type label() { return kumi::str{"Storage Order"}; }
+
     static constexpr storage_order_descriptor descriptor = O;
 
     consteval operator storage_order_descriptor() const { return O; }
@@ -67,6 +79,16 @@ namespace kwk
     template<storage_order_descriptor P> constexpr bool operator==(storage_order_t<P> const&) const noexcept
     {
       return O == P;
+    }
+
+    template<typename CharT, typename Traits>
+    friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+                                                         storage_order_t const&) noexcept
+    {
+      //if constexpr (row_major_order == O)         return os << "Storage Order : Row Major";
+      //else if constexpr (column_major_order == O) return os << "Storage Order : Column Major";
+      //else 
+      return os << "Storage Order : Custom";
     }
   };
 

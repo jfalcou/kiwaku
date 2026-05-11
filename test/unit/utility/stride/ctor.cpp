@@ -8,7 +8,8 @@
 #include "test.hpp"
 #include <kwk/kwk.hpp>
 
-TTS_CASE("Stride construction from scalar/shapes")
+#include <iostream>
+TTS_CASE("Stride construction from scalar/shapes and storage order")
 {
   using namespace kwk::literals;
 
@@ -26,11 +27,11 @@ TTS_CASE("Stride construction from scalar/shapes")
   auto sp2 = shape{7, 3};
   auto sp3 = shape{9, 7, 3};
 
-  TTS_EQUAL(s1, (kwk::stride{sp1, kwk::row_major_order}));
-  TTS_EQUAL(s2, (kwk::stride{sp2, kwk::row_major_order}));
-  TTS_EQUAL(s3, (kwk::stride{sp3, kwk::row_major_order}));
+  TTS_EQUAL(s1, (kwk::to_stride(sp1, kwk::row_major_order)));
+  TTS_EQUAL(s2, (kwk::to_stride(sp2, kwk::row_major_order)));
+  TTS_EQUAL(s3, (kwk::to_stride(sp3, kwk::row_major_order)));
 
-  TTS_EQUAL(fs1, (kwk::stride{sp1, kwk::column_major_order}));
-  TTS_EQUAL(fs2, (kwk::stride{sp2, kwk::column_major_order}));
-  TTS_EQUAL(fs3, (kwk::stride{sp3, kwk::column_major_order}));
+  TTS_EQUAL(fs1, (kwk::to_stride(sp1, kwk::column_major_order)));
+  TTS_EQUAL(fs2, (kwk::to_stride(sp2, kwk::column_major_order)));
+  TTS_EQUAL(fs3, (kwk::to_stride(sp3, kwk::column_major_order)));
 };

@@ -83,7 +83,7 @@ namespace kwk
 
   template<typename T>
   constexpr auto to_slicer(T const&) noexcept
-  requires(is_wildcard<T>)
+  requires(is_wildcard_v<std::remove_cvref_t<T>>)
   {
     return slicer{fixed<0>, _, fixed<1>};
   }
@@ -118,35 +118,35 @@ namespace kwk
 
   template<typename B, typename E, typename S> constexpr auto slice_stride(auto strd, slicer<B, E, S> const& slc)
   {
-    if constexpr (is_wildcard<S>) return strd;
+    if constexpr (is_wildcard_v<std::remove_cvref_t<S>>) return strd;
     else return slc.step() * strd;
   }
 
   // Computes the offset to add to the base pointer of a container to retrieve the sliced container
-  template<shape_descriptor D, storage_order_descriptor C, concepts::slicer... S>
-  constexpr auto origin(shape<D> const& s, storage_order_t<C> const& so, S const&... slices) noexcept
-  requires(D.ndim == sizeof...(S))
+  template<auto... Dims, storage_order_descriptor C, concepts::slicer... S>
+  constexpr auto origin(shape<Dims...> const& s, storage_order_t<C> const& so, S const&... slices) noexcept
+  requires(sizeof...(Dims) == sizeof...(S))
   {
     auto pos = kumi::apply(
       [](auto&&... elts) {
         return kwk::shape{handle(get<1>(KWK_FWD(elts)).begin(), get<0>(KWK_FWD(elts)), fixed<0>)...};
       },
       kumi::zip(kumi::to_tuple(s), kumi::forward_as_tuple(to_slicer(slices)...)));
-    return linearize(kwk::stride{pos, so}, pos);
+    return linearize(to_stride(pos, so), pos);
   }
 
-  template<shape_descriptor D, concepts::slicer... S>
-  constexpr auto reshape(shape<D> const& s, S const&... slices) noexcept
-  requires(D.ndim == sizeof...(S))
+  template<auto... Dims, concepts::slicer... S>
+  constexpr auto reshape(shape<Dims...> const& s, S const&... slices) noexcept
+  requires(sizeof...(Dims) == sizeof...(S))
   {
     return kumi::apply(
       [](auto&&... elts) { return kwk::shape{slice_extent(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
       kumi::zip(kumi::to_tuple(s), kumi::forward_as_tuple(to_slicer(slices)...)));
   }
 
-  template<shape_descriptor D, concepts::slicer... S>
-  constexpr auto restride(stride<D> const& strd, S const&... slices) noexcept
-  requires(D.ndim == sizeof...(S))
+  template<auto... Dims, concepts::slicer... S>
+  constexpr auto restride(stride<Dims...> const& strd, S const&... slices) noexcept
+  requires(sizeof...(Dims) == sizeof...(S))
   {
     return kumi::apply(
       [](auto&&... elts) { return kwk::stride{slice_stride(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },

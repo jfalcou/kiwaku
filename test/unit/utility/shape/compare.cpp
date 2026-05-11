@@ -44,7 +44,7 @@ TTS_CASE("Inequality comparison between shapes")
 TTS_CASE("Inequality comparison between squeezed shapes")
 {
   using kwk::shape;
-  using namespace kumi::literals;
+  using namespace kwk::literals;
 
   TTS_EQUAL(shape{3}, kwk::squeeze(shape{1_c, 3}));
   TTS_EQUAL(shape{3}, kwk::squeeze(shape{3, 1_c}));
