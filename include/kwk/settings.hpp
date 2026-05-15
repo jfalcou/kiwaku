@@ -22,6 +22,7 @@ namespace kwk
 #include <kwk/settings/options.hpp>
 
 #include <kwk/settings/allocator.hpp>
+#include <kwk/settings/base_index.hpp>
 #include <kwk/settings/generator.hpp>
 #include <kwk/settings/indexing.hpp>
 #include <kwk/settings/kind.hpp>

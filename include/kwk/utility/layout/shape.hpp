@@ -22,7 +22,7 @@ namespace kwk
 
     template<typename T> consteval auto make_dimension()
     {
-      if constexpr (is_dynamic_dim<T>::value) return _;
+      if constexpr (concepts::dynamic_extent<T>) return _;
       else return T::value;
     }
 
@@ -49,23 +49,19 @@ namespace kwk
 
     Template class representing the shape (dimensions) of multi-dimensional containers in KIWAKU.
     @ref shape can have both compile-time known dimensions and runtime dimensions, as specified
-    by the shape descriptor template parameter.
+    by it's NTTPs.
 
     The @ref shape class provides a unified interface to access dimension sizes, regardless of whether they are static
     or dynamic. Static dimensions are stored as compile-time constants, while dynamic dimensions are stored in an
     internal array.
 
-    To do so, @ref shape is parameterized by a @ref shape_descriptor that defines the structure of the @ref shape,
-    including the number of dimensions and which dimensions are static vs dynamic. The @ref shape_descriptor is a
-    compile-time construct that encodes this information in its type. It can either be a single integral constant
-    representing the number of dynamic dimensions, or a list of dimensions where static dimensions are represented by
-    their compile-time values and dynamic dimensions are represented by the KIWAKU wildcard: `kwk::_`.
+    To do so, @ref shape is parameterized by a variadic number of NTTPs that defines the structure of the @ref shape,
+    including the number of dimensions and which dimensions are static vs dynamic. It is a list of dimensions where
+    static dimensions are represented by their compile-time values and dynamic dimensions are represented by the
+    KIWAKU @ref wildcard: `kwk::_`.
 
     For examples, consider the following shape descriptors:
     @code
-    // A shape with 4 dynamic dimensions
-    kwk::shape<4> shp_4_dyn;
-
     // A shape where the first two dimensions are static (3 and 4) and the last dimension is dynamic (`kwk::_`)
     kwk::shape<3, 4, kwk::_> shp_3_4_dyn;
 
@@ -99,13 +95,11 @@ namespace kwk
     auto shp_2_3_4 = kwk::shape(2_c, 3_c, 4_c);
     @endcode
 
-    @tparam Descriptor  A shape_descriptor that defines the structure of the shape, including
-                        the number of dimensions and which dimensions are static vs dynamic.
-
-    @see shape_descriptor
+    @tparam D   Constant template parameters defining the structure of the shape, including
+                the number of dimensions and which dimensions are static vs dynamic.
   **/
   //====================================================================================================================
-  template<concepts::extent auto... x> struct shape : private __::as_sequence<x...>::type
+  template<concepts::extent auto... Dims> struct shape : private __::as_sequence<Dims...>::type
   {
     //==================================================================================================================
     // Shape is a field over itself
@@ -117,20 +111,17 @@ namespace kwk
     using size_type = kwk::config::default_size_type;
 
     /// @brief Internal type for efficient storage of hybrid static/dynamic dimensions
-    using storage_type = __::as_sequence<x...>::type;
+    using storage_type = __::as_sequence<Dims...>::type;
 
     constexpr auto operator()(identifier_type const&) const { return *this; }
 
     static constexpr label_type label() { return kumi::str{"Shape"}; }
 
-    /// @brief The shape descriptor associated with this shape
-    // static constexpr auto descriptor = Descriptor;
-
     /// @brief Number of dimensions in this shape
-    static constexpr auto ndim = sizeof...(x); // Descriptor.ndim;
+    static constexpr auto ndim = sizeof...(Dims);
 
     /// @brief Dynamic property of this shape
-    static constexpr bool fully_dynamic = ((x == kwk::_) && ...);
+    static constexpr bool fully_dynamic = ((Dims == kwk::_) && ...);
 
     /// @brief Total number of elements the current shape represents
     constexpr size_type size() const noexcept { return kumi::fold_left(kumi::function::multiplies, *this, fixed<1>); }
@@ -176,7 +167,7 @@ namespace kwk
     //==================================================================================================================
     /// Assignment operator
     //==================================================================================================================
-    template<concepts::extent auto... Dims> constexpr shape& operator=(shape<Dims...> const& other) & noexcept
+    template<concepts::extent auto... D> constexpr shape& operator=(shape<D...> const& other) & noexcept
     {
       this->self() = other.self();
       return *this;

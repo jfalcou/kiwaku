@@ -1,0 +1,203 @@
+@import url('../lib/webfonts/source-sans-pro/2.045R-ro-1.095R-it/webfont.css');
+@import url('../lib/webfonts/iosevka/2.3.1/webfont.css');
+
+:root {
+    --text-color: black;
+    --accent-color: #666;
+    --accent-color2: #ddd;
+    --link-color: #38c;
+    --text-font: "Source Sans Pro";
+    --code-font: "Iosevka";
+}
+
+body {
+    color: var(--text-color);
+}
+
+.slide-progress {
+    background-color: rgba(190,190,190,.5);
+    height: 0.2rem;
+}
+
+
+/* fonts */
+body, .md div.title, .md h1, .md h2, .md h3 {
+    font-family: var(--text-font);
+}
+.md a, .md a:link, .md a:visited, .md code, .md pre, .md svg.diagram, .md kbd {
+    font-family: var(--code-font);
+}
+
+
+/* basics */
+.md strong,
+.md b {
+    color: var(--accent-color);
+}
+.md a,
+.md a:link,
+.md a:visited {
+    color: var(--link-color);
+}
+.md kbd {
+    background-color: #ddd;
+    border: 0.05em solid #aaa;
+    padding: 0 0.2em 0.1em;
+    border-radius: 0.2em;
+    box-shadow: 0 0.05em 0.1em rgba(0, 0, 0, .2),
+                0 0.05em 0     rgba(255, 255, 255, .7) inset;
+}
+.md hr {
+    border: 0;
+    border-bottom: 0.1rem solid var(--accent-color2);
+}
+
+
+/* title */
+.md div.title {
+    font-weight: bold;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 2.5rem !important;
+    margin: calc(var(--slide-height) / 2 - 12rem / 2) 0 0 0;  /* center vertically, assuming two lines of text */
+    padding: 0;
+}
+.md div.subtitle {
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.67rem;
+}
+
+
+/* headings */
+.md h1,
+.md h2 {
+    text-align: left;
+    border: none;
+    width: calc(var(--slide-width) + 2 * var(--side-margin));
+    padding-left: var(--side-margin);
+    margin: 0 0 0 calc(0rem - var(--side-margin));
+}
+.md h1 {
+    background: var(--accent-color2);
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    font-size: 1.5rem;
+    margin-top: calc(var(--slide-height) / 2 - 4.5rem / 2);  /* center vertically, assuming one line of text */
+}
+.md h2 {
+    background: var(--accent-color);
+    color: white;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-size: 1.25rem;
+}
+.md h3 {
+    color: inherit;
+    font-size: 1rem;
+    margin: 1rem 0;
+    padding: 0;
+}
+
+
+/* quotes */
+.md blockquote {
+    background-color: #eee;
+    padding: .25rem 0.4rem;
+    margin: 0;
+}
+.md blockquote.fancyquote {
+    background: transparent;
+}
+.md blockquote.fancyquote .author {
+    margin-top: 0.2rem;
+}
+
+
+/* code */
+.md a,
+.md a:link,
+.md a:visited,
+.md kbd,
+.md code {
+    font-size: 0.93em;  /* em! */
+}
+.md pre.listing {
+    font-size: 0.75em;
+    border-top: 0.1rem solid #ccc;
+    border-bottom: 0.1rem solid #ccc;
+    background-color: #eee;
+    padding: 0.25rem 0.5rem;
+    line-height: 1rem;
+}
+.md pre.listing .linenumbers {
+    padding-left: 0;
+}
+.md pre.listing .linenumbers span.line:before {
+    color: var(--accent-color);
+}
+
+
+/* captions */
+.md div.imagecaption,
+.md div.tablecaption,
+.md div.listingcaption {
+    text-align: center;
+}
+
+
+/* admonitions */
+.md .admonition {
+    border-radius: 0;
+    padding: .25rem 0.4rem;
+    border-left-width: 0.2rem !important;
+    border-left-color: rgba(68,138,255,.4) !important;
+    background-color: rgba(68,138,255,.2) !important;
+}
+.md .admonition::before {
+    display: none !important;
+}
+.md .admonition.tip {
+    border-left-color: rgba(40,230,40,.4) !important;
+    background-color: rgba(40,230,40,.2) !important;
+}
+.md .admonition.warn,
+.md .admonition.warning {
+    border-left-color: rgba(255,145,0,.4) !important;
+    background-color: rgba(255,145,0,.2) !important;
+}
+.md .admonition.error {
+    border-left-color: rgba(255,40,40,.4) !important;
+    background-color: rgba(255,40,40,.2) !important;
+}
+.md .admonition-title {
+    margin: 0;
+    padding: 0;
+    margin-bottom: -1rem;
+    border-width: 0;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    color: rgba(0,0,0,0.6);
+}
+
+
+/* endnotes and bibliography */
+.md .endnote,
+.md .bib {
+    font-size: 0.6rem;
+    line-height: 1rem;
+}
+.md .endnote {
+    padding-left: 0.38rem;
+    text-indent: -0.38rem;
+}
+.md .bib {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    text-indent: -1.5rem;
+}
+.md .bib b {
+    color: var(--link-color);
+    font-family: var(--code-font);
+    font-weight: initial;
+}
