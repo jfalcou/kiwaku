@@ -18,14 +18,7 @@ namespace kwk
   template<kumi::concepts::field Source, kumi::concepts::field... Options>
   KWK_TRIVIAL constexpr auto view(Source&& s, Options&&... opts)
   {
-    auto settings = kwk::options{KWK_FWD(opts)...};
-
-    auto shp = settings.field_or(kwk::__::shape_id{}, __::shape_of(s));
-    auto order = settings.field_or(kwk::__::storage_order_id{}, kwk::row_major_order);
-    auto def_stride = to_stride(shp, order);
-    auto strd = settings.field_or(kwk::__::stride_id{}, def_stride);
-
-    return collection{KWK_FWD(s), shp, strd, order};
+    return builder<kwk::collection>(kwk::options{KWK_FWD(s), KWK_FWD(opts)...});
   }
 
   template<typename Source, kumi::concepts::field... Opts>

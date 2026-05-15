@@ -94,16 +94,18 @@ namespace kwk::__
     template<kumi::concepts::product_type U> static consteval bool follow_mapping()
     {
       // Checks if the tuple U can be used to construct the dynamic part of the sequence which means that :
-      //  + -1 in mapping means the size is static and the corresponding type in Us... must be an integral constant
+      //  + -1 in mapping means the size is static and the corresponding type in U must be an integral constant
       //  with the same value or a wildcard.
-      //  + otherwise, the type in Us... must be convertible to the corresponding type in the mixed_type tuple.
+      //  + otherwise, the type in U must be convertible to the corresponding type in the mixed_type tuple.
       bool valid = true;
 
       auto check = [&]<std::size_t I>(kumi::index_t<I>) {
         using u_type = std::remove_cvref_t<kumi::element_t<I, U>>;
         using is_u_dyn = is_dynamic_dim<u_type>;
 
-        if constexpr (mapping[I] == -1) return (!is_u_dyn::value && u_type::value == kumi::get<I>(base_tuple{}));
+        if constexpr (mapping[I] == -1)
+          return (std::same_as<u_type, wildcard_t> ||
+                  (!is_u_dyn::value && u_type::value == kumi::get<I>(base_tuple{})));
         else return std::convertible_to<u_type, kumi::element_t<mapping[I], parent>>;
       };
 

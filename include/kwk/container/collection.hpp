@@ -17,9 +17,9 @@ namespace kwk
   {
   public:
     using option_type = decltype(options{std::declval<Opts>()...});
-    using shape_type = decltype(std::declval<option_type>()[kwk::__::shape_id{}]);
-    using stride_type = decltype(std::declval<option_type>()[kwk::__::stride_id{}]);
-    using storage_order_type = decltype(std::declval<option_type>()[kwk::__::storage_order_id{}]);
+    using shape_type = decltype(std::declval<option_type>()[kwk::of_shape]);
+    using stride_type = decltype(std::declval<option_type>()[kwk::of_stride]);
+    using storage_order_type = decltype(std::declval<option_type>()[kwk::storage_order]);
 
     using source_type = Kind;
     using value_type = container_base_t<Kind>;
@@ -47,7 +47,7 @@ namespace kwk
 
     template<kumi::concepts::field... Options>
     requires(sizeof...(Options) == (sizeof...(Opts) + 1))
-    KWK_TRIVIAL constexpr collection(Options const&... opts) : collection(options{opts...})
+    KWK_TRIVIAL constexpr collection(Options&&... opts) : collection(options{KWK_FWD(opts)...})
     {
     }
 
@@ -145,7 +145,14 @@ namespace kwk
   // Deduction Guides
   //====================================================================================================================
   template<kumi::concepts::field Source, kumi::concepts::field... Opts>
-  collection(Source const& s, Opts const&... opts) -> collection<typename std::remove_cvref_t<Source>::type, Opts...>;
+  collection(Source&&, Opts&&...)
+    -> collection<typename std::remove_cvref_t<Source>::type, std::unwrap_ref_decay_t<Opts>...>;
+
+  // template<typename S, kumi::concepts::field... Opts> collection(kumi::tuple<S, Opts...>&&) -> collection<S,
+  // Opts...>;
+
+  // template<kumi::concepts::field... Opts>
+  // collection(Opts&&... opts) -> collection<decltype(builder(options{std::declval<Opts>()...}))>;
 
   // template<int Flags, kumi::concepts::product_type Values>
   // collection(options<Flags, Values> const& opts) -> collection<>;

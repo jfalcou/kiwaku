@@ -43,10 +43,10 @@ TTS_CASE("Shape behavior - Mixed 1D")
   TTS_EQUAL(shape_si.size(), 7L);
 };
 
-/*TTS_CASE("Shape behavior - Mixed 2D"){TTS_WHEN("Build shapes"){kwk::shape<_, _> shape_dd;
-kwk::shape<_, 7> shape_ds;
-kwk::shape<7, _> shape_sd;
-kwk::shape<7, 5> shape_ss;
+TTS_CASE("Shape behavior - Mixed 2D"){TTS_WHEN("Build shapes"){using shape_dd = kwk::shape<_, _>;
+using shape_ds = kwk::shape<_, 7>;
+using shape_sd = kwk::shape<7, _>;
+using shape_ss = kwk::shape<7, 5>;
 
 TTS_AND_THEN("Attributes of default constructed shapes")
 {
@@ -55,45 +55,45 @@ TTS_AND_THEN("Attributes of default constructed shapes")
   TTS_EQUAL(sizeof(shape_sd), 1 * sizeof(kwk::config::default_size_type));
   TTS_EQUAL(sizeof(shape_ss), 1UL);
 
-  TTS_EQUAL(shape_dd.ndim, 2UL);
-  TTS_EQUAL(shape_ds.ndim, 2UL);
-  TTS_EQUAL(shape_sd.ndim, 2UL);
-  TTS_EQUAL(shape_ss.ndim, 2UL);
+  TTS_EQUAL(shape_dd::ndim, 2UL);
+  TTS_EQUAL(shape_ds::ndim, 2UL);
+  TTS_EQUAL(shape_sd::ndim, 2UL);
+  TTS_EQUAL(shape_ss::ndim, 2UL);
 }
 
 TTS_AND_THEN("Attributes of filled shapes")
 {
-  shape_dd = {25, 10};
-  shape_ds = {67, _};
-  shape_sd = {_, 42};
+  shape_dd dd = {25, 10};
+  shape_ds ds = {67, _};
+  shape_sd sd = {_, 42};
 
-  TTS_EQUAL(shape_dd.size(), 250L);
-  TTS_EQUAL(shape_ds.size(), 469L);
-  TTS_EQUAL(shape_sd.size(), 294L);
-  TTS_EQUAL(shape_ss.size(), 35L);
+  TTS_EQUAL(dd.size(), 250L);
+  TTS_EQUAL(ds.size(), 469L);
+  TTS_EQUAL(sd.size(), 294L);
+  TTS_EQUAL(shape_ss{}.size(), 35L);
 }
 
 TTS_AND_THEN("Tuple-like properties")
 {
-  shape_dd = {25, 10};
-  shape_ds = {67, _};
-  shape_sd = {_, 42};
+  shape_dd dd = {25, 10};
+  shape_ds ds = {67, _};
+  shape_sd sd = {_, 42};
 
-  TTS_EQUAL(get<0>(shape_dd), 25);
-  TTS_EQUAL(get<1>(shape_dd), 10);
+  TTS_EQUAL(get<0>(dd), 25);
+  TTS_EQUAL(get<1>(dd), 10);
 
-  TTS_EQUAL(get<0>(shape_ds), 67);
-  TTS_EQUAL(get<1>(shape_ds), 7);
+  TTS_EQUAL(get<0>(ds), 67);
+  TTS_EQUAL(get<1>(ds), 7);
 
-  TTS_EQUAL(get<0>(shape_sd), 7);
-  TTS_EQUAL(get<1>(shape_sd), 42);
+  TTS_EQUAL(get<0>(sd), 7);
+  TTS_EQUAL(get<1>(sd), 42);
 
-  TTS_EQUAL(get<0>(shape_ss), 7);
-  TTS_EQUAL(get<1>(shape_ss), 5);
+  TTS_EQUAL(get<0>(shape_ss{}), 7);
+  TTS_EQUAL(get<1>(shape_ss{}), 5);
 }
 }
 }
-;*/
+;
 
 TTS_CASE("Default constructed shape behavior - Mixed 3D")
 {
