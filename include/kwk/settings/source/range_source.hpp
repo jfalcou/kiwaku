@@ -20,11 +20,11 @@ namespace kwk::__
 
     constexpr range_option() : base{nullptr}, size_(0) {}
 
-    constexpr range_option(source_type& r) : base{std::data(r)}, size_(std::size(r)) {}
+    constexpr range_option(source_type& r) : base{kwk::data(r)}, size_(kwk::size(r)) {}
 
-    constexpr range_option(source_type const& r) : base{std::data(r)}, size_(std::size(r)) {}
+    constexpr range_option(source_type const& r) : base{kwk::data(r)}, size_(kwk::size(r)) {}
 
-    constexpr range_option(source_type&& r) : base{std::data(r)}, size_(std::size(r)) {}
+    constexpr range_option(source_type&& r) : base{kwk::data(r)}, size_(kwk::size(r)) {}
 
     constexpr auto operator()(base::identifier_type) const { return *this; }
 

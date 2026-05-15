@@ -101,11 +101,11 @@ namespace kwk
   constexpr auto to_stride(T&& t, storage_order_t<order> const&)
   {
     if constexpr (kumi::concepts::empty_product_type<T>) return kwk::stride{};
-    else if constexpr ( order == kwk::row_major_order )
+    else if constexpr (order == kwk::row_major_order)
     {
       return as_stride(kumi::exclusive_scan_right(kumi::function::multiplies, t, fixed<1>));
     }
-    else if constexpr ( order == kwk::column_major_order )
+    else if constexpr (order == kwk::column_major_order)
     {
       return as_stride(kumi::exclusive_scan_left(kumi::function::multiplies, t, fixed<1>));
     }

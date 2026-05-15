@@ -104,6 +104,26 @@ namespace kwk::concepts
   template<typename T>
   concept extent = kwk::is_wildcard_v<std::remove_cvref_t<T>> || integral_arithmetic_value<T>;
 
+  template<typename T> consteval auto is_nested_extent()
+  {
+    if constexpr (kumi::concepts::empty_product_type<T>) return std::bool_constant<false>{};
+    else if constexpr (kumi::concepts::product_type<T>)
+    {
+      auto v_or_t = []<typename V>(V&&) {
+        if constexpr (kumi::concepts::product_type<V>) return is_nested_extent<V>();
+        else return std::bool_constant<extent<V>>{};
+      };
+
+      return std::bool_constant<kumi::result::apply_t<decltype(v_or_t), T>::value>{};
+    }
+    else return std::bool_constant<extent<T>>{};
+  }
+
+  template<typename T> inline constexpr bool is_nested_extent_v = decltype(is_nested_extent<T>())::value;
+
+  template<typename T>
+  concept deep_extent = is_nested_extent_v<T>;
+
   //====================================================================================================================
   /**
     @ingroup concepts
@@ -118,7 +138,7 @@ namespace kwk::concepts
   **/
   //====================================================================================================================
   template<typename T>
-  concept dynamic_extent = kwk::is_wildcard_v<std::remove_cvref_t<T>> || integral_arithmetic_value<T>;
+  concept dynamic_extent = kwk::is_wildcard_v<std::remove_cvref_t<T>> || std::integral<std::remove_cvref_t<T>>;
 
   //====================================================================================================================
   /**

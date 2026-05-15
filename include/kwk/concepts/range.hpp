@@ -16,7 +16,7 @@ namespace kwk::concepts
   /// Concept for Range types providing access to a contiguous block of data
   template<typename Range>
   concept contiguous_range = range<Range> && requires(Range&& r) {
-    { std::data(r) };
+    { kwk::data(r) };
   };
 
   /// Concept for types behaving as an actual pointer type.
@@ -29,5 +29,5 @@ namespace kwk::concepts
 
   /// Concept for Contiguous Range exposing a compile-time size value
   template<typename T>
-  concept contiguous_static_range = kumi::concepts::static_container<T> && has_static_size<T>;
+  concept contiguous_static_range = kwk::concepts::range<T> && has_static_size<T>;
 }
