@@ -1,28 +1,30 @@
-//==================================================================================================
-/**
+//======================================================================================================================
+/*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
-**/
-//==================================================================================================
+*/
+//======================================================================================================================
 #pragma once
 
 namespace kwk
 {
-  //================================================================================================
-  //! @ingroup containers
-  //! @defgroup settings  Container Settings
-  //! @brief Classes and functions related to table and views constructions
-  //================================================================================================
+  //====================================================================================================================
+  /**
+    @defgroup settings  Container Settings
+
+    This group includes components that define various settings for KIWAKU containers.
+  **/
+  //====================================================================================================================
 }
 
+#include <kwk/detail/detail.hpp>
+#include <kwk/settings/options.hpp>
+
 #include <kwk/settings/allocator.hpp>
-#include <kwk/settings/axis.hpp>
-#include <kwk/settings/category.hpp>
-#include <kwk/settings/extent.hpp>
-#include <kwk/settings/label.hpp>
-#include <kwk/settings/reachable.hpp>
-#include <kwk/settings/size.hpp>
+#include <kwk/settings/base_index.hpp>
+#include <kwk/settings/generator.hpp>
+#include <kwk/settings/indexing.hpp>
+#include <kwk/settings/kind.hpp>
+#include <kwk/settings/layout.hpp>
 #include <kwk/settings/source.hpp>
-#include <kwk/settings/strides.hpp>
-#include <kwk/settings/type.hpp>

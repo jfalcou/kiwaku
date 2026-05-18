@@ -1,21 +1,25 @@
-//==================================================================================================
+//======================================================================================================================
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
-//==================================================================================================
+//======================================================================================================================
 #pragma once
 
 namespace kwk
 {
-  //================================================================================================
-  //! @defgroup containers Containers
-  //! @brief Container-like types and related functions
-  //!
-  //! This module defines the main **KIWAKU**'s classes for handling data.
-  //================================================================================================
+  //====================================================================================================================
+  /**
+    @defgroup container Concepts
+    @brief KIWAKU containers
+
+    This module gathers the various container classes and helpers provided by KIWAKU.
+  */
+  //====================================================================================================================
 }
 
-#include <kwk/container/table.hpp>
+#include <kwk/detail/detail.hpp>
+#include <kwk/container/builder.hpp>
+#include <kwk/container/collection.hpp>
 #include <kwk/container/view.hpp>

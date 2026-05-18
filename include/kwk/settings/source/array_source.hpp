@@ -1,44 +1,63 @@
-//==================================================================================================
+//======================================================================================================================
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
-//==================================================================================================
+//======================================================================================================================
 #pragma once
-#include <kwk/utility/container/shape.hpp>
 
-namespace kwk::__ { struct source_; }
-
-namespace kwk
+namespace kwk::__
 {
-  template<typename T, auto Szs> struct array_source
+  ///@brief array_option provides a way to represent a contiguous_static_range to extract it's properties for view/table
+  /// construction
+  template<kwk::concepts::contiguous_static_range R> struct array_option : source_option<container_base_t<R>>
   {
-    using stored_value_type = array_source<T,Szs>;
-    using keyword_type      = __::source_;
+    using type = R;
+    using source_type = std::remove_cvref_t<R>;
+    using base = source_option<container_base_t<R>>;
+    using value_type = std::remove_cvref_t<container_member_t<R>>;
 
-    using value_type      = std::remove_const_t<T>;
-    using reference       = std::add_lvalue_reference_t<T>;
-    using const_reference = std::add_lvalue_reference_t<T const>;
-    using pointer         = std::add_pointer_t<T>;
-    using const_pointer   = std::add_pointer_t<T const>;
+    constexpr array_option() : base{nullptr} {}
 
-    constexpr array_source(T* p = nullptr) : data_(p) {}
+    constexpr array_option(source_type& r) : base{container_base_address(r)} {}
 
-    constexpr auto operator()(keyword_type const&) const noexcept { return *this; }
+    constexpr array_option(source_type const& r) : base{container_base_address(r)} {}
 
-    T*  data_;
+    constexpr array_option(source_type&& r) : base{container_base_address(r)} {}
+
+    static constexpr auto size = kumi::container_size_v<R>;
+
+    constexpr auto operator()(base::identifier_type) const { return *this; }
+
+    template<typename CharT, typename Traits>
+    friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+                                                         array_option const&) noexcept
+    {
+      return os << "Source: " << kumi::_::typer<source_type>();
+    }
   };
 
-  template<typename T, auto Szs>
-  constexpr auto storage(array_source<T, Szs> const& src) noexcept { return src.data_; }
+  ///@brief Array option deduction guide
+  template<kwk::concepts::contiguous_static_range R> array_option(R&& r) -> array_option<R>;
 
-  template<typename T, auto Szs>
-  constexpr auto default_shape(array_source<T, Szs> const&)  noexcept { return of_size( Szs ); }
-
-  template<typename T> struct source_traits;
-  template<typename T, auto Szs> struct source_traits<array_source<T,Szs>>
+  ///@brief Helper to retrieve the pointer to the begining of an array_option
+  template<typename T> constexpr auto source_pointer(array_option<T> const& source)
   {
-    using value_type = T;
+    return source.data();
+  }
+
+  ///@brief Helper to retrieve a the shape of an array_option
+  template<typename T> constexpr auto shape_of(array_option<T> const&)
+  {
+    return container_shape_v<T>;
+  }
+}
+
+namespace kwk::config
+{
+  template<kwk::concepts::contiguous_static_range R> struct preprocess_source<R>
+  {
+    static constexpr auto from(R&& r) noexcept { return kwk::__::array_option{KWK_FWD(r)}; }
   };
 }

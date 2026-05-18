@@ -57,13 +57,7 @@ PROJECT_BRIEF          = "Containers Well Made"
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = logo.png
-
-# With the PROJECT_ICON tag one can specify an icon that is included in the tabs
-# when the HTML document is shown. Doxygen will copy the logo to the output
-# directory.
-
-PROJECT_ICON           =
+PROJECT_LOGO           = logo.svg
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
@@ -131,7 +125,7 @@ BRIEF_MEMBER_DESC      = YES
 # brief descriptions will be completely suppressed.
 # The default value is: YES.
 
-REPEAT_BRIEF           = YES
+REPEAT_BRIEF           = NO
 
 # This tag implements a quasi-intelligent brief description abbreviator that is
 # used to form the text in various listings. Each string in this list, if found
@@ -302,7 +296,6 @@ ALIASES                = "groupheader{1}=<h2 class=\"groupheader\"> \1 </h2>" \
                          "view{1}=[view\1](@ref kwk::view)" \
                          "view=[view](@ref kwk::view)"
 
-
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
 # instance, some of the names that are used will be different. The list of all
@@ -379,7 +372,8 @@ MARKDOWN_SUPPORT       = YES
 # Minimum value: 0, maximum value: 99, default value: 5.
 # This tag requires that the tag MARKDOWN_SUPPORT is set to YES.
 
-TOC_INCLUDE_HEADINGS   = 5
+TOC_INCLUDE_HEADINGS   = 0
+PAGE_OUTLINE_PANEL      = NO
 
 # The MARKDOWN_ID_STYLE tag can be used to specify the algorithm used to
 # generate identifiers for the Markdown headings. Note: Every identifier is
@@ -1061,8 +1055,9 @@ RECURSIVE              = YES
 #
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
-
-EXCLUDE                =
+EXCLUDE                = ../test/old/ \
+                         ../include/old-kwk/  \
+                         ../include/kwk/detail
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1086,7 +1081,8 @@ EXCLUDE_PATTERNS       =
 # wildcard * is used, a substring. Examples: ANamespace, AClass,
 # ANamespace::AClass, ANamespace::*Test
 
-EXCLUDE_SYMBOLS        = detail*
+EXCLUDE_SYMBOLS        = _::* \
+                        kwk::_::*
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include
@@ -1115,31 +1111,7 @@ EXAMPLE_RECURSIVE      = NO
 
 IMAGE_PATH             =
 
-# The INPUT_FILTER tag can be used to specify a program that doxygen should
-# invoke to filter for each input file. Doxygen will invoke the filter program
-# by executing (via popen()) the command:
-#
-# <filter> <input-file>
-#
-# where <filter> is the value of the INPUT_FILTER tag, and <input-file> is the
-# name of an input file. Doxygen will then use the output that the filter
-# program writes to standard output. If FILTER_PATTERNS is specified, this tag
-# will be ignored.
-#
-# Note that the filter must not add or remove lines; it is applied before the
-# code is scanned, but not when the output code is generated. If lines are added
-# or removed, the anchors will not be placed correctly.
-#
-# Note that doxygen will use the data processed and written to standard output
-# for further processing, therefore nothing else, like debug statements or used
-# commands (so in case of a Windows batch file always use @echo OFF), should be
-# written to standard output.
-#
-# Note that for custom extensions or not directly supported extensions you also
-# need to set EXTENSION_MAPPING for the extension otherwise the files are not
-# properly processed by doxygen.
-
-INPUT_FILTER           =
+INPUT_FILTER = "python3 filter.py --prefix kwk"
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis. Doxygen will compare the file name with each pattern and apply the
@@ -2451,7 +2423,7 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = KUMI_DOXYGEN_INVOKED
+PREDEFINED            = KWK_DOXYGEN_INVOKED
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
@@ -2495,7 +2467,7 @@ TAGFILES               =
 # tag file that is based on the input files it reads. See section "Linking to
 # external documentation" for more information about the usage of tag files.
 
-GENERATE_TAGFILE       = $(DOXYGEN_OUPUT)/kumi.tag
+GENERATE_TAGFILE       = $(DOXYGEN_OUPUT)/kiwaku.tag
 
 # If the ALLEXTERNALS tag is set to YES, all external classes and namespaces
 # will be listed in the class and namespace index. If set to NO, only the
