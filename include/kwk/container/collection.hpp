@@ -13,20 +13,22 @@ namespace kwk
   // collection: The main container-view class
   // Private inheritance of both shape and stride guarantees Empty Base Class Optimization
   //====================================================================================================================
-  template<typename Kind, typename... Opts> struct KWK_STRUCT_ABI collection : private Opts...
+  template<typename... Opts> struct KWK_STRUCT_ABI collection : private Opts...
   {
-  public:
     using option_type = decltype(options{std::declval<Opts>()...});
+    using Kind = decltype(std::declval<option_type>()[kwk::source]);
     using shape_type = decltype(std::declval<option_type>()[kwk::of_shape]);
     using stride_type = decltype(std::declval<option_type>()[kwk::of_stride]);
+    using storage_type = decltype(std::declval<option_type>()[kwk::__::blob_type]);
+    using allocator_type = decltype(std::declval<option_type>()[kwk::allocator]);
     using storage_order_type = decltype(std::declval<option_type>()[kwk::storage_order]);
 
     using source_type = Kind;
-    using value_type = container_base_t<Kind>;
-    using reference = std::add_lvalue_reference<value_type>;
-    using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
-    using pointer = std::add_pointer_t<value_type>;
-    using const_pointer = std::add_pointer_t<value_type const>;
+    using value_type = typename storage_type::element_type;
+    // using reference       = std::add_lvalue_reference<value_type>;
+    // using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
+    // using pointer         = std::add_pointer_t<value_type>;
+    // using const_pointer   = std::add_pointer_t<value_type const>;
 
     static constexpr auto ndim = shape_type::ndim;
     static constexpr auto kind = as<value_type>();
@@ -37,16 +39,14 @@ namespace kwk
       Constructors
     */
     //==================================================================================================================
-  public:
     template<int Flags, kumi::concepts::product_type Values>
     // requires(  ) need to check that options and Opts are the same basically
-    KWK_TRIVIAL constexpr collection(options<Flags, Values> const& opts)
-      : Opts(opts[kumi::identifier_of<Opts>()])..., target_(source_pointer(opts[kwk::source]))
+    KWK_TRIVIAL constexpr collection(options<Flags, Values> const& opts) : Opts(opts[kumi::identifier_of<Opts>()])...
     {
     }
 
     template<kumi::concepts::field... Options>
-    requires(sizeof...(Options) == (sizeof...(Opts) + 1))
+    requires(sizeof...(Options) == (sizeof...(Opts)))
     KWK_TRIVIAL constexpr collection(Options&&... opts) : collection(options{KWK_FWD(opts)...})
     {
     }
@@ -58,7 +58,7 @@ namespace kwk
     // }
 
     template<kumi::concepts::field... Options>
-    requires(sizeof...(Options) != (sizeof...(Opts) + 1))
+    requires(sizeof...(Options) != (sizeof...(Opts)))
     constexpr collection(Options const&...) = delete;
 
     //==================================================================================================================
@@ -67,71 +67,79 @@ namespace kwk
     */
     //==================================================================================================================
     [[nodiscard]] KWK_TRIVIAL constexpr shape_type const& shape() const noexcept
-    requires(!std::same_as<shape_type, kumi::unit>)
+    requires(!kumi::concepts::unit_type<shape_type>)
     {
       return static_cast<shape_type const&>(*this);
     }
 
     [[nodiscard]] KWK_TRIVIAL constexpr stride_type const& stride() const noexcept
-    requires(!std::same_as<stride_type, kumi::unit>)
+    requires(!kumi::concepts::unit_type<stride_type>)
     {
       return static_cast<stride_type const&>(*this);
     }
 
     [[nodiscard]] KWK_TRIVIAL constexpr storage_order_type const& storage_order() const noexcept
-    requires(!std::same_as<storage_order_type, kumi::unit>)
+    requires(!kumi::concepts::unit_type<storage_order_type>)
     {
       return static_cast<storage_order_type const&>(*this);
     }
 
     [[nodiscard]] KWK_TRIVIAL constexpr auto size() const noexcept
-    requires(!std::same_as<shape_type, kumi::unit>)
+    requires(!kumi::concepts::unit_type<shape_type>)
     {
       return shape().size();
     }
 
-    [[nodiscard]] KWK_TRIVIAL constexpr pointer data(this auto&& self) { return KWK_FWD(self).target_; }
+    template<typename Self> [[nodiscard]] KWK_TRIVIAL constexpr decltype(auto) blob(this Self& self)
+    {
+      if constexpr (std::is_const_v<Self>) return static_cast<storage_type const&>(self);
+      else return static_cast<storage_type&>(self);
+    }
+
+    template<typename Self>
+    [[nodiscard]] KWK_TRIVIAL constexpr decltype(auto) data(this Self& self)
+    requires(!kumi::concepts::unit_type<storage_type>)
+    {
+      return &self.blob()[0];
+    }
 
     //==================================================================================================================
     /*
       Access operators
     */
     //==================================================================================================================
-    template<kumi::concepts::product_type T>
-    decltype(auto) operator[](this auto&& self, T&& t) noexcept
-    requires(kumi::size_v<T> == ndim)
+    template<typename Self, kumi::concepts::product_type T>
+    decltype(auto) operator[](this Self& self, T&& t) noexcept
+    requires(kumi::size_v<T> == ndim && !kumi::concepts::unit_type<storage_type>)
     {
-      return kumi::apply(
-        [&](auto&&... i) -> decltype(auto) { return std::forward_like<decltype(self)>(self)(KWK_FWD(i)...); },
-        KWK_FWD(t));
+      return kumi::apply([&](auto&&... i) -> decltype(auto) { return std::forward_like<Self>(self[KWK_FWD(i)...]); },
+                         KWK_FWD(t));
     }
 
     template<std::integral... Is>
-    decltype(auto) operator[](this auto&& self, Is... is) noexcept
-    requires(sizeof...(Is) == ndim)
+    decltype(auto) operator[](this auto& self, Is... is) noexcept
+    requires(sizeof...(Is) == ndim && !kumi::concepts::unit_type<storage_type>)
     {
-      return std::forward_like<decltype(self)>(self.data()[linearize(self.stride(), is...)]);
+      return self.blob()[linearize(self.stride(), is...)];
     }
 
     template<concepts::slicer... S>
-    auto operator[](this auto&& self, S const&... s) noexcept
-    requires(sizeof...(S) == ndim)
+    auto operator[](this auto& self, S const&... s) noexcept
+    requires(sizeof...(S) == ndim && !kumi::concepts::unit_type<storage_type>)
     {
       auto src = (kwk::source = self.data() + kwk::origin(self.shape(), self.storage_order(), s...));
       auto shp = kwk::reshape(self.shape(), s...);
       auto strd = kwk::restride(self.stride(), s...);
 
-      return kwk::collection<Kind, decltype(shp), decltype(strd)>{src, shp, strd};
+      return kwk::builder<kwk::collection>(kwk::options{src, shp, strd});
     }
-
-  private:
-    pointer target_;
   };
 
-  template<typename Kind, kumi::concepts::field... Opts>
+  //
+  template<kumi::concepts::field... Opts>
   requires(!kumi::concepts::uniquely_named<Opts...> || !kumi::concepts::fully_named<Opts...> ||
            !kumi::concepts::uniquely_labeled<Opts...>)
-  struct collection<Kind, Opts...>
+  struct collection<Opts...>
   {
     static_assert(kumi::concepts::uniquely_named<Opts...>, "[KWK] - Duplicate option in collection definition");
     static_assert(kumi::concepts::uniquely_labeled<Opts...>,
@@ -145,11 +153,7 @@ namespace kwk
   // Deduction Guides
   //====================================================================================================================
   template<kumi::concepts::field Source, kumi::concepts::field... Opts>
-  collection(Source&&, Opts&&...)
-    -> collection<typename std::remove_cvref_t<Source>::type, std::unwrap_ref_decay_t<Opts>...>;
-
-  // template<typename S, kumi::concepts::field... Opts> collection(kumi::tuple<S, Opts...>&&) -> collection<S,
-  // Opts...>;
+  collection(Source&&, Opts&&...) -> collection<std::unwrap_ref_decay_t<Source>, std::unwrap_ref_decay_t<Opts>...>;
 
   // template<kumi::concepts::field... Opts>
   // collection(Opts&&... opts) -> collection<decltype(builder(options{std::declval<Opts>()...}))>;

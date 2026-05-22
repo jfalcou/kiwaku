@@ -23,3 +23,4 @@ namespace kwk
 #include <kwk/container/builder.hpp>
 #include <kwk/container/collection.hpp>
 #include <kwk/container/view.hpp>
+#include <kwk/container/table.hpp>

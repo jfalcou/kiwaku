@@ -18,5 +18,7 @@ namespace kwk
   //====================================================================================================================
 }
 
+#include <kwk/utility/memory/handling.hpp>
 #include <kwk/utility/memory/any_allocator.hpp>
 #include <kwk/utility/memory/heap_allocator.hpp>
+#include <kwk/utility/memory/blob.hpp>

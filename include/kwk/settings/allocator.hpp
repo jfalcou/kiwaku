@@ -44,12 +44,13 @@ namespace kwk
       using element_type = T;
       using type = allocator_option<T>;
       using identifier_type = allocator_id;
+      using label_type = kumi::str;
 
       T value;
 
       constexpr auto operator()(identifier_type) const { return *this; }
 
-      static constexpr auto name() { return kumi::str{"Allocator"}; }
+      static constexpr label_type label() { return kumi::str{"Allocator"}; }
 
       template<typename CharT, typename Traits>
       friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,

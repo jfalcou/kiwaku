@@ -7,12 +7,9 @@
 //======================================================================================================================
 #pragma once
 
-#include <cstddef>
-#include <cstdlib>
-#include <cstdint>
-#include <cstring>
-#include <concepts>
-#include <type_traits>
-#include <new>
-
-#include <kumi/kumi.hpp>
+namespace kwk
+{
+  struct constant_blob
+  {
+  };
+}

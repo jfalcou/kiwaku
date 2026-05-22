@@ -9,14 +9,10 @@
 
 namespace kwk
 {
-  template<kumi::concepts::field Source, kumi::concepts::field... Options>
-  KWK_TRIVIAL constexpr auto table(Source&& s, Options&&... opts)
+  template<kumi::concepts::field... Options> KWK_TRIVIAL constexpr auto table(Options&&... opts)
   {
-    auto settings = kwk::options{KWK_FWD(opts)...};
+    return builder<kwk::collection>(kwk::options{KWK_FWD(opts)..., kwk::__::deduce_allocator});
+  }
 
-    auto shp = auto order auto def_stride auto strd auto allocator
-  };
-
-  template<typename Source, kumi::concepts::field... Opts>
-  using table_t = decltype(table(kwk::source = std::declval<Source>(), std::declval<Opts>()...));
+  template<kumi::concepts::field... Opts> using table_t = decltype(table(std::declval<Opts>()...));
 }

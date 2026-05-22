@@ -9,6 +9,7 @@
 
 #include <kwk/detail/abi.hpp>
 #include <kwk/detail/dependencies.hpp>
+#include <kwk/detail/allocator.hpp>
 #include <kwk/detail/iterator.hpp>
 #include <kwk/detail/fwd.hpp>
 #include <kwk/detail/clone_ptr.hpp>

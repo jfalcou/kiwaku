@@ -123,6 +123,9 @@ namespace kwk
     /// @brief Dynamic property of this shape
     static constexpr bool fully_dynamic = ((Dims == kwk::_) && ...);
 
+    /// @brief Detection mechanism for fully static shapes
+    static constexpr bool has_dynamic_dim = ((Dims == kwk::_) || ...);
+
     /// @brief Total number of elements the current shape represents
     constexpr size_type size() const noexcept { return kumi::fold_left(kumi::function::multiplies, *this, fixed<1>); }
 
