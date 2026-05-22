@@ -1,132 +1,18 @@
-//==================================================================================================
+//======================================================================================================================
 /*
   KIWAKU - Containers Well Made
   Copyright : KIWAKU Project Contributors
   SPDX-License-Identifier: BSL-1.0
 */
-//==================================================================================================
+//======================================================================================================================
 #pragma once
-
-#include <kwk/container/container.hpp>
-#include <kwk/concepts/slicer.hpp>
-#include <raberu/raberu.hpp>
-#include <type_traits>
 
 namespace kwk
 {
-  //================================================================================================
-  //! @ingroup containers
-  //! @brief Owning, contiguous multi-dimensional container
-  //!
-  //! @tparam Builder  Policy generator for current table
-  //================================================================================================
-  template<typename Builder>
-  struct  table  : container<kwk::table_,Builder>
+  template<kumi::concepts::field... Options> KWK_TRIVIAL constexpr auto table(Options&&... opts)
   {
-    using parent = container<kwk::table_,Builder>;
+    return builder<kwk::collection>(kwk::options{KWK_FWD(opts)..., kwk::__::deduce_allocator});
+  }
 
-    /// Underlying value type
-    using value_type        = typename parent::value_type;
-
-    /// Associated reference type
-    using reference         = typename parent::reference;
-
-    /// Associated reference to const type
-    using const_reference   = typename parent::const_reference;
-
-    /// Associated pointer type
-    using pointer           = typename parent::pointer;
-
-    /// Associated const pointer type
-    using const_pointer     = typename parent::const_pointer;
-
-    /// Associated @ref kwk::shape type
-    using shape_type = typename parent::shape_type;
-
-    /// Compile-time @ref glossary-order
-    static constexpr std::int32_t static_order = parent::static_order;
-
-    //==============================================================================================
-    //! @name Constructors
-    //! @{
-    //==============================================================================================
-
-    /// Default constructor
-    KWK_TRIVIAL constexpr table() : parent{kwk::table_} {}
-
-    /// Construct a table from a list of options
-    KWK_TRIVIAL constexpr table(rbr::concepts::option auto const&... opts)
-              : parent{rbr::settings{kwk::table_,opts...}} {}
-
-    /// Construct a table from a settings descriptor
-    KWK_TRIVIAL constexpr table(rbr::concepts::settings auto const& opts)
-                        : parent{ []<typename S>(S const& p)
-                                  { return rbr::merge(rbr::settings{kwk::table_}, p); }(opts)
-                                }
-    {}
-
-    /// Move constructor
-    KWK_TRIVIAL constexpr table(table&&) = default;
-
-    /// Move assignment operator
-    KWK_TRIVIAL constexpr table& operator=(table&&) = default;
-
-    /// Copy constructor
-    constexpr table(table const& other)
-            : table(other.settings())
-    {}
-
-    /// Copy constructor from other container
-    KWK_TRIVIAL constexpr table(concepts::container<type<value_type>, shape_type> auto const& other)
-                        : table(other.settings())
-    {}
-
-    /// Copy assignment operator
-    constexpr table& operator=(table const& other)
-    {
-      table local(other);
-      parent::swap(local);
-      return *this;
-    }
-
-    /// Copy assignment operator from other container
-    constexpr table& operator=(concepts::container<type<value_type>, shape_type> auto const& other)
-    {
-      table local(other);
-      parent::swap(local);
-      return *this;
-    }
-
-    //==============================================================================================
-    //! @}
-    //==============================================================================================
-    using parent::operator();
-  };
-
-  //================================================================================================
-  //! @name Deduction guides
-  //! @{
-  //================================================================================================
-
-  /// This deduction guide is provided for kwk::table to allow deduction from a list of options
-  template<rbr::concepts::option... O>
-  table(O const&...) -> table<__::builder<rbr::settings(table_, O{}...)>>;
-
-  /// This deduction guide is provided for kwk::table to allow deduction from another table's settings
-  template<rbr::concepts::option... O>
-  table(rbr::settings<O...> const&) -> table<__::builder<rbr::settings(table_, O{}...)>>;
-
-  /// This deduction guide is provided for kwk::table to allow deduction from another container
-  template<concepts::container C>
-  table(C const&) -> table<__::builder<C::archetype(table_)> >;
-
-  //================================================================================================
-  //! @}
-  //================================================================================================
-
-  template<rbr::concepts::option... Os> auto make_table(Os const&... os) { return table{os...}; };
-
-  /// Type helper
-  template<typename... Settings>
-  using make_table_t = table<__::builder<rbr::settings(table_,Settings{}...)>>;
+  template<kumi::concepts::field... Opts> using table_t = decltype(table(std::declval<Opts>()...));
 }

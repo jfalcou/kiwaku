@@ -6,114 +6,94 @@
 **/
 //==================================================================================================
 #include "test.hpp"
-#include <kwk/utility/container/shape.hpp>
+#include <kwk/kwk.hpp>
 
-TTS_CASE( "Equality comparison between shapes" )
+TTS_CASE("Equality comparison between shapes")
 {
-  using kwk::height;
-  using kwk::width;
-  using kwk::depth;
-  using kwk::channel;
-  using kwk::of_size;
+  using kwk::shape;
 
-  TTS_EQUAL( of_size(3), of_size(3)         );
-  TTS_EQUAL( of_size(3), (of_size(1,3))     );
-  TTS_EQUAL( of_size(3), (of_size(1,1,3))   );
-  TTS_EQUAL( of_size(3), (of_size(1,1,1,3)) );
-
-  TTS_EQUAL( of_size(height = 3),  of_size(height = 3)        );
-  TTS_EQUAL( of_size(height = 3), (of_size(1,height = 3))     );
-  TTS_EQUAL( of_size(height = 3), (of_size(1,1,height = 3))   );
-  TTS_EQUAL( of_size(height = 3), (of_size(1,1,1,height = 3)) );
-
-  TTS_EQUAL( (of_size(3, 5)), (of_size(15))      );
-  TTS_EQUAL( (of_size(3, 5)), (of_size(3,5))     );
-  TTS_EQUAL( (of_size(3, 5)), (of_size(1,3,5))   );
-  TTS_EQUAL( (of_size(3, 5)), (of_size(1,1,3,5)) );
-
-  TTS_EQUAL( (of_size(width = 15))          , (of_size(height = 3,width = 5))     );
-  TTS_EQUAL( (of_size(height = 3,width = 5)), (of_size(width = 15))               );
-  TTS_EQUAL( (of_size(height = 3,width = 5)), (of_size(height = 3,width = 5))     );
-  TTS_EQUAL( (of_size(height = 3,width = 5)), (of_size(1,height = 3,width = 5))   );
-  TTS_EQUAL( (of_size(height = 3,width = 5)), (of_size(1,1,height = 3,width = 5)) );
-
-  TTS_EQUAL( (of_size(3,5,7))  , (of_size(105))     );
-  TTS_EQUAL( (of_size(3,5,7))  , (of_size(15,7))    );
-  TTS_EQUAL( (of_size(3,5,7))  , (of_size(3,5,7))   );
-  TTS_EQUAL( (of_size(3,5,7))  , (of_size(1,3,5,7)) );
-
-  TTS_EQUAL( (of_size(width = 105))                     , (of_size(depth = 3, height = 5, width = 7))   );
-  TTS_EQUAL( (of_size(height = 15, width = 7))          , (of_size(depth = 3, height = 5, width = 7))   );
-  TTS_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(width = 105))                        );
-  TTS_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(height = 15, width = 7))             );
-  TTS_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(depth = 3, height = 5, width = 7))   );
-  TTS_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(1,depth = 3, height = 5, width = 7)) );
-
-  TTS_EQUAL( (of_size(3,5,7,9)), (of_size(945))     );
-  TTS_EQUAL( (of_size(3,5,7,9)), (of_size(105,9))   );
-  TTS_EQUAL( (of_size(3,5,7,9)), (of_size(15,7,9))  );
-  TTS_EQUAL( (of_size(3,5,7,9)), (of_size(3,5,7,9)) );
-
-  TTS_EQUAL( (of_size(depth = 15,height =7,width = 9))            , (of_size(channel = 3,depth = 5,height = 7,width = 9)) );
-  TTS_EQUAL( (of_size(height =105,width = 9))                     , (of_size(channel = 3,depth = 5,height = 7,width = 9)) );
-  TTS_EQUAL( (of_size(width = 945))                               , (of_size(channel = 3,depth = 5,height = 7,width = 9)) );
-  TTS_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(width = 945))     );
-  TTS_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(height =105,width = 9))   );
-  TTS_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(depth = 15,height =7,width = 9))  );
-  TTS_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(channel = 3,depth = 5,height =7,width = 9)) );
+  TTS_EQUAL(shape{3}, (shape{3}));
+  TTS_EQUAL((shape{3, 5}), (shape{3, 5}));
+  TTS_EQUAL((shape{3, 5, 7}), (shape{3, 5, 7}));
+  TTS_EQUAL((shape{3, 5, 7, 9}), (shape{3, 5, 7, 9}));
 };
 
-TTS_CASE( "Inequality comparison between shapes" )
+TTS_CASE("Inequality comparison between shapes")
 {
-  using kwk::height;
-  using kwk::width;
-  using kwk::depth;
-  using kwk::channel;
-  using kwk::of_size;
+  using kwk::shape;
 
-  TTS_NOT_EQUAL( of_size(3),  of_size(7)        );
-  TTS_NOT_EQUAL( of_size(3), (of_size(5,3))     );
-  TTS_NOT_EQUAL( of_size(3), (of_size(1,2,3))   );
-  TTS_NOT_EQUAL( of_size(3), (of_size(1,2,1,9)) );
+  TTS_NOT_EQUAL(shape{3}, shape{7});
+  TTS_NOT_EQUAL(shape{3}, (shape{1, 3}));
+  TTS_NOT_EQUAL(shape{3}, (shape{1, 1, 3}));
+  TTS_NOT_EQUAL(shape{3}, (shape{1, 1, 1, 3}));
 
-  TTS_NOT_EQUAL( of_size(height = 3),  of_size(height = 9)        );
-  TTS_NOT_EQUAL( of_size(height = 3), (of_size(6,height = 3))     );
-  TTS_NOT_EQUAL( of_size(height = 3), (of_size(1,3,height = 3))   );
-  TTS_NOT_EQUAL( of_size(height = 3), (of_size(2,9,1,height = 3)) );
+  TTS_NOT_EQUAL((shape{3, 5}), (shape{15}));
+  TTS_NOT_EQUAL((shape{3, 5}), (shape{5, 3}));
+  TTS_NOT_EQUAL((shape{3, 5}), (shape{1, 3, 5}));
+  TTS_NOT_EQUAL((shape{3, 5}), (shape{1, 1, 3, 5}));
 
-  TTS_NOT_EQUAL( (of_size(3, 5)), (of_size(17))      );
-  TTS_NOT_EQUAL( (of_size(3, 5)), (of_size(7,5))     );
-  TTS_NOT_EQUAL( (of_size(3, 5)), (of_size(1,9,5))   );
-  TTS_NOT_EQUAL( (of_size(3, 5)), (of_size(3,1,3,5)) );
+  TTS_NOT_EQUAL((shape{3, 5, 7}), (shape{105}));
+  TTS_NOT_EQUAL((shape{3, 5, 7}), (shape{15, 7}));
+  TTS_NOT_EQUAL((shape{3, 5, 7}), (shape{1, 3, 5, 7}));
 
-  TTS_NOT_EQUAL( (of_size(width = 15))          , (of_size(height = 9,width = 5))     );
-  TTS_NOT_EQUAL( (of_size(height = 3,width = 5)), (of_size(width = 5))                );
-  TTS_NOT_EQUAL( (of_size(height = 3,width = 5)), (of_size(height = 3,width = 15))    );
-  TTS_NOT_EQUAL( (of_size(height = 3,width = 5)), (of_size(1,height = 8,width = 5))   );
-  TTS_NOT_EQUAL( (of_size(height = 3,width = 5)), (of_size(1,7,height = 3,width = 5)) );
-
-  TTS_NOT_EQUAL( (of_size(3,5,7))  , (of_size(107))     );
-  TTS_NOT_EQUAL( (of_size(3,5,7))  , (of_size(35,7))    );
-  TTS_NOT_EQUAL( (of_size(3,5,7))  , (of_size(3,95,7))  );
-  TTS_NOT_EQUAL( (of_size(3,5,7))  , (of_size(3,3,5,7)) );
-
-  TTS_NOT_EQUAL( (of_size(width = 15))                      , (of_size(depth = 3, height = 5, width = 7))   );
-  TTS_NOT_EQUAL( (of_size(height = 15, width = 77))         , (of_size(depth = 3, height = 5, width = 7))   );
-  TTS_NOT_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(width = 175))                        );
-  TTS_NOT_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(height = 75, width = 7))             );
-  TTS_NOT_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(depth = 3, height = 35, width = 7))  );
-  TTS_NOT_EQUAL( (of_size(depth = 3, height = 5, width = 7)), (of_size(3,depth = 33, height = 5, width = 7)));
-
-  TTS_NOT_EQUAL( (of_size(3,5,7,9)), (of_size(975))     );
-  TTS_NOT_EQUAL( (of_size(3,5,7,9)), (of_size(105,11))  );
-  TTS_NOT_EQUAL( (of_size(3,5,7,9)), (of_size(1,7,9))   );
-  TTS_NOT_EQUAL( (of_size(3,5,7,9)), (of_size(3,1,77,9)));
-
-  TTS_NOT_EQUAL( (of_size(depth = 19,height =7,width = 9))            , (of_size(channel = 3,depth = 5,height = 7,width = 9)) );
-  TTS_NOT_EQUAL( (of_size(height =115,width = 9))                     , (of_size(channel = 3,depth = 5,height = 7,width = 9)) );
-  TTS_NOT_EQUAL( (of_size(width = 995))                               , (of_size(channel = 3,depth = 5,height = 7,width = 9)) );
-  TTS_NOT_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(width = 975))                                );
-  TTS_NOT_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(height =135,width = 9))                      );
-  TTS_NOT_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(depth = 15,height = 8,width = 9))            );
-  TTS_NOT_EQUAL( (of_size(channel = 3,depth = 5,height = 7,width = 9)), (of_size(channel = 11,depth = 80,height =7,width = 9)));
+  TTS_NOT_EQUAL((shape{3, 5, 7, 9}), (shape{945}));
+  TTS_NOT_EQUAL((shape{3, 5, 7, 9}), (shape{105, 9}));
+  TTS_NOT_EQUAL((shape{3, 5, 7, 9}), (shape{15, 7, 9}));
 };
+
+TTS_CASE("Inequality comparison between squeezed shapes")
+{
+  using kwk::shape;
+  using namespace kwk::literals;
+
+  TTS_EQUAL(shape{3}, kwk::squeeze(shape{1_c, 3}));
+  TTS_EQUAL(shape{3}, kwk::squeeze(shape{3, 1_c}));
+  TTS_NOT_EQUAL(shape{3}, kwk::squeeze(shape{3, 1, 1_c}));
+  TTS_NOT_EQUAL(shape{3}, kwk::squeeze(shape{1_c, 1, 3}));
+
+  TTS_NOT_EQUAL((shape{3, 3}), kwk::squeeze(shape{3, 1, 3}));
+  TTS_EQUAL((shape{3, 3}), kwk::squeeze(shape{3, 1_c, 3}));
+};
+
+// Should filling with leading ones be implicit or a function ?
+/*
+using namespace kwk::literals;
+
+TTS_CASE( "Small shape can be used to construct large shape" )
+{
+  auto small = kwk::shape<_2D>{4,2};
+  auto large = kwk::broadcast_to(small, kwk::shape<_4D>{});
+
+  TTS_EQUAL( large, (kwk::shape{1,1,get<0>(small),get<1>(small)}) );
+};
+
+TTS_CASE( "Small shape can be assigned to large shape" )
+{
+  auto      small = kwk::_2D{4,2};
+  kwk::_4D  large;
+
+  large = small;
+
+  TTS_EQUAL( large, kwk::of_size(1,1,small[0],small[1]) );
+};
+
+TTS_CASE( "Large shape need to be explicitly converted to small shape" )
+{
+  auto large = kwk::_4D{4,2,6,9};
+  auto small = kwk::_2D{large};
+
+  TTS_EQUAL( small[0], large[0]*large[1]*large[2] );
+  TTS_EQUAL( small[1], large[3] );
+};
+
+TTS_CASE( "Large shape need to be explicitly assigned to small shape" )
+{
+  auto    large = kwk::_4D{4,2,6,9};
+  kwk::_2D small;
+
+  small = kwk::_2D{large};
+
+  TTS_EQUAL( small[0], large[0]*large[1]*large[2] );
+  TTS_EQUAL( small[1], large[3] );
+};
+*/

@@ -47,18 +47,3 @@ CPMAddPackage(NAME KUMI   GITHUB_REPOSITORY jfalcou/kumi
                       "KUMI_BUILD_DOCUMENTATION OFF"
                       "KUMI_QUIET ON"
               )
-
-CPMAddPackage(NAME RABERU GITHUB_REPOSITORY jfalcou/raberu
-              GIT_TAG main
-              OPTIONS "RABERU_BUILD_TEST OFF"
-                      "RABERU_BUILD_DOCUMENTATION OFF"
-                      "RABERU_QUIET ON"
-              )
-
-CPMAddPackage ( NAME EVE   GITHUB_REPOSITORY jfalcou/eve
-                GIT_TAG main
-                OPTIONS "EVE_BUILD_TEST OFF"
-                        "EVE_BUILD_BENCHMARKS OFF"
-                        "EVE_BUILD_DOCUMENTATION OFF"
-              )
-

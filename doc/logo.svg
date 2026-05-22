@@ -1,0 +1,61 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .text-char { font-family: sans-serif; font-weight: bold; font-size: 60px; text-anchor: middle; dominant-baseline: central; fill: black; }
+
+      /* Stroke styling */
+      .block-border { stroke: #333; stroke-width: 1px; }
+    </style>
+  </defs>
+
+  <g transform="translate(0,0)">
+    <polygon points="0,0 100,0 85,15 15,15" fill="#f0f8ff" class="block-border"/>
+    <polygon points="0,0 15,15 15,85 0,100" fill="#c4e0f5" class="block-border"/>
+    <polygon points="100,0 100,100 85,85 85,15" fill="#8fbcdb" class="block-border"/>
+    <polygon points="0,100 15,85 85,85 100,100" fill="#8fbcdb" class="block-border"/>
+    <rect x="15" y="15" width="70" height="70" fill="#dceefc" class="block-border"/>
+    <text x="50" y="52" class="text-char">き</text>
+  </g>
+
+  <g transform="translate(0,100)">
+    <polygon points="0,0 100,0 85,15 15,15" fill="#a6ccee" class="block-border"/>
+    <polygon points="0,0 15,15 15,85 0,100" fill="#5e9bc9" class="block-border"/>
+    <polygon points="100,0 100,100 85,85 85,15" fill="#457ba3" class="block-border"/>
+    <polygon points="0,100 15,85 85,85 100,100" fill="#457ba3" class="block-border"/>
+    <rect x="15" y="15" width="70" height="70" fill="#73aadd" class="block-border"/>
+  </g>
+
+  <g transform="translate(100,100)">
+    <polygon points="0,0 100,0 85,15 15,15" fill="#f0f8ff" class="block-border"/>
+    <polygon points="0,0 15,15 15,85 0,100" fill="#c4e0f5" class="block-border"/>
+    <polygon points="100,0 100,100 85,85 85,15" fill="#8fbcdb" class="block-border"/>
+    <polygon points="0,100 15,85 85,85 100,100" fill="#8fbcdb" class="block-border"/>
+    <rect x="15" y="15" width="70" height="70" fill="#dceefc" class="block-border"/>
+    <text x="50" y="52" class="text-char">わ</text>
+  </g>
+
+  <g transform="translate(0,200)">
+    <polygon points="0,0 100,0 85,15 15,15" fill="#3a7ab5" class="block-border"/>
+    <polygon points="0,0 15,15 15,85 0,100" fill="#0d4b7d" class="block-border"/>
+    <polygon points="100,0 100,100 85,85 85,15" fill="#083254" class="block-border"/>
+    <polygon points="0,100 15,85 85,85 100,100" fill="#083254" class="block-border"/>
+    <rect x="15" y="15" width="70" height="70" fill="#105a96" class="block-border"/>
+  </g>
+
+  <g transform="translate(100,200)">
+    <polygon points="0,0 100,0 85,15 15,15" fill="#a6ccee" class="block-border"/>
+    <polygon points="0,0 15,15 15,85 0,100" fill="#5e9bc9" class="block-border"/>
+    <polygon points="100,0 100,100 85,85 85,15" fill="#457ba3" class="block-border"/>
+    <polygon points="0,100 15,85 85,85 100,100" fill="#457ba3" class="block-border"/>
+    <rect x="15" y="15" width="70" height="70" fill="#73aadd" class="block-border"/>
+  </g>
+
+  <g transform="translate(200,200)">
+    <polygon points="0,0 100,0 85,15 15,15" fill="#f0f8ff" class="block-border"/>
+    <polygon points="0,0 15,15 15,85 0,100" fill="#c4e0f5" class="block-border"/>
+    <polygon points="100,0 100,100 85,85 85,15" fill="#8fbcdb" class="block-border"/>
+    <polygon points="0,100 15,85 85,85 100,100" fill="#8fbcdb" class="block-border"/>
+    <rect x="15" y="15" width="70" height="70" fill="#dceefc" class="block-border"/>
+    <text x="50" y="52" class="text-char">く</text>
+  </g>
+</svg>
