@@ -49,7 +49,7 @@ namespace kwk
         for (std::size_t i = 0; i < size; i += sizeof(Q))
         {
           auto* addr = &self.get()[i];
-          if constexpr (std::is_implicit_lifetime_v<Q>) kwk::__::start_lifetime_as<Q>(addr);
+          if constexpr (implicit_lifetime_type<Q>) kwk::__::start_lifetime_as<Q>(addr);
           else ::new (addr) Q;
         }
       }
@@ -71,7 +71,7 @@ namespace kwk
 
       template<typename Self> constexpr void destroy(this Self& self, std::size_t size)
       {
-        if constexpr (!std::is_implicit_lifetime_v<Q>)
+        if constexpr (!implicit_lifetime_type<Q>)
         {
           for (std::size_t i = 0; i < size; ++i) kwk::__::destroy_at(&self[i]);
         }

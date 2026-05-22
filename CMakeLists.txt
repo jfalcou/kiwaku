@@ -63,6 +63,7 @@ endif()
 ## Tests setup
 ##======================================================================================================================
 if(KIWAKU_BUILD_TEST)
+  include(CTest)
   enable_testing()
   add_custom_target(kiwaku-unit)
   add_subdirectory(test)

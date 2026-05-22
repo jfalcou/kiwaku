@@ -1,12 +1,12 @@
-<img src="https://raw.githubusercontent.com/jfalcou/kiwaku/refs/heads/main/doc/logo.svg" data-canonical-src="https://jfalcou.github.io/kiwaku/doc/logo.svg" width="8%" align="left"/>
+<img src="https://raw.githubusercontent.com/jfalcou/kiwaku/refs/heads/main/doc/logo.svg" alt="Kiwaku Logo: Staircase of boxes of variable shades of blue" data-canonical-src="https://jfalcou.github.io/kiwaku/doc/logo.svg" width="8%" align="left"/>
 
 # Kiwaku - Containers Well Made
 
+[![License](https://img.shields.io/badge/license-BSL-green?style=plastic)](./LICENSE.md)
+[![Discord](https://img.shields.io/discord/692734675726237696?style=plastic)](https://discord.com/channels/692734675726237696/692735300522344468)
+[![CI Status](https://github.com/jfalcou/kiwaku/actions/workflows/integration.yml/badge.svg)](https://github.com/jfalcou/kiwaku/actions/workflows/integration.yml)
 
-[![Kiwaku CI](https://github.com/jfalcou/kiwaku/actions/workflows/unit.yml/badge.svg)](https://github.com/jfalcou/kiwaku/actions/workflows/unit.yml)
-[![Licence](https://img.shields.io/github/license/jfalcou/kiwaku?style=plastic)](https://img.shields.io/github/license/jfalcou/kiwaku?style=plastic)
-[![Discord](https://img.shields.io/discord/692734675726237696?style=plastic)](https://discord.com/channels/692734675726237696/692735274291298424)
-
+<br clear="left"/>
 
 C++23 and onward collection of high performance data containers and related tools
 

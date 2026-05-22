@@ -18,9 +18,9 @@ namespace kwk
     {
       any_allocator allocator;
 
-      deleter() {}
+      constexpr deleter() {}
 
-      template<typename A> deleter(A a) : allocator(a) {}
+      template<typename A> constexpr deleter(A a) : allocator(a) {}
 
       void operator()(void* p) { deallocate(allocator, p); }
     };

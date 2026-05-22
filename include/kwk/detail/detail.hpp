@@ -15,3 +15,4 @@
 #include <kwk/detail/clone_ptr.hpp>
 #include <kwk/detail/settings.hpp>
 #include <kwk/detail/mixed_sequence.hpp>
+#include <kwk/detail/memory.hpp>

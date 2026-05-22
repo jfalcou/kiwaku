@@ -11,8 +11,8 @@
 #include <cstdlib>
 #include <cstdint>
 #include <cstring>
-#include <concepts>
 #include <type_traits>
+#include <concepts>
 #include <new>
 
 #include <kumi/kumi.hpp>

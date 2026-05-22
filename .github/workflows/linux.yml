@@ -45,3 +45,10 @@ jobs:
         with:
           config: ${{ matrix.options }}
           preset: ${{ matrix.compiler.preset }}
+
+      - name: Run MemCheck
+        uses: ./.github/actions/test
+        with:
+          config: ${{ matrix.options }}
+          preset: ${{ matrix.compiler.preset }}
+          memcheck: ${{ matrix.compiler.preset != 'icpx' }}
