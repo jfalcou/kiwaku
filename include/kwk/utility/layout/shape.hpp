@@ -11,18 +11,23 @@ namespace kwk
 {
   namespace __
   {
-    template<auto N> struct normalize_dim : std::conditional<N == kwk::_, kwk::config::default_size_type, constant<N>>
+    template<auto N>
+    struct normalize_dim
+      : std::conditional<kumi::concepts::product_type<decltype(N)>,
+                         decltype(N),
+                         std::conditional_t<N == kwk::_, kwk::config::default_size_type, constant<N>>>
     {
     };
 
-    template<concepts::extent auto... x> struct as_sequence
+    template<concepts::deep_extent auto... x> struct as_sequence
     {
-      using type = decltype(kwk::__::mixed_sequence(std::declval<typename normalize_dim<x>::type>()...));
+      using type = decltype(kwk::__::compressed_tuple(std::declval<typename normalize_dim<x>::type>()...));
     };
 
     template<typename T> consteval auto make_dimension()
     {
-      if constexpr (concepts::dynamic_extent<T>) return _;
+      if constexpr (kumi::concepts::product_type<T>) return T{};
+      else if constexpr (concepts::dynamic_extent<T>) return _;
       else return T::value;
     }
 
@@ -39,7 +44,6 @@ namespace kwk
       }(std::make_index_sequence<sizeof...(Dims)>{});
       return d;
     }
-
   }
 
   //====================================================================================================================
@@ -99,7 +103,7 @@ namespace kwk
                 the number of dimensions and which dimensions are static vs dynamic.
   **/
   //====================================================================================================================
-  template<concepts::extent auto... Dims> struct shape : private __::as_sequence<Dims...>::type
+  template<concepts::deep_extent auto... Dims> struct shape : __::as_sequence<Dims...>::type
   {
     //==================================================================================================================
     // Shape is a field over itself
@@ -127,7 +131,10 @@ namespace kwk
     static constexpr bool has_dynamic_dim = ((Dims == kwk::_) || ...);
 
     /// @brief Total number of elements the current shape represents
-    constexpr size_type size() const noexcept { return kumi::fold_left(kumi::function::multiplies, *this, fixed<1>); }
+    constexpr size_type size() const noexcept
+    {
+      return kumi::fold_left(kumi::function::multiplies, (*this).flatten(), fixed<1>);
+    }
 
     /// @brief Default constructor
     constexpr shape() : storage_type() {}
@@ -142,7 +149,7 @@ namespace kwk
 
       @param s Dimension sizes, which quantity must match ndim.
     **/
-    template<concepts::extent... S>
+    template<concepts::deep_extent... S>
     requires(sizeof...(S) == ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
     constexpr shape(S... s) : storage_type{s...}
     {
@@ -158,7 +165,7 @@ namespace kwk
 
       @param s Dimension sizes, which quantity must be less than ndim.
     **/
-    template<concepts::extent... S>
+    template<concepts::deep_extent... S>
     requires(sizeof...(S) < ndim)
     constexpr shape(S... s)
       : storage_type{[&]<std::size_t... I>(std::index_sequence<I...>) {
@@ -205,13 +212,13 @@ namespace kwk
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, shape const& s) noexcept
     {
       os << "(";
-      kumi::for_each([&](auto e) { os << " " << +e; }, s);
+      kumi::for_each([&](auto e) { os << " " << e; }, s);
       return os << " )";
     }
   };
 
   //@brief Deduction guide
-  template<concepts::extent... S> shape(S&&...) -> shape<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
+  template<concepts::deep_extent... S> shape(S&&...) -> shape<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
 
   /// @brief Transforms an abritrary product type into a shape
   template<kumi::concepts::product_type T> constexpr auto as_shape(T&& t)
@@ -219,7 +226,7 @@ namespace kwk
     return kumi::apply(
       [](auto&&... elt) {
         auto v_or_t = []<typename V>(V&& v) {
-          if constexpr (kumi::concepts::product_type<V>) return to_shape(KWK_FWD(v));
+          if constexpr (kumi::concepts::product_type<V>) return as_shape(KWK_FWD(v));
           else return KWK_FWD(v);
         };
         return shape{v_or_t(KWK_FWD(elt))...};

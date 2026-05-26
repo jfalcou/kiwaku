@@ -33,7 +33,7 @@ namespace kwk
   //====================================================================================================================
   template<typename T> struct container_shape
   {
-    static constexpr auto value = kwk::shape{}; // kwk::shape_descriptor{};
+    static constexpr auto value = kwk::shape{};
   };
 
   template<kwk::concepts::range T> struct container_shape<T>

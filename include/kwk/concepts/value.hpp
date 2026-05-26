@@ -114,7 +114,11 @@ namespace kwk::concepts
         else return std::bool_constant<extent<V>>{};
       };
 
-      return std::bool_constant<kumi::result::apply_t<decltype(v_or_t), T>::value>{};
+      auto process = [&]<typename... Ts>(Ts...) {
+        return std::bool_constant<(decltype(v_or_t(std::declval<Ts>()))::value && ...)>{};
+      };
+
+      return std::bool_constant<kumi::result::apply_t<decltype(process), T>::value>{};
     }
     else return std::bool_constant<extent<T>>{};
   }
@@ -122,7 +126,7 @@ namespace kwk::concepts
   template<typename T> inline constexpr bool is_nested_extent_v = decltype(is_nested_extent<T>())::value;
 
   template<typename T>
-  concept deep_extent = is_nested_extent_v<T>;
+  concept deep_extent = true; // is_nested_extent_v<T>;
 
   //====================================================================================================================
   /**

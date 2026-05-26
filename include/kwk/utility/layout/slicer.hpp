@@ -12,9 +12,9 @@
 namespace kwk
 {
 
-  template<typename Begin, typename End, typename Step> struct slicer : private __::mixed_sequence<Begin, End, Step>
+  template<typename Begin, typename End, typename Step> struct slicer : private __::compressed_tuple<Begin, End, Step>
   {
-    using parent = __::mixed_sequence<Begin, End, Step>;
+    using parent = __::compressed_tuple<Begin, End, Step>;
 
     constexpr slicer(Begin b, End e, Step s) : parent{b, e, s} {}
 

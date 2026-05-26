@@ -15,7 +15,7 @@ namespace kwk
     @brief Stride of multi-dimensional container (Supports Arbitrary Layouts)
   **/
   //====================================================================================================================
-  template<auto... D> struct stride : private __::as_sequence<D...>::type
+  template<concepts::deep_extent auto... D> struct stride : __::as_sequence<D...>::type
   {
     using element_type = stride;
     using type = stride;
@@ -37,7 +37,7 @@ namespace kwk
 
     constexpr stride() = default;
 
-    template<std::convertible_to<size_type>... S>
+    template<concepts::deep_extent... S>
     requires(sizeof...(S) == ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
     constexpr stride(S... s) : storage_type{s...}
     {
@@ -71,12 +71,12 @@ namespace kwk
                                                          stride const& s) noexcept
     {
       os << "(";
-      kumi::for_each([&](auto e) { os << " " << +e; }, s);
+      kumi::for_each([&](auto e) { os << " " << e; }, s);
       return os << " )";
     }
   };
 
-  template<concepts::extent... S>
+  template<concepts::deep_extent... S>
   requires(sizeof...(S) > 0)
   stride(S...) -> stride<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
 
@@ -86,7 +86,7 @@ namespace kwk
     return kumi::apply(
       [](auto&&... elt) {
         auto v_or_t = []<typename V>(V&& v) {
-          if constexpr (kumi::concepts::product_type<V>) return to_stride(KWK_FWD(v));
+          if constexpr (kumi::concepts::product_type<V>) return as_stride(KWK_FWD(v));
           else return KWK_FWD(v);
         };
         return stride{v_or_t(KWK_FWD(elt))...};

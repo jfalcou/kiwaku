@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <cstring>
+#include <bit>
 #include <type_traits>
 #include <concepts>
 #include <new>

@@ -72,19 +72,19 @@ namespace kwk::__
   //====================================================================================================================
   // Traits for computing the record type with only dynamic axis inside
   //====================================================================================================================
-  template<typename T> struct is_dynamic_dim : std::bool_constant<!std::is_empty_v<T>>
+  template<typename T> struct empty_class : std::bool_constant<!std::is_empty_v<T>>
   {
   };
 
-  template<typename... Ts>
-  using mixed_type = decltype(kumi::filter<is_dynamic_dim>(std::declval<kumi::tuple<Ts...>>()));
+  template<typename... Ts> using mixed_type = decltype(kumi::filter<empty_class>(std::declval<kumi::tuple<Ts...>>()));
 
   //====================================================================================================================
   //
   //====================================================================================================================
-  template<typename... Ts> struct mixed_sequence : private mixed_type<Ts...>
+  template<typename... Ts> struct compressed_tuple : mixed_type<Ts...>
   {
     using base_tuple = kumi::tuple<Ts...>;
+    using flat_tuple = kumi::result::flatten_all_t<base_tuple>;
     using parent = mixed_type<Ts...>;
 
     static constexpr auto rank = sizeof...(Ts);
@@ -101,11 +101,10 @@ namespace kwk::__
 
       auto check = [&]<std::size_t I>(kumi::index_t<I>) {
         using u_type = std::remove_cvref_t<kumi::element_t<I, U>>;
-        using is_u_dyn = is_dynamic_dim<u_type>;
+        using is_u_dyn = empty_class<u_type>;
 
         if constexpr (mapping[I] == -1)
-          return (std::same_as<u_type, wildcard_t> ||
-                  (!is_u_dyn::value && u_type::value == kumi::get<I>(base_tuple{})));
+          return (std::same_as<u_type, wildcard_t> || (!is_u_dyn::value && u_type::value == kumi::get<I>(U{})));
         else return std::convertible_to<u_type, kumi::element_t<mapping[I], parent>>;
       };
 
@@ -116,12 +115,12 @@ namespace kwk::__
       return valid;
     }
 
-    template<typename... Us> static constexpr auto pre_convert(Us... us)
+    template<typename... Us> static constexpr auto pre_convert(Us&&... us)
     {
-      auto base = kumi::tuple{us...};
+      auto base = kumi::tuple{KWK_FWD(us)...};
 
       // Build the tuple of arguments to forward to the parent constructor by following the mapping :
-      //  + -1 in mapping means the size is static, so we return the corresponding us as is.
+      //  + -1 in mapping means the element is empty, so we return the corresponding us as is.
       //  + otherwise, we convert the corresponding us to the type in the mixed_type tuple.
       auto convert = [&]<std::size_t I>(kumi::index_t<I>, auto m) {
         if constexpr (mapping[I] == -1) return m;
@@ -131,75 +130,100 @@ namespace kwk::__
       return kumi::map_index(convert, base);
     }
 
-    constexpr mixed_sequence() = default;
+    constexpr compressed_tuple() = default;
 
     template<typename... Us>
-    KWK_TRIVIAL constexpr mixed_sequence(Us const&... us) : parent(kumi::filter<is_dynamic_dim>(pre_convert(us...)))
+    requires(... && !std::is_same_v<std::decay_t<Us>, compressed_tuple>)
+    KWK_TRIVIAL constexpr compressed_tuple(Us&&... us) : parent{kumi::filter<empty_class>(pre_convert(KWK_FWD(us)...))}
     {
     }
 
-    // template<typename C, typename Ct>
-    // auto& display(std::basic_ostream<C,Ct>& os, auto sep = " ") const
-    // {
-    //   [&]<std::size_t... N>(std::index_sequence<N...>)
-    //   {
-    //     auto p = [&]<typename I>(I)
-    //     {
-    //       if(I::value) os << sep;
-    //       if constexpr(mapping[I::value]==-1) os <<  kumi::get<I::value>(base_tuple{});
-    //       else os << kumi::get<mapping[I::value]>(static_cast<parent const&>(*this));
-    //     };
-    //     (p(kumi::index<N>),...);
-    //   }(std::make_index_sequence<rank>{});
-    //   return os;
-    // }
+    template<typename C, typename Ct> friend auto& operator<<(std::basic_ostream<C, Ct>& os, compressed_tuple const& ms)
+    {
+      os << "(";
+      kumi::for_each([&](auto e) { os << " " << e; }, ms);
+      return os << " )";
+    }
 
-    // template<typename C, typename Ct>
-    // friend auto& operator<<(std::basic_ostream<C,Ct>& os, mixed_sequence const& ms)
-    // {
-    //   return os << static_cast<mixed_type<Ts...> const&>(ms);
-    // }
+    KWK_TRIVIAL constexpr decltype(auto) flatten(this auto&& self) noexcept
+    {
+      constexpr auto as_flat = [](auto&&... elts) { return kwk::__::compressed_tuple{KWK_FWD(elts)...}; };
+      using wtf = kumi::result::apply_t<decltype(as_flat), flat_tuple>;
 
-    template<std::size_t I, typename P> KWK_TRIVIAL static constexpr decltype(auto) get_impl(P&& p)
+      return std::bit_cast<wtf>(self);
+    }
+
+    template<std::size_t I>
+    requires(I < kumi::size_v<flat_tuple>)
+    KWK_TRIVIAL constexpr decltype(auto) operator[](this auto&& self, kumi::index_t<I>) noexcept
     {
       if constexpr (mapping[I] == -1) return kumi::element_t<I, base_tuple>{};
-      else return kumi::get<mapping[I]>(KWK_FWD(p));
+      // Tbh not sure about the forward_like of cast to const& here...
+      else return kumi::get<mapping[I]>(std::forward_like<decltype(self)>(static_cast<parent const&>(self)));
     }
 
-    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(mixed_sequence& s)
+    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(compressed_tuple& s)
     {
-      return get_impl<I>(static_cast<parent&>(s));
+      return s[kumi::index<I>];
     }
 
-    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(mixed_sequence&& s)
+    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(compressed_tuple&& s)
     {
-      return get_impl<I>(static_cast<parent&&>(s));
+      return static_cast<compressed_tuple&&>(s)[kumi::index<I>];
     }
 
-    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(mixed_sequence const& s)
+    template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(compressed_tuple const& s)
     {
-      return get_impl<I>(static_cast<parent const&>(s));
+      return s[kumi::index<I>];
     }
   };
 
-  template<> struct mixed_sequence<>
+  template<> struct compressed_tuple<>
   {
     static constexpr auto rank = 0;
     static constexpr auto stored_rank = 0;
   };
 
-  template<typename... Ts> mixed_sequence(Ts const&...) -> mixed_sequence<Ts...>;
+  template<typename... Ts> compressed_tuple(Ts&&...) -> compressed_tuple<std::unwrap_ref_decay_t<Ts>...>;
 }
 
 //======================================================================================================================
 // Structured Binding Support
 //======================================================================================================================
 template<typename... Dims>
-struct std::tuple_size<kwk::__::mixed_sequence<Dims...>> : std::integral_constant<std::size_t, sizeof...(Dims)>
+struct std::tuple_size<kwk::__::compressed_tuple<Dims...>> : std::integral_constant<std::size_t, sizeof...(Dims)>
 {
 };
 
-template<std::size_t I, typename... Dims> struct std::tuple_element<I, kwk::__::mixed_sequence<Dims...>>
+template<std::size_t I, typename... Dims> struct std::tuple_element<I, kwk::__::compressed_tuple<Dims...>>
 {
-  using type = kumi::stored_element_t<I, typename kwk::__::mixed_sequence<Dims...>::base_tuple>;
+  using type = kumi::stored_element_t<I, typename kwk::__::compressed_tuple<Dims...>::base_tuple>;
 };
+
+#ifndef KWK_DOXYGEN_INVOKED
+// Builder protocole
+template<typename... Ts> struct kumi::builder<kwk::__::compressed_tuple<Ts...>>
+{
+  using type = kwk::__::compressed_tuple<Ts...>;
+
+  template<typename... Us> using to = kwk::__::compressed_tuple<Us...>;
+
+  template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto make(Args&&... args)
+  {
+    return kwk::__::compressed_tuple(KUMI_FWD(args)...);
+  }
+
+  template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto build(Args&&... args)
+  {
+    return kwk::__::compressed_tuple{KUMI_FWD(args)...};
+  }
+};
+
+// As we are lacking a proper mechanism to find the least restrictive subtype, we fallback to a specializable trait
+// template<kumi::concepts::product_type... Ts>
+// requires(!kumi::concepts::record_type<Ts> && ...)
+// struct common_product_type<Ts...>
+//{
+//  using type = kumi::tuple<>;
+//};
+#endif

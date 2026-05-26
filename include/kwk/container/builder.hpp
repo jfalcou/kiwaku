@@ -55,6 +55,13 @@ namespace kwk
         {
           using shp_t = decltype(get_shape(std::declval<Bag>()));
           if constexpr (kumi::concepts::unit_type<shp_t>) return kumi::none;
+          else if constexpr (Bag::contains(kwk::of_stride))
+          {
+            auto so = bag.field_or(kwk::storage_order, kwk::row_major_order);
+            auto shp = get_shape(bag);
+            auto strd = bag[kwk::of_stride];
+            return kumi::tuple{shp, so, strd};
+          }
           else
           {
             auto so = bag.field_or(kwk::storage_order, kwk::row_major_order);
