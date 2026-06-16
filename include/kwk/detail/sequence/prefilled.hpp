@@ -56,8 +56,12 @@ namespace kwk::__
       {
         return [&]<std::size_t... N>(std::index_sequence<N...>)
         {
+#if defined( __clang__ ) && __clang_major__ == 22
           using base = decltype(kumi::make_tuple(D...));
           return kumi::tuple<stored_t<kumi::element_t<setup.stored[N], base>>...>{};
+#else 
+          return kumi::tuple<stored_t<type_nttp_pack_element<setup.stored[N], D...>>...>{};
+#endif
         }(std::make_index_sequence<dynamic_size>{});
       }
     }
