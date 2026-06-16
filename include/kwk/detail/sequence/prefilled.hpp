@@ -56,7 +56,8 @@ namespace kwk::__
       {
         return [&]<std::size_t... N>(std::index_sequence<N...>)
         {
-          return kumi::tuple<stored_t<type_nttp_pack_element<setup.stored[N], D...>>...>{};
+          using base = decltype(kumi::make_tuple(D...));
+          return kumi::tuple<stored_t<kumi::element_t<setup.stored[N], base>>...>{};
         }(std::make_index_sequence<dynamic_size>{});
       }
     }
