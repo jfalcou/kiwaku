@@ -38,7 +38,7 @@ namespace kwk
     constexpr stride() = default;
 
     template<concepts::deep_extent... S>
-    requires(sizeof...(S) == ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
+    requires(sizeof...(S) == ndim) //&& storage_type::template follow_mapping<kumi::tuple<S...>>())
     constexpr stride(S... s) : storage_type{s...}
     {
     }
@@ -74,11 +74,16 @@ namespace kwk
       kumi::for_each([&](auto e) { os << " " << e; }, s);
       return os << " )";
     }
+
+    KWK_TRIVIAL constexpr decltype(auto) flatten(this auto&& self) noexcept
+    {
+      constexpr auto as_flat = [](auto&&... elts) { return kwk::stride{KWK_FWD(elts)...}; };
+      using flat_t = kumi::result::apply_t<decltype(as_flat), typename storage_type::flat_tuple>;
+      return std::bit_cast<flat_t>(self);
+    }
   };
 
-  template<concepts::deep_extent... S>
-  requires(sizeof...(S) > 0)
-  stride(S...) -> stride<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
+  template<concepts::deep_extent... S> stride(S...) -> stride<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
 
   /// @brief Transforms an abritrary product type into a stride
   template<kumi::concepts::product_type T> constexpr auto as_stride(T&& t)
@@ -155,6 +160,24 @@ struct std::tuple_size<kwk::stride<StrideDims...>> : std::integral_constant<std:
 
 template<std::size_t I, auto... StrideDims> struct std::tuple_element<I, kwk::stride<StrideDims...>>
 {
-  using type = decltype(get<I>(std::declval<kwk::stride<StrideDims...>>()));
+  using type = std::remove_cvref_t<decltype(get<I>(std::declval<kwk::stride<StrideDims...>>()))>;
 };
+
+template<auto... Ts> struct kumi::builder<kwk::stride<Ts...>>
+{
+  using type = kwk::stride<Ts...>;
+
+  template<typename... Us> using to = kwk::stride<kwk::__::make_dimension<std::unwrap_ref_decay_t<Us>>()...>;
+
+  template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto make(Args&&... args)
+  {
+    return kwk::stride{KUMI_FWD(args)...};
+  }
+
+  template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto build(Args&&... args)
+  {
+    return kwk::stride{KUMI_FWD(args)...};
+  }
+};
+
 #endif

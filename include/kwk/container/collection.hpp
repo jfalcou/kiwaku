@@ -31,8 +31,10 @@ namespace kwk
     // using const_pointer   = std::add_pointer_t<value_type const>;
 
     static constexpr auto ndim = shape_type::ndim;
+    static constexpr auto flat_ndim = decltype(std::declval<shape_type>().flatten())::rank;
     static constexpr auto kind = as<value_type>();
     static constexpr auto itemsize = sizeof(value_type);
+    static constexpr auto order = storage_order_type::descriptor;
 
     //==================================================================================================================
     /*
@@ -78,11 +80,11 @@ namespace kwk
       return static_cast<stride_type const&>(*this);
     }
 
-    [[nodiscard]] KWK_TRIVIAL constexpr storage_order_type const& storage_order() const noexcept
-    requires(!kumi::concepts::unit_type<storage_order_type>)
-    {
-      return static_cast<storage_order_type const&>(*this);
-    }
+    //[[nodiscard]] KWK_TRIVIAL constexpr storage_order_type const& storage_order() const noexcept
+    // requires(!kumi::concepts::unit_type<storage_order_type>)
+    //{
+    //  return static_cast<storage_order_type const&>(*this);
+    //}
 
     [[nodiscard]] KWK_TRIVIAL constexpr auto size() const noexcept
     requires(!kumi::concepts::unit_type<shape_type>)
@@ -117,15 +119,31 @@ namespace kwk
     }
 
     template<std::integral... Is>
-    decltype(auto) operator[](this auto& self, Is... is) noexcept
-    requires(sizeof...(Is) == ndim && !kumi::concepts::unit_type<storage_type>)
+    auto operator[](this auto& self, Is... is) noexcept
+    requires((kumi::concepts::product_type<kumi::element_t<order(0, ndim), shape_type>>) &&
+             (sizeof...(Is) == kumi::size_v<kumi::element_t<order(0, ndim), shape_type>>) && (ndim != flat_ndim) &&
+             !kumi::concepts::unit_type<storage_type>)
     {
-      return self.blob()[linearize(self.stride(), is...)];
+      constexpr auto t_id = order(0, ndim);
+
+      auto const strd = kumi::join(kumi::remove(self.stride(), kumi::index<t_id>, kumi::index<t_id + 1>));
+      auto const shp = kumi::join(kumi::remove(self.shape(), kumi::index<t_id>, kumi::index<t_id + 1>));
+      auto src = (kwk::source = &self.blob()[linearize(get<t_id>(self.stride()), is...)]);
+
+      return kwk::builder<kwk::collection>(kwk::options{src, strd, shp});
+    }
+
+    // If the product types are matching
+    template<std::integral... Is>
+    decltype(auto) operator[](this auto& self, Is... is) noexcept
+    requires(sizeof...(Is) == flat_ndim && !kumi::concepts::unit_type<storage_type>)
+    {
+      return self.blob()[linearize(self.stride().flatten(), is...)];
     }
 
     template<concepts::slicer... S>
     auto operator[](this auto& self, S const&... s) noexcept
-    requires(sizeof...(S) == ndim && !kumi::concepts::unit_type<storage_type>)
+    requires(sizeof...(S) == ndim)
     {
       auto src = (kwk::source = self.data() + kwk::origin(self.shape(), self.storage_order(), s...));
       auto shp = kwk::reshape(self.shape(), s...);

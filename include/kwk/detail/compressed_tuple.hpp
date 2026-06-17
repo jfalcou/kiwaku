@@ -133,7 +133,7 @@ namespace kwk::__
     constexpr compressed_tuple() = default;
 
     template<typename... Us>
-    requires(... && !std::is_same_v<std::decay_t<Us>, compressed_tuple>)
+    requires(... && !std::is_base_of_v<compressed_tuple, std::decay_t<Us>>)
     KWK_TRIVIAL constexpr compressed_tuple(Us&&... us) : parent{kumi::filter<empty_class>(pre_convert(KWK_FWD(us)...))}
     {
     }
@@ -148,9 +148,9 @@ namespace kwk::__
     KWK_TRIVIAL constexpr decltype(auto) flatten(this auto&& self) noexcept
     {
       constexpr auto as_flat = [](auto&&... elts) { return kwk::__::compressed_tuple{KWK_FWD(elts)...}; };
-      using wtf = kumi::result::apply_t<decltype(as_flat), flat_tuple>;
+      using flat_t = kumi::result::apply_t<decltype(as_flat), flat_tuple>;
 
-      return std::bit_cast<wtf>(self);
+      return std::bit_cast<flat_t>(self);
     }
 
     template<std::size_t I>
@@ -219,11 +219,4 @@ template<typename... Ts> struct kumi::builder<kwk::__::compressed_tuple<Ts...>>
   }
 };
 
-// As we are lacking a proper mechanism to find the least restrictive subtype, we fallback to a specializable trait
-// template<kumi::concepts::product_type... Ts>
-// requires(!kumi::concepts::record_type<Ts> && ...)
-// struct common_product_type<Ts...>
-//{
-//  using type = kumi::tuple<>;
-//};
 #endif

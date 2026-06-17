@@ -72,9 +72,9 @@ namespace kwk
 
     consteval operator storage_order_descriptor() const { return O; }
 
-    constexpr storage_order_t() {}
+    consteval storage_order_t() {}
 
-    constexpr storage_order_t(auto) {}
+    consteval storage_order_t(auto) {}
 
     template<storage_order_descriptor P> constexpr bool operator==(storage_order_t<P> const&) const noexcept
     {

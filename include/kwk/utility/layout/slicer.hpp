@@ -123,16 +123,16 @@ namespace kwk
   }
 
   // Computes the offset to add to the base pointer of a container to retrieve the sliced container
-  template<auto... Dims, storage_order_descriptor C, concepts::slicer... S>
-  constexpr auto origin(shape<Dims...> const& s, storage_order_t<C> const& so, S const&... slices) noexcept
-  requires(sizeof...(Dims) == sizeof...(S))
+  template<auto... Dims, auto... Off, concepts::slicer... S>
+  constexpr auto origin(shape<Dims...> const& s, stride<Off...> const& str, S const&... slices) noexcept
+  requires(sizeof...(Dims) == sizeof...(S) && sizeof...(Dims) == sizeof...(Off))
   {
     auto pos = kumi::apply(
       [](auto&&... elts) {
         return kwk::shape{handle(get<1>(KWK_FWD(elts)).begin(), get<0>(KWK_FWD(elts)), fixed<0>)...};
       },
       kumi::zip(kumi::to_tuple(s), kumi::forward_as_tuple(to_slicer(slices)...)));
-    return linearize(to_stride(pos, so), pos);
+    return linearize(str, pos);
   }
 
   template<auto... Dims, concepts::slicer... S>

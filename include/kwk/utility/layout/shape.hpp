@@ -150,7 +150,7 @@ namespace kwk
       @param s Dimension sizes, which quantity must match ndim.
     **/
     template<concepts::deep_extent... S>
-    requires(sizeof...(S) == ndim && storage_type::template follow_mapping<kumi::tuple<S...>>())
+    requires(sizeof...(S) == ndim) // && storage_type::template follow_mapping<kumi::tuple<S...>>())
     constexpr shape(S... s) : storage_type{s...}
     {
     }
@@ -214,6 +214,13 @@ namespace kwk
       os << "(";
       kumi::for_each([&](auto e) { os << " " << e; }, s);
       return os << " )";
+    }
+
+    KWK_TRIVIAL constexpr decltype(auto) flatten(this auto&& self) noexcept
+    {
+      constexpr auto as_flat = [](auto&&... elts) { return kwk::shape{KWK_FWD(elts)...}; };
+      using flat_t = kumi::result::apply_t<decltype(as_flat), typename storage_type::flat_tuple>;
+      return std::bit_cast<flat_t>(self);
     }
   };
 
@@ -321,6 +328,23 @@ template<auto... D> struct std::tuple_size<kwk::shape<D...>> : std::integral_con
 
 template<std::size_t I, auto... D> struct std::tuple_element<I, kwk::shape<D...>>
 {
-  using type = decltype(get<I>(std::declval<kwk::shape<D...>>()));
+  using type = std::remove_cvref_t<decltype(get<I>(std::declval<kwk::shape<D...>>()))>;
+};
+
+template<auto... Ts> struct kumi::builder<kwk::shape<Ts...>>
+{
+  using type = kwk::shape<Ts...>;
+
+  template<typename... Us> using to = kwk::shape<kwk::__::make_dimension<std::unwrap_ref_decay_t<Us>>()...>;
+
+  template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto make(Args&&... args)
+  {
+    return kwk::shape{KUMI_FWD(args)...};
+  }
+
+  template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto build(Args&&... args)
+  {
+    return kwk::shape{KUMI_FWD(args)...};
+  }
 };
 #endif
