@@ -145,14 +145,6 @@ namespace kwk::__
       return os << " )";
     }
 
-    KWK_TRIVIAL constexpr decltype(auto) flatten(this auto&& self) noexcept
-    {
-      constexpr auto as_flat = [](auto&&... elts) { return kwk::__::compressed_tuple{KWK_FWD(elts)...}; };
-      using flat_t = kumi::result::apply_t<decltype(as_flat), flat_tuple>;
-
-      return std::bit_cast<flat_t>(self);
-    }
-
     template<std::size_t I>
     requires(I < kumi::size_v<flat_tuple>)
     KWK_TRIVIAL constexpr decltype(auto) operator[](this auto&& self, kumi::index_t<I>) noexcept
@@ -185,6 +177,20 @@ namespace kwk::__
   };
 
   template<typename... Ts> compressed_tuple(Ts&&...) -> compressed_tuple<std::unwrap_ref_decay_t<Ts>...>;
+
+  template<kumi::concepts::product_type Target, kumi::concepts::product_type T>
+  [[nodiscard]] KWK_TRIVIAL constexpr decltype(auto) layout_cast(T&& t) noexcept
+  {
+    static_assert(kumi::size_v<kumi::result::flatten_all_t<Target>> == kumi::size_v<kumi::result::flatten_all_t<T>>,
+                  "[KWK] - Cannot layout_cast product types of incompatible size");
+    constexpr auto rewrap = [&]<typename Self, typename V>(this Self&& self, V&& v) {
+      if constexpr (kumi::concepts::product_type<V>)
+        return kumi::apply([&](auto&&... elts) { return kumi::builder<T>::make(self(KUMI_FWD(elts))...); }, v);
+      else return KUMI_FWD(v);
+    };
+    using type = decltype(rewrap(std::declval<Target>()));
+    return std::bit_cast<type>(KUMI_FWD(t));
+  }
 }
 
 //======================================================================================================================

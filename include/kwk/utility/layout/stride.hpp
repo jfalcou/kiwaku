@@ -74,13 +74,6 @@ namespace kwk
       kumi::for_each([&](auto e) { os << " " << e; }, s);
       return os << " )";
     }
-
-    KWK_TRIVIAL constexpr decltype(auto) flatten(this auto&& self) noexcept
-    {
-      constexpr auto as_flat = [](auto&&... elts) { return kwk::stride{KWK_FWD(elts)...}; };
-      using flat_t = kumi::result::apply_t<decltype(as_flat), typename storage_type::flat_tuple>;
-      return std::bit_cast<flat_t>(self);
-    }
   };
 
   template<concepts::deep_extent... S> stride(S...) -> stride<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;

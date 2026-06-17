@@ -133,7 +133,8 @@ namespace kwk
     /// @brief Total number of elements the current shape represents
     constexpr size_type size() const noexcept
     {
-      return kumi::fold_left(kumi::function::multiplies, (*this).flatten(), fixed<1>);
+      return kumi::fold_left(kumi::function::multiplies, kwk::__::layout_cast<typename storage_type::flat_tuple>(*this),
+                             fixed<1>);
     }
 
     /// @brief Default constructor
@@ -214,13 +215,6 @@ namespace kwk
       os << "(";
       kumi::for_each([&](auto e) { os << " " << e; }, s);
       return os << " )";
-    }
-
-    KWK_TRIVIAL constexpr decltype(auto) flatten(this auto&& self) noexcept
-    {
-      constexpr auto as_flat = [](auto&&... elts) { return kwk::shape{KWK_FWD(elts)...}; };
-      using flat_t = kumi::result::apply_t<decltype(as_flat), typename storage_type::flat_tuple>;
-      return std::bit_cast<flat_t>(self);
     }
   };
 

@@ -31,7 +31,8 @@ namespace kwk
     // using const_pointer   = std::add_pointer_t<value_type const>;
 
     static constexpr auto ndim = shape_type::ndim;
-    static constexpr auto flat_ndim = decltype(std::declval<shape_type>().flatten())::rank;
+    static constexpr auto flat_ndim = kumi::size_v<
+      typename shape_type::storage_type::flat_tuple>; // decltype(std::declval<shape_type>().flatten())::rank;
     static constexpr auto kind = as<value_type>();
     static constexpr auto itemsize = sizeof(value_type);
     static constexpr auto order = storage_order_type::descriptor;
@@ -138,7 +139,8 @@ namespace kwk
     decltype(auto) operator[](this auto& self, Is... is) noexcept
     requires(sizeof...(Is) == flat_ndim && !kumi::concepts::unit_type<storage_type>)
     {
-      return self.blob()[linearize(self.stride().flatten(), is...)];
+      using type = typename stride_type::storage_type::flat_tuple;
+      return self.blob()[linearize(kwk::__::layout_cast<type>(self.stride()), is...)];
     }
 
     template<concepts::slicer... S>

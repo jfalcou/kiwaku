@@ -11,12 +11,12 @@
 #if defined(_MSC_VER)
 #if _MSVC_LANG < 202002L
 #error "Kiwaku C++ version error"
-#include "Kiwaku requires C++20 or higher. Use /std:c++20 or higher to enable C++20 features."
+#include "Kiwaku requires C++23 or higher. Use /std:c++23 or higher to enable C++23 features."
 #endif
 #else
 #if __cplusplus < 202002L
 #error "Kiwaku C++ version error"
-#include "Kiwaku requires C++20 or higher. Use -std=c++20 or higher to enable C++20 features."
+#include "Kiwaku requires C++23 or higher. Use -std=c++23 or higher to enable C++23 features."
 #endif
 #endif
 
