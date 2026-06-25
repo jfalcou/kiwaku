@@ -100,9 +100,9 @@ namespace kwk
             if (panel == kumi::tuple{0, 0} && kumi::get<container::static_order - 3>(idx) > 0) os << '\n';
           }
 
-          if (back(idx) == 0) os << spaces << "[ ";
+          if (kumi::back(idx) == 0) os << spaces << "[ ";
           os << e << ' ';
-          if (back(idx) == kumi::back(shp) - 1) os << "]\n";
+          if (kumi::back(idx) == kumi::back(shp) - 1) os << "]\n";
         },
         v);
 

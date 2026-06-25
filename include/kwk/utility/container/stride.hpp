@@ -118,7 +118,9 @@ namespace kwk
     constexpr bool operator==(stride<S2...> const& other) const noexcept
     requires(sizeof...(S2) == static_order)
     {
-      return kumi::to_tuple(*this) == kumi::to_tuple(other);
+      return [&]<std::size_t... I>(std::index_sequence<I...>) {
+        return ((get<I>(*this) == get<I>(other)) && ...);
+      }(std::make_index_sequence<sizeof...(S2)>{});
     }
 
     /// Indexing interface
@@ -165,8 +167,7 @@ namespace kwk
     if constexpr (sizeof...(D) == 1) return stride{s.template axis<0>() = fixed<1>};
     else
     {
-      auto const d = kumi::fold_right([](auto m, auto a) { return push_front(a, m * front(a)); }, kumi::pop_front(s),
-                                      kumi::tuple{fixed<1>});
+      auto const d = kumi::exclusive_scan_right([](auto m, auto a) { return a * m; }, s, fixed<1>);
 
       return [&]<std::size_t... I>(std::index_sequence<I...>, auto t) {
         return stride{(s.template axis<I>() = get<I>(t))...};
@@ -183,7 +184,7 @@ namespace kwk
 
 #if !defined(KWK_DOXYGEN_INVOKED)
 // Tuple interface adaptation
-template<auto... D> struct std::tuple_size<kwk::stride<D...>> : std::integral_constant<std::int32_t, sizeof...(D)>
+template<auto... D> struct std::tuple_size<kwk::stride<D...>> : std::integral_constant<std::size_t, sizeof...(D)>
 {
 };
 
