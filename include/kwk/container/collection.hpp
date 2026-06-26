@@ -184,21 +184,32 @@ namespace kwk
     decltype(auto) operator[](this auto& self, Is... is) noexcept
     requires(!kumi::concepts::unit_type<storage_type>)
     {
-      static_assert(sizeof...(Is) == ndim, "[KWK] - Invalid number of coordinates in table access");
       if constexpr (ndim == sizeof...(Is) && ndim == flat_ndim)
+      {
+        static_assert(sizeof...(Is) == ndim, "[KWK] - Invalid number of coordinates in table access");
         return self.resolve(kumi::tuple{is...}, self.shape(), self.stride());
+      }
       else if constexpr (ndim != flat_ndim)
       {
         constexpr auto id = order(0, ndim);
         using element_type = kumi::element_t<id, shape_type>;
-        static_assert(kumi::concepts::product_type<element_type>, "[KWK] - Invalid tile access");
-        static_assert(sizeof...(Is) == kumi::size_v<element_type>,
-                      "[KWK] - Invalid number of coordinates for tile access");
 
-        auto const strd = kumi::compress(kumi::remove(self.stride(), kumi::index<id>, kumi::index<id + 1>));
-        auto const shp = kumi::compress(kumi::remove(self.shape(), kumi::index<id>, kumi::index<id + 1>));
-        auto pos = self.source_at(kumi::tuple{is...}, get<id>(self.shape()), get<id>(self.stride()));
-        return kwk::builder<kwk::collection>(kwk::options{kwk::source = pos, strd, shp});
+        if constexpr (!kumi::concepts::product_type<element_type>)
+        {
+          constexpr auto e = kumi::index<order(sizeof...(Is), ndim)>;
+          auto [sdf, sdl] = kumi::split(self.stride(), e);
+          auto [shf, shl] = kumi::split(self.shape(), e);
+          auto pos = &self.source_at(kumi::tuple{is...}, shf, sdf);
+          return kwk::builder<kwk::collection>(
+            kwk::options{kwk::source = pos, kumi::compress(sdl), kumi::compress(shl)});
+        }
+        else
+        {
+          auto const strd = kumi::compress(kumi::remove(self.stride(), kumi::index<id>, kumi::index<id + 1>));
+          auto const shp = kumi::compress(kumi::remove(self.shape(), kumi::index<id>, kumi::index<id + 1>));
+          auto pos = &self.source_at(kumi::tuple{is...}, get<id>(self.shape()), get<id>(self.stride()));
+          return kwk::builder<kwk::collection>(kwk::options{kwk::source = pos, strd, shp});
+        }
       }
     }
 

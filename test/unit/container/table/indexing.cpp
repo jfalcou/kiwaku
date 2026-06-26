@@ -54,3 +54,119 @@ TTS_CASE("Indexing Behavior")
   TTS_TYPE_IS(decltype(vs4)::source_type, decltype(v)::source_type, );
   TTS_TYPE_IS(decltype(vs5)::source_type, decltype(v)::source_type, );
 };
+
+TTS_CASE("Indexing Behavior with Boundary Conditions"){
+  TTS_WHEN(" - Initialize containers with boundary conditions"){using kwk::_;
+using namespace kwk::literals;
+
+float ref[7] = {1, 2, 3, 4, 5, 6, 7};
+
+std::ptrdiff_t N = std::ptrdiff_t(7);
+
+auto v_clamp = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::clamp);
+auto v_tiled = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::tile);
+auto v_mirro = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::mirror);
+
+TTS_AND_THEN("- Check clamping")
+{
+  for (std::ptrdiff_t i = 0; i < N; ++i) TTS_EQUAL(v_clamp[i], ref[i]);
+
+  for (std::ptrdiff_t i = N; i < 2 * N; ++i) TTS_EQUAL(v_clamp[i], ref[N]);
+
+  for (std::ptrdiff_t i = -N; i < 0; ++i) TTS_EQUAL(v_clamp[i], ref[0]);
+}
+
+TTS_AND_THEN("- Check tiling (Periodicity)")
+{
+  for (std::ptrdiff_t i = 0; i < N; ++i) TTS_EQUAL(v_tiled[i], ref[i]);
+
+  for (std::ptrdiff_t i = N; i < 2 * N; ++i) TTS_EQUAL(v_tiled[i], ref[i - N]);
+
+  for (std::ptrdiff_t i = -1; i >= -N; --i) TTS_EQUAL(v_tiled[i], ref[N + i]);
+}
+
+TTS_AND_THEN("- Check mirroring")
+{
+  auto expected_mirror_idx = [](std::ptrdiff_t i, std::ptrdiff_t size) {
+    if (size <= 1) return std::ptrdiff_t{0};
+    std::ptrdiff_t period = 2 * (size - 1);
+    std::ptrdiff_t x = i % period;
+    if (x < 0) x += period;
+    return (x < size) ? x : (period - x);
+  };
+
+  for (std::ptrdiff_t i = 0; i < N; ++i) TTS_EQUAL(v_mirro[i], ref[expected_mirror_idx(i, N)]);
+
+  for (std::ptrdiff_t i = N; i < 2 * N; ++i) TTS_EQUAL(v_mirro[i], ref[expected_mirror_idx(i, N)]);
+
+  for (std::ptrdiff_t i = -1; i >= -N; --i) TTS_EQUAL(v_mirro[i], ref[expected_mirror_idx(i, N)]);
+}
+}
+}
+;
+
+TTS_CASE("Indexing Behavior with tiles: 1D grid of 2D tiles")
+{
+  using namespace kwk::literals;
+
+  float ref[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+  auto v = kwk::view(kwk::source = ref, kwk::shape{3, kwk::shape{2, 2}});
+
+  for (std::ptrdiff_t i = 0; i < 3; ++i)
+  {
+    auto curr_tile = v[i];
+    TTS_TYPE_IS(decltype(curr_tile)::source_type, decltype(v)::source_type);
+
+    for (std::ptrdiff_t ti = 0; ti < 2; ++ti)
+    {
+      for (std::ptrdiff_t tj = 0; tj < 2; ++tj) { TTS_EQUAL((curr_tile[ti, tj]), (ref[i * 4 + ti * 2 + tj])); }
+    }
+  }
+};
+
+TTS_CASE("Indexing Behavior with tiles: 2D grid of 1D tiles")
+{
+  using namespace kwk::literals;
+
+  float ref[12] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
+  auto v = kwk::view(kwk::source = ref, kwk::shape{kwk::shape{2, 2}, 3});
+
+  for (std::ptrdiff_t i = 0; i < 2; ++i)
+  {
+    for (std::ptrdiff_t j = 0; j < 2; ++j)
+    {
+      auto curr_tile = v[i, j];
+      TTS_TYPE_IS(decltype(curr_tile)::source_type, decltype(v)::source_type);
+
+      for (std::ptrdiff_t ti = 0; ti < 3; ++ti) { TTS_EQUAL(curr_tile[ti], (ref[i * 6 + j * 3 + ti])); }
+    }
+  }
+};
+
+TTS_CASE("Indexing Behavior with tiles: 2D grid of 2D tiles")
+{
+  using namespace kwk::literals;
+
+  float ref[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+  auto v = kwk::view(kwk::source = ref, kwk::shape{kwk::shape{2, 2}, kwk::shape{2, 2}});
+
+  for (std::ptrdiff_t i = 0; i < 2; ++i)
+  {
+    for (std::ptrdiff_t j = 0; j < 2; ++j)
+    {
+      auto curr_tile = v[i, j];
+      TTS_TYPE_IS(decltype(curr_tile)::source_type, decltype(v)::source_type);
+
+      for (std::ptrdiff_t ti = 0; ti < 2; ++ti)
+      {
+        for (std::ptrdiff_t tj = 0; tj < 2; ++tj)
+        {
+          TTS_EQUAL((curr_tile[ti, tj]), (ref[i * 8 + j * 4 + ti * 2 + tj]));
+        }
+      }
+    }
+  }
+};
