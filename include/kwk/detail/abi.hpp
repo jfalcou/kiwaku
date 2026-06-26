@@ -9,12 +9,12 @@
 
 // Ensure correct C++ standard version
 #if defined(_MSC_VER)
-#if _MSVC_LANG < 202002L
+#if _MSVC_LANG < 202302L
 #error "Kiwaku C++ version error"
 #include "Kiwaku requires C++23 or higher. Use /std:c++23 or higher to enable C++23 features."
 #endif
 #else
-#if __cplusplus < 202002L
+#if __cplusplus < 202302L
 #error "Kiwaku C++ version error"
 #include "Kiwaku requires C++23 or higher. Use -std=c++23 or higher to enable C++23 features."
 #endif
@@ -34,19 +34,15 @@
 #if defined(KWK_NO_FORCEINLINE)
 #define KWK_TRIVIAL inline
 #define KWK_FORCEINLINE inline
-#define KWK_LAMBDA_FORCEINLINE
 #else
 #if defined(__GNUC__) ||                                                                                               \
   defined(__clang__) // Clang-CL does not define __GNUC__ https://github.com/llvm/llvm-project/issues/53259
-#define KWK_LAMBDA_FORCEINLINE __attribute__((__always_inline__))
-#define KWK_FORCEINLINE inline __attribute__((__always_inline__))
+#define KWK_FORCEINLINE [[gnu::always_inline]] inline
 #define KWK_TRIVIAL [[using gnu: always_inline, flatten, artificial]] inline
 #elif defined(_MSC_VER)
-#define KWK_LAMBDA_FORCEINLINE [[msvc::forceinline]]
-#define KWK_FORCEINLINE __forceinline
-#define KWK_TRIVIAL __forceinline
+#define KWK_FORCEINLINE [[msvc::forceinline]]
+#define KWK_TRIVIAL [[msvc::forceinline]]
 #else
-#define KWK_LAMBDA_FORCEINLINE
 #define KWK_TRIVIAL inline
 #define KWK_FORCEINLINE inline
 #endif

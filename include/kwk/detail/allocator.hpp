@@ -29,4 +29,20 @@ namespace kwk::__
   };
 
   inline constexpr default_allocator deduce_allocator{};
+
+  //====================================================================================================================
+  /**
+    @ingroup memory
+    @brief   Allocate free function to enable default_allocator to be detected as an allocator
+  */
+  //====================================================================================================================
+  void* allocate(default_allocator const&, std::size_t) noexcept;
+
+  //====================================================================================================================
+  /**
+    @ingroup memory
+    @brief   Deallocate free function to enable default_allocator to be detected as an allocator
+  */
+  //====================================================================================================================
+  void deallocate(default_allocator const&, void*) noexcept;
 }

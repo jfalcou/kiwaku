@@ -178,18 +178,37 @@ namespace kwk::__
 
   template<typename... Ts> compressed_tuple(Ts&&...) -> compressed_tuple<std::unwrap_ref_decay_t<Ts>...>;
 
+  template<typename T> KWK_TRIVIAL consteval auto extract_map(std::size_t N)
+  {
+    if constexpr (kumi::concepts::product_type<T>)
+      return [&]<std::size_t... I>(std::index_sequence<I...>) {
+        return kumi::tuple{extract_map<kumi::element_t<I, T>>(I)...};
+      }(std::make_index_sequence<kumi::size_v<T>>{});
+    else return N;
+  }
+
+  template<auto t> KWK_TRIVIAL consteval auto as_projection_map()
+  {
+    if constexpr (kumi::concepts::product_type<decltype(t)>)
+      return [&]<std::size_t... I>(std::index_sequence<I...>) {
+        return kumi::projection_map{as_projection_map<get<I>(t)>()...};
+      }(std::make_index_sequence<kumi::size_v<decltype(t)>>{});
+    else return kumi::index<t>;
+  }
+
   template<kumi::concepts::product_type Target, kumi::concepts::product_type T>
   [[nodiscard]] KWK_TRIVIAL constexpr decltype(auto) layout_cast(T&& t) noexcept
   {
-    static_assert(kumi::size_v<kumi::result::flatten_all_t<Target>> == kumi::size_v<kumi::result::flatten_all_t<T>>,
-                  "[KWK] - Cannot layout_cast product types of incompatible size");
-    constexpr auto rewrap = [&]<typename Self, typename V>(this Self&& self, V&& v) {
-      if constexpr (kumi::concepts::product_type<V>)
-        return kumi::apply([&](auto&&... elts) { return kumi::builder<T>::make(self(KUMI_FWD(elts))...); }, v);
-      else return KUMI_FWD(v);
-    };
-    using type = decltype(rewrap(std::declval<Target>()));
-    return std::bit_cast<type>(KUMI_FWD(t));
+    using flat_t = kumi::result::flatten_all_t<T>;
+    constexpr auto t_1 = kwk::__::extract_map<flat_t>(0);
+    using t_2 = decltype(kwk::__::extract_map<Target>(0));
+
+    constexpr auto final_map = as_projection_map<std::bit_cast<t_2>(t_1)>();
+    using skeletton_t = kumi::result::reindex_t<flat_t, final_map>;
+
+    static_assert(sizeof(skeletton_t) == sizeof(T), "[KWK] - Cannot layout_cast product types of incompatible size");
+
+    return std::bit_cast<skeletton_t>(KUMI_FWD(t));
   }
 }
 

@@ -41,7 +41,7 @@ namespace kwk
           if constexpr (kumi::concepts::unit_type<shp_t>) return kumi::none;
           else
           {
-            if constexpr (shp_t::has_dynamic_dim) return kwk::heap;
+            if constexpr (kumi::result::flatten_all_t<shp_t>::has_dynamic_dim) return kwk::heap;
             else return kwk::__::deduce_allocator;
           }
         }
@@ -50,12 +50,12 @@ namespace kwk
 
       template<typename Bag> static constexpr auto get_layout(Bag const& bag)
       {
-        if constexpr (!Bag::contains(kwk::source)) return kumi::none;
+        using shp_t = decltype(get_shape(std::declval<Bag>()));
+        if constexpr (kumi::concepts::unit_type<shp_t>) return kumi::none;
         else
         {
-          using shp_t = decltype(get_shape(std::declval<Bag>()));
-          if constexpr (kumi::concepts::unit_type<shp_t>) return kumi::none;
-          else if constexpr (Bag::contains(kwk::of_stride))
+          // using flat_shp_t = kumi::result::flatten_all_t<shp_t>;
+          if constexpr (Bag::contains(kwk::of_stride))
           {
             auto so = bag.field_or(kwk::storage_order, kwk::row_major_order);
             auto shp = get_shape(bag);
@@ -75,6 +75,8 @@ namespace kwk
       template<typename Bag> static constexpr auto get_storage(Bag const& bag)
       {
         using shp_t = decltype(get_shape(std::declval<Bag>()));
+        using total_shp = kumi::result::flatten_all_t<shp_t>;
+
         using alloc_t = decltype(get_allocator(std::declval<Bag>()));
         using tmp_t = decltype(get_type(std::declval<Bag>()));
         using type_t = typename tmp_t::element_type;
@@ -83,19 +85,17 @@ namespace kwk
 
         if constexpr (!kumi::concepts::unit_type<alloc_t>)
         {
-          if constexpr (!shp_t::has_dynamic_dim && std::same_as<alloc_t, default_allocator>)
+          if constexpr (!total_shp::has_dynamic_dim && std::same_as<alloc_t, default_allocator>)
           {
-            auto b = blob<type_t, kwk::stack_blob<alignof(type_t), shp_t{}.size() * sizeof(type_t)>>{};
-            b.initialize(shp_t{}.size());
-            if constexpr (!kumi::concepts::unit_type<source_t>)
-            {
-              b.copy(source_pointer(get_source(bag)), shp_t{}.size());
-            }
+            constexpr std::size_t sz = total_shp{}.size();
+            auto b = blob<type_t, kwk::stack_blob<alignof(type_t), sz * sizeof(type_t)>>{};
+            b.initialize(sz);
+            if constexpr (!kumi::concepts::unit_type<source_t>) { b.copy(source_pointer(get_source(bag)), sz); }
             return b;
           }
           else
           {
-            auto size = get_shape(bag).size();
+            auto size = kumi::flatten(get_shape(bag)).size();
             auto b = blob<type_t, kwk::heap_blob>{get_allocator(bag), static_cast<std::size_t>(size) * sizeof(type_t)};
             b.initialize(static_cast<std::size_t>(size));
             if constexpr (!kumi::concepts::unit_type<source_t>)
@@ -108,10 +108,16 @@ namespace kwk
         else return blob<type_t, kwk::shallow_blob>{source_pointer(get_source(bag))};
       }
 
+      template<typename Bag> static constexpr auto get_accessor(Bag const& bag)
+      {
+        return kumi::flatten(
+          kumi::tuple{bag.field_or(kwk::coordinate, kwk::canonical), bag[kwk::boundary], bag[kwk::interpolator]});
+      }
+
       template<typename Bag> static constexpr auto operator()(Bag const& bag)
       {
-        auto filtered = kumi::flatten(kumi::tuple{get_layout(bag), get_storage(bag),
-                                                  get_base_index(bag) /*, kwk::allocator = get_allocator(bag)*/});
+        auto filtered =
+          kumi::flatten(kumi::tuple{get_layout(bag), get_storage(bag), get_base_index(bag), get_accessor(bag)});
         return kumi::apply([&](auto&&... elts) { return T{KWK_FWD(elts)...}; }, filtered);
       }
     };

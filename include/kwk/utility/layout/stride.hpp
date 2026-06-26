@@ -50,9 +50,9 @@ namespace kwk
       else return kumi::to_tuple(a) == kumi::to_tuple(b);
     }
 
-    storage_type const& self() const { return static_cast<storage_type const&>(*this); }
+    constexpr storage_type const& self() const { return static_cast<storage_type const&>(*this); }
 
-    storage_type& self() { return static_cast<storage_type&>(*this); }
+    constexpr storage_type& self() { return static_cast<storage_type&>(*this); }
 
     template<std::size_t I> KWK_TRIVIAL friend constexpr decltype(auto) get(stride const& s)
     {
@@ -101,11 +101,13 @@ namespace kwk
     if constexpr (kumi::concepts::empty_product_type<T>) return kwk::stride{};
     else if constexpr (order == kwk::row_major_order)
     {
-      return as_stride(kumi::exclusive_scan_right(kumi::function::multiplies, t, fixed<1>));
+      auto&& strd = as_stride(kumi::exclusive_scan_right(kumi::function::multiplies, kumi::flatten_all(t), fixed<1>));
+      return kwk::__::layout_cast<T>(KWK_FWD(strd));
     }
     else if constexpr (order == kwk::column_major_order)
     {
-      return as_stride(kumi::exclusive_scan_left(kumi::function::multiplies, t, fixed<1>));
+      auto&& strd = as_stride(kumi::exclusive_scan_left(kumi::function::multiplies, kumi::flatten_all(t), fixed<1>));
+      return kwk::__::layout_cast<T>(KWK_FWD(strd));
     }
     else
     {
@@ -121,24 +123,6 @@ namespace kwk
       return as_stride(
         kumi::generate<N>([&](auto i) { return kumi::get<order.generator(static_cast<int>(i), N)>(tmp); }));
     }
-  }
-
-  // @brief : computes the linear position considering a stride and a tuple representing the MD position by
-  // performing a dot product between them
-  template<auto... StrideDims, kumi::concepts::product_type T>
-  KWK_TRIVIAL constexpr auto linearize(stride<StrideDims...> const& s, T&& t)
-  {
-    return kumi::inner_product(s, KWK_FWD(t), 0);
-  }
-
-  //@brief utility to linearize a position based on the stride
-  template<auto... StrideDims, std::convertible_to<std::ptrdiff_t>... Is>
-  KWK_TRIVIAL constexpr auto linearize(stride<StrideDims...> const& s, Is... is) noexcept
-  requires(sizeof...(Is) == sizeof...(StrideDims))
-  {
-    // conversion to ptrdiff_t is a bit to harsh, it avoid conversions warning from unsigned position to
-    // signed one when going through kumi::inner_product
-    return linearize(s, kumi::tuple{std::ptrdiff_t(is)...});
   }
 }
 

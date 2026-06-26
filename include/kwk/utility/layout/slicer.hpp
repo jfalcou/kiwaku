@@ -123,34 +123,54 @@ namespace kwk
   }
 
   // Computes the offset to add to the base pointer of a container to retrieve the sliced container
-  template<auto... Dims, auto... Off, concepts::slicer... S>
-  constexpr auto origin(shape<Dims...> const& s, stride<Off...> const& str, S const&... slices) noexcept
-  requires(sizeof...(Dims) == sizeof...(S) && sizeof...(Dims) == sizeof...(Off))
+  template<auto... Dims, concepts::slicer... S>
+  constexpr auto origin(shape<Dims...> const& s, kumi::tuple<S...> const& sl) noexcept
+  requires(sizeof...(Dims) == sizeof...(S))
   {
-    auto pos = kumi::apply(
+    return kumi::apply(
       [](auto&&... elts) {
-        return kwk::shape{handle(get<1>(KWK_FWD(elts)).begin(), get<0>(KWK_FWD(elts)), fixed<0>)...};
+        return kumi::tuple{handle(get<1>(KWK_FWD(elts)).begin(), get<0>(KWK_FWD(elts)), fixed<0>)...};
       },
-      kumi::zip(kumi::to_tuple(s), kumi::forward_as_tuple(to_slicer(slices)...)));
-    return linearize(str, pos);
+      kumi::zip(kumi::to_tuple(s), sl));
   }
 
   template<auto... Dims, concepts::slicer... S>
-  constexpr auto reshape(shape<Dims...> const& s, S const&... slices) noexcept
+  constexpr auto origin(shape<Dims...> const& shp, S const&... sl) noexcept
+  requires(sizeof...(Dims) == sizeof...(S))
+  {
+    return origin(shp, kumi::make_tuple(to_slicer(sl)...));
+  }
+
+  template<auto... Dims, concepts::slicer... S>
+  constexpr auto reshape(shape<Dims...> const& s, kumi::tuple<S...> const& sl) noexcept
   requires(sizeof...(Dims) == sizeof...(S))
   {
     return kumi::apply(
       [](auto&&... elts) { return kwk::shape{slice_extent(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
-      kumi::zip(kumi::to_tuple(s), kumi::forward_as_tuple(to_slicer(slices)...)));
+      kumi::zip(kumi::to_tuple(s), sl));
   }
 
   template<auto... Dims, concepts::slicer... S>
-  constexpr auto restride(stride<Dims...> const& strd, S const&... slices) noexcept
+  constexpr auto reshape(shape<Dims...> const& shp, S const&... sl) noexcept
+  requires(sizeof...(Dims) == sizeof...(S))
+  {
+    return reshape(shp, kumi::make_tuple(to_slicer(sl)...));
+  }
+
+  template<auto... Dims, concepts::slicer... S>
+  constexpr auto restride(stride<Dims...> const& strd, kumi::tuple<S...> const& sl) noexcept
   requires(sizeof...(Dims) == sizeof...(S))
   {
     return kumi::apply(
       [](auto&&... elts) { return kwk::stride{slice_stride(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
-      kumi::zip(kumi::to_tuple(strd), kumi::forward_as_tuple(to_slicer(slices)...)));
+      kumi::zip(kumi::to_tuple(strd), sl));
+  }
+
+  template<auto... Dims, concepts::slicer... S>
+  constexpr auto restride(stride<Dims...> const& strd, S const&... sl) noexcept
+  requires(sizeof...(Dims) == sizeof...(S))
+  {
+    return restride(strd, kumi::make_tuple(to_slicer(sl)...));
   }
 
   constexpr auto at(std::integral auto i)

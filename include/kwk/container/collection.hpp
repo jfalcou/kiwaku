@@ -23,16 +23,17 @@ namespace kwk
     using allocator_type = decltype(std::declval<option_type>()[kwk::allocator]);
     using storage_order_type = decltype(std::declval<option_type>()[kwk::storage_order]);
 
+    using boundary_t = decltype(std::declval<option_type>()[kwk::boundary]);
+    using coordinate_t = decltype(std::declval<option_type>()[kwk::coordinate]);
+    using interpolator_t = decltype(std::declval<option_type>()[kwk::interpolator]);
+
+    // using accessor_type = decltype(get_accessor(std::declval<option_type>()));
+
     using source_type = Kind;
     using value_type = typename storage_type::element_type;
-    // using reference       = std::add_lvalue_reference<value_type>;
-    // using const_reference = std::add_lvalue_reference<std::add_const_t<value_type>>;
-    // using pointer         = std::add_pointer_t<value_type>;
-    // using const_pointer   = std::add_pointer_t<value_type const>;
 
     static constexpr auto ndim = shape_type::ndim;
-    static constexpr auto flat_ndim = kumi::size_v<
-      typename shape_type::storage_type::flat_tuple>; // decltype(std::declval<shape_type>().flatten())::rank;
+    static constexpr auto flat_ndim = kumi::size_v<typename shape_type::storage_type::flat_tuple>;
     static constexpr auto kind = as<value_type>();
     static constexpr auto itemsize = sizeof(value_type);
     static constexpr auto order = storage_order_type::descriptor;
@@ -70,40 +71,100 @@ namespace kwk
     */
     //==================================================================================================================
     [[nodiscard]] KWK_TRIVIAL constexpr shape_type const& shape() const noexcept
-    requires(!kumi::concepts::unit_type<shape_type>)
     {
+      static_assert(!kumi::concepts::unit_type<shape_type>, "[KWK] - Invalid shape");
       return static_cast<shape_type const&>(*this);
     }
 
     [[nodiscard]] KWK_TRIVIAL constexpr stride_type const& stride() const noexcept
-    requires(!kumi::concepts::unit_type<stride_type>)
     {
+      static_assert(!kumi::concepts::unit_type<stride_type>, "KWK - Invalid stride");
       return static_cast<stride_type const&>(*this);
     }
 
-    //[[nodiscard]] KWK_TRIVIAL constexpr storage_order_type const& storage_order() const noexcept
-    // requires(!kumi::concepts::unit_type<storage_order_type>)
-    //{
-    //  return static_cast<storage_order_type const&>(*this);
-    //}
+    [[nodiscard]] KWK_TRIVIAL constexpr storage_order_type const& storage_order() const noexcept
+    {
+      static_assert(!kumi::concepts::unit_type<storage_order_type>, "[KWK] - Invalid storage order");
+      return static_cast<storage_order_type const&>(*this);
+    }
+
+    [[nodiscard]] KWK_TRIVIAL constexpr boundary_t const& boundary_conditions() const noexcept
+    {
+      static_assert(!kumi::concepts::unit_type<boundary_t>, "[KWK] - Boundary conditions not set");
+      return static_cast<boundary_t const&>(*this);
+    }
+
+    [[nodiscard]] KWK_TRIVIAL constexpr coordinate_t const& coordinate_function() const noexcept
+    {
+      static_assert(!kumi::concepts::unit_type<coordinate_t>, "[KWK] - Coordinate function not set");
+      return static_cast<coordinate_t const&>(*this);
+    }
+
+    [[nodiscard]] KWK_TRIVIAL constexpr interpolator_t const& interpolator() const noexcept
+    {
+      static_assert(!kumi::concepts::unit_type<boundary_t>, "[KWK] - Interpolator not set");
+      return static_cast<interpolator_t const&>(*this);
+    }
 
     [[nodiscard]] KWK_TRIVIAL constexpr auto size() const noexcept
-    requires(!kumi::concepts::unit_type<shape_type>)
     {
+      static_assert(!kumi::concepts::unit_type<shape_type>, "[KWK] - Invalid size");
       return shape().size();
     }
 
     template<typename Self> [[nodiscard]] KWK_TRIVIAL constexpr decltype(auto) blob(this Self& self)
     {
+      static_assert(!kumi::concepts::unit_type<storage_type>, "[KWK] - Invalid storage");
       if constexpr (std::is_const_v<Self>) return static_cast<storage_type const&>(self);
       else return static_cast<storage_type&>(self);
     }
 
-    template<typename Self>
-    [[nodiscard]] KWK_TRIVIAL constexpr decltype(auto) data(this Self& self)
-    requires(!kumi::concepts::unit_type<storage_type>)
+    template<typename Self> [[nodiscard]] KWK_TRIVIAL constexpr decltype(auto) data(this Self& self)
     {
+      static_assert(!kumi::concepts::unit_type<storage_type>, "[KWK] - Invalid storage");
       return &self.blob()[0];
+    }
+
+    //==================================================================================================================
+    /*
+      Access helpers
+    */
+    //==================================================================================================================
+    template<typename Self, kumi::concepts::product_type Position, kumi::concepts::product_type Stride>
+    KWK_TRIVIAL constexpr decltype(auto) access(this Self&& self, Position&& p, Stride&& s)
+    {
+      /// Lambda storage value retrieval shall be done here
+      return self.blob()[self.coordinate_function()(KWK_FWD(p), KWK_FWD(s))];
+    }
+
+    template<typename Self,
+             kumi::concepts::product_type Position,
+             kumi::concepts::product_type Shape,
+             kumi::concepts::product_type Stride>
+    KWK_TRIVIAL constexpr decltype(auto) bounds_check(this Self&& self, Position&& p, Shape&& sp, Stride&& sd)
+    {
+      if constexpr (kumi::concepts::unit_type<boundary_t>) return self.access(KWK_FWD(p), KWK_FWD(sd));
+      else return self.access(self.boundary_conditions()(KWK_FWD(p), KWK_FWD(sp)), KWK_FWD(sd));
+    }
+
+    template<typename Self,
+             kumi::concepts::product_type Position,
+             kumi::concepts::product_type Shape,
+             kumi::concepts::product_type Stride>
+    KWK_TRIVIAL constexpr decltype(auto) resolve(this Self&& self, Position&& p, Shape&& sh, Stride&& sd)
+    {
+      /// Interpolation should be handled in this step
+      return self.bounds_check(KWK_FWD(p), KWK_FWD(sh), KWK_FWD(sd));
+    }
+
+    template<typename Self,
+             kumi::concepts::product_type Position,
+             kumi::concepts::product_type Shape,
+             kumi::concepts::product_type Stride>
+    KWK_TRIVIAL constexpr decltype(auto) source_at(this Self&& self, Position&& p, Shape&& sh, Stride&& sd)
+    {
+      /// If the blob actually is a lambda : return it
+      return self.resolve(KWK_FWD(p), KWK_FWD(sh), KWK_FWD(sd));
     }
 
     //==================================================================================================================
@@ -112,7 +173,7 @@ namespace kwk
     */
     //==================================================================================================================
     template<typename Self, kumi::concepts::product_type T>
-    decltype(auto) operator[](this Self& self, T&& t) noexcept
+    KWK_TRIVIAL decltype(auto) operator[](this Self& self, T&& t) noexcept
     requires(kumi::size_v<T> == ndim && !kumi::concepts::unit_type<storage_type>)
     {
       return kumi::apply([&](auto&&... i) -> decltype(auto) { return std::forward_like<Self>(self[KWK_FWD(i)...]); },
@@ -120,38 +181,38 @@ namespace kwk
     }
 
     template<std::integral... Is>
-    auto operator[](this auto& self, Is... is) noexcept
-    requires((kumi::concepts::product_type<kumi::element_t<order(0, ndim), shape_type>>) &&
-             (sizeof...(Is) == kumi::size_v<kumi::element_t<order(0, ndim), shape_type>>) && (ndim != flat_ndim) &&
-             !kumi::concepts::unit_type<storage_type>)
-    {
-      constexpr auto t_id = order(0, ndim);
-
-      auto const strd = kumi::join(kumi::remove(self.stride(), kumi::index<t_id>, kumi::index<t_id + 1>));
-      auto const shp = kumi::join(kumi::remove(self.shape(), kumi::index<t_id>, kumi::index<t_id + 1>));
-      auto src = (kwk::source = &self.blob()[linearize(get<t_id>(self.stride()), is...)]);
-
-      return kwk::builder<kwk::collection>(kwk::options{src, strd, shp});
-    }
-
-    // If the product types are matching
-    template<std::integral... Is>
     decltype(auto) operator[](this auto& self, Is... is) noexcept
-    requires(sizeof...(Is) == flat_ndim && !kumi::concepts::unit_type<storage_type>)
+    requires(!kumi::concepts::unit_type<storage_type>)
     {
-      using type = typename stride_type::storage_type::flat_tuple;
-      return self.blob()[linearize(kwk::__::layout_cast<type>(self.stride()), is...)];
+      static_assert(sizeof...(Is) == ndim, "[KWK] - Invalid number of coordinates in table access");
+      if constexpr (ndim == sizeof...(Is) && ndim == flat_ndim)
+        return self.resolve(kumi::tuple{is...}, self.shape(), self.stride());
+      else if constexpr (ndim != flat_ndim)
+      {
+        constexpr auto id = order(0, ndim);
+        using element_type = kumi::element_t<id, shape_type>;
+        static_assert(kumi::concepts::product_type<element_type>, "[KWK] - Invalid tile access");
+        static_assert(sizeof...(Is) == kumi::size_v<element_type>,
+                      "[KWK] - Invalid number of coordinates for tile access");
+
+        auto const strd = kumi::compress(kumi::remove(self.stride(), kumi::index<id>, kumi::index<id + 1>));
+        auto const shp = kumi::compress(kumi::remove(self.shape(), kumi::index<id>, kumi::index<id + 1>));
+        auto pos = self.source_at(kumi::tuple{is...}, get<id>(self.shape()), get<id>(self.stride()));
+        return kwk::builder<kwk::collection>(kwk::options{kwk::source = pos, strd, shp});
+      }
     }
 
     template<concepts::slicer... S>
-    auto operator[](this auto& self, S const&... s) noexcept
+    constexpr auto operator[](this auto& self, S const&... s) noexcept
     requires(sizeof...(S) == ndim)
     {
-      auto src = (kwk::source = self.data() + kwk::origin(self.shape(), self.storage_order(), s...));
-      auto shp = kwk::reshape(self.shape(), s...);
-      auto strd = kwk::restride(self.stride(), s...);
+      auto slicer = kumi::tuple{to_slicer(s)...};
 
-      return kwk::builder<kwk::collection>(kwk::options{src, shp, strd});
+      auto const shp = kwk::reshape(self.shape(), slicer);
+      auto const strd = kwk::restride(self.stride(), slicer);
+
+      return kwk::builder<kwk::collection>(kwk::options{
+        kwk::source = &self.source_at(kwk::origin(self.shape(), slicer), self.shape(), self.stride()), shp, strd});
     }
   };
 

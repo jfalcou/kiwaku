@@ -118,17 +118,17 @@ TTS_AND_THEN("- Check restride ")
 
 TTS_AND_THEN("- Check origin")
 {
-  auto res1 = kwk::origin(shp1, kwk::row_major_order, sl1);
-  auto res2 = kwk::origin(shp2, kwk::row_major_order, sl1, sl2);
-  auto res3 = kwk::origin(shp3, kwk::row_major_order, sl1, sl2, sl3);
-  auto res4 = kwk::origin(shp4, kwk::row_major_order, sl1, sl2, sl3, sl4);
-  auto res7 = kwk::origin(shp7, kwk::row_major_order, sl1, sl2, sl3, sl4, sl5, sl6, sl7);
+  auto res1 = kwk::origin(shp1, sl1);
+  auto res2 = kwk::origin(shp2, sl1, sl2);
+  auto res3 = kwk::origin(shp3, sl1, sl2, sl3);
+  auto res4 = kwk::origin(shp4, sl1, sl2, sl3, sl4);
+  auto res7 = kwk::origin(shp7, sl1, sl2, sl3, sl4, sl5, sl6, sl7);
 
-  TTS_EQUAL(res1, (0));
-  TTS_EQUAL(res2, (2));
-  TTS_EQUAL(res3, (132));
-  TTS_EQUAL(res4, (0));
-  TTS_EQUAL(res7, (0));
+  TTS_EQUAL(res1, (kumi::tuple{0_c}));
+  TTS_EQUAL(res2, (kumi::tuple{0_c, 2_c}));
+  TTS_EQUAL(res3, (kumi::tuple{0_c, 2_c, 44_c}));
+  TTS_EQUAL(res4, (kumi::tuple{0_c, 2_c, 44_c, 0}));
+  TTS_EQUAL(res7, (kumi::tuple{0_c, 2_c, 44_c, 0, 1_c, 0, 0}));
 }
 }
 }

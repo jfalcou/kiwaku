@@ -56,9 +56,21 @@ namespace kwk
 
       friend constexpr auto to_str(storage_order_id) { return kumi::str{"Storage Order"}; }
     };
+
+    // struct axis_id : kumi::identifier<axis_id>
+    //{
+
+    //  template<> constexpr auto operator=() const noexcept
+    //  {
+    //    return as_axis();
+    //  }
+
+    //  friend constexpr auto to_str(axis_id) { return kumi::str{"Axis"}; }
+    //};
   }
 
   inline constexpr __::shape_id of_shape{};
   inline constexpr __::stride_id of_stride{};
   inline constexpr __::storage_order_id storage_order{};
+  // inline constexpr __::axis_id axis{};
 }
