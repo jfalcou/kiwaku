@@ -378,7 +378,7 @@ namespace kwk
     else
     {
       auto [head, tail] = kumi::split(s, kumi::index<sz - N + 1>);
-      auto value = kumi::fold_right([](auto v, auto acc) { return acc * v; }, pop_front(head), get<0>(head));
+      auto value = kumi::fold_right([](auto v, auto acc) { return acc * v; }, kumi::pop_front(head), get<0>(head));
       return of_size(kumi::push_front(tail, value));
     }
   }
@@ -397,7 +397,7 @@ namespace kwk
 
 #if !defined(KWK_DOXYGEN_INVOKED)
 // Tuple interface adaptation
-template<auto... D> struct std::tuple_size<kwk::shape<D...>> : std::integral_constant<std::int32_t, sizeof...(D)>
+template<auto... D> struct std::tuple_size<kwk::shape<D...>> : std::integral_constant<std::size_t, sizeof...(D)>
 {
 };
 
