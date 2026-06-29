@@ -170,3 +170,30 @@ TTS_CASE("Indexing Behavior with tiles: 2D grid of 2D tiles")
     }
   }
 };
+
+TTS_CASE("Indexing Behavior with tiles: 3D grid with 2D tiles")
+{
+  using namespace kwk::literals;
+
+  float ref[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+  auto v = kwk::view(kwk::source = ref, kwk::shape{2, 2, kwk::shape{2, 2}});
+
+  for (std::ptrdiff_t i = 0; i < 2; ++i)
+  {
+    auto sub_range = v[i];
+    for (std::ptrdiff_t j = 0; j < 2; ++j)
+    {
+      auto curr_tile = sub_range[j];
+      TTS_TYPE_IS(decltype(curr_tile)::source_type, decltype(v)::source_type);
+
+      for (std::ptrdiff_t ti = 0; ti < 2; ++ti)
+      {
+        for (std::ptrdiff_t tj = 0; tj < 2; ++tj)
+        {
+          TTS_EQUAL((curr_tile[ti, tj]), (ref[i * 8 + j * 4 + ti * 2 + tj]));
+        }
+      }
+    }
+  }
+};

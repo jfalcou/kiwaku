@@ -167,6 +167,49 @@ namespace kwk
       return self.resolve(KWK_FWD(p), KWK_FWD(sh), KWK_FWD(sd));
     }
 
+    template<kumi::concepts::product_type T,
+             storage_order_descriptor order,
+             std::size_t ndim,
+             std::size_t P,
+             std::size_t... Is1,
+             std::size_t... Is2>
+    decltype(auto) retrieve(T&& t,
+                            storage_order_t<order>,
+                            kumi::index_t<ndim>,
+                            kumi::index_t<P>,
+                            std::index_sequence<Is1...>,
+                            std::index_sequence<Is2...>) noexcept
+    {
+      return kumi::tuple{kumi::builder<T>::make(get<order(Is1, ndim)>(KWK_FWD(t))...),
+                         kumi::builder<T>::make(get<order(Is2 + P, ndim)>(KWK_FWD(t))...)};
+    }
+
+    template<kumi::concepts::product_type T,
+             storage_order_descriptor order,
+             std::size_t ndim,
+             std::size_t P,
+             std::size_t... Is1,
+             std::size_t... Is2>
+    KWK_TRIVIAL static constexpr auto retrieve_(T&& t,
+                                                storage_order_t<order>,
+                                                kumi::index_t<ndim>,
+                                                kumi::index_t<P>,
+                                                std::index_sequence<Is1...>,
+                                                std::index_sequence<Is2...>) noexcept
+    {
+      return kumi::tuple{kumi::builder<T>::make(get<order(Is1, ndim)>(KWK_FWD(t))...),
+                         kumi::builder<T>::make(get<order(Is2 + P, ndim)>(KWK_FWD(t))...)};
+    }
+
+    template<kumi::concepts::product_type T, storage_order_descriptor order, std::size_t ndim, std::size_t P>
+    KWK_TRIVIAL static constexpr auto retrieve(T&& t,
+                                               storage_order_t<order> so,
+                                               kumi::index_t<ndim> d,
+                                               kumi::index_t<P> p) noexcept
+    {
+      return retrieve_(KWK_FWD(t), so, d, p, std::make_index_sequence<P>{}, std::make_index_sequence<ndim - P>{});
+    }
+
     //==================================================================================================================
     /*
       Access operators
@@ -193,18 +236,22 @@ namespace kwk
       {
         constexpr auto id = order(0, ndim);
         using element_type = kumi::element_t<id, shape_type>;
+        constexpr auto pivot = kumi::index<sizeof...(Is)>;
+        constexpr auto dims = kumi::index<ndim>;
 
         if constexpr (!kumi::concepts::product_type<element_type>)
         {
-          constexpr auto e = kumi::index<order(sizeof...(Is), ndim)>;
-          auto [sdf, sdl] = kumi::split(self.stride(), e);
-          auto [shf, shl] = kumi::split(self.shape(), e);
+          static_assert(sizeof...(Is) <= ndim, "[KWK] - Number of indexes is bigger than the number of dimensions");
+          auto const [sdf, sdl] = retrieve(self.stride(), self.storage_order(), dims, pivot);
+          auto const [shf, shl] = retrieve(self.shape(), self.storage_order(), dims, pivot);
           auto pos = &self.source_at(kumi::tuple{is...}, shf, sdf);
           return kwk::builder<kwk::collection>(
             kwk::options{kwk::source = pos, kumi::compress(sdl), kumi::compress(shl)});
         }
         else
         {
+          static_assert(sizeof...(Is) == kumi::size_v<element_type>,
+                        "[KWK] - Number of indexes do not match tile size");
           auto const strd = kumi::compress(kumi::remove(self.stride(), kumi::index<id>, kumi::index<id + 1>));
           auto const shp = kumi::compress(kumi::remove(self.shape(), kumi::index<id>, kumi::index<id + 1>));
           auto pos = &self.source_at(kumi::tuple{is...}, get<id>(self.shape()), get<id>(self.stride()));

@@ -50,23 +50,66 @@ namespace kwk
     return {};
   }
 
-  struct linear_
+  namespace __
   {
-    static constexpr auto interpolate() noexcept {}
-  };
+    struct floor
+    {
+      template<kumi::concepts::product_type Position> static constexpr auto operator()(Position&& p)
+      {
+        return kumi::map(
+          [](auto&& elt) {
+            if constexpr (kumi::concepts::product_type<decltype(elt)>) return kwk::__::floor{}(KWK_FWD(elt));
+            else return static_cast<std::ptrdiff_t>(KWK_FWD(elt));
+          },
+          KWK_FWD(p));
+      }
+    };
 
-  struct nearest_
-  {
-    static constexpr auto interpolate() noexcept {}
-  };
+    struct ceil
+    {
+      template<kumi::concepts::product_type Position> static constexpr auto operator()(Position&& p)
+      {
+        return kumi::map(
+          [](auto&& elt) {
+            if constexpr (kumi::concepts::product_type<decltype(elt)>) return kwk::__::ceil{}(KWK_FWD(elt));
+            else return static_cast<std::ptrdiff_t>(KWK_FWD(elt)) + 1;
+          },
+          KWK_FWD(p));
+      }
+    };
 
-  struct affine_
-  {
-    static constexpr auto interpolate() noexcept {}
-  };
+    struct round
+    {
+      template<kumi::concepts::product_type Position> static constexpr auto operator()(Position&& p)
+      {
+        return kumi::map(
+          [](auto&& elt) {
+            if constexpr (kumi::concepts::product_type<decltype(elt)>) return kwk::__::round{}(KWK_FWD(elt));
+            else return static_cast<std::ptrdiff_t>(KWK_FWD(elt) + 0.5);
+          },
+          KWK_FWD(p));
+      }
+    };
+
+    // struct linear_
+    //{
+    //   template<kumi::concepts::product_type Position>
+    //   static constexpr auto operator()(Position && p) noexcept
+    //   {
+
+    //  }
+    //};
+
+    // struct affine_
+    //{
+    //   static constexpr auto interpolate() noexcept {}
+    // };
+  }
 
   // Interpolation strategies
-  inline constexpr auto linear = interpolation<linear_>();
-  inline constexpr auto nearest = interpolation<nearest_>();
-  inline constexpr auto affine = interpolation<affine_>();
+  inline constexpr auto floor = interpolation<kwk::__::floor>();
+  inline constexpr auto ceil = interpolation<kwk::__::ceil>();
+  inline constexpr auto round = interpolation<kwk::__::round>();
+  // inline constexpr auto linear = interpolation<linear_>();
+  // inline constexpr auto affine = interpolation<affine_>();
 }

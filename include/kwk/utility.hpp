@@ -32,3 +32,5 @@ namespace kwk
 #include <kwk/utility/memory.hpp>
 #include <kwk/utility/layout.hpp>
 #include <kwk/utility/range.hpp>
+
+#include <kwk/utility/for_each.hpp>
