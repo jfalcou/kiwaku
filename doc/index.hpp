@@ -9,14 +9,5 @@
 //!
 //! C++20 collection of high performance data containers and related tools
 //!
-//! @section start Getting started
-//!
-//! @code
-//! #include <kiwaku/kiwaku.hpp>
-//! @endcode
-//!
-//! @section install Installing
-//!
-//! @code{.cmake}
-//! CPMAddPackage(NAME KIWAKU GIT_REPOSITORY https://github.com/jfalcou/kiwaku GIT_TAG main)
-//! @endcode
+//! - @subpage kwk_getting_started
+//! - @subpage kwk_tutorials
