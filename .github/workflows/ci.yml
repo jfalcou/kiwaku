@@ -5,6 +5,10 @@
 ##======================================================================================================================
 name: Unit Tests
 on:
+  ## Temporary: the rewrite lives on an orphan branch, so nothing here fires until it becomes main.
+  push:
+    branches:
+      - infra/rewrite
   pull_request:
     branches:
       - main

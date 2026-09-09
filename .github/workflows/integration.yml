@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - main
+      ## Temporary, until the rewrite becomes main.
+      - infra/rewrite
 
 concurrency:
   group: kiwaku-integration-${{ github.ref }}
