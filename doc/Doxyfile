@@ -1,0 +1,25 @@
+##======================================================================================================================
+##  KIWAKU - C++20 collection of high performance data containers and related tools
+##  Copyright : KIWAKU Project Contributors
+##  SPDX-License-Identifier: BSL-1.0
+##======================================================================================================================
+## Only what belongs to this project. What the fleet shares comes from the @INCLUDE at the bottom, what can be worked
+## out from the project's name is worked out there too, and anything named nowhere is a doxygen default we have no
+## reason to restate.
+##======================================================================================================================
+
+PROJECT_BRIEF          = "C++20 collection of high performance data containers and related tools"
+
+## What to read, and where the @include of a snippet looks for its file
+INPUT                  = ../include .
+INCLUDE_PATH           = ../include
+EXAMPLE_PATH           = ../test .
+
+## How much of a page to unfold
+SEPARATE_MEMBER_PAGES  = YES
+TOC_INCLUDE_HEADINGS   = 5
+
+##======================================================================================================================
+## What the fleet shares, last so that it wins over anything above
+##======================================================================================================================
+@INCLUDE               = $(DOXYGEN_ASSETS)/base.doxyfile

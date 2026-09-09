@@ -1,0 +1,33 @@
+BasedOnStyle: LLVM
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments: {Enabled: true, AcrossEmptyLines: true, AcrossComments: true, AlignCompound: true, AlignFunctionDeclarations: false, AlignFunctionPointers: false, PadOperators: true}
+AlignConsecutiveDeclarations: {Enabled: true, AcrossEmptyLines: true, AcrossComments: true, AlignCompound: true, AlignFunctionDeclarations: true, AlignFunctionPointers: false, PadOperators: true}
+AlignConsecutiveMacros: {Enabled: true, AcrossEmptyLines: true, AcrossComments: true, AlignCompound: true, AlignFunctionDeclarations: false, AlignFunctionPointers: false, PadOperators: true}
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+BinPackArguments: false
+BinPackParameters: OnePerLine
+BraceWrapping: {AfterCaseLabel: true, AfterClass: true, AfterControlStatement: Always, AfterEnum: true, AfterExternBlock: true, AfterFunction: true, AfterNamespace: true, AfterObjCDeclaration: true, AfterStruct: true,
+  AfterUnion: true, BeforeCatch: true, BeforeElse: true, BeforeLambdaBody: true, BeforeWhile: false, IndentBraces: false, SplitEmptyFunction: true, SplitEmptyRecord: true, SplitEmptyNamespace: true}
+BreakBeforeBraces: Allman
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+ColumnLimit: 100
+FixNamespaceComments: false
+IncludeBlocks: Regroup
+InsertNewlineAtEOF: true
+KeepEmptyLines: {AtEndOfFile: false, AtStartOfBlock: false, AtStartOfFile: true}
+NamespaceIndentation: All
+PointerAlignment: Left
+QualifierAlignment: Right
+SortIncludes: {Enabled: false, IgnoreCase: false, IgnoreExtension: false}
+SpaceAfterTemplateKeyword: false
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeParens: Never
+SpaceBeforeParensOptions: {AfterControlStatements: false, AfterForeachMacros: false, AfterFunctionDefinitionName: false, AfterFunctionDeclarationName: false, AfterIfMacros: false, AfterNot: false, AfterOverloadedOperator: false,
+  AfterPlacementOperator: true, AfterRequiresInClause: false, AfterRequiresInExpression: false, BeforeNonEmptyParentheses: false}
+SpaceBeforeRangeBasedForLoopColon: false
+SpacesInSquareBrackets: true
+StatementMacros: [TTS_CASE, TTS_CASE_TPL, TTS_CASE_WITH, TTS_WHEN, TTS_AND_THEN]

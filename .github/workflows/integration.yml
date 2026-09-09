@@ -1,0 +1,22 @@
+##======================================================================================================================
+##  KIWAKU - C++20 collection of high performance data containers and related tools
+##  Copyright : KIWAKU Project Contributors
+##  SPDX-License-Identifier: BSL-1.0
+##======================================================================================================================
+name: KIWAKU Integration Tests
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: kiwaku-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    uses: jfalcou/copacabana/.github/workflows/integration.yml@44053e713b1b57329ccbcbb8878c839024bf19ee # v8
+    with:
+      project: kiwaku
+      cxx-compiler: clang++
+      cxx-flags: -std=c++20

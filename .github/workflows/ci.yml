@@ -1,0 +1,65 @@
+##======================================================================================================================
+##  KIWAKU - C++20 collection of high performance data containers and related tools
+##  Copyright : KIWAKU Project Contributors
+##  SPDX-License-Identifier: BSL-1.0
+##======================================================================================================================
+name: Unit Tests
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: kiwaku-unit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ##################################################################################################
+  ## Fast gate: the checks below start together with no interdependency, and only once they all pass does the
+  ## much heavier compiler matrix start.
+  ##################################################################################################
+  ## Named so that the check reads "Meta Checks / Pre-commit", the context the ruleset requires.
+  precommit:
+    name: Meta Checks
+    uses: jfalcou/copacabana/.github/workflows/precommit.yml@44053e713b1b57329ccbcbb8878c839024bf19ee # v8
+
+
+  ##################################################################################################
+  ## Sanitizers (ASan+UBSan)
+  ##################################################################################################
+  sanitizer-tests:
+    name: Sanitizers
+    uses: jfalcou/copacabana/.github/workflows/sanitizers.yml@44053e713b1b57329ccbcbb8878c839024bf19ee # v8
+
+  ##################################################################################################
+  ## Coverage report - informational, runs alongside the gate without blocking the matrix
+  ##################################################################################################
+  coverage-report:
+    name: Coverage
+    uses: jfalcou/copacabana/.github/workflows/coverage.yml@44053e713b1b57329ccbcbb8878c839024bf19ee # v8
+    with:
+      project: kiwaku
+
+  ##################################################################################################
+  ## Unit Tests - the full compiler matrix, gated behind the fast checks above all passing
+  ##################################################################################################
+  linux-tests:
+    name: Linux
+    needs: [precommit, sanitizer-tests]
+    uses: jfalcou/copacabana/.github/workflows/matrix.yml@44053e713b1b57329ccbcbb8878c839024bf19ee # v8
+    with:
+      file: .github/matrices/linux.yml
+
+  macos-tests:
+    name: MacOS
+    needs: [precommit, sanitizer-tests]
+    uses: jfalcou/copacabana/.github/workflows/matrix.yml@44053e713b1b57329ccbcbb8878c839024bf19ee # v8
+    with:
+      file: .github/matrices/macos.yml
+
+  windows-tests:
+    name: Windows
+    needs: [precommit, sanitizer-tests]
+    uses: jfalcou/copacabana/.github/workflows/matrix.yml@44053e713b1b57329ccbcbb8878c839024bf19ee # v8
+    with:
+      file: .github/matrices/windows.yml
