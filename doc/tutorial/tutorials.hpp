@@ -9,6 +9,9 @@
   - @subpage kwk_broadcasting
   - @subpage kwk_advanced_indexing
   - @subpage kwk_tricks
+
+Whichever of the two you already know, read its page and skip the other:
+
   - @subpage kwk_for_matlab
   - @subpage kwk_for_numpy
 
