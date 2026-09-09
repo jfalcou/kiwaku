@@ -1,5 +1,5 @@
 ##======================================================================================================================
-##  KIWAKU - C++20 collection of high performance data containers and related tools
+##  KIWAKU - Shape Up Your Data
 ##  Copyright : KIWAKU Project Contributors
 ##  SPDX-License-Identifier: BSL-1.0
 ##======================================================================================================================
@@ -8,7 +8,7 @@
 ## reason to restate.
 ##======================================================================================================================
 
-PROJECT_BRIEF          = "C++20 collection of high performance data containers and related tools"
+PROJECT_BRIEF          = "Shape Up Your Data"
 
 ## How the navigation panel is laid out
 LAYOUT_FILE            = layout.xml

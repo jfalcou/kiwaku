@@ -1,5 +1,5 @@
 ##======================================================================================================================
-##  KIWAKU - C++20 collection of high performance data containers and related tools
+##  KIWAKU - Shape Up Your Data
 ##  Copyright : KIWAKU Project Contributors
 ##  SPDX-License-Identifier: BSL-1.0
 ##======================================================================================================================

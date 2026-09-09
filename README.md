@@ -1,6 +1,6 @@
 # KIWAKU
 
-C++20 collection of high performance data containers and related tools
+Shape Up Your Data
 
 ## Getting it
 
