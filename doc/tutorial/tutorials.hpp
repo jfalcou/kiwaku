@@ -11,6 +11,5 @@ Whichever of the two you already know, read its page and skip the other:
   - @subpage kwk_for_numpy
 
   - @subpage kwk_howtos
-  - @subpage kwk_advanced
 
 **/

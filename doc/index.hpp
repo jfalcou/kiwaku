@@ -8,6 +8,3 @@
 //! @mainpage KIWAKU
 //!
 //! C++20 collection of high performance data containers and related tools
-//!
-//! - @subpage kwk_getting_started
-//! - @subpage kwk_tutorials
