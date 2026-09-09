@@ -5,10 +5,11 @@
 
   - @subpage kwk_fundamentals
 
-Whichever of the two you already know, read its page and skip the other:
+Whichever of the three you already know, read its page and skip the others:
 
   - @subpage kwk_for_matlab
   - @subpage kwk_for_numpy
+  - @subpage kwk_for_fortran
 
   - @subpage kwk_howtos
 
