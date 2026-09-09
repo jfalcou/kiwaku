@@ -2,6 +2,12 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
+    <tab type="usergroup" visible="yes" title="Getting started" url="@ref kwk_getting_started">
+      <tab type="user" url="@ref kwk_overview"     title="What KIWAKU is"/>
+      <tab type="user" url="@ref kwk_installation" title="Installation"/>
+      <tab type="user" url="@ref kwk_quickstart"   title="Quickstart"/>
+      <tab type="user" url="@ref kwk_beginners"    title="Absolute basics for beginners"/>
+    </tab>
     <tab type="usergroup" visible="yes" title="Tutorials" url="@ref kwk_tutorials">
       <tab type="user" url="@ref kwk_basics"            title="The basics"/>
       <tab type="user" url="@ref kwk_shape"             title="Shape manipulation"/>
