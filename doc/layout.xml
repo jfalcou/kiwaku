@@ -24,7 +24,7 @@
       <tab type="user" url="@ref kwk_for_fortran" title="KIWAKU for Fortran users"/>
     </tab>
     <tab type="usergroup" visible="yes" title="Advanced usage" url="@ref kwk_advanced">
-      <tab type="user" url="@ref kwk_internals"        title="Under-the-hood documentation for developers"/>
+      <tab type="user" url="@ref kwk_internals"        title="Under the hood"/>
       <tab type="user" url="@ref kwk_interoperability" title="Interoperability with other libraries"/>
       <tab type="user" url="@ref kwk_performance"      title="Writing performant code"/>
     </tab>

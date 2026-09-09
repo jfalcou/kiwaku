@@ -1,7 +1,7 @@
 #error This file is for documentation only - DO NOT INCLUDE
 /**
 
-@page kwk_internals Under-the-hood documentation for developers
+@page kwk_internals Under the hood
 
 @section kwk_internals_layout Memory layout
 
