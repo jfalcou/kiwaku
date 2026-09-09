@@ -10,6 +10,9 @@
 
 PROJECT_BRIEF          = "C++20 collection of high performance data containers and related tools"
 
+## How the navigation panel is laid out
+LAYOUT_FILE            = layout.xml
+
 ## What to read, and where the @include of a snippet looks for its file
 INPUT                  = ../include .
 INCLUDE_PATH           = ../include

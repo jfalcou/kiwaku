@@ -1,0 +1,29 @@
+<doxygenlayout version="1.0">
+  <!-- Navigation index tabs for HTML output -->
+  <navindex>
+    <tab type="mainpage" visible="yes" title=""/>
+    <tab type="usergroup" visible="yes" title="Tutorials" url="@ref kwk_tutorials">
+      <tab type="user" url="@ref kwk_basics"            title="The basics"/>
+      <tab type="user" url="@ref kwk_shape"             title="Shape manipulation"/>
+      <tab type="user" url="@ref kwk_copies"            title="Copies and views"/>
+      <tab type="user" url="@ref kwk_broadcasting"      title="Broadcasting"/>
+      <tab type="user" url="@ref kwk_advanced_indexing" title="Advanced indexing and index tricks"/>
+      <tab type="user" url="@ref kwk_tricks"            title="Tricks and tips"/>
+      <tab type="user" url="@ref kwk_for_matlab"        title="KIWAKU for MATLAB users"/>
+      <tab type="user" url="@ref kwk_for_numpy"         title="KIWAKU for NumPy users"/>
+    </tab>
+    <tab type="usergroup" visible="yes" title="Reference Documentation">
+      <tab type="namespaces" visible="yes" title="">
+        <tab type="namespacelist" visible="yes" title="" intro=""/>
+        <tab type="namespacemembers" visible="yes" title="" intro=""/>
+      </tab>
+      <tab type="classes" visible="yes" title="">
+        <tab type="classlist" visible="yes" title="" intro=""/>
+        <tab type="classmembers" visible="yes" title="" intro=""/>
+      </tab>
+      <tab type="files" visible="yes" title="">
+        <tab type="filelist" visible="yes" title="" intro=""/>
+      </tab>
+    </tab>
+  </navindex>
+</doxygenlayout>
