@@ -8,21 +8,20 @@
       <tab type="user" url="@ref kwk_quickstart"   title="Quickstart"/>
       <tab type="user" url="@ref kwk_beginners"    title="Absolute basics for beginners"/>
     </tab>
+    <tab type="usergroup" visible="yes" title="Fundamentals" url="@ref kwk_fundamentals">
+      <tab type="user" url="@ref kwk_creation"     title="Container creation"/>
+      <tab type="user" url="@ref kwk_indexing"     title="Indexing on containers"/>
+      <tab type="user" url="@ref kwk_shape"        title="Shape manipulation"/>
+      <tab type="user" url="@ref kwk_copies"       title="Copies and views"/>
+      <tab type="user" url="@ref kwk_broadcasting" title="Broadcasting"/>
+      <tab type="user" url="@ref kwk_universal"    title="Universal functions"/>
+      <tab type="user" url="@ref kwk_data_types"   title="Data types"/>
+      <tab type="user" url="@ref kwk_io"           title="I/O with KIWAKU"/>
+    </tab>
     <tab type="usergroup" visible="yes" title="Tutorials" url="@ref kwk_tutorials">
-      <tab type="usergroup" visible="yes" title="KIWAKU fundamentals" url="@ref kwk_fundamentals">
-        <tab type="user" url="@ref kwk_creation"     title="Container creation"/>
-        <tab type="user" url="@ref kwk_indexing"     title="Indexing on containers"/>
-        <tab type="user" url="@ref kwk_shape"        title="Shape manipulation"/>
-        <tab type="user" url="@ref kwk_copies"       title="Copies and views"/>
-        <tab type="user" url="@ref kwk_broadcasting" title="Broadcasting"/>
-        <tab type="user" url="@ref kwk_universal"    title="Universal functions"/>
-        <tab type="user" url="@ref kwk_data_types"   title="Data types"/>
-        <tab type="user" url="@ref kwk_io"           title="I/O with KIWAKU"/>
-      </tab>
-      <tab type="user" url="@ref kwk_for_matlab" title="KIWAKU for MATLAB users"/>
-      <tab type="user" url="@ref kwk_for_numpy"  title="KIWAKU for NumPy users"/>
+      <tab type="user" url="@ref kwk_for_matlab"  title="KIWAKU for MATLAB users"/>
+      <tab type="user" url="@ref kwk_for_numpy"   title="KIWAKU for NumPy users"/>
       <tab type="user" url="@ref kwk_for_fortran" title="KIWAKU for Fortran users"/>
-      <tab type="user" url="@ref kwk_howtos"     title="KIWAKU how-tos"/>
     </tab>
     <tab type="usergroup" visible="yes" title="Advanced usage" url="@ref kwk_advanced">
       <tab type="user" url="@ref kwk_internals"        title="Under-the-hood documentation for developers"/>

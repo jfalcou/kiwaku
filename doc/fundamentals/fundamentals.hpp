@@ -1,7 +1,7 @@
 #error This file is for documentation only - DO NOT INCLUDE
 /**
 
-@page kwk_fundamentals KIWAKU fundamentals
+@page kwk_fundamentals Fundamentals
 
   - @subpage kwk_creation
   - @subpage kwk_indexing
