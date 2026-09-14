@@ -12,8 +12,8 @@
       <tab type="user" url="@ref kwk_creation"     title="Container creation"/>
       <tab type="user" url="@ref kwk_indexing"     title="Indexing on containers"/>
       <tab type="user" url="@ref kwk_shape"        title="Shape manipulation"/>
+      <tab type="user" url="@ref kwk_slicing"      title="Taking slices"/>
       <tab type="user" url="@ref kwk_copies"       title="Copies and views"/>
-      <tab type="user" url="@ref kwk_broadcasting" title="Broadcasting"/>
       <tab type="user" url="@ref kwk_universal"    title="Universal functions"/>
       <tab type="user" url="@ref kwk_data_types"   title="Data types"/>
       <tab type="user" url="@ref kwk_io"           title="I/O with KIWAKU"/>
