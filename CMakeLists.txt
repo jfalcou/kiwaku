@@ -8,6 +8,7 @@ project(kiwaku LANGUAGES CXX)
 
 ##======================================================================================================================
 include(${PROJECT_SOURCE_DIR}/cmake/dependencies.cmake)
+CPMGetPackage(KUMI)
 
 ##======================================================================================================================
 ## Project setup via copacabana
@@ -26,6 +27,7 @@ copa_add_option(KIWAKU_ENABLE_SANITIZERS "Build tests with AddressSanitizer + Un
 copa_add_option(KIWAKU_ENABLE_COVERAGE "Build tests with code coverage instrumentation" OFF LABEL "Coverage")
 
 if(KIWAKU_BUILD_TEST)
+  CPMGetPackage(TTS)
   include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
 endif()
 
@@ -62,7 +64,7 @@ if(KIWAKU_BUILD_DOCUMENTATION)
     ${QUIET_OPTION}
     TARGET kiwaku-doxygen
     DESTINATION "${PROJECT_BINARY_DIR}/doc"
-    GODBOLT_LIBRARIES kiwaku tts
+    GODBOLT_LIBRARIES kiwaku tts kumi
     COLOR_HUE 293
     COLOR_SATURATION 40)
 endif()
@@ -76,6 +78,7 @@ if(KIWAKU_BUILD_TEST)
   endif()
 
   enable_testing()
+  add_custom_target(kiwaku-unit)
   add_subdirectory(test)
 
   # After the test targets exist, so the coverage targets can depend on them
