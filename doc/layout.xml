@@ -28,6 +28,19 @@
       <tab type="user" url="@ref kwk_interoperability" title="Interoperability with other libraries"/>
       <tab type="user" url="@ref kwk_performance"      title="Writing performant code"/>
     </tab>
+    <tab type="usergroup" visible="yes" title="Architecture" url="@ref kwk_architecture">
+      <tab type="user" url="@ref kwk_arch_foundations"    title="Mathematical foundations"/>
+      <tab type="user" url="@ref kwk_arch_blob"           title="The total space: blob"/>
+      <tab type="user" url="@ref kwk_arch_element"        title="The point: element"/>
+      <tab type="user" url="@ref kwk_arch_scheme"         title="The sheaf: scheme"/>
+      <tab type="user" url="@ref kwk_arch_kind"           title="The type: kind"/>
+      <tab type="user" url="@ref kwk_arch_shape_position" title="Positions: shape &amp; stride"/>
+      <tab type="user" url="@ref kwk_arch_layout"         title="The fiber: layout"/>
+      <tab type="user" url="@ref kwk_arch_accessor"       title="The topology: accessor"/>
+      <tab type="user" url="@ref kwk_arch_options"        title="Composition: options &amp; builder"/>
+      <tab type="user" url="@ref kwk_arch_collection"     title="Containers: collection, table, view"/>
+      <tab type="user" url="@ref kwk_finalization_roadmap" title="Finalization roadmap"/>
+    </tab>
     <tab type="usergroup" visible="yes" title="Reference Documentation">
       <tab type="namespaces" visible="yes" title="">
         <tab type="namespacelist" visible="yes" title="" intro=""/>
