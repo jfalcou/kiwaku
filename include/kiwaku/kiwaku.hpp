@@ -7,11 +7,17 @@
 //======================================================================================================================
 #pragma once
 
-#include <string_view>
-
 //! @brief Root namespace for KIWAKU
 namespace kiwaku
 {
   //! The version this header was built from, as major.minor.patch
-  inline constexpr std::string_view version = "0.1.0";
+  inline constexpr char const* version = "0.1.0";
 }
+
+#include <kiwaku/configuration.hpp>
+#include <kiwaku/traits.hpp>
+#include <kiwaku/concepts.hpp>
+#include <kiwaku/utility.hpp>
+#include <kiwaku/memory.hpp>
+#include <kiwaku/settings.hpp>
+#include <kiwaku/container.hpp>
