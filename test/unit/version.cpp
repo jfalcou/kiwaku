@@ -13,5 +13,5 @@ int main()
 {
   std::cout << "kiwaku " << kiwaku::version << "\n";
 
-  return kiwaku::version.empty() ? 1 : 0;
+  return kiwaku::version ? 0 : 1;
 }
