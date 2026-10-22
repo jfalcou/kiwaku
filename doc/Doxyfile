@@ -18,6 +18,12 @@ INPUT                  = ../include .
 INCLUDE_PATH           = ../include
 EXAMPLE_PATH           = ../test .
 
+## The project build tree (and the generated documentation under it) must not be scanned:
+## INPUT covers the whole repository root, and RECURSIVE would otherwise make Doxygen walk every
+## header/unit artifact under `build/` (including its own output `build/doc`), which is both wrong
+## and pathologically slow.
+EXCLUDE_PATTERNS        = */build/*
+
 ## How much of a page to unfold
 SEPARATE_MEMBER_PAGES  = YES
 TOC_INCLUDE_HEADINGS   = 5
