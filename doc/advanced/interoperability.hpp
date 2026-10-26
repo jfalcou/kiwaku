@@ -48,52 +48,69 @@ whose `value_type` is that register type. No special dtype is required and no co
 occurs — the stored cells are the register values themselves.
 
 ```cpp
-using vec_t = /* a SIMD / fixed-width register type */;
-auto simd = kwk::view(kwk::source = regs, kwk::shape{N}, kwk::as<vec_t>());
+using vec_t = /* a SIMD / fixed-width register type */
+;
+auto simd = kwk::view(kwk::source = regs, kwk::shape {N}, kwk::as<vec_t>());
 ```
 
-Because the geometry (shape/stride/accessor) is decoupled from the memory scheme, a
-compound kind also works: `kwk::as<kumi::tuple<T...>>()` lays out records
-struct-of-arrays (see @subpage kwk_data_types), which pairs naturally with
-per-component SIMD access through @subpage kwk_indexing.
+    Because the geometry(shape / stride / accessor) is decoupled from the memory scheme,
+    a compound kind also works
+    : `kwk::as<kumi::tuple<T...>>()` lays out records struct
+    -
+    of
+    -
+    arrays(see @subpage kwk_data_types)
+    , which pairs naturally with per -
+          component SIMD access through @subpage kwk_indexing.
 
-@section kwk_interoperability_external Foreign container types
+          @section kwk_interoperability_external Foreign container types
 
-The `kwk::source` contract is intentionally minimal — a pointer (or tuple of pointers)
-plus an extent — so **any foreign contiguous buffer** can be wrapped without the foreign
-type being KIWAKU-aware. The supported source forms are a raw pointer, a C array, a
-contiguous range, and a tuple of per-field pointers:
+          The `kwk::source` contract is intentionally minimal — a
+          pointer(or tuple of pointers) plus an extent — so **any foreign
+          contiguous buffer **can be wrapped without the foreign type being KIWAKU
+          - aware.The supported source forms are a raw pointer
+    , a C array
+    , a contiguous range
+    , and a tuple of per - field pointers
+    :
 
 ```cpp
-// Wrap a raw, caller-owned buffer as a borrowed 2x3 collection:
-float* foreign  = /* ... */;
-auto   grid     = kwk::view(kwk::source = foreign, kwk::shape{2_c, 3_c});
+    // Wrap a raw, caller-owned buffer as a borrowed 2x3 collection:
+    float *foreign = /* ... */;
+auto grid          = kwk::view(kwk::source = foreign, kwk::shape {2_c, 3_c});
 
 // Wrap a non-uniform stride explicitly (e.g. an interleaved/AoS buffer) with of_stride:
-auto strided = kwk::view(kwk::source = foreign
-                       , kwk::shape{2_c, 3_c}
-                       , kwk::of_stride = kwk::stride{1_c, 2_c});
+auto strided       = kwk::view(kwk::source = foreign,
+                               kwk::shape {2_c, 3_c},
+                               kwk::of_stride = kwk::stride {1_c, 2_c});
 ```
 
-**Array-of-structures records from another library** map onto a product kind. Given a
-foreign record type `Record` (any struct), the record is transported as a `kumi::tuple`
-of its fields; a range of records (`std::vector<Record>`-like AoS) is transposed to
-struct-of-arrays when the owning `table` copies it in, and a tuple of per-field pointers
-is wrapped directly:
+        **Array -
+    of -
+    structures records from another library **map onto a product kind.Given
+        a foreign record                                         type `Record` (any struct),
+    the record is transported as a `kumi::tuple` of its fields;
+a range of records(`std::vector<Record>`- like AoS) is transposed to struct - of
+    - arrays when the owning `table` copies it in,
+    and a tuple of per - field pointers is wrapped directly
+    :
 
-```cpp
-using K = kumi::tuple<float, double>;
+```cpp using K                                = kumi::tuple<float, double>;
 
 std::vector<kumi::tuple<float, double>> points = /* foreign AoS records */;
-auto soa = kwk::table(kwk::source = points, kwk::as<K>());      // transposed to SoA
+auto                  soa = kwk::table(kwk::source = points, kwk::as<K>()); // transposed to SoA
 
 // or wrap already-separated per-field arrays (no copy):
-std::array<float,4>  xs;  std::array<double,4>  ys;
-auto v = kwk::view(kwk::source = kumi::tuple{xs.data(), ys.data()}, kwk::shape{4_c}, kwk::as<K>());
+std::array<float, 4>  xs;
+std::array<double, 4> ys;
+auto                  v =
+    kwk::view(kwk::source = kumi::tuple {xs.data(), ys.data()}, kwk::shape {4_c}, kwk::as<K>());
 ```
 
-This is the buffer-protocol story without a protocol: as long as your data is contiguous
-(interleaved or strided, records or parallel arrays), KIWAKU addresses it in place
-through @subpage kwk_indexing and the memory algorithms.
+    This is the              buffer -
+    protocol story without a protocol
+    : as long as your data is
+      contiguous(interleaved or strided, records or parallel arrays)
+    , KIWAKU addresses it in place through @subpage kwk_indexing and the memory algorithms.
 
-**/
+              ** /

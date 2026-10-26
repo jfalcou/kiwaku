@@ -14,7 +14,8 @@ namespace kwk
   //! @ingroup utility
   //! @brief Layout Management utilities
   //!
-  //! This module defines various functions, types and variables to handle container layout in a flexible way.
+  //! This module defines various functions, types and variables to handle container layout in a
+  //! flexible way.
   //====================================================================================================================
 }
 

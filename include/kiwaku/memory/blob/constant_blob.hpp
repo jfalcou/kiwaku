@@ -24,13 +24,13 @@ namespace kwk
   //! @tparam Generator  a callable used as a non-type template parameter (a `constexpr` function
   //!                    pointer or a value of an empty constexpr-callable class).
   //====================================================================================================================
-  template<typename Value, auto Generator>
-  struct constant_blob
+  template<typename Value, auto Generator> struct constant_blob
   {
     //! The type of the values produced by this source.
     using value_type = Value;
 
-    //! The kind of this source (a pointer-like placeholder so it can sit in a collection's options).
+    //! The kind of this source (a pointer-like placeholder so it can sit in a collection's
+    //! options).
     using data_type  = void const*;
 
     //==================================================================================================================
@@ -38,13 +38,12 @@ namespace kwk
     //==================================================================================================================
     template<typename... Coords>
     [[nodiscard]] constexpr value_type operator()(Coords&&... coords) const
-      noexcept(noexcept(Generator(KWK_FWD(coords)...)))
+        noexcept(noexcept(Generator(KWK_FWD(coords)...)))
     {
       return Generator(KWK_FWD(coords)...);
     }
   };
 
   //! Type synonym for `constant_blob<Value, Generator>`.
-  template<typename Value, auto Generator>
-  using constant_blob_t = constant_blob<Value, Generator>;
+  template<typename Value, auto Generator> using constant_blob_t = constant_blob<Value, Generator>;
 }

@@ -16,8 +16,8 @@ namespace kwk::concepts
     @ingroup concepts
     @brief Concept specifying a type represent an extremum.
 
-    A type `T` models `kwk::concepts::extremum` if it has a function that can return a value convertible to
-  std::ptrdiff_t to be used as an index.
+    A type `T` models `kwk::concepts::extremum` if it has a function that can return a value
+  convertible to std::ptrdiff_t to be used as an index.
 
     ## Example types:
     + kwk::extremum

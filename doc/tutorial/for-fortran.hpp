@@ -14,16 +14,17 @@ strictly in operations the library implements and tests exercise. The companion 
 
 | Fortran          | KIWAKU | Meaning |
 |------------------|--------|---------|
-| array `real, dimension(..)` | `kwk::table` / `kwk::view` / `kwk::collection` | an n-dimensional array. `table` owns storage; `view` borrows caller memory |
-| `size(A)` / `shape(A)` | `->size()` / `->shape()` / `.ndim` | element count / per-axis extents / number of dims |
-| element type (kind) | `kwk::as<T>()` / `->kind()` | element type, stated with `as<T>`; see @subpage kwk_data_types |
-| `A(i,j)` / `A(i)` | `A[i, j]` / `A[i]` | scalar positional read/write (comma indexing) |
-| `A(i:j)` / `A(i:j:k)` | `kwk::slicer{..}` | slicing a range along an axis (0-based, stop exclusive) |
-| `A(:,1:2)` | `A[_ , kwk::slicer{0,2,1}]` | slicing a whole axis with the `_` wildcard |
-| `A(i:j)` whole, `end` | `kwk::end` | the last-index sentinel in a slicer |
-| derived type / structure | `kwk::as<kumi::tuple<...>>` product kind | a struct-of-arrays (SoA) table, fields via `kwk::get<I>` |
-| `reshape(A, ...)` | a second `view` over the same buffer | re-view the same memory under new extents |
-| `real(kind=8)` | `kwk::real64` / `kwk::as<double>()` | element type constant |
+| array `real, dimension(..)` | `kwk::table` / `kwk::view` / `kwk::collection` | an n-dimensional
+array. `table` owns storage; `view` borrows caller memory | | `size(A)` / `shape(A)` | `->size()` /
+`->shape()` / `.ndim` | element count / per-axis extents / number of dims | | element type (kind) |
+`kwk::as<T>()` / `->kind()` | element type, stated with `as<T>`; see @subpage kwk_data_types | |
+`A(i,j)` / `A(i)` | `A[i, j]` / `A[i]` | scalar positional read/write (comma indexing) | | `A(i:j)`
+/ `A(i:j:k)` | `kwk::slicer{..}` | slicing a range along an axis (0-based, stop exclusive) | |
+`A(:,1:2)` | `A[_ , kwk::slicer{0,2,1}]` | slicing a whole axis with the `_` wildcard | | `A(i:j)`
+whole, `end` | `kwk::end` | the last-index sentinel in a slicer | | derived type / structure |
+`kwk::as<kumi::tuple<...>>` product kind | a struct-of-arrays (SoA) table, fields via `kwk::get<I>`
+| | `reshape(A, ...)` | a second `view` over the same buffer | re-view the same memory under new
+extents | | `real(kind=8)` | `kwk::real64` / `kwk::as<double>()` | element type constant |
 
 @section kwk_for_fortran_equivalences Rough equivalences
 

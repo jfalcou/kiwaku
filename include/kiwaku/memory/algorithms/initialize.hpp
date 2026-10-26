@@ -15,8 +15,8 @@ namespace kwk
 {
   template<typename T> constexpr void initialize_(void* p)
   {
-    if constexpr (kwk::__::implicit_lifetime_type<T>) kwk::__::start_lifetime_as<T>(p);
-    else ::new (p) T;
+    if constexpr(kwk::__::implicit_lifetime_type<T>) kwk::__::start_lifetime_as<T>(p);
+    else ::new(p) T;
   }
 
   struct initialize_t
@@ -25,8 +25,15 @@ namespace kwk
     {
       using T = typename std::remove_cvref_t<InOut>::value_type;
 
-      if constexpr (kumi::concepts::product_type<T>) kumi::for_each(*this, io);
-      else kwk::__::for_each([&](auto... idxs) { initialize_<std::remove_const_t<T>>(const_cast<void*>(static_cast<const void*>(&io[idxs...]))); }, io->shape());
+      if constexpr(kumi::concepts::product_type<T>) kumi::for_each(*this, io);
+      else
+        kwk::__::for_each(
+            [ & ](auto... idxs)
+            {
+              initialize_<std::remove_const_t<T>>(
+                  const_cast<void*>(static_cast<void const*>(&io[ idxs... ])));
+            },
+            io->shape());
     }
-  } inline constexpr initialize{};
+  } inline constexpr initialize {};
 }

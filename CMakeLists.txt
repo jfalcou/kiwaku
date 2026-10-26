@@ -26,11 +26,6 @@ copa_add_option(KIWAKU_ENABLE_SANITIZERS "Build tests with AddressSanitizer + Un
                 "Sanitizers")
 copa_add_option(KIWAKU_ENABLE_COVERAGE "Build tests with code coverage instrumentation" OFF LABEL "Coverage")
 
-if(KIWAKU_BUILD_TEST)
-  CPMGetPackage(TTS)
-  include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
-endif()
-
 ##======================================================================================================================
 ## Summary Display, which KIWAKU_QUIET silences on its own; QUIET_OPTION is for the calls below
 ##======================================================================================================================
@@ -73,12 +68,15 @@ endif()
 ## Tests setup
 ##======================================================================================================================
 if(KIWAKU_BUILD_TEST)
+  CPMGetPackage(TTS)
+  include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
+
   if(KIWAKU_ENABLE_SANITIZERS)
     copa_setup_sanitizers(kiwaku_tests ENABLE_ASAN ENABLE_UBSAN)
   endif()
 
   enable_testing()
-  add_custom_target(kiwaku-unit)
+  add_custom_target(kiwaku-unit COMMENT "Build KIWAKU uit test")
   add_subdirectory(test)
 
   # After the test targets exist, so the coverage targets can depend on them

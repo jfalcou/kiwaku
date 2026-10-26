@@ -14,7 +14,8 @@ namespace kwk
     @defgroup utility Miscellaneous Helpers
     @brief Quality of Life helpers
 
-    This module defines various functions, types and variables for improving Quality of Life when using **KIWAKU**.
+    This module defines various functions, types and variables for improving Quality of Life when
+  using **KIWAKU**.
   **/
   //====================================================================================================================
 

@@ -19,7 +19,7 @@ TTS_CASE("Shape behavior - Mixed 1D")
   shape<7> shape_s;
   shape<_> shape_di = {27};
   shape<_> shape_d7 = {7};
-  auto shape_si = shape{7_c};
+  auto     shape_si = shape {7_c};
 
   TTS_EQUAL(sizeof(shape_d), 1 * sizeof(kwk::config::default_size_type));
   TTS_EQUAL(sizeof(shape_s), 1UL);
@@ -43,57 +43,60 @@ TTS_CASE("Shape behavior - Mixed 1D")
   TTS_EQUAL(shape_si.size(), 7L);
 };
 
-TTS_CASE("Shape behavior - Mixed 2D"){TTS_WHEN("Build shapes"){using shape_dd = kwk::shape<_, _>;
-using shape_ds = kwk::shape<_, 7>;
-using shape_sd = kwk::shape<7, _>;
-using shape_ss = kwk::shape<7, 5>;
-
-TTS_AND_THEN("Attributes of default constructed shapes")
+TTS_CASE("Shape behavior - Mixed 2D")
 {
-  TTS_EQUAL(sizeof(shape_dd), 2 * sizeof(kwk::config::default_size_type));
-  TTS_EQUAL(sizeof(shape_ds), 1 * sizeof(kwk::config::default_size_type));
-  TTS_EQUAL(sizeof(shape_sd), 1 * sizeof(kwk::config::default_size_type));
-  TTS_EQUAL(sizeof(shape_ss), 1UL);
+  TTS_WHEN("Build shapes")
+  {
+    using shape_dd = kwk::shape<_, _>;
+    using shape_ds = kwk::shape<_, 7>;
+    using shape_sd = kwk::shape<7, _>;
+    using shape_ss = kwk::shape<7, 5>;
 
-  TTS_EQUAL(shape_dd::ndim, 2);
-  TTS_EQUAL(shape_ds::ndim, 2);
-  TTS_EQUAL(shape_sd::ndim, 2);
-  TTS_EQUAL(shape_ss::ndim, 2);
-}
+    TTS_AND_THEN("Attributes of default constructed shapes")
+    {
+      TTS_EQUAL(sizeof(shape_dd), 2 * sizeof(kwk::config::default_size_type));
+      TTS_EQUAL(sizeof(shape_ds), 1 * sizeof(kwk::config::default_size_type));
+      TTS_EQUAL(sizeof(shape_sd), 1 * sizeof(kwk::config::default_size_type));
+      TTS_EQUAL(sizeof(shape_ss), 1UL);
 
-TTS_AND_THEN("Attributes of filled shapes")
-{
-  shape_dd dd = {25, 10};
-  shape_ds ds = {67, _};
-  shape_sd sd = {_, 42};
+      TTS_EQUAL(shape_dd::ndim, 2);
+      TTS_EQUAL(shape_ds::ndim, 2);
+      TTS_EQUAL(shape_sd::ndim, 2);
+      TTS_EQUAL(shape_ss::ndim, 2);
+    }
 
-  TTS_EQUAL(dd.size(), 250L);
-  TTS_EQUAL(ds.size(), 469L);
-  TTS_EQUAL(sd.size(), 294L);
-  TTS_EQUAL(shape_ss{}.size(), 35L);
-}
+    TTS_AND_THEN("Attributes of filled shapes")
+    {
+      shape_dd dd = {25, 10};
+      shape_ds ds = {67, _};
+      shape_sd sd = {_, 42};
 
-TTS_AND_THEN("Tuple-like properties")
-{
-  shape_dd dd = {25, 10};
-  shape_ds ds = {67, _};
-  shape_sd sd = {_, 42};
+      TTS_EQUAL(dd.size(), 250L);
+      TTS_EQUAL(ds.size(), 469L);
+      TTS_EQUAL(sd.size(), 294L);
+      TTS_EQUAL(shape_ss {}.size(), 35L);
+    }
 
-  TTS_EQUAL(get<0>(dd), 25);
-  TTS_EQUAL(get<1>(dd), 10);
+    TTS_AND_THEN("Tuple-like properties")
+    {
+      shape_dd dd = {25, 10};
+      shape_ds ds = {67, _};
+      shape_sd sd = {_, 42};
 
-  TTS_EQUAL(get<0>(ds), 67);
-  TTS_EQUAL(get<1>(ds), 7);
+      TTS_EQUAL(get<0>(dd), 25);
+      TTS_EQUAL(get<1>(dd), 10);
 
-  TTS_EQUAL(get<0>(sd), 7);
-  TTS_EQUAL(get<1>(sd), 42);
+      TTS_EQUAL(get<0>(ds), 67);
+      TTS_EQUAL(get<1>(ds), 7);
 
-  TTS_EQUAL(get<0>(shape_ss{}), 7);
-  TTS_EQUAL(get<1>(shape_ss{}), 5);
-}
-}
-}
-;
+      TTS_EQUAL(get<0>(sd), 7);
+      TTS_EQUAL(get<1>(sd), 42);
+
+      TTS_EQUAL(get<0>(shape_ss {}), 7);
+      TTS_EQUAL(get<1>(shape_ss {}), 5);
+    }
+  }
+};
 
 TTS_CASE("Default constructed shape behavior - Mixed 3D")
 {
@@ -186,10 +189,12 @@ template<int N, std::size_t... I> struct sizes<N, std::index_sequence<I...>>
   using types_list = tts::types<std::integral_constant<std::size_t, I + 1>...>;
 };
 
-TTS_CASE_TPL("Building a nD shape with kwk::kwk::shape{a1,...,an}", sizes<10>)<typename T>(::tts::type<T>)
+TTS_CASE_TPL("Building a nD shape with kwk::kwk::shape{a1,...,an}", sizes<10>)
+<typename T>(::tts::type<T>)
 {
-  auto f = []<std::size_t... Idx>(std::index_sequence<Idx...> const&) { return kwk::shape{3 * (1 + Idx)...}; };
+  auto f = []<std::size_t... Idx>(std::index_sequence<Idx...> const&)
+  { return kwk::shape {3 * (1 + Idx)...}; };
 
-  auto sh = f(std::make_index_sequence<T::value>{});
+  auto sh = f(std::make_index_sequence<T::value> {});
   TTS_EQUAL(sh.ndim, static_cast<int>(T::value));
 };

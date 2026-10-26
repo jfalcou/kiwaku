@@ -25,5 +25,5 @@ namespace kwk
   */
   //====================================================================================================================
   template<std::size_t Size, std::size_t Alignment>
-  inline constexpr stack_allocator<Size,Alignment> stack = {};
+  inline constexpr stack_allocator<Size, Alignment> stack = {};
 }

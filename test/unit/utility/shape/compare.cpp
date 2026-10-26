@@ -12,33 +12,33 @@ TTS_CASE("Equality comparison between shapes")
 {
   using kwk::shape;
 
-  TTS_EQUAL(shape{3}, (shape{3}));
-  TTS_EQUAL((shape{3, 5}), (shape{3, 5}));
-  TTS_EQUAL((shape{3, 5, 7}), (shape{3, 5, 7}));
-  TTS_EQUAL((shape{3, 5, 7, 9}), (shape{3, 5, 7, 9}));
+  TTS_EQUAL(shape {3}, (shape {3}));
+  TTS_EQUAL((shape {3, 5}), (shape {3, 5}));
+  TTS_EQUAL((shape {3, 5, 7}), (shape {3, 5, 7}));
+  TTS_EQUAL((shape {3, 5, 7, 9}), (shape {3, 5, 7, 9}));
 };
 
 TTS_CASE("Inequality comparison between shapes")
 {
   using kwk::shape;
 
-  TTS_NOT_EQUAL(shape{3}, shape{7});
-  TTS_NOT_EQUAL(shape{3}, (shape{1, 3}));
-  TTS_NOT_EQUAL(shape{3}, (shape{1, 1, 3}));
-  TTS_NOT_EQUAL(shape{3}, (shape{1, 1, 1, 3}));
+  TTS_NOT_EQUAL(shape {3}, shape {7});
+  TTS_NOT_EQUAL(shape {3}, (shape {1, 3}));
+  TTS_NOT_EQUAL(shape {3}, (shape {1, 1, 3}));
+  TTS_NOT_EQUAL(shape {3}, (shape {1, 1, 1, 3}));
 
-  TTS_NOT_EQUAL((shape{3, 5}), (shape{15}));
-  TTS_NOT_EQUAL((shape{3, 5}), (shape{5, 3}));
-  TTS_NOT_EQUAL((shape{3, 5}), (shape{1, 3, 5}));
-  TTS_NOT_EQUAL((shape{3, 5}), (shape{1, 1, 3, 5}));
+  TTS_NOT_EQUAL((shape {3, 5}), (shape {15}));
+  TTS_NOT_EQUAL((shape {3, 5}), (shape {5, 3}));
+  TTS_NOT_EQUAL((shape {3, 5}), (shape {1, 3, 5}));
+  TTS_NOT_EQUAL((shape {3, 5}), (shape {1, 1, 3, 5}));
 
-  TTS_NOT_EQUAL((shape{3, 5, 7}), (shape{105}));
-  TTS_NOT_EQUAL((shape{3, 5, 7}), (shape{15, 7}));
-  TTS_NOT_EQUAL((shape{3, 5, 7}), (shape{1, 3, 5, 7}));
+  TTS_NOT_EQUAL((shape {3, 5, 7}), (shape {105}));
+  TTS_NOT_EQUAL((shape {3, 5, 7}), (shape {15, 7}));
+  TTS_NOT_EQUAL((shape {3, 5, 7}), (shape {1, 3, 5, 7}));
 
-  TTS_NOT_EQUAL((shape{3, 5, 7, 9}), (shape{945}));
-  TTS_NOT_EQUAL((shape{3, 5, 7, 9}), (shape{105, 9}));
-  TTS_NOT_EQUAL((shape{3, 5, 7, 9}), (shape{15, 7, 9}));
+  TTS_NOT_EQUAL((shape {3, 5, 7, 9}), (shape {945}));
+  TTS_NOT_EQUAL((shape {3, 5, 7, 9}), (shape {105, 9}));
+  TTS_NOT_EQUAL((shape {3, 5, 7, 9}), (shape {15, 7, 9}));
 };
 
 TTS_CASE("Inequality comparison between squeezed shapes")
@@ -46,13 +46,13 @@ TTS_CASE("Inequality comparison between squeezed shapes")
   using kwk::shape;
   using namespace kwk::literals;
 
-  TTS_EQUAL(shape{3}, kwk::squeeze(shape{1_c, 3}));
-  TTS_EQUAL(shape{3}, kwk::squeeze(shape{3, 1_c}));
-  TTS_NOT_EQUAL(shape{3}, kwk::squeeze(shape{3, 1, 1_c}));
-  TTS_NOT_EQUAL(shape{3}, kwk::squeeze(shape{1_c, 1, 3}));
+  TTS_EQUAL(shape {3}, kwk::squeeze(shape {1_c, 3}));
+  TTS_EQUAL(shape {3}, kwk::squeeze(shape {3, 1_c}));
+  TTS_NOT_EQUAL(shape {3}, kwk::squeeze(shape {3, 1, 1_c}));
+  TTS_NOT_EQUAL(shape {3}, kwk::squeeze(shape {1_c, 1, 3}));
 
-  TTS_NOT_EQUAL((shape{3, 3}), kwk::squeeze(shape{3, 1, 3}));
-  TTS_EQUAL((shape{3, 3}), kwk::squeeze(shape{3, 1_c, 3}));
+  TTS_NOT_EQUAL((shape {3, 3}), kwk::squeeze(shape {3, 1, 3}));
+  TTS_EQUAL((shape {3, 3}), kwk::squeeze(shape {3, 1_c, 3}));
 };
 
 // Should filling with leading ones be implicit or a function ?

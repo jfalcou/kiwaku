@@ -11,17 +11,14 @@ namespace kwk
 {
   struct shallow_blob
   {
-    std::byte* base_ = nullptr;
+    std::byte*            base_ = nullptr;
 
-    std::byte* get() noexcept { return base_; }
-    std::byte const* get() const noexcept { return base_; }
+    std::byte*            get() noexcept { return base_; }
+    std::byte const*      get() const noexcept { return base_; }
 
-    constexpr void swap(shallow_blob& other) noexcept
-    {
-      std::swap(base_, other.base_);
-    }
+    constexpr void        swap(shallow_blob& other) noexcept { std::swap(base_, other.base_); }
 
-    constexpr friend void swap(shallow_blob &self, shallow_blob& other) noexcept
+    constexpr friend void swap(shallow_blob& self, shallow_blob& other) noexcept
     {
       self.swap(other);
     }

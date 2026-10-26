@@ -20,13 +20,15 @@ namespace kwk
     {
       using T = typename std::remove_cvref_t<InOut>::value_type;
 
-      if constexpr (kumi::concepts::product_type<T>) kumi::for_each(*this, io);
+      if constexpr(kumi::concepts::product_type<T>) kumi::for_each(*this, io);
       else
         kwk::__::for_each(
-          [&](auto... idxs) {
-            if constexpr (!kwk::__::implicit_lifetime_type<T>) kwk::__::destroy_at(std::addressof(io[idxs...]));
-          },
-          io->shape());
+            [ & ](auto... idxs)
+            {
+              if constexpr(!kwk::__::implicit_lifetime_type<T>)
+                kwk::__::destroy_at(std::addressof(io[ idxs... ]));
+            },
+            io->shape());
     }
-  } inline constexpr destroy{};
+  } inline constexpr destroy {};
 }

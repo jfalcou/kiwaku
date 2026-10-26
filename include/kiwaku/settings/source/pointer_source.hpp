@@ -9,22 +9,22 @@
 
 namespace kwk::__
 {
-  ///@brief pointer_option provides a way to represent a pointer to extract it's properties for view/table
+  ///@brief pointer_option provides a way to represent a pointer to extract it's properties for
+  /// view/table
   /// construction
   template<kwk::concepts::pointer P> struct pointer_option : source_option<std::remove_pointer_t<P>>
   {
-    using type = P;
+    using type        = P;
     using source_type = std::remove_cvref_t<P>;
-    using base = source_option<std::remove_pointer_t<P>>;
-    using value_type = std::remove_pointer_t<source_type>;
+    using base        = source_option<std::remove_pointer_t<P>>;
+    using value_type  = std::remove_pointer_t<source_type>;
 
-    template <typename Self>
-    constexpr auto&& operator()(this Self&& self, base::identifier_type const&) {
-      using pointer_t = std::conditional_t<
-        std::is_const_v<std::remove_reference_t<Self>>,
-        const pointer_option,
-        pointer_option 
-      >;
+    template<typename Self>
+    constexpr auto&& operator()(this Self&& self, base::identifier_type const&)
+    {
+      using pointer_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
+                                           pointer_option const,
+                                           pointer_option>;
       return std::forward_like<Self>(static_cast<pointer_t&>(self));
     }
 
@@ -46,10 +46,7 @@ namespace kwk::__
   }
 
   ///@brief Helper to retrieve a the shape of a pointer_option
-  template<typename P> constexpr auto shape_of(pointer_option<P> const&)
-  {
-    return shape{kwk::_};
-  }
+  template<typename P> constexpr auto shape_of(pointer_option<P> const&) { return shape {kwk::_}; }
 
 }
 
@@ -57,6 +54,6 @@ namespace kwk::config
 {
   template<kwk::concepts::pointer P> struct preprocess_source<P>
   {
-    static constexpr auto from(P p) noexcept { return kwk::__::pointer_option{p}; }
+    static constexpr auto from(P p) noexcept { return kwk::__::pointer_option {p}; }
   };
 }

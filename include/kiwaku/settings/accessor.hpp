@@ -13,11 +13,11 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Indexing setting for kwk::table
   //================================================================================================
-  inline constexpr __::boundary_id boundary{};
+  inline constexpr __::boundary_id   boundary {};
 
   //================================================================================================
   //! @ingroup  settings
   //! @brief    Indexing setting for kwk::table
   //================================================================================================
-  inline constexpr __::coordinate_id coordinate{};
+  inline constexpr __::coordinate_id coordinate {};
 }

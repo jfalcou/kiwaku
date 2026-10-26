@@ -36,8 +36,8 @@ namespace kwk::concepts
     @ingroup concepts
     @brief Concept specifying a type represent an extent.
 
-    A type `T` models `kwk::concepts::dynamic_extent` if it models : `kwk::static_constant` with inner type
-    modeling `std::integral` or is simply models `std::integral`.
+    A type `T` models `kwk::concepts::dynamic_extent` if it models : `kwk::static_constant` with
+  inner type modeling `std::integral` or is simply models `std::integral`.
 
     ## Example types:
     + kwk::_
@@ -45,5 +45,6 @@ namespace kwk::concepts
   **/
   //====================================================================================================================
   template<typename T>
-  concept dynamic_extent = kwk::is_wildcard_v<std::remove_cvref_t<T>> || std::integral<std::remove_cvref_t<T>>;
+  concept dynamic_extent =
+      kwk::is_wildcard_v<std::remove_cvref_t<T>> || std::integral<std::remove_cvref_t<T>>;
 }

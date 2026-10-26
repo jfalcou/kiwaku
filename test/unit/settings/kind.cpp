@@ -23,8 +23,9 @@ TTS_CASE("Predefined kind settings")
   TTS_TYPE_IS(decltype(kwk::uint64)::element_type, std::uint64_t);
 };
 
-TTS_CASE_TPL("kind behave as expected in options", tts::arithmetic_types)<typename T>(tts::type<T>)
+TTS_CASE_TPL("kind behave as expected in options", tts::arithmetic_types)
+<typename T>(tts::type<T>)
 {
   auto o = kwk::options(kwk::as<T>());
-  TTS_EQUAL(o[kwk::kind], kwk::as<T>());
+  TTS_EQUAL(o[ kwk::kind ], kwk::as<T>());
 };

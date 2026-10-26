@@ -15,7 +15,7 @@
 //! *containers* (strictly positive types).
 //!
 //! - @subpage kwk_architecture "Architecture" — the math and the design of every building block
-//! - @subpage kwk_finalization_roadmap "Finalization Roadmap" — prioritized plan to finish the refactor
+//! - @subpage kwk_finalization_roadmap "Finalization Roadmap" — prioritized plan to finish the
+//! refactor
 //! - @subpage kwk_getting_started "Getting started"
 //! - @subpage kwk_fundamentals "Fundamentals"
-

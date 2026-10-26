@@ -38,8 +38,9 @@ the stride arithmetic and the storage footprint be fully static, which lets the 
 unroll and keep the data in registers:
 
 ```cpp
-auto fast = kwk::view(kwk::source = buf, kwk::shape{4_c});   // static: strides known at compile time
-auto dyn  = kwk::view(kwk::source = buf, kwk::shape{n});     // runtime: address arithmetic per read
+auto fast = kwk::view(kwk::source = buf, kwk::shape{4_c});   // static: strides known at compile
+time auto dyn  = kwk::view(kwk::source = buf, kwk::shape{n});     // runtime: address arithmetic per
+read
 ```
 
 For out-of-domain or fractional reads, the boundary (`clamp`/`tile`/`mirror`) and

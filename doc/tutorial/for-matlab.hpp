@@ -13,15 +13,16 @@ ground from the NumPy side.
 
 | MATLAB       | KIWAKU | Meaning |
 |--------------|--------|---------|
-| matrix / array | `kwk::table` / `kwk::view` / `kwk::collection` | an n-dimensional array. `table` owns storage; `view` borrows caller memory |
-| `size(A)`    | `->shape()` / `->size()` / `.ndim` | per-axis extents / element count / number of dims |
-| `class(A)` / numeric type | `kwk::as<T>()` / `->kind()` | element type, stated with `as<T>`; see @subpage kwk_data_types |
-| `A(i,j)`     | `A[i, j]` | scalar positional read/write (comma indexing) |
-| `A(:,1:2)`   | `A[_ , kwk::slicer{0,2,1}]` | slicing a range along an axis (0-based) |
-| `A(1)` vs `A(i,j)` | `A[i]` vs `A[i, j]` | 1-D scalar read equally by position |
-| struct array | `kwk::as<kumi::tuple<...>>` product kind | a struct-of-arrays (SoA) table, fields via `kwk::get<I>` |
-| `reshape(A, m, n)` | a second `view` over the same buffer | re-view the same memory under new extents |
-| `end`         | `kwk::end` | the last index sentinel in a slicer |
+| matrix / array | `kwk::table` / `kwk::view` / `kwk::collection` | an n-dimensional array. `table`
+owns storage; `view` borrows caller memory | | `size(A)`    | `->shape()` / `->size()` / `.ndim` |
+per-axis extents / element count / number of dims | | `class(A)` / numeric type | `kwk::as<T>()` /
+`->kind()` | element type, stated with `as<T>`; see @subpage kwk_data_types | | `A(i,j)`     | `A[i,
+j]` | scalar positional read/write (comma indexing) | | `A(:,1:2)`   | `A[_ , kwk::slicer{0,2,1}]` |
+slicing a range along an axis (0-based) | | `A(1)` vs `A(i,j)` | `A[i]` vs `A[i, j]` | 1-D scalar
+read equally by position | | struct array | `kwk::as<kumi::tuple<...>>` product kind | a
+struct-of-arrays (SoA) table, fields via `kwk::get<I>` | | `reshape(A, m, n)` | a second `view` over
+the same buffer | re-view the same memory under new extents | | `end`         | `kwk::end` | the
+last index sentinel in a slicer |
 
 @section kwk_for_matlab_equivalences Rough equivalences
 

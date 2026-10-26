@@ -23,31 +23,32 @@ namespace kwk
 
     struct kind_id : kumi::identifier<kind_id>
     {
-      template<typename T> constexpr auto operator=(kind_option<T> const& cnst) const noexcept { return cnst; }
+      template<typename T> constexpr auto operator=(kind_option<T> const& cnst) const noexcept
+      {
+        return cnst;
+      }
 
-      friend constexpr auto to_str(kind_id) { return kumi::str{"Kind"}; }
+      friend constexpr auto to_str(kind_id) { return kumi::str {"Kind"}; }
     };
 
     template<typename T> struct kind_option
     {
-      using element_type = T;
-      using type = kind_option<T>;
+      using element_type    = T;
+      using type            = kind_option<T>;
       using identifier_type = kind_id;
-      using label_type = kumi::str;
-      
-      template <typename Self>
-      constexpr auto&& operator()(this Self&& self, identifier_type const&) {
-        using kind_t = std::conditional_t<
-          std::is_const_v<std::remove_reference_t<Self>>,
-          const kind_option,
-          kind_option 
-        >;
+      using label_type      = kumi::str;
+
+      template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
+      {
+        using kind_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
+                                          kind_option const,
+                                          kind_option>;
         return std::forward_like<Self>(static_cast<kind_t&>(self));
       }
 
-      static constexpr label_type label() { return kumi::str{"Kind"}; }
+      static constexpr label_type label() { return kumi::str {"Kind"}; }
 
-      using kind = T;
+      using kind                     = T;
       static constexpr auto itemsize = sizeof(T);
 
       template<typename CharT, typename Traits>
@@ -58,10 +59,7 @@ namespace kwk
       }
     };
 
-    template<typename T> constexpr bool operator==(kind_option<T>, kind_option<T>)
-    {
-      return true;
-    }
+    template<typename T> constexpr bool operator==(kind_option<T>, kind_option<T>) { return true; }
 
     template<typename T, typename U> constexpr bool operator==(kind_option<T>, kind_option<U>)
     {
@@ -81,10 +79,11 @@ namespace kwk
     @ingroup  settings-kind
     @brief Identifier for the kind setting for containers
 
-    Identifies the kind setting for KIWAKU containers, which specifies the type to be used within the container.
+    Identifies the kind setting for KIWAKU containers, which specifies the type to be used within
+  the container.
   **/
   //====================================================================================================================
-  inline constexpr __::kind_id kind = {};
+  inline constexpr __::kind_id                      kind = {};
 
   //====================================================================================================================
   /**
@@ -95,10 +94,7 @@ namespace kwk
     @see  kind
   **/
   //====================================================================================================================
-  template<typename T> constexpr __::kind_option<T> as(T = {})
-  {
-    return {};
-  }
+  template<typename T> constexpr __::kind_option<T> as(T = {}) { return {}; }
 
   //====================================================================================================================
   /**
@@ -121,7 +117,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto real32 = as<float>();
+  constexpr inline auto                             real32 = as<float>();
 
   //====================================================================================================================
   /**
@@ -130,7 +126,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto real64 = as<double>();
+  constexpr inline auto                             real64 = as<double>();
 
   //====================================================================================================================
   /**
@@ -139,7 +135,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto int8 = as<std::int8_t>();
+  constexpr inline auto                             int8   = as<std::int8_t>();
 
   //====================================================================================================================
   /**
@@ -148,7 +144,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto int16 = as<std::int16_t>();
+  constexpr inline auto                             int16  = as<std::int16_t>();
 
   //====================================================================================================================
   /**
@@ -157,7 +153,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto int32 = as<std::int32_t>();
+  constexpr inline auto                             int32  = as<std::int32_t>();
 
   //====================================================================================================================
   /**
@@ -166,7 +162,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto int64 = as<std::int64_t>();
+  constexpr inline auto                             int64  = as<std::int64_t>();
 
   //====================================================================================================================
   /**
@@ -175,7 +171,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto uint8 = as<std::uint8_t>();
+  constexpr inline auto                             uint8  = as<std::uint8_t>();
 
   //====================================================================================================================
   /**
@@ -184,7 +180,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto uint16 = as<std::uint16_t>();
+  constexpr inline auto                             uint16 = as<std::uint16_t>();
 
   //====================================================================================================================
   /**
@@ -193,7 +189,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto uint32 = as<std::uint32_t>();
+  constexpr inline auto                             uint32 = as<std::uint32_t>();
 
   //====================================================================================================================
   /**
@@ -202,7 +198,7 @@ namespace kwk
     @see kind
   **/
   //====================================================================================================================
-  constexpr inline auto uint64 = as<std::uint64_t>();
+  constexpr inline auto                             uint64 = as<std::uint64_t>();
 
   //====================================================================================================================
   /**

@@ -83,7 +83,7 @@ an element of \f$F(X)\f$. (nLab *sheaf*; Hartshorne, *Algebraic Geometry*, ch. I
 In Grothendieck's language the "open sets + covers" structure is axiomatized as a **site** with a
 **Grothendieck topology**; the sheaf condition becomes **descent** along covering families. The
 **Grothendieck construction** \f$\textstyle\int F\f$ (the category of elements) assembles a presheaf
-\f$F\f$ into a fibered category whose objects are pairs \f$(U,\,x)\f$ with \f$x\in F(U)\f$ — 
+\f$F\f$ into a fibered category whose objects are pairs \f$(U,\,x)\f$ with \f$x\in F(U)\f$ —
 "an open set together with a local datum over it."
 
 ## How the two meet (Kiwaku's stance)

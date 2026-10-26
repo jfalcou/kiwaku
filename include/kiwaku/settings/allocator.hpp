@@ -16,8 +16,8 @@ namespace kwk
     @defgroup settings-allocator  Container Allocator
     @ingroup settings
 
-    This group includes components that define the allocator used by KIWAKU containers, allowing users to specify
-    custom memory management strategies for their containers.
+    This group includes components that define the allocator used by KIWAKU containers, allowing
+  users to specify custom memory management strategies for their containers.
   **/
   //====================================================================================================================
 
@@ -29,31 +29,28 @@ namespace kwk
     {
       template<concepts::allocator T> constexpr auto operator=(T const& cnst) const noexcept
       {
-        return allocator_option<T>{cnst};
+        return allocator_option<T> {cnst};
       }
 
       template<typename T>
-      requires(!concepts::allocator<T>)
-      constexpr auto operator=(T const&) const = delete;
+        requires(!concepts::allocator<T>)
+      constexpr auto        operator=(T const&) const = delete;
 
-      friend constexpr auto to_str(allocator_id) { return kumi::str{"Allocator"}; }
+      friend constexpr auto to_str(allocator_id) { return kumi::str {"Allocator"}; }
     };
 
     template<typename T> struct allocator_option
     {
-      using element_type = T;
-      using type = allocator_option<T>;
+      using element_type    = T;
+      using type            = allocator_option<T>;
       using identifier_type = allocator_id;
-      using label_type = kumi::str;
+      using label_type      = kumi::str;
 
-      T value;
+      T                           value;
 
-      constexpr auto operator()(identifier_type) const 
-      { 
-        return *this; 
-      }
+      constexpr auto              operator()(identifier_type) const { return *this; }
 
-      static constexpr label_type label() { return kumi::str{"Allocator"}; }
+      static constexpr label_type label() { return kumi::str {"Allocator"}; }
 
       template<typename CharT, typename Traits>
       friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
@@ -68,7 +65,8 @@ namespace kwk
     @ingroup  settings-allocator
     @brief Identifier for the allocator setting for containers
 
-    Identifies the allocator setting for KIWAKU containers, which specifies the allocator used by the container.
+    Identifies the allocator setting for KIWAKU containers, which specifies the allocator used by
+  the container.
   **/
-  inline constexpr __::allocator_id allocator{};
+  inline constexpr __::allocator_id allocator {};
 }

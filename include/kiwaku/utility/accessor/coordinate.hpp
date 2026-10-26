@@ -15,30 +15,31 @@ namespace kwk
 
     struct coordinate_id : kumi::identifier<coordinate_id>
     {
-      template<typename T> constexpr auto operator=(coordinate_option<T> const& cnst) const noexcept { return cnst; }
+      template<typename T> constexpr auto operator=(coordinate_option<T> const& cnst) const noexcept
+      {
+        return cnst;
+      }
 
-      friend constexpr auto to_str(coordinate_id) { return kumi::str{"Coordinate"}; }
+      friend constexpr auto to_str(coordinate_id) { return kumi::str {"Coordinate"}; }
     };
 
     template<typename T> struct coordinate_option : T
     {
-      using element_type = T;
-      using type = coordinate_option<T>;
+      using element_type    = T;
+      using type            = coordinate_option<T>;
       using identifier_type = coordinate_id;
-      using label_type = kumi::str;
+      using label_type      = kumi::str;
       using T::operator();
 
-      template <typename Self>
-      constexpr auto&& operator()(this Self&& self, identifier_type const&) {
-        using coordinate_t= std::conditional_t<
-          std::is_const_v<std::remove_reference_t<Self>>,
-          const coordinate_option,
-          coordinate_option 
-        >;
+      template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
+      {
+        using coordinate_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
+                                                coordinate_option const,
+                                                coordinate_option>;
         return std::forward_like<Self>(static_cast<coordinate_t&>(self));
       }
 
-      static constexpr label_type label() { return kumi::str{"Coordinate"}; }
+      static constexpr label_type label() { return kumi::str {"Coordinate"}; }
 
       template<typename CharT, typename Traits>
       friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
@@ -49,10 +50,7 @@ namespace kwk
     };
   }
 
-  template<typename T> constexpr __::coordinate_option<T> coordinator(T = {})
-  {
-    return {};
-  }
+  template<typename T> constexpr __::coordinate_option<T> coordinator(T = {}) { return {}; }
 
   namespace __
   {
@@ -87,29 +85,26 @@ namespace kwk
     // boundary, flatten — order-correct for both the integer and interpolating paths. `Base == 0`
     // degenerates to `canonical_t`'s identity, which is why `c_index` and the (unset) default
     // coincide.
-    template<std::size_t Base, typename Inner>
-    struct based_t
+    template<std::size_t Base, typename Inner> struct based_t
     {
       static constexpr auto shift(auto&& p)
       {
-        return kumi::map( [](auto x) { return x - static_cast<std::ptrdiff_t>(Base); },
-                          kumi::flatten_all(KWK_FWD(p)) );
+        return kumi::map([](auto x) { return x - static_cast<std::ptrdiff_t>(Base); },
+                         kumi::flatten_all(KWK_FWD(p)));
       }
 
       template<kumi::concepts::product_type P, auto... std>
       static constexpr auto operator()(P&& p, kwk::stride<std...> const& sd) noexcept
       {
-        return Inner{}(KWK_FWD(p), KWK_FWD(sd));
+        return Inner {}(KWK_FWD(p), KWK_FWD(sd));
       }
     };
 
     // Coordinate strategy guard : whether `T` is a coordinate strategy (has an address-resolving
     // `operator()`). Used to detect a wrapped/base-indexed coordinate inside the builder.
     template<typename T>
-    inline constexpr bool is_coordinate_strategy_v = requires(T const& t)
-    {
-      t(kumi::tuple<std::ptrdiff_t>{}, kwk::stride<1, 1>{});
-    };
+    inline constexpr bool is_coordinate_strategy_v =
+        requires(T const& t) { t(kumi::tuple<std::ptrdiff_t> {}, kwk::stride<1, 1> {}); };
 
     struct morton_t
     {

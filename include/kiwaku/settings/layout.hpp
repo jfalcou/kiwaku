@@ -27,7 +27,7 @@ namespace kwk
         return as_shape(KWK_FWD(t));
       }
 
-      friend constexpr auto to_str(shape_id) { return kumi::str{"Shape"}; }
+      friend constexpr auto to_str(shape_id) { return kumi::str {"Shape"}; }
     };
 
     struct stride_id : kumi::identifier<stride_id>
@@ -37,28 +37,29 @@ namespace kwk
         return as_stride(KWK_FWD(t));
       }
 
-      friend constexpr auto to_str(stride_id) { return kumi::str{"Stride"}; }
+      friend constexpr auto to_str(stride_id) { return kumi::str {"Stride"}; }
     };
 
     struct storage_order_id : kumi::identifier<storage_order_id>
     {
-      template<storage_order_descriptor O> constexpr auto operator=(storage_order_option<O>) const noexcept
+      template<storage_order_descriptor O>
+      constexpr auto operator=(storage_order_option<O>) const noexcept
       {
-        return storage_order_option<O>{};
+        return storage_order_option<O> {};
       }
 
       template<typename Func>
-      requires(std::is_empty_v<Func>)
+        requires(std::is_empty_v<Func>)
       constexpr auto operator=(Func) const noexcept
       {
-        return storage_order_option<Func{}>{};
+        return storage_order_option<Func {}> {};
       }
 
-      friend constexpr auto to_str(storage_order_id) { return kumi::str{"Storage Order"}; }
+      friend constexpr auto to_str(storage_order_id) { return kumi::str {"Storage Order"}; }
     };
   }
 
-  inline constexpr __::shape_id of_shape{};
-  inline constexpr __::stride_id of_stride{};
-  inline constexpr __::storage_order_id storage_order{};
+  inline constexpr __::shape_id         of_shape {};
+  inline constexpr __::stride_id        of_stride {};
+  inline constexpr __::storage_order_id storage_order {};
 }

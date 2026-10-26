@@ -4,6 +4,10 @@
 ##  SPDX-License-Identifier: BSL-1.0
 ##======================================================================================================================
 copa_setup_test_targets()
-set(root "${CMAKE_SOURCE_DIR}/test")
+set(ROOT "${CMAKE_SOURCE_DIR}/test")
 
-copa_glob_unit(QUIET PATTERN "unit/*.cpp" INTERFACE kiwaku_test RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} )
+copa_glob_unit(
+  QUIET
+  PATTERN "unit/*.cpp"
+  INTERFACE kiwaku_test
+  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR})

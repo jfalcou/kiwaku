@@ -15,29 +15,35 @@ namespace kwk
 
     struct generator_id : kumi::identifier<generator_id>
     {
-      template<typename C> constexpr auto operator=(C const& c) const noexcept { return generator_option{c}; }
+      template<typename C> constexpr auto operator=(C const& c) const noexcept
+      {
+        return generator_option {c};
+      }
 
-      friend constexpr auto to_str(generator_id) { return kumi::str{"Generator"}; }
+      friend constexpr auto to_str(generator_id) { return kumi::str {"Generator"}; }
     };
 
     template<typename C> struct generator_option
     {
-      using element_type = C;
-      using type = generator_option<C>;
+      using element_type    = C;
+      using type            = generator_option<C>;
       using identifier_type = generator_id;
-      using label_type = kumi::str;
+      using label_type      = kumi::str;
 
       C content;
 
       constexpr generator_option() = default;
 
-      constexpr generator_option(C c) : content(c) {}
+      constexpr generator_option(C c)
+          : content(c)
+      {
+      }
 
-      constexpr auto operator()(identifier_type) const { return *this; }
+      constexpr auto              operator()(identifier_type) const { return *this; }
 
-      static constexpr label_type label() { return kumi::str{"Generator"}; }
+      static constexpr label_type label() { return kumi::str {"Generator"}; }
 
-      static constexpr auto name() { return kumi::str{"Generator"}; }
+      static constexpr auto       name() { return kumi::str {"Generator"}; }
 
       template<typename CharT, typename Traits>
       friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
@@ -52,5 +58,5 @@ namespace kwk
   //! @ingroup  settings
   //! @brief    Generator setting for kwk::table and kwk::view
   //================================================================================================
-  inline constexpr __::generator_id generator{};
+  inline constexpr __::generator_id generator {};
 }

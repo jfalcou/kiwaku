@@ -31,32 +31,33 @@ namespace kwk
     struct source_id : kumi::identifier<source_id>
     {
       template<typename T>
-      constexpr auto operator=(T&& t) const noexcept(noexcept(config::preprocess_source<T>::from(KWK_FWD(t)) ))
-      requires(requires { config::preprocess_source<T>::from(KWK_FWD(t)); })
+      constexpr auto operator=(T&& t) const
+          noexcept(noexcept(config::preprocess_source<T>::from(KWK_FWD(t))))
+        requires(requires { config::preprocess_source<T>::from(KWK_FWD(t)); })
       {
         return config::preprocess_source<T>::from(KWK_FWD(t));
       }
 
       template<typename T> constexpr auto operator=(T&& t) const = delete;
 
-      friend constexpr auto to_str(source_id) { return kumi::str{"Source"}; }
+      friend constexpr auto               to_str(source_id) { return kumi::str {"Source"}; }
     };
 
     template<typename T> struct source_option
     {
-      using element_type = T;
-      using type = source_option<T>;
+      using element_type    = T;
+      using type            = source_option<T>;
       using identifier_type = source_id;
-      using label_type = kumi::str;
-      using pointer = std::add_pointer_t<T>;
+      using label_type      = kumi::str;
+      using pointer         = std::add_pointer_t<T>;
 
-      static constexpr label_type label() { return kumi::str{"Source"}; }
+      static constexpr label_type label() { return kumi::str {"Source"}; }
 
-      constexpr auto data() const { return data_; }
+      constexpr auto              data() const { return data_; }
 
-      constexpr auto data() { return data_; }
+      constexpr auto              data() { return data_; }
 
-      pointer data_;
+      pointer                     data_;
     };
   }
 
@@ -65,10 +66,11 @@ namespace kwk
     @ingroup  settings-source
     @brief Identifier for the source setting for containers
 
-    Identifies the source setting for KIWAKU containers, which specifies the source of the data for the container.
+    Identifies the source setting for KIWAKU containers, which specifies the source of the data for
+  the container.
   **/
   //====================================================================================================================
-  inline constexpr __::source_id source{};
+  inline constexpr __::source_id source {};
 }
 
 #include <kiwaku/settings/source/pointer_source.hpp>

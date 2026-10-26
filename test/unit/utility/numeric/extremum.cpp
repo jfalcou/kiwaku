@@ -19,8 +19,8 @@ TTS_CASE("extremum behavior - Arithmetic with values")
 
     TTS_AND_THEN("Evaluation")
     {
-      int n = 100;
-      int m = 200;
+      int  n = 100;
+      int  m = 200;
       auto g = 10_c;
       // Traditionnal math on the result
       TTS_EQUAL(e(n), 100);

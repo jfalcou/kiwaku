@@ -16,7 +16,8 @@ namespace kwk::concepts
     @ingroup concepts
     @brief Concept specifying a type represent a compile time static constant.
 
-    A type `T` models `kwk::concepts::static_constant` if it holds a `value_type` alias and a static `value` member.
+    A type `T` models `kwk::concepts::static_constant` if it holds a `value_type` alias and a static
+  `value` member.
 
     ## Example types:
     + std::integral_constant<std::size_t,1>;
@@ -34,8 +35,8 @@ namespace kwk::concepts
     @ingroup concepts
     @brief Concept specifying a type represent a compile time static arithmetic constant.
 
-    A type `T` models `kwk::concepts::arithmetic_constant` if it models `kwk::static_constant` which internal member
-    models either `std::integral` or `std::floating_point`.
+    A type `T` models `kwk::concepts::arithmetic_constant` if it models `kwk::static_constant` which
+  internal member models either `std::integral` or `std::floating_point`.
 
     ## Example types:
     + std::integral_constant<std::size_t,1>;
@@ -46,6 +47,6 @@ namespace kwk::concepts
   template<typename T>
   concept arithmetic_constant = static_constant<T> && requires(T) {
     requires std::integral<typename std::remove_cvref_t<T>::value_type> ||
-               std::floating_point<typename std::remove_cvref_t<T>::value_type>;
+                 std::floating_point<typename std::remove_cvref_t<T>::value_type>;
   };
 }

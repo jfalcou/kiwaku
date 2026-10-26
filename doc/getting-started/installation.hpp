@@ -19,8 +19,9 @@ tuple library); for the unit tests, **TTS** is used as well, but neither is need
 
 @section kwk_installation_cpm With CPM
 
-The simplest way to pull KIWAKU into a CMake project is [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake).
-Add it to your top-level `CMakeLists.txt` and then request the package:
+The simplest way to pull KIWAKU into a CMake project is
+[CPM.cmake](https://github.com/cpm-cmake/CPM.cmake). Add it to your top-level `CMakeLists.txt` and
+then request the package:
 
 ```cmake
 CPMAddPackage(NAME KIWAKU GIT_REPOSITORY https://github.com/jfalcou/kiwaku GIT_TAG main)

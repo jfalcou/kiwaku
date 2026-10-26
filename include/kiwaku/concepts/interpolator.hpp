@@ -21,6 +21,6 @@ namespace kwk::__
   // static member function template cannot be named in a `requires`-expression.
   // `none` does neither, so it only accepts integral indices.
   template<typename T>
-  inline constexpr bool fractional_capable_v
-    = requires { T::_is_interpolating; } || requires { T::_selects; };
+  inline constexpr bool fractional_capable_v =
+      requires { T::_is_interpolating; } || requires { T::_selects; };
 }

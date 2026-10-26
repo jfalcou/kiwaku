@@ -29,7 +29,7 @@ namespace kwk
   struct paving_t
   {
     template<kwk::concepts::layout Lhs, kwk::concepts::layout Rhs>
-    constexpr auto operator()(Lhs && lhs, Rhs && rhs) const noexcept
+    constexpr auto operator()(Lhs&& lhs, Rhs&& rhs) const noexcept
     {
       return (lhs / rhs) & (lhs % rhs);
     }
@@ -39,7 +39,7 @@ namespace kwk
   struct overlap_t
   {
     template<kwk::concepts::layout Lhs, kwk::concepts::layout Rhs>
-    constexpr auto operator()(Lhs && lhs, Rhs && rhs) const noexcept
+    constexpr auto operator()(Lhs&& lhs, Rhs&& rhs) const noexcept
     {
       return (lhs - rhs) & (lhs % rhs);
     }
@@ -56,21 +56,25 @@ namespace kwk
       return static_cast<type>(self);
     }
 
-    template<kwk::concepts::shape Shape> KWK_ABI constexpr auto operator()(Shape && shp) const noexcept
+    template<kwk::concepts::shape Shape>
+    KWK_ABI constexpr auto operator()(Shape&& shp) const noexcept
     {
       return (*this)(shp, to_stride(shp));
     }
 
     template<kwk::concepts::shape Shape, kwk::concepts::stride Stride>
-    KWK_ABI constexpr auto operator()(Shape && shp, Stride && srd) const noexcept
+    KWK_ABI constexpr auto operator()(Shape&& shp, Stride&& srd) const noexcept
     {
-      return kwk::tiler{solver(), shp, srd};
+      return kwk::tiler {solver(), shp, srd};
     }
 
-    template<typename O> KWK_ABI constexpr auto operator[](O o) const noexcept { return kwk::tiles_t{o}; }
+    template<typename O> KWK_ABI constexpr auto operator[](O o) const noexcept
+    {
+      return kwk::tiles_t {o};
+    }
   };
 
   template<typename T> tiles_t(T) -> tiles_t<T>;
 
-  inline constexpr tiles_t<paving_t> tiles{};
+  inline constexpr tiles_t<paving_t> tiles {};
 }

@@ -26,8 +26,7 @@ namespace kwk
     // static `value`) and also masquerades as a proper `kwk` option via `element_type`, which the
     // `maybe` monad used by `get<base_index>(opts)` requires. A bare `kumi::index_t<N>` cannot be
     // stored in an option bag: `maybe_properties` probes `T::element_type` and would fail.
-    template<std::size_t N>
-    struct base_index_option : kumi::index_t<N>
+    template<std::size_t N> struct base_index_option : kumi::index_t<N>
     {
       using element_type = kumi::index_t<N>;
     };
@@ -35,13 +34,12 @@ namespace kwk
 
   struct base_index_id : kumi::identifier<base_index_id>
   {
-    template<std::size_t N>
-    constexpr auto operator=(kumi::index_t<N> const&) const noexcept
+    template<std::size_t N> constexpr auto operator=(kumi::index_t<N> const&) const noexcept
     {
-      return kumi::field<base_index_id, kwk::__::base_index_option<N>>{};
+      return kumi::field<base_index_id, kwk::__::base_index_option<N>> {};
     }
 
-    friend constexpr auto to_str(base_index_id) { return kumi::str{"Base Index"}; }
+    friend constexpr auto to_str(base_index_id) { return kumi::str {"Base Index"}; }
   };
 
   //====================================================================================================================
@@ -49,11 +47,11 @@ namespace kwk
     @ingroup  settings-base-index
     @brief Identifier for the base index setting for KIWAKU containers
 
-    Identifies the base index setting for KIWAKU containers, which specifies the base index to be used within the
-    container.
+    Identifies the base index setting for KIWAKU containers, which specifies the base index to be
+  used within the container.
   **/
   //====================================================================================================================
-  inline constexpr base_index_id base_index = {};
+  inline constexpr base_index_id base_index    = {};
 
   //====================================================================================================================
   /**
@@ -62,7 +60,7 @@ namespace kwk
     @see base_index
   **/
   //====================================================================================================================
-  inline constexpr auto c_index = (base_index = kumi::index<0>);
+  inline constexpr auto          c_index       = (base_index = kumi::index<0>);
 
   //====================================================================================================================
   /**
@@ -71,5 +69,5 @@ namespace kwk
     @see base_index
   **/
   //====================================================================================================================
-  inline constexpr auto fortran_index = (base_index = kumi::index<1>);
+  inline constexpr auto          fortran_index = (base_index = kumi::index<1>);
 }

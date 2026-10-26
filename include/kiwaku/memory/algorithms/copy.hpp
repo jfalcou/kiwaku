@@ -24,7 +24,7 @@ namespace kwk
     template<kwk::concepts::collection Out, kwk::concepts::collection In>
     constexpr void operator()(Out& o, In const& in) const noexcept
     {
-      kwk::__::for_each([&](auto... idxs) { o[idxs...] = in[idxs...]; }, in->shape());
+      kwk::__::for_each([ & ](auto... idxs) { o[ idxs... ] = in[ idxs... ]; }, in->shape());
     }
-  } inline constexpr copy{};
+  } inline constexpr copy {};
 }

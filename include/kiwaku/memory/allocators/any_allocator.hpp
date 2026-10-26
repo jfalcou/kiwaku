@@ -18,8 +18,8 @@ namespace kwk
     @brief Opaque allocator type
 
     kwk::any_allocator is a type-erased object that can store and use any allocator satisfying the
-    kwk::concepts::allocator concept. It provides a uniform interface to allocate and deallocate memory
-    without exposing the underlying allocator type.
+    kwk::concepts::allocator concept. It provides a uniform interface to allocate and deallocate
+    memory without exposing the underlying allocator type.
   */
   //====================================================================================================================
   struct any_allocator
@@ -29,22 +29,28 @@ namespace kwk
     {
       virtual ~api_t() {}
 
-      virtual void* do_allocate(std::size_t) = 0;
-      virtual void do_deallocate(void*) = 0;
-      virtual api_t* clone() const = 0;
+      virtual void*  do_allocate(std::size_t) = 0;
+      virtual void   do_deallocate(void*)     = 0;
+      virtual api_t* clone() const            = 0;
     };
 
     template<concepts::allocator T> struct model_t final : api_t
     {
       using base_type = T;
 
-      model_t() : object() {}
+      model_t()
+          : object()
+      {
+      }
 
-      model_t(base_type t) : object(std::move(t)) {}
+      model_t(base_type t)
+          : object(std::move(t))
+      {
+      }
 
-      void* do_allocate(std::size_t n) override { return allocate(object, n); }
+      void*  do_allocate(std::size_t n) override { return allocate(object, n); }
 
-      void do_deallocate(void* b) override { deallocate(object, b); }
+      void   do_deallocate(void* b) override { deallocate(object, b); }
 
       api_t* clone() const override { return new model_t(object); }
 
@@ -55,7 +61,11 @@ namespace kwk
   public:
     any_allocator() = default;
 
-    template<typename T> any_allocator(T&& other) : object(new model_t<std::decay_t<T>>(KWK_FWD(other))) {}
+    template<typename T>
+    any_allocator(T&& other)
+        : object(new model_t<std::decay_t<T>>(KWK_FWD(other)))
+    {
+    }
 
     template<typename T> any_allocator& operator=(T&& other)
     {
@@ -63,16 +73,16 @@ namespace kwk
       return *this;
     }
 
-    any_allocator(any_allocator&&) = default;
-    any_allocator& operator=(any_allocator&&) = default;
-    any_allocator(any_allocator const&) = default;
+    any_allocator(any_allocator&&)                 = default;
+    any_allocator& operator=(any_allocator&&)      = default;
+    any_allocator(any_allocator const&)            = default;
     any_allocator& operator=(any_allocator const&) = default;
 
-    void swap(any_allocator& other) noexcept { std::swap(object, other.object); }
+    void           swap(any_allocator& other) noexcept { std::swap(object, other.object); }
 
-    friend void swap(any_allocator& a, any_allocator& b) noexcept { a.swap(b); }
+    friend void    swap(any_allocator& a, any_allocator& b) noexcept { a.swap(b); }
 
-    api_t* get() const { return object.get(); }
+    api_t*         get() const { return object.get(); }
 
   private:
     __::clone_ptr<api_t> object;
@@ -102,8 +112,5 @@ namespace kwk
     @param  ptr Pointer to the data to deallocates
   */
   //====================================================================================================================
-  inline void deallocate(any_allocator& a, void* ptr)
-  {
-    return a.get()->do_deallocate(ptr);
-  }
+  inline void deallocate(any_allocator& a, void* ptr) { return a.get()->do_deallocate(ptr); }
 }

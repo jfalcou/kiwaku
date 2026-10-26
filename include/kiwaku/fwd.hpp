@@ -19,8 +19,7 @@ namespace kwk
     here — and only here — so that traits and the builder can reference the (incomplete) type
     without pulling in the full definition and creating an include cycle.
   */
-  template<typename... Opts>
-  struct collection;
+  template<typename... Opts> struct collection;
 
   //====================================================================================================================
   /*
@@ -41,15 +40,24 @@ namespace kwk
       slice/tile `make_view` in `collection.hpp`) both route their construction through it, so there
       is exactly one place that knows how to assemble the component pack.
 
-      The function is declared here so the sub-view builders in `collection.hpp` can reach it without
-      an include cycle (its definition lives in `builder.hpp`, which includes `collection.hpp`).
-      Sub-views pass their resolved scheme/accessor/kind directly, so their byte-exact semantics
-      (e.g. a product kind's per-field offset scheme) are preserved — this is the scheme-aware entry
-      point that a plain re-derivation through the options bag could not express.
+      The function is declared here so the sub-view builders in `collection.hpp` can reach it
+      without an include cycle (its definition lives in `builder.hpp`, which includes
+      `collection.hpp`). Sub-views pass their resolved scheme/accessor/kind directly, so their
+      byte-exact semantics (e.g. a product kind's per-field offset scheme) are preserved — this is
+      the scheme-aware entry point that a plain re-derivation through the options bag could not
+      express.
     */
-    template<typename Storage, typename Shape, typename Stride,
-             typename Scheme,  typename Accessor, typename Kind>
-    constexpr auto make_collection(Storage&& store, Shape&& shp, Stride&& strd,
-                                   Scheme&& scheme, Accessor&& acc, Kind&& kind);
+    template<typename Storage,
+             typename Shape,
+             typename Stride,
+             typename Scheme,
+             typename Accessor,
+             typename Kind>
+    constexpr auto make_collection(Storage&&  store,
+                                   Shape&&    shp,
+                                   Stride&&   strd,
+                                   Scheme&&   scheme,
+                                   Accessor&& acc,
+                                   Kind&&     kind);
   }
 }

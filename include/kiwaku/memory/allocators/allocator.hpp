@@ -11,14 +11,14 @@ namespace kwk::__
 {
   struct default_allocator
   {
-    using element_type = void;
-    using type = default_allocator;
+    using element_type    = void;
+    using type            = default_allocator;
     using identifier_type = default_allocator;
-    using label_type = kumi::str;
+    using label_type      = kumi::str;
 
-    constexpr auto operator()(identifier_type const&) const { return *this; }
+    constexpr auto              operator()(identifier_type const&) const { return *this; }
 
-    static constexpr label_type label() { return kumi::str{"Deduced Allocator"}; }
+    static constexpr label_type label() { return kumi::str {"Deduced Allocator"}; }
 
     template<typename CharT, typename Traits>
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
@@ -28,7 +28,7 @@ namespace kwk::__
     }
   };
 
-  inline constexpr default_allocator deduce_allocator{};
+  inline constexpr default_allocator deduce_allocator {};
 
   //====================================================================================================================
   /**
@@ -36,7 +36,7 @@ namespace kwk::__
     @brief   Allocate free function to enable default_allocator to be detected as an allocator
   */
   //====================================================================================================================
-  void* allocate(default_allocator const&, std::size_t) noexcept;
+  void*                              allocate(default_allocator const&, std::size_t) noexcept;
 
   //====================================================================================================================
   /**
@@ -44,5 +44,5 @@ namespace kwk::__
     @brief   Deallocate free function to enable default_allocator to be detected as an allocator
   */
   //====================================================================================================================
-  void deallocate(default_allocator const&, void*) noexcept;
+  void                               deallocate(default_allocator const&, void*) noexcept;
 }

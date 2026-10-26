@@ -14,7 +14,8 @@ namespace kwk
     @defgroup concepts Concepts
     @brief Contains various concepts used throughout KIWAKU.
 
-    This module gathers the various concepts used within KIWAKU to define constraints on template parameters.
+    This module gathers the various concepts used within KIWAKU to define constraints on template
+    parameters.
   */
   //====================================================================================================================
 }

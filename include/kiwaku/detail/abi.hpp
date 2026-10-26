@@ -34,11 +34,11 @@
 // "parameters" such as a static layout, an empty scheme or an empty accessor do not inflate the
 // footprint of a container. NOTE: removed - not portable (MSVC). The collection now reaches the
 // same result portably via the `properties` internal EBO base that inherits these components.
-//#define KWK_NO_UNIQUE_ADDRESS [[no_unique_address]]
+// #define KWK_NO_UNIQUE_ADDRESS [[no_unique_address]]
 
 // Clang-CL does not define __GNUC__ https://github.com/llvm/llvm-project/issues/53259
 #if defined(KWK_DEBUG)
-#define KWK_ABI 
+#define KWK_ABI
 #elif defined(__EDG__) || defined(__EDG_VERSION__) || defined(__CUDACC__) || defined(__NVCC__)
 #define KWK_ABI inline
 #elif defined(__GNUC__) || defined(__clang__)

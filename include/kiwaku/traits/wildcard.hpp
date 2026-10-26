@@ -19,7 +19,8 @@ namespace kwk
     @tparam T Type to analyze.
   **/
   //====================================================================================================================
-  template<typename T> inline constexpr bool is_wildcard_v = std::same_as<std::remove_cvref_t<T>, kwk::wildcard_t>;
+  template<typename T>
+  inline constexpr bool is_wildcard_v = std::same_as<std::remove_cvref_t<T>, kwk::wildcard_t>;
 
   template<typename T> struct is_wildcard
   {

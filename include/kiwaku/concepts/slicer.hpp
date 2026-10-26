@@ -16,8 +16,8 @@ namespace kwk::concepts
     @ingroup concepts
     @brief Concept specifying a type can be used as a slicer.
 
-    A type `T` models `kwk::concepts::slicer` if there exist a free function called `to_slicer` taking that can be found
-    via @ref{adl} on the input type.
+    A type `T` models `kwk::concepts::slicer` if there exist a free function called `to_slicer`
+  taking that can be found via @ref{adl} on the input type.
 
     ## Example types:
     + kwk::extremum

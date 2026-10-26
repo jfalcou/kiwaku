@@ -111,9 +111,9 @@ in[idxs...]`).
 | NumPy             | KIWAKU spelling                      | Semantics                        |
 |-------------------|--------------------------------------|----------------------------------|
 | `np.asarray(buf)` | `kwk::view(kwk::source = buf, ...)`  | borrow; **no copy**, no allocation |
-| slice / tile      | `v[sl]` / `v[i,...]`                 | borrow; aliasing sub-view, **no copy** |
-| value copy of a view | `auto w = v;`                     | shallow copy of the descriptor; both alias |
-| value copy of an owning table | *(not allowed)*        | owning handle is move-only      |
+| slice / tile      | `v[sl]` / `v[i,...]`                 | borrow; aliasing sub-view, **no copy**
+| | value copy of a view | `auto w = v;`                     | shallow copy of the descriptor; both
+alias | | value copy of an owning table | *(not allowed)*        | owning handle is move-only      |
 | `a.copy()`        | `kwk::table(kwk::source = a, ...)`   | owns a fresh, independent copy  |
 | `b[:] = a[:]`     | `kwk::copy(dst, src)`                | element-wise deep copy          |
 | const source      | `kwk::source = cref`                 | borrowed but compile-time read-only |

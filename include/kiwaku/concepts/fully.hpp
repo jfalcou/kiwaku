@@ -24,22 +24,25 @@ namespace kwk::concepts
     @ingroup concepts
     @brief Concept checking that a product type only holds dynamic integral values.
 
-    A type `T` models `kwk::concepts::fully_dynamic` if it is a product type with every members modeling
-    `kwk::concepts::dynamic_extent` once flattened.
+    A type `T` models `kwk::concepts::fully_dynamic` if it is a product type with every members
+  modeling `kwk::concepts::dynamic_extent` once flattened.
   **/
   //====================================================================================================================
   template<typename T>
-  concept fully_dynamic = kumi::concepts::product_type<T> && kumi::apply_traits_t<dynamic_trait, kumi::result::flatten_all_t<T>>::value;
+  concept fully_dynamic =
+      kumi::concepts::product_type<T> &&
+      kumi::apply_traits_t<dynamic_trait, kumi::result::flatten_all_t<T>>::value;
 
   //====================================================================================================================
   /**
     @ingroup concepts
     @brief Concept checking that a product type only holds static integral values.
 
-    A type `T` models `kwk::concepts::fully_static` if it is a product type with every members modeling
-    `kwk::concepts::static_constant` one flattened.
+    A type `T` models `kwk::concepts::fully_static` if it is a product type with every members
+  modeling `kwk::concepts::static_constant` one flattened.
   **/
   //====================================================================================================================
   template<typename T>
-  concept fully_static = kumi::concepts::product_type<T> && kumi::apply_traits_t<static_trait, kumi::result::flatten_all_t<T>>::value;
+  concept fully_static = kumi::concepts::product_type<T> &&
+                         kumi::apply_traits_t<static_trait, kumi::result::flatten_all_t<T>>::value;
 }

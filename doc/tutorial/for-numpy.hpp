@@ -13,16 +13,19 @@ strictly on operations that the library implements and tests exercise.
 
 | NumPy            | KIWAKU | Meaning |
 |------------------|--------|---------|
-| `ndarray`        | `kwk::table` / `kwk::view` / `kwk::collection` | an n-dimensional array. `table` owns storage; `view` borrows (shallow-wraps) caller-provided memory |
-| `shape`          | `kwk::shape{...}` / `->shape()` | per-axis extents, as a nested product type |
-| `ndim`           | `.ndim` (compile-time `constexpr`) / `->size()` | number of dimensions / total element count |
-| `strides`        | `->stride(...)` / the layout | memory offsets between consecutive elements |
-| `dtype`          | `kwk::as<T>()` / `->kind()` | the element kind: scalar (`as<float>`), ordinal (`as<unsigned>`), or product (`as<kumi::tuple<...>>`) |
-| `lvalue`/`rvalue` base | `kwk::source = ptr` (const ⇒ read-only) | owned-looking vs borrowed / const vs mutable source |
-| array of structs | `kwk::as<K>` product kind | a struct-of-arrays (SoA) table backed by per-field fibers |
-| fancy indexing  | partial indexing (tiling) | indexing fewer axes than `ndim` returns a sub-collection (tile) |
-| broadcasting    | `~` ad-hoc, coordinate options / generators | function-defined spaces evaluated on demand (J6) |
-| `np.copy` / `np.fill` | `kwk::copy` / `kwk::fill` | element-wise algorithms over the shape |
+| `ndarray`        | `kwk::table` / `kwk::view` / `kwk::collection` | an n-dimensional array.
+`table` owns storage; `view` borrows (shallow-wraps) caller-provided memory | | `shape`          |
+`kwk::shape{...}` / `->shape()` | per-axis extents, as a nested product type | | `ndim`           |
+`.ndim` (compile-time `constexpr`) / `->size()` | number of dimensions / total element count | |
+`strides`        | `->stride(...)` / the layout | memory offsets between consecutive elements | |
+`dtype`          | `kwk::as<T>()` / `->kind()` | the element kind: scalar (`as<float>`), ordinal
+(`as<unsigned>`), or product (`as<kumi::tuple<...>>`) | | `lvalue`/`rvalue` base | `kwk::source =
+ptr` (const ⇒ read-only) | owned-looking vs borrowed / const vs mutable source | | array of structs
+| `kwk::as<K>` product kind | a struct-of-arrays (SoA) table backed by per-field fibers | | fancy
+indexing  | partial indexing (tiling) | indexing fewer axes than `ndim` returns a sub-collection
+(tile) | | broadcasting    | `~` ad-hoc, coordinate options / generators | function-defined spaces
+evaluated on demand (J6) | | `np.copy` / `np.fill` | `kwk::copy` / `kwk::fill` | element-wise
+algorithms over the shape |
 
 @section kwk_for_numpy_creation Creating arrays
 
@@ -40,7 +43,8 @@ float        ref[4]  = {1, 2, 3, 4};
 float const  cref[4] = {1, 2, 3, 4};
 
 auto v = kwk::view(kwk::source = ref,  kwk::shape{4_c});   // mutable, borrowed
-auto r = kwk::view(kwk::source = cref, kwk::shape{4_c});   // const source => read-only (r[i]=.. won't compile)
+auto r = kwk::view(kwk::source = cref, kwk::shape{4_c});   // const source => read-only (r[i]=..
+won't compile)
 ```
 
 **Owning table** (a fresh region is allocated and the source copied in, like
@@ -103,11 +107,12 @@ by attaching a boundary condition and, for non-integer coordinates, an interpola
 
 ```cpp
 using kwk::_;
-auto v_c = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::clamp);  // out-of-range clamps (a[-1]==a[0])
-auto v_t = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::tile);   // periodic wrap (np.tile semantics)
-auto v_m = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::mirror); // reflect / symmetric
-auto v_l = kwk::view(kwk::source = ref, kwk::shape{5_c}, kwk::linear); // + interpolation at f.p. coords
-t[2.5]       // linear blend of t[2] and t[3]  (with the linear interpolator engaged)
+auto v_c = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::clamp);  // out-of-range clamps
+(a[-1]==a[0]) auto v_t = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::tile);   // periodic wrap
+(np.tile semantics) auto v_m = kwk::view(kwk::source = ref, kwk::shape{N}, kwk::mirror); // reflect
+/ symmetric auto v_l = kwk::view(kwk::source = ref, kwk::shape{5_c}, kwk::linear); // +
+interpolation at f.p. coords t[2.5]       // linear blend of t[2] and t[3]  (with the linear
+interpolator engaged)
 ```
 
 Interpolators include `kwk::linear`, `kwk::nearest`, `kwk::floor`, `kwk::ceil`,

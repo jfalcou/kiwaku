@@ -14,7 +14,8 @@ namespace kwk
   //! @ingroup utility
   //! @brief Arithmetic Operation utilities
   //!
-  //! This module defines various functions, types and variables to handle arithmetic in a flexible way.
+  //! This module defines various functions, types and variables to handle arithmetic in a flexible
+  //! way.
   //====================================================================================================================
 }
 

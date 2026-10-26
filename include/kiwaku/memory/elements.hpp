@@ -19,25 +19,27 @@ namespace kwk
     //==================================================================================================================
     // element: the atom of the representation.
     //
-    // An element is a single point of the space: which `kind` sits at that point, its byte offset in
-    // the underlying blob, and which layout/fiber it belongs to (its `Layout_idx`). Every other
+    // An element is a single point of the space: which `kind` sits at that point, its byte offset
+    // in the underlying blob, and which layout/fiber it belongs to (its `Layout_idx`). Every other
     // abstraction (scheme, layout, accessor) ultimately resolves to elements.
     //==================================================================================================================
-    template<typename KindT, std::size_t N = 1>
-    struct element
+    template<typename KindT, std::size_t N = 1> struct element
     {
       //! The kind (type) of the scalar/component this element names.
-      using kind_type  = KindT;
+      using kind_type     = KindT;
       //! The value transported at this point.
-      using value_type = KindT;
+      using value_type    = KindT;
       //! Which layout/fiber of the space this element belongs to.
-      using Layout_idx = kumi::index_t<N>;
+      using Layout_idx    = kumi::index_t<N>;
 
       //! Byte offset of this point inside the blob.
-      std::size_t offset = 0;
+      std::size_t offset  = 0;
 
       constexpr element() = default;
-      explicit constexpr element(std::size_t o) noexcept : offset{o} {}
+      explicit constexpr element(std::size_t o) noexcept
+          : offset {o}
+      {
+      }
 
       friend constexpr bool operator==(element const&, element const&) = default;
     };

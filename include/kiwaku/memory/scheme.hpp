@@ -22,47 +22,48 @@ namespace kwk
     // (uniform mode). When `Kind` is a product type (a kumi record) each field becomes its own
     // fiber with its own byte offset in the blob, giving a structure-of-arrays storage (SoA mode).
     //
-    // The scheme itself stores only the per-field `Offsets...`; the blob base pointer is supplied by
-    // the caller (the blob / collection), so a scheme is a lightweight geometry and not tied to a
-    // particular storage instance.
+    // The scheme itself stores only the per-field `Offsets...`; the blob base pointer is supplied
+    // by the caller (the blob / collection), so a scheme is a lightweight geometry and not tied to
+    // a particular storage instance.
     //==================================================================================================================
-    template<typename Kind, typename... Offsets>
-    struct scheme : compressed_tuple<Offsets...>
+    template<typename Kind, typename... Offsets> struct scheme : compressed_tuple<Offsets...>
     {
       //! The fiber type : the scalar (uniform) or the record of scalars (SoA).
-      using kind_type    = Kind;
+      using kind_type                               = Kind;
       //! Placeholder for the per-field geometry (wired by the collection layer in Phase 3+).
-      using layout_type  = void;
+      using layout_type                             = void;
       //! The tuple of per-field byte offsets held by this scheme.
-      using offsets_type = compressed_tuple<Offsets...>;
+      using offsets_type                            = compressed_tuple<Offsets...>;
 
       //! Whether this space is a product space (each field is its own SoA fiber).
-      static constexpr bool is_product_space = kumi::concepts::product_type<Kind>;
+      static constexpr bool        is_product_space = kumi::concepts::product_type<Kind>;
 
       //! Number of fibers (1 for a uniform space, one per field for a product space).
-      static constexpr std::size_t field_count = []
+      static constexpr std::size_t field_count      = []
       {
-        if constexpr( is_product_space ) return kumi::size_v<Kind>;
-        else                              return std::size_t{1};
+        if constexpr(is_product_space) return kumi::size_v<Kind>;
+        else return std::size_t {1};
       }();
 
       //! Initializes the per-field offsets held by this scheme.
       template<typename... Offs>
-      requires( sizeof...(Offs) == sizeof...(Offsets) )
-      constexpr scheme(Offs&&... offs) noexcept(std::is_nothrow_constructible_v<offsets_type, Offs&&...>)
-        : offsets_type{ KWK_FWD(offs)... }
-      {}
+        requires(sizeof...(Offs) == sizeof...(Offsets))
+      constexpr scheme(Offs&&... offs) noexcept(
+          std::is_nothrow_constructible_v<offsets_type, Offs&&...>)
+          : offsets_type {KWK_FWD(offs)...}
+      {
+      }
 
       //================================================================================================================
       // data(base): returns the fiber pointer(s) given the blob base.
       //   - uniform : the single fiber pointer `base`.
-      //   - product : a kumi::tuple of one byte-pointer per field (`base + o_0`, `base + o_1`, ...).
+      //   - product : a kumi::tuple of one byte-pointer per field (`base + o_0`, `base + o_1`,
+      //   ...).
       //================================================================================================================
-      template<typename Self>
-      constexpr auto data(this Self&& self, auto* begin)
+      template<typename Self> constexpr auto data(this Self&& self, auto* begin)
       {
-        if constexpr( !is_product_space ) return begin;
-        else return self._data(begin, std::make_index_sequence<sizeof...(Offsets)>{});
+        if constexpr(!is_product_space) return begin;
+        else return self._data(begin, std::make_index_sequence<sizeof...(Offsets)> {});
       }
 
       //================================================================================================================
@@ -73,41 +74,44 @@ namespace kwk
       template<typename Self>
       constexpr decltype(auto) operator[](this Self& self, auto* base, std::size_t index)
       {
-        if constexpr( !is_product_space )
+        if constexpr(!is_product_space)
         {
-          return *resolve( element<Kind, 1>{ index * sizeof(Kind) }, base );
+          return *resolve(element<Kind, 1> {index * sizeof(Kind)}, base);
         }
         else
         {
           // Each field is its own SoA fiber: field `I` lives at `data(base)[I]` (a byte pointer
           // already offset to that field's region). Advance within the fiber by `index` scalars.
-          return self._fiber(index, base, std::make_index_sequence<sizeof...(Offsets)>{});
+          return self._fiber(index, base, std::make_index_sequence<sizeof...(Offsets)> {});
         }
       }
 
     private:
       // The offsets, viewed through the base compressed_tuple (supporting kumi::get).
-      static constexpr offsets_type& offsets_cast(auto& self) { return static_cast<offsets_type&>(self); }
+      static constexpr offsets_type& offsets_cast(auto& self)
+      {
+        return static_cast<offsets_type&>(self);
+      }
 
       // Build the tuple of per-field byte pointers over `begin`.
       template<typename Self, std::size_t... I>
       constexpr auto _data(this Self& self, auto* begin, std::index_sequence<I...>)
       {
         auto& offs = offsets_cast(self);
-        return kumi::tuple{ (begin + kumi::get<I>(offs))... };
+        return kumi::tuple {(begin + kumi::get<I>(offs))...};
       }
 
       // Build the tuple of per-field typed references at `index` over `base`.
       template<typename Self, std::size_t... I>
-      constexpr auto _fiber(this Self& self, std::size_t index, auto* base, std::index_sequence<I...>)
+      constexpr auto
+      _fiber(this Self& self, std::size_t index, auto* base, std::index_sequence<I...>)
       {
         auto fibers = self.data(base);
-        return kumi::tuple
-          { *resolve( element<kumi::element_t<I, Kind>, I + 1>
-                      { index * sizeof(kumi::element_t<I, Kind>) }
-                      // offset already advanced onto field I's own fiber:
-                    , static_cast<std::byte*>(kumi::get<I>(fibers)) )...
-          };
+        return kumi::tuple {*resolve(
+            element<kumi::element_t<I, Kind>, I + 1> {index * sizeof(kumi::element_t<I, Kind>)}
+            // offset already advanced onto field I's own fiber:
+            ,
+            static_cast<std::byte*>(kumi::get<I>(fibers)))...};
       }
 
     public:
@@ -116,20 +120,25 @@ namespace kwk
       // kumi::get<I>(scheme) via the base's ADL-friend, or read them through data()/operator[].
       //================================================================================================================
       template<typename CharT, typename Traits>
-      friend std::basic_ostream<CharT, Traits>&
-        operator<<(std::basic_ostream<CharT, Traits>& os, scheme const&) noexcept
-      { return os << "Scheme"; }
+      friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+                                                           scheme const&) noexcept
+      {
+        return os << "Scheme";
+      }
     };
   }
 }
 
 //======================================================================================================================
 // Scheme record protocol: a `scheme` is a kumi record so the SoA per-field offsets are accessible
-// through the product-type machinery (kumi::get<I>(scheme), kumi::size_v, ...). A `blob` is deliberately
-// *not* a product type: it is a raw opaque byte region, so no tuple_size/tuple_element are provided for it.
+// through the product-type machinery (kumi::get<I>(scheme), kumi::size_v, ...). A `blob` is
+// deliberately *not* a product type: it is a raw opaque byte region, so no tuple_size/tuple_element
+// are provided for it.
 //======================================================================================================================
 namespace kumi
 {
   template<typename Kind, typename... Offsets>
-  struct is_record_type< kwk::__::scheme<Kind, Offsets...> > : std::true_type {};
+  struct is_record_type<kwk::__::scheme<Kind, Offsets...>> : std::true_type
+  {
+  };
 }

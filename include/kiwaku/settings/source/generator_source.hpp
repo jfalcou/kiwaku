@@ -23,10 +23,9 @@ namespace kwk
     // (it is the settings-level option produced by `kwk::generator = callable`). This header only
     // contributes the source-layer adapters that let the builder recognize a function-backed
     // source and route it to the `constant_blob` terminal backend.
-    template<typename C>
-    constexpr auto shape_of(generator_option<C> const&)
+    template<typename C> constexpr auto shape_of(generator_option<C> const&)
     {
-      return kwk::shape{kwk::_};
+      return kwk::shape {kwk::_};
     }
   }
 }

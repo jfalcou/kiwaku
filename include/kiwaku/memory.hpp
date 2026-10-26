@@ -14,7 +14,8 @@ namespace kwk
   //! @ingroup utility
   //! @brief Memory Management utilities
   //!
-  //! This module defines various functions, types and variables to handle memory in a more flexible way.
+  //! This module defines various functions, types and variables to handle memory in a more flexible
+  //! way.
   //====================================================================================================================
 }
 

@@ -9,33 +9,46 @@
 
 namespace kwk::__
 {
-  ///@brief array_option provides a way to represent a contiguous_static_range to extract it's properties for view/table
+  ///@brief array_option provides a way to represent a contiguous_static_range to extract it's
+  /// properties for view/table
   /// construction
-  template<kwk::concepts::contiguous_static_range R> struct array_option : source_option<container_base_t<R>>
+  template<kwk::concepts::contiguous_static_range R>
+  struct array_option : source_option<container_base_t<R>>
   {
-    using type = R;
+    using type        = R;
     using source_type = std::remove_cvref_t<R>;
-    using base = source_option<container_base_t<R>>;
-    using value_type = std::remove_cvref_t<container_member_t<R>>;
+    using base        = source_option<container_base_t<R>>;
+    using value_type  = std::remove_cvref_t<container_member_t<R>>;
 
-    constexpr array_option() : base{nullptr} {}
+    constexpr array_option()
+        : base {nullptr}
+    {
+    }
 
-    constexpr array_option(source_type& r) : base{container_base_address(r)} {}
+    constexpr array_option(source_type& r)
+        : base {container_base_address(r)}
+    {
+    }
 
-    constexpr array_option(source_type const& r) : base{container_base_address(r)} {}
+    constexpr array_option(source_type const& r)
+        : base {container_base_address(r)}
+    {
+    }
 
-    constexpr array_option(source_type&& r) : base{container_base_address(r)} {}
+    constexpr array_option(source_type&& r)
+        : base {container_base_address(r)}
+    {
+    }
 
     static constexpr auto size = kumi::container_size_v<R>;
 
-    template <typename Self>
-    constexpr auto&& operator()(this Self&& self, base::identifier_type const&) {
-      using array_t = std::conditional_t<
-        std::is_const_v<std::remove_reference_t<Self>>,
-        const array_option,
-       array_option 
-      >;
-      return std::forward_like<Self>(static_cast<array_t &>(self));
+    template<typename Self>
+    constexpr auto&& operator()(this Self&& self, base::identifier_type const&)
+    {
+      using array_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
+                                         array_option const,
+                                         array_option>;
+      return std::forward_like<Self>(static_cast<array_t&>(self));
     }
 
     template<typename CharT, typename Traits>
@@ -66,6 +79,6 @@ namespace kwk::config
 {
   template<kwk::concepts::contiguous_static_range R> struct preprocess_source<R>
   {
-    static constexpr auto from(R&& r) noexcept { return kwk::__::array_option{KWK_FWD(r)}; }
+    static constexpr auto from(R&& r) noexcept { return kwk::__::array_option {KWK_FWD(r)}; }
   };
 }
