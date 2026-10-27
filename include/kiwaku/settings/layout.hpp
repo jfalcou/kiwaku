@@ -57,6 +57,16 @@ namespace kwk
 
       friend constexpr auto to_str(storage_order_id) { return kumi::str {"Storage Order"}; }
     };
+
+    struct layout_id : kumi::identifier<layout_id>
+    {
+      template<typename Layout> constexpr auto operator=(Layout&& l) const noexcept
+      {
+        return KWK_FWD(l);
+      }
+
+      friend constexpr auto to_str(layout_id) { return kumi::str {"Layout"}; }
+    };
   }
 
   inline constexpr __::shape_id         of_shape {};

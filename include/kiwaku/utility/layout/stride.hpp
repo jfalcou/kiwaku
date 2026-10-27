@@ -29,19 +29,29 @@ namespace kwk
     @brief Stride of multi-dimensional container (Supports Arbitrary Layouts)
   **/
   //====================================================================================================================
-  template<concepts::deep_extent auto... D> struct stride : __::as_sequence_t<D...>
+  template<concepts::deep_extent auto... D> struct stride_t : __::as_sequence_t<D...>
   {
-    using element_type    = stride;
-    using type            = stride;
+    using element_type    = stride_t;
+    using type            = stride_t;
     using identifier_type = __::stride_id;
     using label_type      = kumi::str;
     using size_type       = kwk::config::default_size_type;
 
     template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
     {
-      using stride_t =
-          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, stride const, stride>;
-      return std::forward_like<Self>(static_cast<stride_t&>(self));
+      using self_t =
+          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, stride_t const, stride_t>;
+      return std::forward_like<Self>(static_cast<self_t&>(self));
+    }
+
+    //==================================================================================================================
+    // A stride is a property over itself : it exposes its own value through a `stride()` accessor.
+    //==================================================================================================================
+    template<typename Self>
+    [[nodiscard]] KWK_ABI constexpr decltype(auto) stride(this Self&& self) noexcept
+    {
+      using type = decltype(std::forward_like<Self>(std::declval<stride_t>()));
+      return static_cast<type>(self);
     }
 
     static constexpr label_type label() { return kumi::str {"Stride"}; }
@@ -65,20 +75,20 @@ namespace kwk
 
     using storage_type = __::as_sequence_t<D...>;
 
-    constexpr stride() = default;
+    constexpr stride_t() = default;
 
     template<concepts::deep_extent... S>
       requires(sizeof...(S) ==
                sizeof...(D)) //&& storage_type::template follow_mapping<kumi::tuple<S...>>())
-    constexpr stride(S... s)
+    constexpr stride_t(S... s)
         : storage_type {s...}
     {
     }
 
     template<auto... StrideDims>
-    friend constexpr bool operator==(stride const& a, stride<StrideDims...> const& b) noexcept
+    friend constexpr bool operator==(stride_t const& a, stride_t<StrideDims...> const& b) noexcept
     {
-      if constexpr(stride::ndim != stride<StrideDims...>::ndim) return false;
+      if constexpr(stride_t::ndim != stride_t<StrideDims...>::ndim) return false;
       else return kumi::to_tuple(a) == kumi::to_tuple(b);
     }
 
@@ -86,21 +96,21 @@ namespace kwk
 
     constexpr storage_type&       self() { return static_cast<storage_type&>(*this); }
 
-    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(stride const& s)
+    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(stride_t const& s)
     {
-      if constexpr(I >= stride::ndim) return kwk::fixed<0>;
+      if constexpr(I >= stride_t::ndim) return kwk::fixed<0>;
       else return get<I>(s.self());
     }
 
-    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(stride& s)
+    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(stride_t& s)
     {
-      if constexpr(I >= stride::ndim) return kwk::fixed<0>;
+      if constexpr(I >= stride_t::ndim) return kwk::fixed<0>;
       else return get<I>(s.self());
     }
 
     template<typename CharT, typename Traits>
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-                                                         stride const& s) noexcept
+                                                         stride_t const& s) noexcept
     {
       os << "(";
       kumi::for_each([ & ](auto e) { os << " " << e; }, s);
@@ -108,8 +118,11 @@ namespace kwk
     }
   };
 
+  /// @brief Alias for the stride type (natural name of the property)
+  template<concepts::deep_extent auto... D> using stride = stride_t<D...>;
+
   template<concepts::deep_extent... S>
-  stride(S...) -> stride<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
+  stride_t(S...) -> stride_t<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
 
   /// @brief Transforms an abritrary product type into a stride
   template<kumi::concepts::product_type T> constexpr auto as_stride(T&& t)
@@ -122,7 +135,7 @@ namespace kwk
             if constexpr(kumi::concepts::product_type<V>) return as_stride(KWK_FWD(v));
             else return KWK_FWD(v);
           };
-          return stride {v_or_t(KWK_FWD(elt))...};
+          return stride_t {v_or_t(KWK_FWD(elt))...};
         },
         KWK_FWD(t));
   }
@@ -134,7 +147,7 @@ namespace kwk
   template<kumi::concepts::product_type T, storage_order_descriptor order>
   constexpr auto to_stride(T&& t, storage_order_option<order> const&) noexcept
   {
-    if constexpr(kumi::concepts::empty_product_type<T>) return kwk::stride {};
+    if constexpr(kumi::concepts::empty_product_type<T>) return kwk::stride_t {};
     else if constexpr(order == kwk::row_major_order)
     {
       auto&& strd = as_stride(
@@ -170,7 +183,7 @@ namespace kwk
   {
     return kumi::apply(
         [](auto&&... elts)
-        { return kwk::stride {slice_stride(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
+        { return kwk::stride_t {slice_stride(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
         kumi::zip(kumi::to_tuple(strd), sl));
   }
 
@@ -206,12 +219,12 @@ template<auto... D> struct kumi::builder<kwk::stride<D...>>
 
   template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto make(Args&&... args)
   {
-    return kwk::stride {KUMI_FWD(args)...};
+    return kwk::stride_t {KUMI_FWD(args)...};
   }
 
   template<typename... Args> [[nodiscard]] KUMI_ABI static constexpr auto build(Args&&... args)
   {
-    return kwk::stride {KUMI_FWD(args)...};
+    return kwk::stride_t {KUMI_FWD(args)...};
   }
 };
 

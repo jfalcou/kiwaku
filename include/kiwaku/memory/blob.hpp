@@ -73,30 +73,30 @@ namespace kwk
   //   - owning  + static  : stack_blob<Size, Alignment>
   //   - borrowed          : shallow_blob
   //====================================================================================================================
-  template<typename Storage> struct blob : private kwk::__::as_storage_t<Storage>
+  template<typename Storage> struct blob_t : private kwk::__::as_storage_t<Storage>
   {
     using total_space     = kwk::__::as_storage_t<Storage>;
 
     // kumi::field requirements to consider blob an option
     using element_type    = Storage;
-    using type            = blob;
+    using type            = blob_t;
     using identifier_type = __::blob_id;
     using label_type      = kumi::str;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    constexpr blob()      = default;
+    constexpr blob_t()      = default;
 
     //! Borrow an externally-owned region of memory.
-    explicit constexpr blob(std::byte* addr)
+    explicit constexpr blob_t(std::byte* addr)
         : total_space {addr}
     {
     }
 
     //! Allocate a (owning) region of `size` bytes through an allocator.
     template<kwk::concepts::allocator Allocator>
-    explicit constexpr blob(Allocator a, std::size_t size)
+    explicit constexpr blob_t(Allocator a, std::size_t size)
         : total_space {std::move(a), size}
     {
     }
@@ -114,14 +114,23 @@ namespace kwk
     //==================================================================================================================
     template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
     {
-      using blob_t =
-          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, blob const, blob>;
-      return std::forward_like<Self>(static_cast<blob_t&>(self));
+      using self_t =
+          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, blob_t const, blob_t>;
+      return std::forward_like<Self>(static_cast<self_t&>(self));
+    }
+
+    //==================================================================================================================
+    // A blob is a property over itself : it exposes its own value through a `blob()` accessor.
+    //==================================================================================================================
+    template<typename Self> constexpr decltype(auto) blob(this Self&& self) noexcept
+    {
+      using type = decltype(std::forward_like<Self>(std::declval<blob_t>()));
+      return static_cast<type>(self);
     }
 
     static constexpr label_type label() { return kumi::str {"Blob"}; }
 
-    constexpr void              swap(blob& rhs) noexcept
+    constexpr void              swap(blob_t& rhs) noexcept
     {
       if(this != &rhs)
       {
@@ -129,18 +138,21 @@ namespace kwk
       }
     }
 
-    constexpr friend void swap(blob& self, blob& rhs) noexcept { return self.swap(rhs); }
+    constexpr friend void swap(blob_t& self, blob_t& rhs) noexcept { return self.swap(rhs); }
 
     template<typename CharT, typename Traits>
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-                                                         blob const&) noexcept
+                                                         blob_t const&) noexcept
     {
       return os << "Blob type";
     }
   };
 
+  //! Alias for the blob type (natural name of the property).
+  template<typename Storage> using blob = blob_t<Storage>;
+
   //! Deduction guide: a `blob` built from an allocator + size keeps the allocator as its storage
   //! intent.
   template<typename Allocator>
-  explicit blob(Allocator&&, std::size_t) -> blob<std::decay_t<Allocator>>;
+  explicit blob_t(Allocator&&, std::size_t) -> blob_t<std::decay_t<Allocator>>;
 }

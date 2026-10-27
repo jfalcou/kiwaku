@@ -17,11 +17,11 @@ namespace kwk
   // Layout
   template<typename T>
     requires(std::declval<T>()->shape())
-  using shape_t = std::remove_cvref_t<decltype(std::declval<T>()->shape())>;
+  using shape_type = std::remove_cvref_t<decltype(std::declval<T>()->shape())>;
 
   template<typename T>
     requires(std::declval<T>()->stride())
-  using stride_t = std::remove_cvref_t<decltype(std::declval<T>()->stride())>;
+  using stride_type = std::remove_cvref_t<decltype(std::declval<T>()->stride())>;
 
   // Memory
   template<typename T>
@@ -31,7 +31,7 @@ namespace kwk
   // Accessor
   template<typename T>
     requires(std::declval<T>()->accessor())
-  using accessor_t = std::remove_cvref_t<decltype(std::declval<T>()->accessor())>;
+  using accessor_type = std::remove_cvref_t<decltype(std::declval<T>()->accessor())>;
 
   // Meta
   template<typename T>
@@ -41,5 +41,5 @@ namespace kwk
   // Derived from the kind
   template<typename T>
     requires(std::declval<T>()->kind())
-  using value_type = typename kind_t<T>::kind;
+  using value_type = typename kind_t<T>::element_type;
 }

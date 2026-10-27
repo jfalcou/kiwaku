@@ -102,26 +102,36 @@ namespace kwk
                 the number of dimensions and which dimensions are static vs dynamic.
   **/
   //====================================================================================================================
-  template<concepts::deep_extent auto... Dims> struct shape : __::as_sequence_t<Dims...>
+  template<concepts::deep_extent auto... Dims> struct shape_t : __::as_sequence_t<Dims...>
   {
     //==================================================================================================================
     // Shape is a field over itself
     //==================================================================================================================
-    using element_type    = shape;
-    using type            = shape;
+    using element_type    = shape_t;
+    using type            = shape_t;
     using identifier_type = __::shape_id;
     using label_type      = kumi::str;
     using size_type       = kwk::config::default_size_type;
-    using shape_type      = shape;
+    using shape_type      = shape_t;
 
     /// @brief Internal type for efficient storage of hybrid static/dynamic dimensions
     using storage_type    = __::as_sequence_t<Dims...>;
 
     template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
     {
-      using shape_t =
-          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, shape const, shape>;
-      return std::forward_like<Self>(static_cast<shape_t&>(self));
+      using self_t =
+          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, shape_t const, shape_t>;
+      return std::forward_like<Self>(static_cast<self_t&>(self));
+    }
+
+    //==================================================================================================================
+    // A shape is a property over itself : it exposes its own value through a `shape()` accessor.
+    //==================================================================================================================
+    template<typename Self>
+    [[nodiscard]] KWK_ABI constexpr decltype(auto) shape(this Self&& self) noexcept
+    {
+      using type = decltype(std::forward_like<Self>(std::declval<shape_t>()));
+      return static_cast<type>(self);
     }
 
     static constexpr label_type label() { return kumi::str {"Shape"}; }
@@ -147,7 +157,7 @@ namespace kwk
     }
 
     /// @brief Default constructor
-    constexpr shape()
+    constexpr shape_t()
         : storage_type()
     {
     }
@@ -165,7 +175,7 @@ namespace kwk
     template<concepts::deep_extent... S>
       requires(sizeof...(S) ==
                ndim) // && storage_type::template follow_mapping<kumi::tuple<S...>>())
-    constexpr shape(S... s)
+    constexpr shape_t(S... s)
         : storage_type {s...}
     {
     }
@@ -183,7 +193,7 @@ namespace kwk
     **/
     template<concepts::deep_extent... S>
       requires(sizeof...(S) < ndim)
-    constexpr shape(S... s)
+    constexpr shape_t(S... s)
         : storage_type {[ & ]<std::size_t... I>(std::index_sequence<I...>)
                         {
                           return storage_type {s..., kumi::index<I * 0>...};
@@ -195,7 +205,7 @@ namespace kwk
     /// Assignment operator
     //==================================================================================================================
     template<concepts::extent auto... D>
-    constexpr shape& operator=(shape<D...> const& other) & noexcept
+    constexpr shape_t& operator=(shape_t<D...> const& other) & noexcept
     {
       this->self() = other.self();
       return *this;
@@ -205,9 +215,9 @@ namespace kwk
     /// Equality comparison operator
     //==================================================================================================================
     template<auto... D>
-    friend constexpr bool operator==(shape const& a, shape<D...> const& b) noexcept
+    friend constexpr bool operator==(shape_t const& a, shape_t<D...> const& b) noexcept
     {
-      if constexpr(shape::ndim != shape<D...>::ndim) return false;
+      if constexpr(shape_t::ndim != shape_t<D...>::ndim) return false;
       else return kumi::to_tuple(a) == kumi::to_tuple(b);
     }
 
@@ -215,21 +225,21 @@ namespace kwk
 
     constexpr storage_type&       self() { return static_cast<storage_type&>(*this); }
 
-    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(shape const& s)
+    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(shape_t const& s)
     {
-      if constexpr(I >= shape::ndim) return fixed<1>;
+      if constexpr(I >= shape_t::ndim) return fixed<1>;
       else return get<I>(s.self());
     }
 
-    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(shape& s)
+    template<std::size_t I> KWK_ABI friend constexpr decltype(auto) get(shape_t& s)
     {
-      if constexpr(I >= shape::ndim) return fixed<1>;
+      if constexpr(I >= shape_t::ndim) return fixed<1>;
       else return get<I>(s.self());
     }
 
     template<typename CharT, typename Traits>
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-                                                         shape const& s) noexcept
+                                                         shape_t const& s) noexcept
     {
       os << "(";
       kumi::for_each([ & ](auto e) { os << " " << e; }, s);
@@ -239,7 +249,10 @@ namespace kwk
 
   //@brief Deduction guide
   template<concepts::deep_extent... S>
-  shape(S&&...) -> shape<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
+  shape_t(S&&...) -> shape_t<__::make_dimension<std::unwrap_ref_decay_t<S>>()...>;
+
+  /// @brief Alias for the shape type (natural name of the property)
+  template<concepts::deep_extent auto... Dims> using shape = shape_t<Dims...>;
 
   /// @brief Transforms an abritrary product type into a shape
   template<kumi::concepts::product_type T> constexpr auto as_shape(T&& t)
@@ -252,22 +265,22 @@ namespace kwk
             if constexpr(kumi::concepts::product_type<V>) return as_shape(KWK_FWD(v));
             else return KWK_FWD(v);
           };
-          return shape {v_or_t(KWK_FWD(elt))...};
+          return shape_t {v_or_t(KWK_FWD(elt))...};
         },
         KWK_FWD(t));
   }
 
   //@brief Squeeze the current shape by removing trivial dimensions
-  template<auto... D> constexpr auto squeeze(shape<D...> const& s)
+  template<auto... D> constexpr auto squeeze(shape_t<D...> const& s)
   {
     constexpr auto pos = __::squeeze_dimensions(D...);
     return [ & ]<std::size_t... I>(std::index_sequence<I...>)
-    { return shape {get<pos.data[ I ]>(s)...}; }(std::make_index_sequence<pos.count> {});
+    { return shape_t {get<pos.data[ I ]>(s)...}; }(std::make_index_sequence<pos.count> {});
   }
 
-  template<auto... D, concepts::extent Dim> constexpr auto add_rank(shape<D...> const& s, Dim N)
+  template<auto... D, concepts::extent Dim> constexpr auto add_rank(shape_t<D...> const& s, Dim N)
   {
-    return kumi::apply([ & ](auto&&... elts) { return shape {KWK_FWD(elts)..., N}; }, s);
+    return kumi::apply([ & ](auto&&... elts) { return shape_t {KWK_FWD(elts)..., N}; }, s);
   }
 
   //@brief Extends the current shape by adding trivial dimensions
@@ -280,7 +293,7 @@ namespace kwk
 
   //@brief Check if two shapes are isomorph, ie they describe the same data space
   template<auto... D1, auto... D2>
-  constexpr bool equivalent(shape<D1...> const& a, shape<D2...> const& b)
+  constexpr bool equivalent(shape_t<D1...> const& a, shape_t<D2...> const& b)
   {
     return squeeze(a) == squeeze(b);
   }
@@ -291,7 +304,7 @@ namespace kwk
   {
     return kumi::apply(
         [](auto&&... elts)
-        { return kwk::shape {slice_extent(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
+        { return kwk::shape_t {slice_extent(get<0>(KWK_FWD(elts)), get<1>(KWK_FWD(elts)))...}; },
         kumi::zip(kumi::to_tuple(s), sl));
   }
 

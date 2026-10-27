@@ -16,6 +16,12 @@ namespace kwk
 {
   namespace __
   {
+    // Identifier of the accessor option (part of the uniform "field over itself" option protocol).
+    struct accessor_id : kumi::identifier<accessor_id>
+    {
+      friend constexpr auto to_str(accessor_id) { return kumi::str {"Accessor"}; }
+    };
+
     //==================================================================================================================
     /*
       Down-walk across the interpolator pack (left-to-right).
@@ -137,7 +143,7 @@ namespace kwk
   */
   //====================================================================================================================
   template<typename Coordinate, typename Boundaries, typename... Interpolators>
-  struct accessor
+  struct accessor_t
       : private Coordinate
       , private Boundaries
       , private Interpolators...
@@ -152,7 +158,39 @@ namespace kwk
     static constexpr bool fractional =
         interpolates || (kwk::__::fractional_capable_v<Interpolators> || ...);
 
-    constexpr accessor(Coordinate c, Boundaries b, Interpolators... is)
+    //==============================================================================================================
+    // Uniform construction backbone : every option follows the same "field over itself" protocol
+    // (element_type / type / identifier_type / label_type / label() / operator()(identifier)),
+    // so an accessor composes naturally in a properties pack alongside the other options. The
+    // identifier overload is distinct from the read pipeline's operator()(Position, Shape, Stride,
+    // Read) below.
+    //==============================================================================================================
+    using element_type    = accessor_t;
+    using type            = accessor_t;
+    using identifier_type = __::accessor_id;
+    using label_type      = kumi::str;
+
+    template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
+    {
+      using self_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
+                                        accessor_t const,
+                                        accessor_t>;
+      return std::forward_like<Self>(static_cast<self_t&>(self));
+    }
+
+    //==================================================================================================================
+    // An accessor is a property over itself : it exposes its own value through an `accessor()`
+    // accessor.
+    //==================================================================================================================
+    template<typename Self> constexpr decltype(auto) accessor(this Self&& self) noexcept
+    {
+      using type = decltype(std::forward_like<Self>(std::declval<accessor_t>()));
+      return static_cast<type>(self);
+    }
+
+    static constexpr label_type label() { return kumi::str {"Accessor"}; }
+
+    constexpr accessor_t(Coordinate c, Boundaries b, Interpolators... is)
         : Coordinate(KWK_FWD(c))
         , Boundaries(KWK_FWD(b))
         , Interpolators(KWK_FWD(is))...
@@ -162,8 +200,8 @@ namespace kwk
     //! Friendship: the `|` pipeline composition operator needs access to the (private) stage bases
     //! so it can forward every stage of the two operands into the composite pipeline.
     template<typename C1, typename B1, typename... I1, typename C2, typename B2, typename... I2>
-    friend constexpr auto                            operator|(accessor<C1, B1, I1...> const& lhs,
-                                                               accessor<C2, B2, I2...> const& rhs);
+    friend constexpr auto                            operator|(accessor_t<C1, B1, I1...> const& lhs,
+                                                               accessor_t<C2, B2, I2...> const& rhs);
 
     //==================================================================================================================
     /*
@@ -291,6 +329,10 @@ namespace kwk
     }
   };
 
+  //! Alias for the accessor type (natural name of the property).
+  template<typename Coordinate, typename Boundaries, typename... Interpolators>
+  using accessor = accessor_t<Coordinate, Boundaries, Interpolators...>;
+
   //====================================================================================================================
   /*
     Pipeline composition : `accessor | accessor` is right-append. The composite keeps the left
@@ -302,11 +344,12 @@ namespace kwk
   */
   //====================================================================================================================
   template<typename C1, typename B1, typename... I1, typename C2, typename B2, typename... I2>
-  constexpr auto operator|(accessor<C1, B1, I1...> const& lhs, accessor<C2, B2, I2...> const& rhs)
+  constexpr auto operator|(accessor_t<C1, B1, I1...> const& lhs,
+                          accessor_t<C2, B2, I2...> const& rhs)
   {
-    return accessor<C1, B1, I1..., I2...> {lhs.coordinate(),
-                                           lhs.boundaries(),
-                                           static_cast<I1 const&>(lhs)...,
-                                           static_cast<I2 const&>(rhs)...};
+    return accessor_t<C1, B1, I1..., I2...> {lhs.coordinate(),
+                                             lhs.boundaries(),
+                                             static_cast<I1 const&>(lhs)...,
+                                             static_cast<I2 const&>(rhs)...};
   }
 }

@@ -37,26 +37,24 @@ namespace kwk
     // Storage intent helpers
     //==================================================================================================================
     // The single construction authority for `kwk::collection` (declared in `kiwaku/fwd.hpp`).
-    // Assembles a collection from its six fully-resolved components. Both the top-level option
-    // builder and every sub-view builder route their construction through this one function, so the
-    // component pack is assembled in exactly one place; sub-views pass their resolved scheme /
-    // accessor / kind through unchanged, preserving byte-exact view semantics.
+    // Assembles a collection from its five fully-resolved components, the `layout` coupling the
+    // shape and stride into one option. Both the top-level option builder and every sub-view
+    // builder route their construction through this one function, so the component pack is
+    // assembled in exactly one place; sub-views pass their resolved scheme / accessor / kind
+    // through unchanged, preserving byte-exact view semantics.
     template<typename Storage,
-             typename Shape,
-             typename Stride,
+             typename Layout,
              typename Scheme,
              typename Accessor,
              typename Kind>
     constexpr auto make_collection(Storage&&  store,
-                                   Shape&&    shp,
-                                   Stride&&   strd,
+                                   Layout&&   layout,
                                    Scheme&&   scheme,
                                    Accessor&& acc,
                                    Kind&&     kind)
     {
       return kwk::collection {KWK_FWD(store),
-                              KWK_FWD(shp),
-                              KWK_FWD(strd),
+                              KWK_FWD(layout),
                               KWK_FWD(scheme),
                               KWK_FWD(acc),
                               KWK_FWD(kind)};
@@ -462,17 +460,17 @@ namespace kwk
 
         //--- construct the collection -----------------------------------------------------------
         // The builder always produces a `kwk::collection`, constructed directly (no funnel).
-        // Its template arguments are deduced from the call (CTAD on the six component arguments):
-        // the component order is fixed (storage, shape, stride, scheme, accessor, kind) so two
+        // Its template arguments are deduced from the call (CTAD on the five component arguments):
+        // the component order is fixed (storage, layout, scheme, accessor, kind) so two
         // bags with the same components in any option order yield exactly the same concrete type.
+        // The shape and stride are coupled into a single `layout` option.
         //
         // The interpolator instance is just the folded stage type default-constructed: a present
         // `interpolator_option` unwraps to its strategy (`linear`, `nearest`, ...) and an absent
         // one to `none{}` — both trivial value-free strategies. The boundary is passed through the
         // monad's own `value_or` (falling back to the identity `kumi::unit{}`).
         return kwk::__::make_collection(KWK_FWD(storage),
-                                        shp,
-                                        stride,
+                                        kwk::layout {shp, stride},
                                         KWK_FWD(scheme),
                                         accessor_t {KWK_FWD(coordinates_final),
                                                     boundaries.value_or(kumi::unit {}),

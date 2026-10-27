@@ -26,6 +26,10 @@ namespace kwk
 
   namespace __
   {
+    // Layout identifier (fully defined in `kiwaku/settings/layout.hpp`); forward-declared here so
+    // `layout_t` follows the same "field over itself" option protocol as every other property.
+    struct layout_id;
+
     //==================================================================================================================
     // Product of the *flat* extents of a shape, kept compile-time (`kwk::constant`) whenever the
     // shape is fully static. Used to scale a stride by a block's element count so that the
@@ -116,13 +120,44 @@ namespace kwk
 
   //====================================================================================================================
   template<typename Shape, typename Stride>
-  struct layout
+  struct layout_t
       : private Shape
-      , Stride
+      , private Stride
   {
+    // `shape()` / `stride()` are re-exported from `shape_t` / `stride_t` (the own-name members
+    // those options already define), and those members cast `self` down to their own sub-object
+    // (`static_cast<shape_t const&>(self)`). For that downward cast to reach through layout's
+    // *private* bases, the concrete shape/stride types must be able to see those bases, hence the
+    // targeted friendship below.
+    friend Shape;
+    friend Stride;
+
     using size_type = kwk::config::default_size_type;
 
-    constexpr layout(Shape const& s, Stride const& st)
+    //==================================================================================================================
+    // Layout is a property over its (shape, stride) pair : it follows the same uniform
+    // construction backbone as every other option, so it composes naturally in a properties pack.
+    //==================================================================================================================
+    using element_type    = layout_t;
+    using type            = layout_t;
+    using identifier_type = __::layout_id;
+    using label_type      = kumi::str;
+
+    template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
+    {
+      using self_t =
+          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, layout_t const, layout_t>;
+      return std::forward_like<Self>(static_cast<self_t&>(self));
+    }
+
+    static constexpr label_type label() { return kumi::str {"Layout"}; }
+
+    /// @brief The shape this layout is responsible for.
+    using shape_type  = Shape;
+    /// @brief The stride this layout is responsible for.
+    using stride_type = Stride;
+
+    constexpr layout_t(Shape const& s, Stride const& st)
         : Shape(s)
         , Stride(st)
     {
@@ -131,29 +166,36 @@ namespace kwk
     //==================================================================================================================
     /*
       Properties
+
+      The shape and stride live in their dedicated bases. Rather than re-coding a `shape()` /
+      `stride()` member here, layout re-exports them from those bases : any shape/stride member
+      that exists on the corresponding `_t` type (the own-name `shape()` / `stride()` accessors and
+      the static `flat_ndim` constant) is pulled into layout's public interface and floats up
+      through the whole `properties` inheritance chain.
     */
     //==================================================================================================================
+    using Shape::shape;
+    using Shape::flat_ndim;
+    using Stride::stride;
+
+    // The layout reached through its own name : returns the layout's own sub-object (never the
+    // enclosing properties/collection object, even when reached through the inheritance chain).
     template<typename Self>
-    [[nodiscard]] KWK_ABI constexpr decltype(auto) shape(this Self&& self) noexcept
+    [[nodiscard]] KWK_ABI constexpr decltype(auto) layout(this Self&& self) noexcept
     {
-      using type = decltype(std::forward_like<Self>(std::declval<Shape>()));
+      using type = decltype(std::forward_like<Self>(std::declval<layout_t>()));
       return static_cast<type>(self);
     }
 
-    template<typename Self>
-    [[nodiscard]] KWK_ABI constexpr decltype(auto) stride(this Self&& self) noexcept
-    {
-      using type = decltype(std::forward_like<Self>(std::declval<Stride>()));
-      return static_cast<type>(self);
-    }
-
-    static constexpr size_type                ndim = Shape::flat_ndim;
+    static constexpr size_type                ndim = flat_ndim;
 
     // static constexpr size_type flat_ndim = Shape::flat_ndim;
 
     [[nodiscard]] KWK_ABI constexpr size_type size() const noexcept { return shape().size(); }
 
-    // Byte size
+    // Byte size of the whole index space : the interval [0, cosize).  This is the natural
+    // self-description of a layout, so it lives directly on the option (same shape/stride/kind
+    // style) instead of being pulled separately.
     [[nodiscard]] KWK_ABI constexpr size_type cosize() const noexcept
     {
       return stride().cosize(shape());
@@ -193,7 +235,7 @@ namespace kwk
       auto       position = kwk::origin(self.shape(), slicer);
 
       return kumi::tuple {
-          position, kwk::layout {shp, strd}
+          position, kwk::layout_t {shp, strd}
       };
     }
 
@@ -201,7 +243,7 @@ namespace kwk
     constexpr auto operator[](this Self&& self, kwk::tiler<T, TShape, TStride> const& t) noexcept
     {
       // Transform this layout according to the tiling scheme described by the tiler
-      return t.solver()(KWK_FWD(self), kwk::layout {TShape {}, TStride {}});
+      return t.solver()(KWK_FWD(self), kwk::layout_t {TShape {}, TStride {}});
     }
 
     template<typename Self, kwk::concepts::integral_arithmetic_value... Idxs>
@@ -216,8 +258,8 @@ namespace kwk
         auto [ shl, shr ] = kumi::split(self.shape(), kumi::index<split>);
         auto [ stl, str ] = kumi::split(self.stride(), kumi::index<split>);
         return kumi::tuple {
-            kwk::layout {shl, stl},
-             kwk::layout {shr, str}
+            kwk::layout_t {shl, stl},
+             kwk::layout_t {shr, str}
         };
       }
       else
@@ -266,10 +308,10 @@ namespace kwk
     //! `A + B` shape is `{ {2,3}, {4,5} }`, stride `{ {3,1}, {5,1} }`.
     //==================================================================================================================
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto operator+(layout const&                          lhs,
-                                    layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto operator+(layout_t const&                          lhs,
+                                    layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
-      return kwk::layout {
+      return kwk::layout_t {
           kwk::shape { lhs.shape(),  rhs.shape()},
            kwk::stride {lhs.stride(), rhs.stride()}
       };
@@ -285,13 +327,13 @@ namespace kwk
     //! operand: `(A + B) - B == A`.
     //==================================================================================================================
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto operator-(layout const&                          lhs,
-                                    layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto operator-(layout_t const&                          lhs,
+                                    layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
       (void)rhs; // `rhs` only selects the overload; the trailing block is always stripped.
       auto [ shl, shr ]  = kumi::split(lhs.shape(), kumi::index<1>);
       auto [ stl, str_ ] = kumi::split(lhs.stride(), kumi::index<1>);
-      return kwk::layout {as_shape(shl), as_stride(stl)};
+      return kwk::layout_t {as_shape(shl), as_stride(stl)};
     }
 
     //==================================================================================================================
@@ -312,13 +354,13 @@ namespace kwk
     //! `A * B` shape is `{ {2,3}, {4,5} }`, stride `{ {60,20}, {5,1} }`; `cosize == 120 == size`.
     //==================================================================================================================
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto operator*(layout const&                          lhs,
-                                    layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto operator*(layout_t const&                          lhs,
+                                    layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
       auto const block = __::flat_extent(rhs.shape());
       auto       shp   = kwk::shape {lhs.shape(), rhs.shape()};
       auto       strd  = kwk::stride {__::scale_stride(lhs.stride(), block), rhs.stride()};
-      return kwk::layout {shp, strd};
+      return kwk::layout_t {shp, strd};
     }
 
     //==================================================================================================================
@@ -333,8 +375,8 @@ namespace kwk
     //! Example: `(A * B) / B` recovers `A` (2x3, stride `(3,1)`).
     //==================================================================================================================
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto operator/(layout const&                          lhs,
-                                    layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto operator/(layout_t const&                          lhs,
+                                    layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
       auto [ cshl, cshr ] = kumi::split(lhs.shape(), kumi::index<1>);
       auto [ cstl, cstr ] = kumi::split(lhs.stride(), kumi::index<1>);
@@ -342,7 +384,7 @@ namespace kwk
       auto const block    = __::flat_extent(rhs.shape());
       auto       ashp     = as_shape(cshl);
       auto       astr     = __::unscale_stride(as_stride(cstl), block);
-      return kwk::layout {ashp, astr};
+      return kwk::layout_t {ashp, astr};
     }
 
     //==================================================================================================================
@@ -359,12 +401,12 @@ namespace kwk
     //! Example: a 1D layout of 10 tiled by blocks of 3 leaves `10 % 3 == 1` element.
     //==================================================================================================================
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto operator%(layout const&                          lhs,
-                                    layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto operator%(layout_t const&                          lhs,
+                                    layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
       auto shp  = __::leaf_remainder(lhs.shape(), rhs.shape());
       auto strd = kumi::flatten_all(lhs.stride());
-      return kwk::layout {as_shape(shp), as_stride(strd)};
+      return kwk::layout_t {as_shape(shp), as_stride(strd)};
     }
 
     //==================================================================================================================
@@ -379,10 +421,10 @@ namespace kwk
     //! (unscaled) extent and stride.
     //==================================================================================================================
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto merge(layout const&                          lhs,
-                                layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto merge(layout_t const&                          lhs,
+                                layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
-      return kwk::layout {
+      return kwk::layout_t {
           kwk::shape { lhs.shape(),  rhs.shape()},
            kwk::stride {lhs.stride(), rhs.stride()}
       };
@@ -390,8 +432,8 @@ namespace kwk
 
     //! @brief Blocked (logical) composition, alias of `merge(A, B) == A && B` (see `merge`).
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto operator&&(layout const&                          lhs,
-                                     layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto operator&&(layout_t const&                          lhs,
+                                     layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
       return merge(lhs, rhs);
     }
@@ -408,10 +450,10 @@ namespace kwk
     //! `(3,1,5,1)`.
     //==================================================================================================================
     template<typename OtherShape, typename OtherStride>
-    friend constexpr auto operator||(layout const&                          lhs,
-                                     layout<OtherShape, OtherStride> const& rhs) noexcept
+    friend constexpr auto operator||(layout_t const&                          lhs,
+                                     layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
-      return kwk::layout {as_shape(kumi::cat(lhs.shape(), rhs.shape())),
+      return kwk::layout_t {as_shape(kumi::cat(lhs.shape(), rhs.shape())),
                           as_stride(kumi::cat(lhs.stride(), rhs.stride()))};
     }
 
@@ -422,7 +464,7 @@ namespace kwk
     /// nesting.
     constexpr auto coalesce() const noexcept
     {
-      return kwk::layout {as_shape(kumi::flatten_all(shape())),
+      return kwk::layout_t {as_shape(kumi::flatten_all(shape())),
                           as_stride(kumi::flatten_all(stride()))};
     }
 
@@ -431,15 +473,18 @@ namespace kwk
 
     template<typename CharT, typename Traits>
     friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-                                                         layout const& s) noexcept
+                                                         layout_t const& s) noexcept
     {
       return os << s.shape() << " : " << s.stride();
     }
   };
 
+  /// @brief Alias for the layout type (natural name of the property)
+  template<typename Shape, typename Stride> using layout = layout_t<Shape, Stride>;
+
   template<typename Shape, typename Stride>
-  layout(Shape&&, Stride&&)
-      -> layout<std::unwrap_ref_decay_t<Shape>, std::unwrap_ref_decay_t<Stride>>;
+  layout_t(Shape&&, Stride&&)
+      -> layout_t<std::unwrap_ref_decay_t<Shape>, std::unwrap_ref_decay_t<Stride>>;
 
   //====================================================================================================================
   //! @brief Builds a layout from an explicit shape and stride.
@@ -447,7 +492,7 @@ namespace kwk
   template<kwk::concepts::shape Shp, kwk::concepts::stride Str>
   constexpr auto make_layout(Shp const& s, Str const& st) noexcept
   {
-    return kwk::layout {s, st};
+    return kwk::layout_t {s, st};
   }
 
   //====================================================================================================================
@@ -457,7 +502,7 @@ namespace kwk
   template<kwk::concepts::shape Shp, storage_order_descriptor order>
   constexpr auto make_layout(Shp const& s, storage_order_option<order> const& o) noexcept
   {
-    return kwk::layout {s, kwk::to_stride(s, o)};
+    return kwk::layout_t {s, kwk::to_stride(s, o)};
   }
 
   //====================================================================================================================
@@ -487,7 +532,7 @@ namespace kwk
   **/
   //====================================================================================================================
   template<typename Shape, typename Stride>
-  [[nodiscard]] constexpr bool is_compact(layout<Shape, Stride> const& t) noexcept
+  [[nodiscard]] constexpr bool is_compact(layout_t<Shape, Stride> const& t) noexcept
   {
     return t.stride().cosize(t.shape()) == t.size();
   }

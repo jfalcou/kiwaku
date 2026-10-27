@@ -46,9 +46,18 @@ namespace kwk
         return std::forward_like<Self>(static_cast<kind_t&>(self));
       }
 
+      //==================================================================================================================
+      // A kind is a property over itself : it exposes its own value through a `kind()` accessor.
+      //==================================================================================================================
+      template<typename Self>
+      [[nodiscard]] KWK_ABI constexpr decltype(auto) kind(this Self&& self) noexcept
+      {
+        using type = decltype(std::forward_like<Self>(std::declval<kind_option>()));
+        return static_cast<type>(self);
+      }
+
       static constexpr label_type label() { return kumi::str {"Kind"}; }
 
-      using kind                     = T;
       static constexpr auto itemsize = sizeof(T);
 
       template<typename CharT, typename Traits>

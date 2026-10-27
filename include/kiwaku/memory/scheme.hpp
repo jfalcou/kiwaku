@@ -14,6 +14,12 @@ namespace kwk
 {
   namespace __
   {
+    // Identifier of the scheme option (part of the uniform "field over itself" option protocol).
+    struct scheme_id : kumi::identifier<scheme_id>
+    {
+      friend constexpr auto to_str(scheme_id) { return kumi::str {"Scheme"}; }
+    };
+
     //==================================================================================================================
     // scheme: organizes elements over a shared blob.
     //
@@ -26,8 +32,38 @@ namespace kwk
     // by the caller (the blob / collection), so a scheme is a lightweight geometry and not tied to
     // a particular storage instance.
     //==================================================================================================================
-    template<typename Kind, typename... Offsets> struct scheme : compressed_tuple<Offsets...>
+    template<typename Kind, typename... Offsets> struct scheme_t : compressed_tuple<Offsets...>
     {
+      //==============================================================================================================
+      // Uniform construction backbone : every option follows the same "field over itself" protocol
+      // (element_type / type / identifier_type / label_type / label() / operator()(identifier)),
+      // so a scheme composes naturally in a properties pack alongside the other options.
+      //==============================================================================================================
+      using element_type    = scheme_t;
+      using type            = scheme_t;
+      using identifier_type = scheme_id;
+      using label_type      = kumi::str;
+
+      template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
+      {
+        using self_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
+                                          scheme_t const,
+                                          scheme_t>;
+        return std::forward_like<Self>(static_cast<self_t&>(self));
+      }
+
+      //==================================================================================================================
+      // A scheme is a property over itself : it exposes its own value through a `scheme()` accessor.
+      //==================================================================================================================
+      template<typename Self>
+      [[nodiscard]] KWK_ABI constexpr decltype(auto) scheme(this Self&& self) noexcept
+      {
+        using type = decltype(std::forward_like<Self>(std::declval<scheme_t>()));
+        return static_cast<type>(self);
+      }
+
+      static constexpr label_type label() { return kumi::str {"Scheme"}; }
+
       //! The fiber type : the scalar (uniform) or the record of scalars (SoA).
       using kind_type                               = Kind;
       //! Placeholder for the per-field geometry (wired by the collection layer in Phase 3+).
@@ -48,7 +84,7 @@ namespace kwk
       //! Initializes the per-field offsets held by this scheme.
       template<typename... Offs>
         requires(sizeof...(Offs) == sizeof...(Offsets))
-      constexpr scheme(Offs&&... offs) noexcept(
+      constexpr scheme_t(Offs&&... offs) noexcept(
           std::is_nothrow_constructible_v<offsets_type, Offs&&...>)
           : offsets_type {KWK_FWD(offs)...}
       {
@@ -121,11 +157,14 @@ namespace kwk
       //================================================================================================================
       template<typename CharT, typename Traits>
       friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-                                                           scheme const&) noexcept
+                                                           scheme_t const&) noexcept
       {
         return os << "Scheme";
       }
     };
+
+    //! Alias for the scheme type (natural name of the property).
+    template<typename Kind, typename... Offsets> using scheme = scheme_t<Kind, Offsets...>;
   }
 }
 
@@ -138,7 +177,7 @@ namespace kwk
 namespace kumi
 {
   template<typename Kind, typename... Offsets>
-  struct is_record_type<kwk::__::scheme<Kind, Offsets...>> : std::true_type
+  struct is_record_type<kwk::__::scheme_t<Kind, Offsets...>> : std::true_type
   {
   };
 }
