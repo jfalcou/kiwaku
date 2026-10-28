@@ -132,7 +132,7 @@ namespace kwk
     friend Shape;
     friend Stride;
 
-    using size_type = kwk::config::default_size_type;
+    using size_type       = kwk::config::default_size_type;
 
     //==================================================================================================================
     // Layout is a property over its (shape, stride) pair : it follows the same uniform
@@ -145,8 +145,8 @@ namespace kwk
 
     template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
     {
-      using self_t =
-          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, layout_t const, layout_t>;
+      using self_t = std::
+          conditional_t<std::is_const_v<std::remove_reference_t<Self>>, layout_t const, layout_t>;
       return std::forward_like<Self>(static_cast<self_t&>(self));
     }
 
@@ -174,8 +174,8 @@ namespace kwk
       through the whole `properties` inheritance chain.
     */
     //==================================================================================================================
-    using Shape::shape;
     using Shape::flat_ndim;
+    using Shape::shape;
     using Stride::stride;
 
     // The layout reached through its own name : returns the layout's own sub-object (never the
@@ -183,8 +183,8 @@ namespace kwk
     template<typename Self>
     [[nodiscard]] KWK_ABI constexpr decltype(auto) layout(this Self&& self) noexcept
     {
-      using type = decltype(std::forward_like<Self>(std::declval<layout_t>()));
-      return static_cast<type>(self);
+      using fwd_t = decltype(std::forward_like<Self>(std::declval<layout_t>()));
+      return static_cast<fwd_t>(self);
     }
 
     static constexpr size_type                ndim = flat_ndim;
@@ -454,7 +454,7 @@ namespace kwk
                                      layout_t<OtherShape, OtherStride> const& rhs) noexcept
     {
       return kwk::layout_t {as_shape(kumi::cat(lhs.shape(), rhs.shape())),
-                          as_stride(kumi::cat(lhs.stride(), rhs.stride()))};
+                            as_stride(kumi::cat(lhs.stride(), rhs.stride()))};
     }
 
     //==================================================================================================================
@@ -465,7 +465,7 @@ namespace kwk
     constexpr auto coalesce() const noexcept
     {
       return kwk::layout_t {as_shape(kumi::flatten_all(shape())),
-                          as_stride(kumi::flatten_all(stride()))};
+                            as_stride(kumi::flatten_all(stride()))};
     }
 
     /// @brief Unary `*` is a synonym for `coalesce` (flatten the nested structure).

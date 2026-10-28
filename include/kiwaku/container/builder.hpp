@@ -75,6 +75,18 @@ namespace kwk
     template<typename M, typename Absent>
     using maybe_absent_t = std::conditional_t<M::has_value, typename M::element_type, Absent>;
 
+    // Append a stage held by a `maybe<Option>` onto a fibre chain tuple, *if* it is present. The
+    // result is a fresh tuple of a possibly-larger type (constant `has_value` picks the branch at
+    // compile time), so it is returned (never assigned back into a fixed-size tuple).
+    template<typename Tuple, typename Maybe>
+    constexpr auto append_stage(Tuple&& t, Maybe&& m)
+    {
+      using maybe_t = std::remove_cvref_t<Maybe>;
+      if constexpr(maybe_t::has_value)
+        return kumi::cat(KWK_FWD(t), kumi::tuple {KWK_FWD(m.value)});
+      else return KWK_FWD(t);
+    }
+
     // A fresh owning region of `n` bytes on the heap — the dynamic owning backend, and also the
     // defensive fallback when a bag carries neither a generator, an allocator nor a source. The two
     // heap-backed branches of the storage selection are the same construction, so they share this
@@ -138,14 +150,13 @@ namespace kwk
       }
     }
 
-    // Result type of a generator laid flat across `Seq`-many coordinate arguments (one per
-    // flattened dimension). Metafunction replacing the deduction lambda so a generator is never
-    // probed with a degenerate zero-argument call.
-    template<typename Gen, typename Seq> struct generator_value_t;
-    template<typename Gen, std::size_t... I>
-    struct generator_value_t<Gen, std::index_sequence<I...>>
+    // Result type of a generator used as the pipeline sink. The generator "takes whatever the
+    // previous stage returns" — under the canonical resolver that is a single flat index — so its
+    // value type is deduced from a one-argument call (never probed with a degenerate zero-argument
+    // or a per-coordinate call).
+    template<typename Gen> struct generator_value_t
     {
-      using type = decltype(Gen {}(((void)I, std::size_t {})...));
+      using type = decltype(std::declval<Gen&>()(std::size_t {}));
     };
 
     //==================================================================================================================
@@ -300,13 +311,11 @@ namespace kwk
 
       if constexpr(decltype(generator)::has_value)
       {
-        // Function-backed terminal backend : no memory, evaluate the callable on demand.
+        // Function-backed terminal backend : no memory, the generator is the sink of the accessor
+        // pipeline, taking whatever the previous stage returns (a single flat index under
+        // canonical) — so its value type is deduced from a one-argument call.
         using Gen = std::remove_cvref_t<decltype(generator.value.content)>;
-        // A generator maps coordinates to a value, so its result type is deduced from a call with
-        // as many coordinate arguments as the shape's flattened dimension count — never a
-        // degenerate zero-argument call (which would reject coordinate-requiring generators).
-        using value_t =
-            typename generator_value_t<Gen, std::make_index_sequence<Shp::flat_ndim>>::type;
+        using value_t = typename generator_value_t<Gen>::type;
         constexpr Gen gen {};
         return kwk::constant_blob<value_t, gen> {};
       }
@@ -396,12 +405,12 @@ namespace kwk
         auto coordinates_final = wrap_base<base_value>(coordinates);
 
         using element_e        = typename decltype(kind)::element_type;
-        // The boundary / interpolator stages collapse through the monad: a present option unwraps
-        // to its strategy type, an absent one to the identity stage (`kumi::unit` /
-        // `kwk::__::none`).
-        using boundary_t       = maybe_absent_t<decltype(boundaries), kumi::unit>;
-        using interp_t         = maybe_absent_t<decltype(interp), kwk::__::none>;
-        using accessor_t       = kwk::accessor<decltype(coordinates_final), boundary_t, interp_t>;
+        // The accessor is a fibre of piped stages. Only *present* stages are composed : the
+        // resolver (the coordinate) is always the innermost stage, and a present boundary and
+        // interpolator are appended after it (each by simply piping its option). An absent
+        // boundary / interpolator is *not* composed at all — there is no identity stage.
+        auto accessor_stages =
+            append_stage(append_stage(kumi::tuple {KWK_FWD(coordinates_final)}, boundaries), interp);
 
         // Convenient aliases over the shape/stride *types* (needed to select the concrete
         // stack-blob capacity for fully-static owning tables below).
@@ -465,16 +474,13 @@ namespace kwk
         // bags with the same components in any option order yield exactly the same concrete type.
         // The shape and stride are coupled into a single `layout` option.
         //
-        // The interpolator instance is just the folded stage type default-constructed: a present
-        // `interpolator_option` unwraps to its strategy (`linear`, `nearest`, ...) and an absent
-        // one to `none{}` — both trivial value-free strategies. The boundary is passed through the
-        // monad's own `value_or` (falling back to the identity `kumi::unit{}`).
+        // The accessor is assembled from the folded stages (resolver + optional boundary +
+        // optional interpolator) — the final fibre type is whatever the fold produced.
+        auto accessor_option = __::accessor_from_tuple(accessor_stages);
         return kwk::__::make_collection(KWK_FWD(storage),
                                         kwk::layout {shp, stride},
                                         KWK_FWD(scheme),
-                                        accessor_t {KWK_FWD(coordinates_final),
-                                                    boundaries.value_or(kumi::unit {}),
-                                                    interp_t {}},
+                                        KWK_FWD(accessor_option),
                                         kind);
       }
     };

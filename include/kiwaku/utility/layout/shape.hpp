@@ -119,8 +119,8 @@ namespace kwk
 
     template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
     {
-      using self_t =
-          std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, shape_t const, shape_t>;
+      using self_t = std::
+          conditional_t<std::is_const_v<std::remove_reference_t<Self>>, shape_t const, shape_t>;
       return std::forward_like<Self>(static_cast<self_t&>(self));
     }
 
@@ -130,8 +130,8 @@ namespace kwk
     template<typename Self>
     [[nodiscard]] KWK_ABI constexpr decltype(auto) shape(this Self&& self) noexcept
     {
-      using type = decltype(std::forward_like<Self>(std::declval<shape_t>()));
-      return static_cast<type>(self);
+      using fwd_t = decltype(std::forward_like<Self>(std::declval<shape_t>()));
+      return static_cast<fwd_t>(self);
     }
 
     static constexpr label_type label() { return kumi::str {"Shape"}; }

@@ -23,6 +23,10 @@ namespace kwk
     requires(std::declval<T>()->stride())
   using stride_type = std::remove_cvref_t<decltype(std::declval<T>()->stride())>;
 
+  template<typename T>
+    requires(std::declval<T>()->layout())
+  using layout_type = std::remove_cvref_t<decltype(std::declval<T>()->layout())>;
+
   // Memory
   template<typename T>
     requires(std::declval<T>()->storage())

@@ -40,10 +40,10 @@ namespace kwk
 
       template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
       {
-        using kind_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
-                                          kind_option const,
-                                          kind_option>;
-        return std::forward_like<Self>(static_cast<kind_t&>(self));
+        using fwd_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
+                                         kind_option const,
+                                         kind_option>;
+        return std::forward_like<Self>(static_cast<fwd_t&>(self));
       }
 
       //==================================================================================================================
@@ -52,12 +52,13 @@ namespace kwk
       template<typename Self>
       [[nodiscard]] KWK_ABI constexpr decltype(auto) kind(this Self&& self) noexcept
       {
-        using type = decltype(std::forward_like<Self>(std::declval<kind_option>()));
-        return static_cast<type>(self);
+        using fwd_t = decltype(std::forward_like<Self>(std::declval<kind_option>()));
+        return static_cast<fwd_t>(self);
       }
 
       static constexpr label_type label() { return kumi::str {"Kind"}; }
 
+      using kind_t                   = T;
       static constexpr auto itemsize = sizeof(T);
 
       template<typename CharT, typename Traits>

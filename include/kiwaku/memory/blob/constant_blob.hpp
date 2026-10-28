@@ -33,6 +33,11 @@ namespace kwk
     //! options).
     using data_type  = void const*;
 
+    //! Identity accessor : a generator-backed collection reaches its storage as the
+    //! `constant_blob` base; `storage()` returns it unambiguously (this is the only option type
+    //! defining `storage()` for a function-backed collection).
+    constexpr constant_blob const& storage() const noexcept { return *this; }
+
     //==================================================================================================================
     //! Evaluate the generator at the given coordinates.
     //==================================================================================================================

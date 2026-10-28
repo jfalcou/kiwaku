@@ -46,20 +46,20 @@ namespace kwk
 
       template<typename Self> constexpr auto&& operator()(this Self&& self, identifier_type const&)
       {
-        using self_t = std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>,
-                                          scheme_t const,
-                                          scheme_t>;
+        using self_t = std::
+            conditional_t<std::is_const_v<std::remove_reference_t<Self>>, scheme_t const, scheme_t>;
         return std::forward_like<Self>(static_cast<self_t&>(self));
       }
 
       //==================================================================================================================
-      // A scheme is a property over itself : it exposes its own value through a `scheme()` accessor.
+      // A scheme is a property over itself : it exposes its own value through a `scheme()`
+      // accessor.
       //==================================================================================================================
       template<typename Self>
       [[nodiscard]] KWK_ABI constexpr decltype(auto) scheme(this Self&& self) noexcept
       {
-        using type = decltype(std::forward_like<Self>(std::declval<scheme_t>()));
-        return static_cast<type>(self);
+        using fwd_t = decltype(std::forward_like<Self>(std::declval<scheme_t>()));
+        return static_cast<fwd_t>(self);
       }
 
       static constexpr label_type label() { return kumi::str {"Scheme"}; }
@@ -67,7 +67,8 @@ namespace kwk
       //! The fiber type : the scalar (uniform) or the record of scalars (SoA).
       using kind_type                               = Kind;
       //! Placeholder for the per-field geometry (wired by the collection layer in Phase 3+).
-      using layout_type                             = void;
+      // using layout_type                             = void;
+
       //! The tuple of per-field byte offsets held by this scheme.
       using offsets_type                            = compressed_tuple<Offsets...>;
 
@@ -75,11 +76,7 @@ namespace kwk
       static constexpr bool        is_product_space = kumi::concepts::product_type<Kind>;
 
       //! Number of fibers (1 for a uniform space, one per field for a product space).
-      static constexpr std::size_t field_count      = []
-      {
-        if constexpr(is_product_space) return kumi::size_v<Kind>;
-        else return std::size_t {1};
-      }();
+      static constexpr std::size_t field_count      = kumi::function::size_or_v<Kind, 1>;
 
       //! Initializes the per-field offsets held by this scheme.
       template<typename... Offs>
@@ -99,7 +96,7 @@ namespace kwk
       template<typename Self> constexpr auto data(this Self&& self, auto* begin)
       {
         if constexpr(!is_product_space) return begin;
-        else return self._data(begin, std::make_index_sequence<sizeof...(Offsets)> {});
+        else return kumi::map([ & ](auto e) { return e + begin; }, offsets_cast(self));
       }
 
       //================================================================================================================
@@ -111,14 +108,19 @@ namespace kwk
       constexpr decltype(auto) operator[](this Self& self, auto* base, std::size_t index)
       {
         if constexpr(!is_product_space)
-        {
           return *resolve(element<Kind, 1> {index * sizeof(Kind)}, base);
-        }
         else
         {
           // Each field is its own SoA fiber: field `I` lives at `data(base)[I]` (a byte pointer
           // already offset to that field's region). Advance within the fiber by `index` scalars.
-          return self._fiber(index, base, std::make_index_sequence<sizeof...(Offsets)> {});
+          return kumi::map_index(
+              [ & ](auto I, auto&& e)
+              {
+                using curr = kumi::element_t<I, Kind>;
+                return *resolve(element<curr, I + 1> {index * sizeof(curr)},
+                                static_cast<std::byte*>(KWK_FWD(e)));
+              },
+              self.data(base));
         }
       }
 
@@ -127,27 +129,6 @@ namespace kwk
       static constexpr offsets_type& offsets_cast(auto& self)
       {
         return static_cast<offsets_type&>(self);
-      }
-
-      // Build the tuple of per-field byte pointers over `begin`.
-      template<typename Self, std::size_t... I>
-      constexpr auto _data(this Self& self, auto* begin, std::index_sequence<I...>)
-      {
-        auto& offs = offsets_cast(self);
-        return kumi::tuple {(begin + kumi::get<I>(offs))...};
-      }
-
-      // Build the tuple of per-field typed references at `index` over `base`.
-      template<typename Self, std::size_t... I>
-      constexpr auto
-      _fiber(this Self& self, std::size_t index, auto* base, std::index_sequence<I...>)
-      {
-        auto fibers = self.data(base);
-        return kumi::tuple {*resolve(
-            element<kumi::element_t<I, Kind>, I + 1> {index * sizeof(kumi::element_t<I, Kind>)}
-            // offset already advanced onto field I's own fiber:
-            ,
-            static_cast<std::byte*>(kumi::get<I>(fibers)))...};
       }
 
     public:

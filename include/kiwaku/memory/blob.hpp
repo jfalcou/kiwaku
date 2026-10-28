@@ -42,25 +42,17 @@ namespace kwk
     // The mapping is a plain class template naming the concrete blob types directly: the primary
     // template is the borrowed fallback and each storage intent partially specializes the trait.
     //==================================================================================================================
-    template<typename Storage> struct as_storage
-    {
-      using type = kwk::shallow_blob;
-    };
+    template<typename Storage> extern kwk::shallow_blob as_storage;
 
-    template<std::size_t Sz, std::size_t Al> struct as_storage<kwk::stack_allocator<Sz, Al>>
-    {
-      using type = kwk::stack_blob<Sz, Al>;
-    };
+    template<std::size_t Sz, std::size_t Al>
+    extern kwk::stack_blob<Sz, Al> as_storage<kwk::stack_allocator<Sz, Al>>;
 
     template<typename Storage>
       requires kwk::concepts::allocator<Storage>
-    struct as_storage<Storage>
-    {
-      using type = kwk::heap_blob;
-    };
+    extern kwk::heap_blob as_storage<Storage>;
 
     //! The concrete owning/borrowing backend selected for a storage intent.
-    template<typename Storage> using as_storage_t = typename kwk::__::as_storage<Storage>::type;
+    template<typename Storage> using as_storage_t = decltype(kwk::__::as_storage<Storage>);
   }
 
   //====================================================================================================================
@@ -86,7 +78,7 @@ namespace kwk
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    constexpr blob_t()      = default;
+    constexpr blob_t()    = default;
 
     //! Borrow an externally-owned region of memory.
     explicit constexpr blob_t(std::byte* addr)
@@ -124,8 +116,8 @@ namespace kwk
     //==================================================================================================================
     template<typename Self> constexpr decltype(auto) blob(this Self&& self) noexcept
     {
-      using type = decltype(std::forward_like<Self>(std::declval<blob_t>()));
-      return static_cast<type>(self);
+      using blob_t = decltype(std::forward_like<Self>(std::declval<blob_t>()));
+      return static_cast<blob_t>(self);
     }
 
     static constexpr label_type label() { return kumi::str {"Blob"}; }

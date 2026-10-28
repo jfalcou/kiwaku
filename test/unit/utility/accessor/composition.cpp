@@ -9,53 +9,76 @@
 #include <kiwaku/kiwaku.hpp>
 
 //==================================================================================================
-// C9 : the accessor is a variadic pipeline (`accessor<Coordinate, Boundaries, Interpolators...>`)
-// of stages, composed with `accessor | accessor` and with `fractional` / `interpolates` derived
-// across the interpolator pack. Absent stages (no boundary / no interpolator) are trivial.
+// The accessor is a fibre : a chain of plain function objects (`accessor_t{ canonical }` as the
+// innermost resolver) extended by piping a boundary (clamp/tile/mirror) and/or an interpolator
+// (none/nearest/floor/ceil/round/linear). Reading is `acc(position, shape, stride, read)`.
+//
+// Piping runs the chain backwards (continuation-passing) : the outermost piped stage runs first on
+// the position — a boundary transforms it and passes it down, an interpolator calls the rest back
+// once per sample and blends — and the resolver leaf maps the position to a storage offset which
+// the `read` callback turns into a value. An absent stage is simply *not piped* (no identity).
 //==================================================================================================
-TTS_CASE("Accessor pipeline : absent stages are trivial identities (2-stage)")
+TTS_CASE("Accessor : a plain resolver with no additional stage")
 {
   using namespace kwk::literals;
 
   double ref[ 4 ] = {0., 10., 20., 30.};
   auto   read     = [ & ](std::size_t i) -> double { return ref[ i ]; };
 
-  // `accessor{ canonical }` alone : a coordinate with no boundary and no interpolator.
-  auto   acc      = kwk::accessor {kwk::canonical, kumi::unit {}};
+  auto   acc      = kwk::accessor {kwk::canonical};
 
   TTS_EXPECT(!decltype(acc)::interpolates);
   TTS_EXPECT(!decltype(acc)::fractional);
 
   // Flat index of position {2} over shape{4}, stride{1} -> ref[2].
-  TTS_EQUAL(acc(kumi::tuple {2.0}, kwk::shape {4_c}, kwk::stride {1_c}, read), 20.0);
-  TTS_EQUAL(acc(kumi::tuple {0.0}, kwk::shape {4_c}, kwk::stride {1_c}, read), 0.0);
+  TTS_EQUAL(acc(kumi::tuple {2_c}, kwk::shape {4_c}, kwk::stride {1_c}, read), 20.0);
+  TTS_EQUAL(acc(kumi::tuple {0_c}, kwk::shape {4_c}, kwk::stride {1_c}, read), 0.0);
+  TTS_EQUAL(acc(kumi::tuple {3_c}, kwk::shape {4_c}, kwk::stride {1_c}, read), 30.0);
 };
 
-TTS_CASE("Accessor pipeline : a selection stage engages only fractional, not interpolates")
+TTS_CASE("Accessor : a boundary is piped on and passes its transformed position down")
+{
+  using namespace kwk::literals;
+
+  double ref[ 4 ] = {0., 10., 20., 30.};
+  auto   read     = [ & ](std::size_t i) -> double { return ref[ i ]; };
+
+  auto   acc      = kwk::accessor {kwk::canonical} | kwk::clamp;
+
+  TTS_EXPECT(!decltype(acc)::interpolates);
+  TTS_EXPECT(!decltype(acc)::fractional);
+
+  // clamp projects out-of-range positions into [0, 3] before the resolver leaf.
+  TTS_EQUAL(acc(kumi::tuple {-2_c}, kwk::shape {4_c}, kwk::stride {1_c}, read), 0.0);
+  TTS_EQUAL(acc(kumi::tuple {1_c}, kwk::shape {4_c}, kwk::stride {1_c}, read), 10.0);
+  TTS_EQUAL(acc(kumi::tuple {9_c}, kwk::shape {4_c}, kwk::stride {1_c}, read), 30.0);
+};
+
+TTS_CASE("Accessor : a selection stage engages only fractional, not interpolates")
 {
   using namespace kwk::literals;
 
   double ref[ 5 ] = {0., 10., 20., 30., 40.};
   auto   read     = [ & ](std::size_t i) -> double { return ref[ i ]; };
 
-  auto   acc      = kwk::accessor {kwk::canonical, kumi::unit {}, kwk::__::nearest {}};
+  auto   acc      = kwk::accessor {kwk::canonical} | kwk::nearest;
 
   TTS_EXPECT(!decltype(acc)::interpolates);
   TTS_EXPECT(decltype(acc)::fractional);
 
-  // nearest rounds the fractional position onto the closest lattice point, then flattens.
+  // nearest maps the fractional position onto the closest lattice point, then resolves it.
   TTS_EQUAL(acc(kumi::tuple {2.4}, kwk::shape {5_c}, kwk::stride {1_c}, read), 20.0);
   TTS_EQUAL(acc(kumi::tuple {2.7}, kwk::shape {5_c}, kwk::stride {1_c}, read), 30.0);
 };
 
-TTS_CASE("Accessor pipeline : an interpolating stage engages both fractional and interpolates")
+TTS_CASE("Accessor : an interpolating stage engages both fractional and interpolates")
 {
   using namespace kwk::literals;
 
   double ramp[ 5 ] = {0., 10., 20., 30., 40.};
   auto   read      = [ & ](std::size_t i) -> double { return ramp[ i ]; };
 
-  auto   acc       = kwk::accessor {kwk::canonical, kumi::unit {}, kwk::__::linear {}};
+  auto   acc       = kwk::accessor {kwk::canonical} | kwk::linear;
 
   TTS_EXPECT(decltype(acc)::interpolates);
   TTS_EXPECT(decltype(acc)::fractional);
@@ -68,44 +91,39 @@ TTS_CASE("Accessor pipeline : an interpolating stage engages both fractional and
   TTS_EXPECT(approx_equal(acc(kumi::tuple {3.5}, kwk::shape {5_c}, kwk::stride {1_c}, read), 35.0));
 };
 
-TTS_CASE("Accessor pipeline : variadic pack engages the FIRST interpolating stage")
+TTS_CASE("Accessor : boundary and interpolator compose by piping in order")
 {
   using namespace kwk::literals;
 
   double ref[ 4 ] = {0., 10., 20., 30.};
   auto   read     = [ & ](std::size_t i) -> double { return ref[ i ]; };
 
-  // An inert `none` leads a variadic pack whose first interpolating stage is `linear`.
-  auto   acc = kwk::accessor {kwk::canonical, kumi::unit {}, kwk::__::none {}, kwk::__::linear {}};
+  // The interpolator is the outermost stage : it calls the boundary back with each corner, and the
+  // boundary passes the clamped corner down to the resolver leaf.
+  auto   acc      = kwk::accessor {kwk::canonical} | kwk::clamp | kwk::linear;
 
   TTS_EXPECT(decltype(acc)::interpolates);
   TTS_EXPECT(decltype(acc)::fractional);
-  TTS_EQUAL(acc(kumi::tuple {1.0}, kwk::shape {4_c}, kwk::stride {1_c}, read), 10.0);
-};
-
-TTS_CASE("Accessor pipeline : `accessor | accessor` concatenates the stages")
-{
-  using namespace kwk::literals;
-
-  double ramp[ 4 ] = {0., 10., 20., 30.};
-  auto   read      = [ & ](std::size_t i) -> double { return ramp[ i ]; };
-
-  // `base` is a plain selection pipeline; `interp` brings the linear interpolation stage.
-  auto   base      = kwk::accessor {kwk::canonical, kumi::unit {}, kwk::__::none {}};
-  auto   interp    = kwk::accessor {kwk::canonical, kumi::unit {}, kwk::__::linear {}};
-
-  auto   comp      = base | interp;
-
-  // The composite's first interpolating stage is `linear` : both flags come true.
-  TTS_EXPECT(decltype(comp)::interpolates);
-  TTS_EXPECT(decltype(comp)::fractional);
 
   auto approx_equal = [](double a, double b) { return std::abs(a - b) < 1e-9; };
 
-  // Down/up across the concatenated pipeline still reproduce the linear ramp.
-  TTS_EXPECT(
-      approx_equal(comp(kumi::tuple {1.5}, kwk::shape {4_c}, kwk::stride {1_c}, read), 15.0));
-  TTS_EXPECT(approx_equal(comp(kumi::tuple {0.0}, kwk::shape {4_c}, kwk::stride {1_c}, read), 0.0));
-  TTS_EXPECT(
-      approx_equal(comp(kumi::tuple {3.0}, kwk::shape {4_c}, kwk::stride {1_c}, read), 30.0));
+  // In-bounds : the boundary is a no-op and linear blends the two neighbours.
+  TTS_EXPECT(approx_equal(acc(kumi::tuple {1.5}, kwk::shape {4_c}, kwk::stride {1_c}, read), 15.0));
+  // Out-of-bounds : the linear corners get clamped to [0, 3], so the read stays in-bounds.
+  TTS_EXPECT(approx_equal(acc(kumi::tuple {-1.5}, kwk::shape {4_c}, kwk::stride {1_c}, read), 0.0));
+  TTS_EXPECT(approx_equal(acc(kumi::tuple {9.5}, kwk::shape {4_c}, kwk::stride {1_c}, read), 30.0));
+};
+
+TTS_CASE("Accessor : a runtime label is a property of the fibre")
+{
+  using namespace kwk::literals;
+
+  // The label is a (runtime) kumi::str held by the fibre; an empty name means "no name".
+  auto acc = kwk::accessor {kwk::canonical};
+  TTS_EQUAL(acc.name().size(), 0u);
+
+  // A fibre can carry a runtime name via `named`; reading preserves the runtime name.
+  auto named = kwk::accessor {kwk::canonical}.named("fibre_v");
+  TTS_EQUAL(named.name(), kumi::str {"fibre_v"});
+  TTS_EQUAL(named.name().size(), 7u);
 };

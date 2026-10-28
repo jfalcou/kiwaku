@@ -54,27 +54,28 @@ namespace kwk
     both produce a collection through the builder's CTAD.
   */
   //====================================================================================================================
-  template<typename... Opts> struct collection : private __::properties<Opts...>
+  template<typename... Opts> struct collection
   {
-    using impl_type = __::properties<Opts...>;
+  private:
+    struct KWK_STRUCT_ABI properties_t : Opts...
+    {
+    } properties;
 
-    // Re-expose the object interface that `properties` provides. Under private inheritance a
-    // collection *holds* its properties (it is not one), so only the members that are meant to be
-    // called directly on the collection object are brought in publicly; the component interface is
-    // reached through `operator->` below.
-    using impl_type::operator[];
+  public:
+    using impl_type                     = properties_t;
 
     // Size type of the space, inherited from the layout.
-    using size_type                 = typename impl_type::size_type;
+    using size_type                     = typename impl_type::size_type;
 
     // The scalar content type of a single element of this space.
-    using value_type                = typename impl_type::value_type;
+    using value_type                    = typename impl_type::kind_t;
 
     // Required by the container concepts.
-    using source_type               = void;
+    using source_type                   = void;
 
     // The number of dimensions of this space (a compile-time constant derived from the layout).
-    static constexpr size_type ndim = impl_type::ndim;
+    static constexpr size_type ndim     = impl_type::ndim;
+    static constexpr size_type itemsize = impl_type::itemsize;
 
     //==================================================================================================================
     /*
@@ -95,8 +96,9 @@ namespace kwk
     */
     //==================================================================================================================
     template<typename... Args>
+      requires(sizeof...(Args) == sizeof...(Opts))
     constexpr collection(Args&&... args)
-        : impl_type(KWK_FWD(args)...)
+        : properties(KWK_FWD(args)...)
     {
     }
 
@@ -108,15 +110,189 @@ namespace kwk
       the arrow without any forwarding declarations in this shell.
     */
     //==================================================================================================================
-    constexpr impl_type*       operator->() noexcept { return static_cast<impl_type*>(this); }
-    constexpr impl_type const* operator->() const noexcept
+    constexpr impl_type*       operator->() noexcept { return &properties; }
+    constexpr impl_type const* operator->() const noexcept { return &properties; }
+
+    //==================================================================================================================
+    /*
+      Access : operator[]
+    */
+    //==================================================================================================================
+    // A tuple/record of integral indices is forwarded to the scalar overloads.
+    template<kumi::concepts::product_type T> constexpr decltype(auto) operator[](T&& t) noexcept
     {
-      return static_cast<impl_type const*>(this);
+      return kumi::apply([ & ](auto&&... i) -> decltype(auto) { return (*this)[ KWK_FWD(i)... ]; },
+                         KWK_FWD(t));
     }
 
-    // `operator[]` is re-exposed above via the using-declaration, so `collection[i]`,
-    // `collection[...]` and `collection[sl...]` resolve directly on the object; every component
-    // member (`shape`, `kind`, `get<I>`, ...) is reached through `operator->`.
+    // Scalar access : the accessor runs the bidirectional resolve pipeline
+    // (down: indices -> sample ; read storage ; up: raw -> interpolated value).
+    //
+    // When fewer indices than `ndim` (the flat dimension count) are provided the space is
+    // *tiled*: the indices select a position in the index (grid) space and the remainder of the
+    // layout is returned as a sub-collection (a tile view) over the same storage, re-pointed to
+    // the selected byte offset. When enough indices are provided to fully address every leaf
+    // dimension, a single scalar element is read through the accessor.
+    template<typename Self, typename... Is>
+      requires(sizeof...(Is) >= 1 && (std::integral<Is> && ...))
+    constexpr decltype(auto) operator[](this Self& self, Is... is) noexcept
+    {
+      if constexpr(sizeof...(Is) == ndim) return self.resolve(kumi::tuple {is...});
+      else if constexpr(sizeof...(Is) < ndim) return self.tile_view(is...);
+      else
+        static_assert(sizeof...(Is) < ndim,
+                      "[KWK] - Too many indices for the number of dimensions");
+    }
+
+    // Slicing access : a range (slicer) produces a sub-collection whose layout is the reshaped /
+    // re-strided view and whose storage is re-pointed to the sliced byte offset.
+    template<typename Self, kwk::concepts::slicer... S>
+    constexpr auto operator[](this Self& self, S&&... s) noexcept
+    {
+      auto const [ position, subl ] = self->layout()[ KWK_FWD(s)... ];
+      // Flatten the origin and the parent strides to compute the element offset consumed by the
+      // slicer starts, scaled by the element size : the dot product of `starts` with `fs`.
+      auto const fs                 = kumi::to_tuple(kumi::flatten_all(self->stride()));
+      auto const starts             = kumi::to_tuple(kumi::flatten_all(position));
+      auto       offset_elements    = kumi::inner_product(starts, fs, std::size_t {0});
+      return self.make_view(subl.shape(), subl.stride(), offset_elements);
+    }
+
+    // Fractional access : available when the accessor can consume a non-integral position —
+    // either a blending strategy (`linear`, which reads the 2^N surrounding samples) or a
+    // rounding selection (`nearest`/`floor`/`ceil`/`round`, which map the position onto an
+    // integer grid point). `none` accepts only integral indices (its `operator[]` is the integral
+    // overloads).
+    template<typename Self, typename... Is>
+      requires(sizeof...(Is) >= 1 && (std::floating_point<Is> && ...) && impl_type::fractional)
+    constexpr decltype(auto) operator[](this Self& self, Is... is) noexcept
+    {
+      return self.resolve(kumi::tuple {is...});
+    }
+
+  private:
+    // The sink (the read) is chosen once at the top, from the storage base :
+    //
+    //   - a pointer / owning blob address memory : the accessor resolves the position to a flat
+    //     offset, which is passed to the scheme's `operator[]` to yield a reference into the blob;
+    //   - a generator (`constant_blob`) is not storage at all : it is the *sink* of the pipeline,
+    //     taking precedence over the scheme and consuming whatever the resolver leaf returns (a
+    //     flat index when canonical is present, or the un-flattened position if it replaces
+    //     canonical).
+    //
+    // There is deliberately no coordinate round-trip : the generator simply receives the previous
+    // stage's result.
+    template<typename Self, typename Position>
+    constexpr decltype(auto) resolve(this Self&& self, Position&& p) noexcept
+    {
+      // The generator base (`constant_blob`) exposes no `blob()`/`data()` — that is what
+      // discriminates it from real, addressable memory.
+      if constexpr(requires { self->blob().data(); })
+        return self->accessor()(KWK_FWD(p),
+                                self->shape(),
+                                self->stride(),
+                                [ & ](std::size_t i) -> decltype(auto)
+                                { return self->scheme()[ self->blob().data(), i ]; });
+      else
+        return self->accessor()(KWK_FWD(p),
+                                self->shape(),
+                                self->stride(),
+                                [ & ](auto&& r) -> decltype(auto)
+                                { return self->storage()(KWK_FWD(r)); });
+    }
+
+    // template<typename Position>
+    // constexpr decltype(auto) resolve(Position&& p) const noexcept
+    //{
+    //   auto const& acc = this->accessor();
+    //   return acc(KWK_FWD(p),
+    //              this->layout().shape(),
+    //              this->layout().stride(),
+    //              [ & ](std::size_t i) -> decltype(auto) { return read_sample(*this, i); });
+    // }
+
+    //==================================================================================================================
+    /*
+      Sub-view construction (layout-driven access)
+
+      A sub-view reuses the *same* kind, accessor and storage intent as its parent; only the
+      shape/stride and the byte position of the storage change. `offset_elements` is the number of
+      *scalars* the sub-view is shifted from the parent's origin (the dot product of the leading
+      indices/starts with the flattened strides).
+
+      For a **uniform** space the origin shift is applied by re-pointing the (borrowed) storage to
+      `data() + offset_elements * sizeof(value_type)` and keeping the (scalar-offset-free) scheme.
+
+      For a **product** (SoA) space each field lives in its own fiber at its own byte offset
+      (`scheme[I]`), and the fields have different scalar sizes — so a single storage re-point by
+      `offset_elements * sizeof(record)` would address the *wrong* bytes for every field but the
+      first. The origin shift is therefore applied *per field*: the storage stays at the parent's
+      `data()` and each field's scheme offset advances by `offset_elements * sizeof(field_I)`. The
+      shift lives purely in this sub-view's scheme, never baked onto the parent's offsets.
+
+      Generator-backed (constant) storage carries no pointer, so for a uniform space the offset is
+      dropped and the storage is passed through unchanged.
+    */
+    //==================================================================================================================
+    template<typename Self, typename NewShape, typename NewStride>
+    [[nodiscard]] constexpr auto make_view(this Self&       self,
+                                           NewShape const&  shp,
+                                           NewStride const& strd,
+                                           std::size_t      offset_elements)
+    {
+      if constexpr(impl_type::is_product_space)
+      {
+        using KindT = impl_type::kind_t;
+
+        auto new_scheme =
+            kumi::map_index([ & ](auto I, auto&& elt)
+                            { return (elt + offset_elements * sizeof(kumi::element_t<I, KindT>)); },
+                            self.scheme());
+
+        auto store = self.offset_storage(0);
+        return kwk::__::make_collection(KWK_FWD(store),
+                                        kwk::layout {shp, strd},
+                                        KWK_FWD(new_scheme),
+                                        self.accessor(),
+                                        self.kind());
+      }
+      else
+      {
+        auto store = self.offset_storage(offset_elements * sizeof(value_type));
+        return kwk::__::make_collection(
+            KWK_FWD(store), kwk::layout {shp, strd}, self.scheme(), self.accessor(), self.kind());
+      }
+    }
+
+    template<typename Self>
+    [[nodiscard]] constexpr auto offset_storage(this Self& self, std::size_t byte_offset)
+    {
+      if constexpr(requires { self.storage().data(); })
+        return kwk::blob<kwk::shallow_blob> {const_cast<std::byte*>(self.storage().data()) +
+                                             byte_offset};
+      else return self.storage();
+    }
+
+    // Partial indexing : fewer indices than flat `ndim` select a tile within the (possibly
+    // nested) space. The tile is the structure that remains after consuming `K` leaves from the
+    // front of the shape/stride, and the element offset is the dot-product of the indices with
+    // the leading flattened strides. The scheme/storage is re-based by that scalar offset
+    // (per-field for an SoA space, see make_view).
+    template<typename Self, typename... Is> static constexpr auto tile_view(Self&& self, Is... is)
+    {
+      constexpr auto K               = sizeof...(Is);
+      auto const     fs              = kumi::to_tuple(kumi::flatten_all(self->stride()));
+      auto const     idxs            = kumi::tuple {static_cast<std::size_t>(is)...};
+      // The tile offset is the dot product of the indices with the leading K flattened strides
+      // (inner_product needs equal-sized tuples, so `fs` is first truncated to its K-long
+      // prefix). -> wrong
+      auto           offset_elements = kumi::inner_product(
+          kumi::extract(fs, kumi::index<0>, kumi::index<K>), idxs, std::size_t {0});
+
+      auto const tile_shp  = kwk::__::tile_shape<K>(self->shape());
+      auto const tile_strd = kwk::__::tile_stride<K>(self->stride());
+      return self.make_view(tile_shp, tile_strd, offset_elements);
+    }
   };
 
   //====================================================================================================================
@@ -129,11 +305,7 @@ namespace kwk
     keep reference types for such lvalue arguments).
   */
   //====================================================================================================================
-  template<typename Storage,
-           typename Layout,
-           typename Scheme,
-           typename Accessor,
-           typename Kind>
+  template<typename Storage, typename Layout, typename Scheme, typename Accessor, typename Kind>
   collection(Storage&&, Layout&&, Scheme&&, Accessor&&, Kind&&)
       -> collection<std::remove_cvref_t<Storage>,
                     std::remove_cvref_t<Layout>,
@@ -145,11 +317,35 @@ namespace kwk
   /* Per-field (SoA) access : `kwk::get<I>(c)` returns a borrowed scalar view over field I's fiber.
    */
   //======================================================================================================================
+  //================================================================================================================
+  /*
+    Per-field (SoA) access : field I of a product (record) kind, exposed as a borrowed scalar
+    view over field I's own fiber.
+
+    A product kind (`kwk::as<kumi::tuple<T0,T1,...>>()`) is stored structure-of-arrays: each
+    field is a contiguous fiber at its own byte offset (`scheme[I]`) in the shared storage. This
+    returns a lightweight `collection` whose kind is the scalar `T_I`, whose shape/stride match
+    the parent, and whose storage is a borrowed `shallow_blob` re-pointed to the field's fiber.
+    The parent is not resized or copied: the two views alias the same bytes, so writing through
+    field `I` of the result is visible in the parent (and vice-versa).
+  */
+  //================================================================================================================
   template<std::size_t I, typename... Opts>
-    requires(kumi::concepts::product_type<typename kwk::collection<Opts...>::value_type>)
-  [[nodiscard]] constexpr auto get(kwk::collection<Opts...> const& c)
+  // requires(kumi::concepts::product_type<typename impl_type::kind_t>)
+  [[nodiscard]] constexpr auto get(kwk::collection<Opts...> const& collec)
   {
-    return c->template get<I>();
+    using record_t    = kind_t<decltype(collec)>; // typename impl_type::kind;
+    using field_t     = kumi::element_t<I, record_t>;
+    auto off          = static_cast<std::size_t>(kumi::get<I>(collec->scheme()));
+    auto store        = collec.offset_storage(off);
+    auto field_scheme = kwk::__::scheme<field_t> {};
+    auto skind        = kwk::as<field_t>();
+
+    return kwk::__::make_collection(KWK_FWD(store),
+                                    kwk::layout {get<I>(collec->shape()), get<I>(collec->stride())},
+                                    KWK_FWD(field_scheme),
+                                    collec->accessor(),
+                                    KWK_FWD(skind));
   }
 }
 
