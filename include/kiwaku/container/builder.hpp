@@ -42,49 +42,28 @@ namespace kwk
     // builder route their construction through this one function, so the component pack is
     // assembled in exactly one place; sub-views pass their resolved scheme / accessor / kind
     // through unchanged, preserving byte-exact view semantics.
-    template<typename Storage,
-             typename Layout,
-             typename Scheme,
-             typename Accessor,
-             typename Kind>
-    constexpr auto make_collection(Storage&&  store,
-                                   Layout&&   layout,
-                                   Scheme&&   scheme,
-                                   Accessor&& acc,
-                                   Kind&&     kind)
+    template<typename Storage, typename Layout, typename Scheme, typename Accessor, typename Kind>
+    constexpr auto
+    make_collection(Storage&& store, Layout&& layout, Scheme&& scheme, Accessor&& acc, Kind&& kind)
     {
-      return kwk::collection {KWK_FWD(store),
-                              KWK_FWD(layout),
-                              KWK_FWD(scheme),
-                              KWK_FWD(acc),
-                              KWK_FWD(kind)};
+      // Consistency : a function-backed storage (`constant_blob`) owns no addressable memory, so
+      // its reads are only meaningful when the accessor terminates at a generator — otherwise there
+      // would be no data to read. Memory storage (has `data()`) accepts either terminal. This is
+      // checked once here, at the single assembly authority, instead of failing cryptically at the
+      // first access.
+      static_assert(
+          requires { store.data(); } || __::accessor_generator_terminal_v<Accessor>,
+          "[KWK] - a constant / function-backed space must pair with a generator-terminal "
+          "accessor (there is no memory to read).");
+
+      return kwk::collection {
+          KWK_FWD(store), KWK_FWD(layout), KWK_FWD(scheme), KWK_FWD(acc), KWK_FWD(kind)};
     }
 
     // Round `n` up to a multiple of `a` (a power of two).
     constexpr std::size_t align_up(std::size_t n, std::size_t a) noexcept
     {
       return (n + a - 1) & ~(a - 1);
-    }
-
-    // Collapse a `maybe<Option>` to the unwrapped value type of the option it holds, or to
-    // `Absent` when the bag carries nothing. The value-carrying type of a `maybe<Option>` is
-    // exactly the option's `element_type` (exposed by the monad's `maybe_properties`), so this one
-    // generic alias replaces the bespoke per-option trait wrappers (`boundary_of`,
-    // `interpolator_of`) with idiomatic `maybe`-composition: `M::has_value` picks the branch,
-    // `M::element_type` is the content.
-    template<typename M, typename Absent>
-    using maybe_absent_t = std::conditional_t<M::has_value, typename M::element_type, Absent>;
-
-    // Append a stage held by a `maybe<Option>` onto a fibre chain tuple, *if* it is present. The
-    // result is a fresh tuple of a possibly-larger type (constant `has_value` picks the branch at
-    // compile time), so it is returned (never assigned back into a fixed-size tuple).
-    template<typename Tuple, typename Maybe>
-    constexpr auto append_stage(Tuple&& t, Maybe&& m)
-    {
-      using maybe_t = std::remove_cvref_t<Maybe>;
-      if constexpr(maybe_t::has_value)
-        return kumi::cat(KWK_FWD(t), kumi::tuple {KWK_FWD(m.value)});
-      else return KWK_FWD(t);
     }
 
     // A fresh owning region of `n` bytes on the heap — the dynamic owning backend, and also the
@@ -134,19 +113,18 @@ namespace kwk
     } inline constexpr as_byteptr;
 
     // Realise the `base_index` setting: index `Base` addresses element offset 0. Base 0 (the
-    // `c_index` identity) collapses to the plain coordinate strategy; a non-zero base wraps the
-    // coordinate strategy in `based_t<Base, Inner>`, the base living solely in the addressing
-    // stage and never being baked onto the stored byte/field offsets.
+    // `c_index` identity) collapses to the plain coordinate strategy; a non-zero base swaps the
+    // resolver for the base-aware `based_coord_t<Base>` coordinate, whose origin shift is folded
+    // into the resolver's own offset (never a separate addressing stage or wrapper type) and is
+    // never baked onto the stored byte/field offsets.
     template<std::size_t Base, typename Coordinates>
     static constexpr decltype(auto) wrap_base(Coordinates&& coordinates)
     {
       if constexpr(Base == 0) return coordinates;
       else
       {
-        using coords_t = std::remove_cvref_t<decltype(coordinates)>;
-        using wrapped  = kwk::__::based_t<Base, typename coords_t::element_type>;
         (void)coordinates;
-        return kwk::__::coordinate_option<wrapped> {};
+        return kwk::__::coordinate_option<kwk::__::based_coord_t<Base>> {};
       }
     }
 
@@ -158,6 +136,22 @@ namespace kwk
     {
       using type = decltype(std::declval<Gen&>()(std::size_t {}));
     };
+
+    // Kind of a function-backed generator option : its value type lifted into a `kwk::as<...>()`
+    // kind option. This is what lets the builder make the generator's own return type the
+    // collection's element type — rather than falling back to `real64` — so the formal `kind`,
+    // the `constant_blob` storage and the accessor's generator terminal all agree on one value
+    // type (the S4 fix's single source of truth). The generator's `generator_option` lives in
+    // `kwk::__`'s ADL set, so the projection is qualified explicitly like `shape_of_generator`.
+    struct kind_of_generator_fn
+    {
+      template<typename G> constexpr auto operator()(G&& g) const noexcept
+      {
+        using C       = std::remove_cvref_t<decltype(g.content)>;
+        using value_t = typename generator_value_t<C>::type;
+        return kwk::as<std::remove_cvref_t<value_t>>();
+      }
+    } inline constexpr kind_of_generator;
 
     //==================================================================================================================
     // scheme / storage construction for the builder
@@ -314,7 +308,7 @@ namespace kwk
         // Function-backed terminal backend : no memory, the generator is the sink of the accessor
         // pipeline, taking whatever the previous stage returns (a single flat index under
         // canonical) — so its value type is deduced from a one-argument call.
-        using Gen = std::remove_cvref_t<decltype(generator.value.content)>;
+        using Gen     = std::remove_cvref_t<decltype(generator.value.content)>;
         using value_t = typename generator_value_t<Gen>::type;
         constexpr Gen gen {};
         return kwk::constant_blob<value_t, gen> {};
@@ -369,53 +363,110 @@ namespace kwk
         // A generator-backed space sizes itself through its own options, exactly like a source
         // does (`shape_of` on the function-backed option reports its single dynamic dimension).
         // Preference collapses monadically: explicit `of_shape` ?: source shape ?: generator shape
-        // ?: the unknown single-element shape. Each `and_then` lifts its `shape_of` result into a
+        // ?: the unknown single-element shape. Each `transform` maps its `shape_of` result into a
         // `maybe<shape>` and skips the absent backend entirely, so no hand-rolled if-constexpr
         // remains — the `value_or`s alone select the first present source of the shape.
         auto explicit_shp = get<kwk::of_shape>(bag);
-        auto src_shape    = src.and_then(shape_of_source);
-        auto gen_shape    = generator.and_then(shape_of_generator);
+        auto src_shape    = src.transform(shape_of_source);
+        auto gen_shape    = generator.transform(shape_of_generator);
 
         auto shp =
             explicit_shp.value_or(src_shape.value_or(gen_shape.value_or(kwk::shape {kwk::_})));
 
-        auto order  = get<kwk::storage_order>(bag).value_or(kwk::row_major_order);
-        auto stride = get<kwk::of_stride>(bag).value_or(kwk::to_stride(shp, order));
+        auto order = get<kwk::storage_order>(bag).value_or(kwk::row_major_order);
+        // `or_else` defers computing the derived default until the bag carries no explicit stride.
+        auto stride =
+            get<kwk::of_stride>(bag).or_else([ & ] { return kwk::to_stride(shp, order); });
 
         //--- kind ---------------------------------------------------------------------------
-        auto kind =
-            get<kwk::kind>(bag).value_or(src.and_then(extract_source_type).value_or(kwk::real64));
+        // The element type folds monadically : an explicit `kind`, else the source's pointee type,
+        // else the generator's own return type, else `real64`. Each `transform` projects the
+        // present backend to its value type; the `or_else`s supply the next fallback only when
+        // neither backend is present. Driving the kind from a present generator keeps the
+        // collection's element type in lock-step with what the generator actually returns (no
+        // silent `real64` mismatch).
+        auto kind = get<kwk::kind>(bag).or_else(
+            [ & ]
+            {
+              return src.transform(extract_source_type)
+                  .or_else(
+                      [ & ]
+                      {
+                        return generator.transform(kind_of_generator)
+                            .or_else([] { return kwk::real64; });
+                      });
+            });
 
         //--- accessor -----------------------------------------------------------------------
-        auto coordinates       = get<kwk::coordinate>(bag).value_or(kwk::canonical);
-        auto boundaries        = get<kwk::boundary>(bag);
-        auto interp            = get<kwk::interpolator>(bag);
+        auto coordinates                 = get<kwk::coordinate>(bag).value_or(kwk::canonical);
+        auto boundaries                  = get<kwk::boundary>(bag);
+        auto interp                      = get<kwk::interpolator>(bag);
 
         // The `base_index` setting (`c_index` = 0-based, `fortran_index` = 1-based) shifts the
-        // index-space origin so that index `Base` addresses element offset 0. It is realised by
-        // wrapping the coordinate strategy in `based_t<Base, Inner>`; the base lives solely in the
-        // addressing stage and is never baked onto the stored byte/field offsets. `c_index` (Base
-        // 0) is the identity and collapses to the plain `canonical` path, so existing byte-layouts
-        // are untouched. The base is read off the bag with the same `maybe_absent_t` fold used for
-        // the accessor stages (absent -> `index_t<0>`, whose static `value` is 0).
-        using base_index_maybe = decltype(get<kwk::base_index>(bag));
-        constexpr std::size_t base_value =
-            maybe_absent_t<base_index_maybe, kumi::index_t<0>>::value;
+        // index-space origin so that index `Base` addresses element offset 0. The resolver
+        // (coordinate) is swapped for the base-aware `based_coord_t<Base>`, whose origin shift is
+        // folded into the resolver's own offset over the flattened strides and never baked onto the
+        // stored offsets. `c_index` (Base 0) is the identity and collapses to the plain `canonical`
+        // path, so existing byte-layouts are untouched. The base is a compile-time constant, so it
+        // is folded straight off the monad's static projection (`has_value` / `element_type` — no
+        // runtime bag evaluation):
+        // a present `base_index_option<N>` collapses to its scalar `N`, an absent one to 0. The
+        // base is *compile-time only* (it can't ride the `maybe` monad — `maybe` demands an
+        // `element_type` member and probes the held type's, which a scalar like `size_t` lacks), so
+        // it is folded with a plain constexpr read over the concrete `base_index_maybe`: the
+        // `if constexpr` on the non-dependent `has_value` genuinely discards the absent branch
+        // (no `element_type` read on `maybe<void>` is ever instantiated).
+        using base_index_maybe           = decltype(get<kwk::base_index>(bag));
+        constexpr std::size_t base_value = []() constexpr -> std::size_t
+        {
+          if constexpr(base_index_maybe::has_value) return base_index_maybe::element_type::value;
+          else return std::size_t {0};
+        }();
 
-        auto coordinates_final = wrap_base<base_value>(coordinates);
+        // A non-zero base rebinds the resolver to `based_coord_t<Base>`, which *replaces* (not
+        // composes-with) the coordinate — `wrap_base` would silently discard an explicit user
+        // coordinate. That combination is contradictory, so it is rejected up front (base 0, the
+        // `c_index` identity, keeps any coordinate untouched).
+        static_assert(
+            base_value == 0 || !decltype(get<kwk::coordinate>(bag))::has_value,
+            "[KWK] - a non-zero base_index cannot be combined with an explicit coordinate : the "
+            "base rebinds the resolver and would silently discard the coordinate. Use only "
+            "`fortran_index`/`c_index` (no coordinate) or a coordinate (base 0).");
 
-        using element_e        = typename decltype(kind)::element_type;
+        auto coordinates_final  = wrap_base<base_value>(coordinates);
+
+        using element_e         = typename decltype(kind)::element_type;
         // The accessor is a fibre of piped stages. Only *present* stages are composed : the
         // resolver (the coordinate) is always the innermost stage, and a present boundary and
         // interpolator are appended after it (each by simply piping its option). An absent
-        // boundary / interpolator is *not* composed at all — there is no identity stage.
-        auto accessor_stages =
-            append_stage(append_stage(kumi::tuple {KWK_FWD(coordinates_final)}, boundaries), interp);
+        // boundary / interpolator is *not* composed at all — there is no identity stage. Each
+        // stage present in the bag is projected to a 0-or-1 element tuple (`as_tuple`) so a single
+        // `kumi::cat` assembles exactly the present stages. A present generator is injected as the
+        // chain's *terminal* stage : it becomes the read the resolver leaf drives, so the accessor
+        // itself terminates at the generator (see accessor_t::operator()).
+        auto generator_terminal = [ & ]() -> decltype(auto)
+        {
+          // Gate on the concrete `decltype(generator)` (the same pattern `make_storage` uses) so
+          // the present branch — which reaches into `generator.value` — is genuinely discarded for
+          // the absent `maybe<void>` and never instantiated.
+          if constexpr(decltype(generator)::has_value)
+          {
+            using Gen     = std::remove_cvref_t<decltype(generator.value.content)>;
+            using value_t = typename generator_value_t<Gen>::type;
+            constexpr Gen gen {};
+            return kumi::tuple {kwk::__::generator_stage<value_t, gen> {}};
+          }
+          else return kumi::tuple<> {};
+        };
+        auto accessor_stages         = kumi::cat(kumi::tuple {KWK_FWD(coordinates_final)},
+                                                 boundaries.as_tuple(),
+                                                 interp.as_tuple(),
+                                                 generator_terminal());
 
         // Convenient aliases over the shape/stride *types* (needed to select the concrete
         // stack-blob capacity for fully-static owning tables below).
-        using shapetype        = std::remove_cvref_t<decltype(shp)>;
-        using stridetype       = std::remove_cvref_t<decltype(stride)>;
+        using shapetype              = std::remove_cvref_t<decltype(shp)>;
+        using stridetype             = std::remove_cvref_t<decltype(stride)>;
 
         //--- geometry -----------------------------------------------------------------------
         constexpr bool is_product    = kumi::concepts::product_type<element_e>;

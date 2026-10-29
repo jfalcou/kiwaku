@@ -54,15 +54,51 @@ namespace kwk
     both produce a collection through the builder's CTAD.
   */
   //====================================================================================================================
+
+  namespace __
+  {
+    // True when every element of a product type is a (non-constant) integral — i.e. the product is
+    // a *plain index tuple* rather than a slicer. Used to keep `operator[]` on index tuples from
+    // capturing `kwk::slicer` arguments (whose elements are `constant`/`ratio`/`extremum`, not
+    // plainly integral).
+    template<kumi::concepts::product_type T,
+             typename Seq = std::make_index_sequence<kumi::size_v<T>>>
+    struct index_tuple_impl;
+
+    template<kumi::concepts::product_type T, std::size_t... I>
+    struct index_tuple_impl<T, std::index_sequence<I...>>
+        : std::bool_constant<(std::integral<kumi::element_t<I, T>> && ...)>
+    {
+    };
+
+    template<kumi::concepts::product_type T>
+    inline constexpr bool index_tuple = index_tuple_impl<T>::value;
+  }
+
   template<typename... Opts> struct collection
   {
   private:
     struct KWK_STRUCT_ABI properties_t : Opts...
     {
+      // Both the layout and the (kumi-record) scheme expose a `size()` (the latter statically, as a
+      // tuple/record member count) — that makes a bare `properties.size()` ambiguous. Shadow them
+      // with an explicit member that reports the layout's element count, which is the instance
+      // semantic callers expect from `collection->size()`.
+      [[nodiscard]] KWK_ABI constexpr auto size() const noexcept { return this->layout().size(); }
+      [[nodiscard]] KWK_ABI constexpr auto cosize() const noexcept
+      {
+        return this->layout().cosize();
+      }
     } properties;
 
   public:
-    using impl_type                     = properties_t;
+    using impl_type = properties_t;
+
+    // The free per-field accessor `get<I>` rebuilds a scalar field view (re-pointed storage,
+    // reduced scheme/kind) and so needs the shell's private `offset_storage`. The `std::get`
+    // specialization forwards to it. Both are friended rather than duplicating the offsets.
+    template<std::size_t I, typename... U>
+    friend constexpr auto get(collection<U...> const& collec);
 
     // Size type of the space, inherited from the layout.
     using size_type                     = typename impl_type::size_type;
@@ -118,8 +154,12 @@ namespace kwk
       Access : operator[]
     */
     //==================================================================================================================
-    // A tuple/record of integral indices is forwarded to the scalar overloads.
-    template<kumi::concepts::product_type T> constexpr decltype(auto) operator[](T&& t) noexcept
+    // A tuple/record of integral indices is forwarded to the scalar overloads. Constrained to
+    // *plain* index tuples so that `kwk::slicer` (a product whose components are not integral) is
+    // never captured here and always reaches the slicing overload instead.
+    template<kumi::concepts::product_type T>
+      requires kwk::__::index_tuple<std::remove_cvref_t<T>>
+    constexpr decltype(auto) operator[](T&& t) noexcept
     {
       return kumi::apply([ & ](auto&&... i) -> decltype(auto) { return (*this)[ KWK_FWD(i)... ]; },
                          KWK_FWD(t));
@@ -135,9 +175,9 @@ namespace kwk
     // dimension, a single scalar element is read through the accessor.
     template<typename Self, typename... Is>
       requires(sizeof...(Is) >= 1 && (std::integral<Is> && ...))
-    constexpr decltype(auto) operator[](this Self& self, Is... is) noexcept
+    constexpr decltype(auto) operator[](this Self&& self, Is... is) noexcept
     {
-      if constexpr(sizeof...(Is) == ndim) return self.resolve(kumi::tuple {is...});
+      if constexpr(sizeof...(Is) == ndim) return self.resolve((kumi::tuple {is...}));
       else if constexpr(sizeof...(Is) < ndim) return self.tile_view(is...);
       else
         static_assert(sizeof...(Is) < ndim,
@@ -147,7 +187,7 @@ namespace kwk
     // Slicing access : a range (slicer) produces a sub-collection whose layout is the reshaped /
     // re-strided view and whose storage is re-pointed to the sliced byte offset.
     template<typename Self, kwk::concepts::slicer... S>
-    constexpr auto operator[](this Self& self, S&&... s) noexcept
+    constexpr auto operator[](this Self&& self, S&&... s) noexcept
     {
       auto const [ position, subl ] = self->layout()[ KWK_FWD(s)... ];
       // Flatten the origin and the parent strides to compute the element offset consumed by the
@@ -165,51 +205,43 @@ namespace kwk
     // overloads).
     template<typename Self, typename... Is>
       requires(sizeof...(Is) >= 1 && (std::floating_point<Is> && ...) && impl_type::fractional)
-    constexpr decltype(auto) operator[](this Self& self, Is... is) noexcept
+    constexpr decltype(auto) operator[](this Self&& self, Is... is) noexcept
     {
       return self.resolve(kumi::tuple {is...});
     }
 
   private:
-    // The sink (the read) is chosen once at the top, from the storage base :
-    //
-    //   - a pointer / owning blob address memory : the accessor resolves the position to a flat
-    //     offset, which is passed to the scheme's `operator[]` to yield a reference into the blob;
-    //   - a generator (`constant_blob`) is not storage at all : it is the *sink* of the pipeline,
-    //     taking precedence over the scheme and consuming whatever the resolver leaf returns (a
-    //     flat index when canonical is present, or the un-flattened position if it replaces
-    //     canonical).
-    //
-    // There is deliberately no coordinate round-trip : the generator simply receives the previous
-    // stage's result.
+    // The read is wired once, uniformly : the accessor resolves the position (through any boundary
+    // / interpolator) to a flat offset, which the read maps to a value. For memory storage the read
+    // addresses the blob through the scheme (per-field offsets). There is no `constant_blob`
+    // special-case : a function-backed space's generator is injected into the accessor as its
+    // terminal stage, so the accessor *itself* terminates at the generator and this read is never
+    // invoked on that path (a `constant_blob` has no `data()`, so the memory branch is guarded by a
+    // `requires` that simply falls to a dead diversion for it).
     template<typename Self, typename Position>
     constexpr decltype(auto) resolve(this Self&& self, Position&& p) noexcept
     {
-      // The generator base (`constant_blob`) exposes no `blob()`/`data()` — that is what
-      // discriminates it from real, addressable memory.
-      if constexpr(requires { self->blob().data(); })
-        return self->accessor()(KWK_FWD(p),
-                                self->shape(),
-                                self->stride(),
-                                [ & ](std::size_t i) -> decltype(auto)
-                                { return self->scheme()[ self->blob().data(), i ]; });
-      else
-        return self->accessor()(KWK_FWD(p),
-                                self->shape(),
-                                self->stride(),
-                                [ & ](auto&& r) -> decltype(auto)
-                                { return self->storage()(KWK_FWD(r)); });
+      return self->accessor()(KWK_FWD(p),
+                              self->shape(),
+                              self->stride(),
+                              [ & ]<typename Index>(Index i) -> decltype(auto)
+                              {
+                                // A single uniform read. Memory storage addresses the blob through
+                                // the scheme (per-field offsets); a function-backed space's read is
+                                // *never reached* here because its generator is the accessor's
+                                // terminal stage — `make_collection` statically guarantees such a
+                                // storage (no `data()`) pairs with a generator-terminal accessor,
+                                // so the else branch is proven unreachable rather than silently
+                                // returning a stale index that happens to compile.
+                                if constexpr(requires { self->blob().data(); })
+                                  return self->scheme()[ self->blob().data(), i ];
+                                else
+                                  static_assert(kwk::__::always_false_v<Self>,
+                                                "[KWK] - a storage without addressable data must "
+                                                "pair with a generator-terminal accessor, so this "
+                                                "memory read is unreachable.");
+                              });
     }
-
-    // template<typename Position>
-    // constexpr decltype(auto) resolve(Position&& p) const noexcept
-    //{
-    //   auto const& acc = this->accessor();
-    //   return acc(KWK_FWD(p),
-    //              this->layout().shape(),
-    //              this->layout().stride(),
-    //              [ & ](std::size_t i) -> decltype(auto) { return read_sample(*this, i); });
-    // }
 
     //==================================================================================================================
     /*
@@ -242,35 +274,47 @@ namespace kwk
     {
       if constexpr(impl_type::is_product_space)
       {
-        using KindT = impl_type::kind_t;
+        using KindT      = impl_type::kind_t;
 
-        auto new_scheme =
-            kumi::map_index([ & ](auto I, auto&& elt)
-                            { return (elt + offset_elements * sizeof(kumi::element_t<I, KindT>)); },
-                            self.scheme());
+        // The scheme is a kumi *record* (see is_record_type), so `map_index` does not apply.
+        // Advance each field's stored byte offset (scheme[I]) by `offset_elements *
+        // sizeof(field_I)` and rebuild the scheme from the shifted per-field offset tuple.
+        auto new_offsets = [ & ]<std::size_t... I>(std::index_sequence<I...>)
+        {
+          return kumi::tuple {(kumi::get<I>(self->scheme()) +
+                               offset_elements * sizeof(kumi::element_t<I, KindT>))...};
+        }(std::make_index_sequence<kumi::size_v<KindT>> {});
+        auto new_scheme = [ & ]<std::size_t... I>(std::index_sequence<I...>)
+        {
+          return kwk::__::scheme<KindT, kumi::element_t<I, decltype(new_offsets)>...> {
+              kumi::get<I>(new_offsets)...};
+        }(std::make_index_sequence<kumi::size_v<decltype(new_offsets)>> {});
 
         auto store = self.offset_storage(0);
         return kwk::__::make_collection(KWK_FWD(store),
                                         kwk::layout {shp, strd},
                                         KWK_FWD(new_scheme),
-                                        self.accessor(),
-                                        self.kind());
+                                        self->accessor(),
+                                        self->kind());
       }
       else
       {
         auto store = self.offset_storage(offset_elements * sizeof(value_type));
-        return kwk::__::make_collection(
-            KWK_FWD(store), kwk::layout {shp, strd}, self.scheme(), self.accessor(), self.kind());
+        return kwk::__::make_collection(KWK_FWD(store),
+                                        kwk::layout {shp, strd},
+                                        self->scheme(),
+                                        self->accessor(),
+                                        self->kind());
       }
     }
 
     template<typename Self>
     [[nodiscard]] constexpr auto offset_storage(this Self& self, std::size_t byte_offset)
     {
-      if constexpr(requires { self.storage().data(); })
-        return kwk::blob<kwk::shallow_blob> {const_cast<std::byte*>(self.storage().data()) +
+      if constexpr(requires { self->blob().data(); })
+        return kwk::blob<kwk::shallow_blob> {const_cast<std::byte*>(self->blob().data()) +
                                              byte_offset};
-      else return self.storage();
+      else return self.storage(); // generator (constant storage) is passed through unchanged
     }
 
     // Partial indexing : fewer indices than flat `ndim` select a tile within the (possibly
@@ -278,14 +322,13 @@ namespace kwk
     // front of the shape/stride, and the element offset is the dot-product of the indices with
     // the leading flattened strides. The scheme/storage is re-based by that scalar offset
     // (per-field for an SoA space, see make_view).
-    template<typename Self, typename... Is> static constexpr auto tile_view(Self&& self, Is... is)
+    template<typename Self, typename... Is> constexpr auto tile_view(this Self&& self, Is... is)
     {
       constexpr auto K               = sizeof...(Is);
       auto const     fs              = kumi::to_tuple(kumi::flatten_all(self->stride()));
       auto const     idxs            = kumi::tuple {static_cast<std::size_t>(is)...};
       // The tile offset is the dot product of the indices with the leading K flattened strides
-      // (inner_product needs equal-sized tuples, so `fs` is first truncated to its K-long
-      // prefix). -> wrong
+      // (inner_product needs equal-sized tuples, so `fs` is first truncated to its K-long prefix).
       auto           offset_elements = kumi::inner_product(
           kumi::extract(fs, kumi::index<0>, kumi::index<K>), idxs, std::size_t {0});
 
@@ -334,15 +377,18 @@ namespace kwk
   // requires(kumi::concepts::product_type<typename impl_type::kind_t>)
   [[nodiscard]] constexpr auto get(kwk::collection<Opts...> const& collec)
   {
-    using record_t    = kind_t<decltype(collec)>; // typename impl_type::kind;
-    using field_t     = kumi::element_t<I, record_t>;
-    auto off          = static_cast<std::size_t>(kumi::get<I>(collec->scheme()));
-    auto store        = collec.offset_storage(off);
+    using record_t = value_type<decltype(collec)>; // the elemental kind (the product type itself)
+    using field_t  = kumi::element_t<I, record_t>;
+    auto off       = static_cast<std::size_t>(kumi::get<I>(collec->scheme()));
+    auto store     = collec.offset_storage(off);
     auto field_scheme = kwk::__::scheme<field_t> {};
     auto skind        = kwk::as<field_t>();
 
+    // A field view keeps the parent's full shape/stride (so per-field interpolation blends the same
+    // neighbourhood as the parent); only the storage is re-pointed to field I's own fiber and the
+    // scheme reduced to the scalar field type.
     return kwk::__::make_collection(KWK_FWD(store),
-                                    kwk::layout {get<I>(collec->shape()), get<I>(collec->stride())},
+                                    kwk::layout {collec->shape(), collec->stride()},
                                     KWK_FWD(field_scheme),
                                     collec->accessor(),
                                     KWK_FWD(skind));

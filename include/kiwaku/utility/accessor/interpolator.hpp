@@ -59,18 +59,22 @@ namespace kwk
   namespace __
   {
     //==================================================================================================================
-    // Interpolator strategies (bidirectional pipeline).
+    // Interpolator strategies.
     //
-    // Each strategy provides two stages that the accessor/collection wire together:
-    //   - `down(position, shape, stride)` : the "solve layout" stage. It maps a (possibly
-    //     fractional) position onto a *sample request* describing which flat storage elements are
-    //     needed and how they combine.
-    //   - `up(sample, shape, stride, read)` : the "accessor up" stage. `read(i)` retrieves the raw
-    //     value at flat scalar index `i`; `up` combines the sampled values into the final one.
+    // Each strategy is a value-free policy consumed by the accessor's `interpolate` stage
+    // (accessor.hpp), which is how a fractional position fans out to one-or-many samples then
+    // back:
+    //   - a selection strategy (`nearest`/`floor`/`ceil`/`round`) provides `select(position)`,
+    //     mapping the (fractional) position onto a single integer grid point, and the accessor
+    //     calls the rest of the chain with it once;
+    //   - `linear` marks itself `_is_interpolating` and provides `down(position)` (split into a
+    //     per-dim `base`/`frac` sample) together with `weight(frac, mask)` and `corner(base,
+    //     mask)`. The accessor's `linear_blend` gathers all 2^N surrounding corners of the
+    //     flattened grid and blends them (multi-linear interpolation).
     //
-    // `none` and `nearest` are pure selections (the up stage reads exactly one element), which also
-    // make them the correct default for exact grid sampling. `linear` gathers all 2^N surrounding
-    // corners and blends them (multi-linear interpolation in the flattened grid).
+    // `none` is the plain default : it carries no stages, so the accessor just passes the integral
+    // position straight down. There is no per-strategy `up`/read stage — blending is driven by the
+    // shared continuation `inner` in `linear_blend`, never by the strategy itself.
     //==================================================================================================================
 
     // Exact grid sampling : a sample is simply a flat index.
@@ -124,15 +128,6 @@ namespace kwk
         return kumi::tuple {base, frac};
       }
 
-      // Flat index of a base/corner tuple : the dot product of the base tuple with the flattenable
-      // stride (a kumi inner_product over equal-sized tuples, no index unwrapping).
-      template<typename Index, typename Stride>
-      static constexpr std::ptrdiff_t flat(Index const& b, Stride const& sd)
-      {
-        auto const s = kumi::flatten_all(sd);
-        return kumi::inner_product(b, s, std::ptrdiff_t {0});
-      }
-
       // Weight of corner `mask`: per-dim frac_i where the bit is set, (1-frac_i) otherwise.
       template<typename Frac, std::size_t... I>
       static constexpr double
@@ -158,25 +153,6 @@ namespace kwk
       template<typename Base> static constexpr auto corner(Base const& base, std::size_t mask)
       {
         return corner_impl(base, mask, std::make_index_sequence<kumi::size_v<Base>> {});
-      }
-
-      // Upstage: read every corner and blend. `read(i)` returns the raw value at flat index `i`.
-      template<typename Sample, typename Shape, typename Stride, typename Read>
-      static constexpr decltype(auto)
-      up(Sample&& sample, Shape const&, Stride const& sd, Read&& read)
-      {
-        auto const&           base = kumi::get<0>(sample);
-        auto const&           frac = kumi::get<1>(sample);
-        constexpr std::size_t N    = kumi::size_v<decltype(base)>;
-
-        double                acc  = 0.0;
-        for(std::size_t mask = 0; mask < (std::size_t {1} << N); ++mask)
-        {
-          auto w    = weight(frac, mask);
-          auto idx  = flat(corner(base, mask), sd);
-          acc      += w * static_cast<double>(read(static_cast<std::size_t>(idx)));
-        }
-        return acc;
       }
     };
 

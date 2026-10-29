@@ -94,10 +94,40 @@ namespace kwk::__
       else return KWK_FWD(u);
     }
 
+    // Lazy fallback : return the held value when present, otherwise call `f()` for the fallback.
+    // (Counterpart of `value_or` for callable fallbacks; the shape / kind / coordinate pipelines
+    // pick the first present backend with `value_or`, the base/accessor folds with `or_else`.)
+    template<typename Self, typename F> constexpr decltype(auto) or_else(this Self&& self, F&& f)
+    {
+      if constexpr(has_value) return std::forward_like<Self>(self.value);
+      else return KWK_FWD(f)();
+    }
+
+    // Map : apply `f` to the held value and lift the (raw) result back into a `maybe`. Absent stays
+    // `maybe<void>`. Keywords' `and_then` historically doubled as the map; the two are now split so
+    // a map verb is idiomatic and a bind returns the function's own maybe untouched.
+    template<typename Self, typename F> constexpr auto transform(this Self&& self, F&& f)
+    {
+      if constexpr(has_value)
+        return kwk::__::maybe {KWK_FWD(f)(std::forward_like<Self>(self.value))};
+      else return kwk::__::maybe<void> {};
+    }
+
+    // Bind : apply `f` to the held value; `f` is expected to return a `maybe` (or a tuple, folded
+    // downstream), which is returned as-is. Absent stays `maybe<void>`.
     template<typename Self, typename F> constexpr auto and_then(this Self&& self, F&& f)
     {
-      if constexpr(has_value) return kwk::__::maybe {KWK_FWD(f)(self.value)};
+      if constexpr(has_value) return KWK_FWD(f)(std::forward_like<Self>(self.value));
       else return kwk::__::maybe<void> {};
+    }
+
+    // Presence filter : project a present value into a concatenable, homogeneous 0-or-1 element
+    // tuple. Used by the builder to fold the (optional) accessor stages onto a fibre chain with a
+    // plain `kumi::cat` — an absent stage simply contributes the empty tuple.
+    template<typename Self> constexpr auto as_tuple(this Self&& self)
+    {
+      if constexpr(has_value) return kumi::tuple {std::forward_like<Self>(self.value)};
+      else return kumi::tuple<> {};
     }
 
     constexpr operator bool() noexcept { return has_value; }

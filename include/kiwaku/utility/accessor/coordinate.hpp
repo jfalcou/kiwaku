@@ -74,18 +74,17 @@ namespace kwk
     // A coordinate strategy whose origin is shifted so that index `Base` maps to element offset 0.
     // It is the mechanism behind the `base_index` setting (`c_index` = 0-based / `fortran_index` =
     // 1-based) : every flat coordinate of the position is reduced by `Base`, which shifts the
-    // *origin* of the index space without ever altering the stored byte offsets (the base lives
-    // purely in the addressing coordinate stage).
+    // *origin* of the index space without ever altering the stored byte offsets.
     //
-    // The shift is factored out as a `shift` *pre-stage* so that boundary conditions can run on
-    // already-shifted (physical, 0-based) indices : if a boundary ran on the logical index first
-    // and then `Base` were subtracted again, an in-range logical index could be pushed out of
-    // bounds (a read past the buffer), or the double correction would silently corrupt the sample.
-    // Delegating the flatten to the wrapped `Inner` strategy keeps the staged pipeline — shift,
-    // boundary, flatten — order-correct for both the integer and interpolating paths. `Base == 0`
-    // degenerates to `canonical_t`'s identity, which is why `c_index` and the (unset) default
-    // coincide.
-    template<std::size_t Base, typename Inner> struct based_t
+    // The base is *folded into the offset* : it is never added as a separate addressing layer. The
+    // origin shift is expressed as the resolver's own `shift` pre-stage, which feeds the flattened
+    // (physical, 0-based) coordinate into the plain offset inner-product below — the base
+    // contributes exactly the constant scalar offset `-Base * sum(flatten(stride))` over the
+    // flattened strides, with no `based` wrapper type. Keeping the shift *before* the boundary
+    // stages matters : a boundary runs on already-shifted physical indices, so an in-range logical
+    // index is never pushed out of bounds or doubly corrected. `Base == 0` degenerates to
+    // `canonical_t`'s identity, which is why `c_index` and the (unset) default coincide.
+    template<std::size_t Base> struct based_coord_t
     {
       static constexpr auto shift(auto&& p)
       {
@@ -93,10 +92,13 @@ namespace kwk
                          kumi::flatten_all(KWK_FWD(p)));
       }
 
+      // The resolved offset is the plain flatten inner-product of the (already base-shifted)
+      // physical position — identical to `canonical_t`, because the base has already been folded
+      // into the position by `shift` before any boundary or interpolator stage sees it.
       template<kumi::concepts::product_type P, auto... std>
       static constexpr auto operator()(P&& p, kwk::stride<std...> const& sd) noexcept
       {
-        return Inner {}(KWK_FWD(p), KWK_FWD(sd));
+        return kumi::inner_product(kumi::flatten_all(KWK_FWD(p)), kumi::flatten_all(sd), 0);
       }
     };
 

@@ -9,6 +9,7 @@
 
 #include <kiwaku/detail/detail.hpp>
 
+#include <cassert>
 #include <string_view>
 
 #include <kiwaku/utility/accessor/boundaries.hpp>
@@ -62,15 +63,67 @@ namespace kwk
     {
     };
     template<typename T, typename Id>
-      requires (requires { typename T::identifier_type; })
+      requires(requires { typename T::identifier_type; })
     struct identifier_check<T, Id>
         : std::bool_constant<std::same_as<typename T::identifier_type, Id>>
     {
     };
 
-    template<typename T> inline constexpr bool is_resolver_v     = identifier_check<T, coordinate_id>::value;
-    template<typename T> inline constexpr bool is_boundary_v     = identifier_check<T, boundary_id>::value;
-    template<typename T> inline constexpr bool is_interpolator_v = identifier_check<T, interpolator_id>::value;
+    template<typename T>
+    inline constexpr bool is_resolver_v = identifier_check<T, coordinate_id>::value;
+    template<typename T>
+    inline constexpr bool is_boundary_v = identifier_check<T, boundary_id>::value;
+    template<typename T>
+    inline constexpr bool is_interpolator_v = identifier_check<T, interpolator_id>::value;
+
+    // The generator terminal : the accessor's final (read) stage for a function-backed space. It
+    // receives the flat index produced by the inner resolver (canonical, optionally base-shifted
+    // and boundary/interpolator-adjusted) and maps it to a value with the compile-time callable
+    // `Gen`, terminating the pipeline — no memory is read at all. Its presence as a chain's
+    // terminal stage is what makes "the accessor terminates at the generator" literal: the read
+    // callback wired by the collection is never invoked, so `resolve` no longer special-cases
+    // `constant_blob`.
+    template<typename Value, auto Gen> struct generator_stage
+    {
+      using value_type   = Value;
+      using is_generator = void;
+
+      template<std::integral Index>
+      constexpr Value operator()(Index index) const noexcept(noexcept(Gen(index)))
+      {
+        return Gen(index);
+      }
+    };
+
+    template<typename T>
+    inline constexpr bool is_generator_v =
+        requires { typename std::remove_cvref_t<T>::is_generator; };
+
+    // The last piped stage of an accessor's chain.
+    template<typename... S> struct accessor_last_stage;
+    template<typename S> struct accessor_last_stage<S>
+    {
+      using type = S;
+    };
+    template<typename S0, typename S1, typename... Rest> struct accessor_last_stage<S0, S1, Rest...>
+    {
+      using type = typename accessor_last_stage<S1, Rest...>::type;
+    };
+
+    // True when an accessor terminates at a generator stage (its last piped stage is a generator
+    // terminal). This is the type-level pendant to `accessor_t::operator()`'s runtime routing : it
+    // lets the builder assert a function-backed space pairs with a generator-terminal accessor.
+    template<typename A> struct accessor_generator_terminal : std::false_type
+    {
+    };
+    template<typename... Stages>
+    struct accessor_generator_terminal<accessor_t<Stages...>>
+        : std::bool_constant<sizeof...(Stages) &&
+                             is_generator_v<typename accessor_last_stage<Stages...>::type>>
+    {
+    };
+    template<typename A>
+    inline constexpr bool accessor_generator_terminal_v = accessor_generator_terminal<A>::value;
 
     // The raw strategy of a stage : options wrap a strategy in `element_type`, unwrap it, otherwise
     // the stage is already the strategy.
@@ -78,20 +131,20 @@ namespace kwk
     using stage_strategy_t =
         std::conditional_t<requires { typename T::element_type; }, typename T::element_type, T>;
 
-    // Whether a stage's strategy blends (`linear`) or merely re-samples a position (`nearest`, ...).
-    // Mirrors concepts/interpolator.hpp's `_is_interpolating` / `_selects` markers.
+    // Whether a stage's strategy blends (`linear`) or merely re-samples a position (`nearest`,
+    // ...). Mirrors concepts/interpolator.hpp's `_is_interpolating` / `_selects` markers.
     template<typename T>
     inline constexpr bool stage_interpolates_v =
         requires { stage_strategy_t<T>::_is_interpolating; };
 
     template<typename T>
-    inline constexpr bool stage_fractional_v =
-        requires { stage_strategy_t<T>::_is_interpolating; } ||
-        requires { stage_strategy_t<T>::_selects; };
+    inline constexpr bool stage_fractional_v = requires {
+      stage_strategy_t<T>::_is_interpolating;
+    } || requires { stage_strategy_t<T>::_selects; };
 
-    // The origin shift of a resolver (identity for canonical / 0-based, subtracts the base for
-    // based_t). It runs once on the position *before* any boundary so a boundary sees already-shifted
-    // physical indices (see based_t in coordinate.hpp).
+    // The origin shift of a resolver (identity for canonical / 0-based, subtracts the base for the
+    // base-aware `based_coord_t`). It runs once on the position *before* any boundary so a boundary
+    // sees already-shifted physical indices (see based_coord_t in coordinate.hpp).
     template<typename Sink, typename Position> constexpr auto shift_position(Position const& p)
     {
       if constexpr(requires { Sink::shift(p); }) return Sink::shift(p);
@@ -102,12 +155,22 @@ namespace kwk
     // self-describing value) and hands the storage offset to the read callback — the only place a
     // read meets the storage.
     template<typename Sink, typename Position, typename Stride, typename Read>
-    constexpr decltype(auto) resolver_leaf(Sink const& sink, Position const& p, Stride const& sd,
-                                           Read&& read)
+    constexpr decltype(auto)
+    resolver_leaf(Sink const& sink, Position const& p, Stride const& sd, Read&& read)
     {
       auto r = sink(p, sd);
       if constexpr(std::is_integral_v<std::remove_cvref_t<decltype(r)>>)
-        return read(static_cast<std::size_t>(r));
+      {
+        // The resolver's offset is signed : a below-base logical index (e.g. index 0 under a
+        // `fortran_index` base of 1, with no boundary clamping it first) yields a *negative*
+        // physical offset. Casting that straight to `size_t` would silently wrap it to a huge
+        // out-of-bounds index, so the non-negativity is asserted here instead — boundaries run
+        // before this leaf and clamp to physical indices, so a legitimately-reached offset is
+        // always in range.
+        auto const offset = static_cast<std::ptrdiff_t>(r);
+        assert(offset >= 0);
+        return read(static_cast<std::size_t>(offset));
+      }
       else return (r);
     }
 
@@ -115,29 +178,30 @@ namespace kwk
     //
     //   - selection strategies (nearest / floor / ceil / round) pick one integer grid position and
     //     call the rest with it once;
-    //   - linear computes the 2^N surrounding corners and calls the rest with each, blending weights;
+    //   - linear computes the 2^N surrounding corners and calls the rest with each, blending
+    //   weights;
     //   - none (the default when nothing was piped) passes the (integral) position straight down.
     template<typename Strategy, typename Position, typename Stride, typename Inner>
     constexpr auto linear_blend(Position const& p, Stride const& sd, Inner&& inner)
     {
-      auto const&                sample = Strategy::down(p, sd);
-      auto const&                base   = kumi::get<0>(sample);
-      auto const&                frac   = kumi::get<1>(sample);
-      constexpr std::size_t      N      = kumi::size_v<std::remove_cvref_t<decltype(base)>>;
+      auto const&           sample = Strategy::down(p, sd);
+      auto const&           base   = kumi::get<0>(sample);
+      auto const&           frac   = kumi::get<1>(sample);
+      constexpr std::size_t N      = kumi::size_v<std::remove_cvref_t<decltype(base)>>;
 
       // Seed the accumulator with the mask-0 corner so its type is that of `weight * sample` — a
-      // floating-point promotion of an integral sample (e.g. a generator yielding `size_t`), exactly
-      // what a weighted blend needs, and a per-fibre tuple for a product (SoA) sample — then fold the
-      // remaining corners in.
-      auto acc = Strategy::weight(frac, 0) * inner(Strategy::corner(base, 0));
+      // floating-point promotion of an integral sample (e.g. a generator yielding `size_t`),
+      // exactly what a weighted blend needs, and a per-fibre tuple for a product (SoA) sample —
+      // then fold the remaining corners in.
+      auto                  acc    = Strategy::weight(frac, 0) * inner(Strategy::corner(base, 0));
       for(std::size_t mask = 1; mask < (std::size_t {1} << N); ++mask)
         acc = acc + Strategy::weight(frac, mask) * inner(Strategy::corner(base, mask));
       return acc;
     }
 
     template<typename Stage, typename Position, typename Shape, typename Stride, typename Inner>
-    constexpr decltype(auto) interpolate(Stage const&, Position const& p, Shape const&,
-                                         Stride const& sd, Inner&& inner)
+    constexpr decltype(auto)
+    interpolate(Stage const&, Position const& p, Shape const&, Stride const& sd, Inner&& inner)
     {
       using strategy = stage_strategy_t<std::remove_cvref_t<Stage>>;
 
@@ -150,26 +214,34 @@ namespace kwk
     // Delegate a read to the stage at index J, then inward. The innermost stage (J == 0) is the
     // resolver leaf; every outer stage either passes its transformed position down (boundary) or
     // calls the rest back per sample (interpolator).
-    template<std::size_t J, typename Stages, typename Position, typename Shape, typename Stride,
+    template<std::size_t J,
+             typename Stages,
+             typename Position,
+             typename Shape,
+             typename Stride,
              typename Read>
-    constexpr decltype(auto) run_stage(Stages const& stages, Position const& p, Shape const& sp,
-                                       Stride const& sd, Read&& read)
+    constexpr decltype(auto) run_stage(Stages const&   stages,
+                                       Position const& p,
+                                       Shape const&    sp,
+                                       Stride const&   sd,
+                                       Read&&          read)
     {
       if constexpr(J == 0) return resolver_leaf(kumi::get<0>(stages), p, sd, KWK_FWD(read));
       else
       {
         using stage_t = std::remove_cvref_t<decltype(kumi::get<J>(stages))>;
-        auto inner    = [&](auto const& q) -> decltype(auto)
+        auto inner    = [ & ](auto const& q) -> decltype(auto)
         { return run_stage<J - 1>(stages, q, sp, sd, read); };
 
         if constexpr(is_boundary_v<stage_t>) return inner(kumi::get<J>(stages)(p, sp));
         else if constexpr(is_interpolator_v<stage_t>)
           return interpolate(kumi::get<J>(stages), p, sp, sd, KWK_FWD(inner));
         else
-          static_assert(__::always_false_v<stage_t>,
-                        "kwk::accessor : an unknown stage was piped. A stage is either a boundary "
-                        "(clamp/tile/mirror), an interpolator (none/nearest/linear/floor/ceil/round) "
-                        "or the innermost resolver (canonical).");
+          static_assert(
+              __::always_false_v<stage_t>,
+              "kwk::accessor : an unknown stage was piped. A stage is either a boundary "
+              "(clamp/tile/mirror), an interpolator (none/nearest/linear/floor/ceil/round) "
+              "or the innermost resolver (canonical).");
       }
     }
   }
@@ -179,14 +251,15 @@ namespace kwk
     The accessor (fibre) : a chain of plain function objects, composed by piping, that resolves a
     position to a value read from storage.
 
-        accessor_t{ canonical }                     // plain index function, no boundary / interpolation
-        accessor_t{ canonical } | clamp             // boundary only
-        accessor_t{ canonical } | linear            // interpolation only
-        accessor_t{ canonical } | clamp | linear    // boundary feeds the interpolator's corners
+        accessor_t{ canonical }                     // plain index function, no boundary /
+    interpolation accessor_t{ canonical } | clamp             // boundary only accessor_t{ canonical
+    } | linear            // interpolation only accessor_t{ canonical } | clamp | linear    //
+    boundary feeds the interpolator's corners
 
     Reading is `acc(position, shape, stride, read)` : the accessor holds only its chain (no shape,
     stride or storage), the caller wires shape + stride + a storage-read callback `read(offset)` at
-    read time — an accessor has no reference to the collection, so the collection provides that read.
+    read time — an accessor has no reference to the collection, so the collection provides that
+    read.
   */
   //====================================================================================================================
   //====================================================================================================================
@@ -225,32 +298,35 @@ namespace kwk
 
     // Whether any piped stage blends across samples (`linear`) or merely re-samples a fractional
     // position (`nearest`/`floor`/`ceil`/`round`). These drive the collection's fractional gate.
-    static constexpr bool interpolates = (__::stage_interpolates_v<Stages> || ...);
-    static constexpr bool fractional   = (__::stage_fractional_v<Stages> || ...);
+    static constexpr bool       interpolates = (__::stage_interpolates_v<Stages> || ...);
+    static constexpr bool       fractional   = (__::stage_fractional_v<Stages> || ...);
 
     //==================================================================================================================
     // Construction and composition
     //==================================================================================================================
-    constexpr explicit accessor_t() = default;
+    constexpr explicit accessor_t()          = default;
 
-    // From a ready-made chain (used by CTAD on `accessor_t{ canonical }` and by the `|` operators).
-    constexpr explicit accessor_t(kumi::tuple<Stages...> const& rs) : rules_(rs)
-    {
-    }
+    // A fibre carries no runtime storage : every stage is a stateless type tag (canonical / based,
+    // clamp / tile / mirror, none / nearest / linear / ...) whose `operator()` is `static`. The
+    // stage *values* passed here (a ready-made chain tuple, or bare stage objects) are therefore
+    // not retained — the chain is fully described by the `Stages...` pack and reconstructed, empty
+    // and stateless, at read time. This keeps the plain fibre an empty type, so a collection whose
+    // only state is its storage pointer stays `sizeof == sizeof(void*)` (empty-base optimization).
+    constexpr explicit accessor_t(kumi::tuple<Stages...> const&) {}
 
     template<typename... R>
-    requires(!(sizeof...(R) == 1 &&
-               (kumi::concepts::product_type<std::remove_reference_t<R>> && ...)))
-    constexpr explicit accessor_t(R&&... rs) : rules_(kumi::make_tuple(std::forward<R>(rs)...))
+      requires(!(sizeof...(R) == 1 &&
+                 (kumi::concepts::product_type<std::remove_reference_t<R>> && ...)))
+    constexpr explicit accessor_t(R&&...)
     {
     }
 
     //==================================================================================================================
     // Runtime fibre name : a fibre may carry an (optional, runtime) label — built from any string
     // via `str::from` — used e.g. to name a variable backed by that fibre. The plain fibre keeps no
-    // name storage (staying an empty type, so a storage-free generator table remains `sizeof == 1`);
-    // naming it wraps it in a `named_fibre` that carries the runtime label. An empty name means
-    // "unnamed".
+    // name storage (staying an empty type, so a storage-free generator table remains `sizeof ==
+    // 1`); naming it wraps it in a `named_fibre` that carries the runtime label. An empty name
+    // means "unnamed".
     //==================================================================================================================
     // Naming returns a wrapper holding a copy of this fibre plus the runtime label.
     constexpr auto named(std::string_view n) const
@@ -269,16 +345,21 @@ namespace kwk
     // Pipe a stage (a boundary or an interpolator) onto the chain. The last piped stage is the
     // outermost : it runs first on the position and either passes down or calls the rest back.
     template<typename Self, typename Stage>
-    requires(!__::is_accessor_v<std::remove_cvref_t<Stage>>)
+      requires(!__::is_accessor_v<std::remove_cvref_t<Stage>>)
     constexpr auto operator|(this Self&& self, Stage&& stage)
     {
       using stage_t = std::remove_cvref_t<Stage>;
-      static_assert(__::is_boundary_v<stage_t> || __::is_interpolator_v<stage_t>,
-                    "kwk::accessor : only a boundary (clamp/tile/mirror) or an interpolator "
-                    "(none/nearest/linear/floor/ceil/round) can be piped onto a fibre. The resolver "
-                    "(canonical) is the innermost stage, piped at construction time.");
-      return accessor_t<Stages..., stage_t> {
-          kumi::cat(KWK_FWD(self).rules_, kumi::tuple<stage_t> {std::forward<Stage>(stage)})};
+      static_assert(
+          __::is_boundary_v<stage_t> || __::is_interpolator_v<stage_t>,
+          "kwk::accessor : only a boundary (clamp/tile/mirror) or an interpolator "
+          "(none/nearest/linear/floor/ceil/round) can be piped onto a fibre. The resolver "
+          "(canonical) is the innermost stage, piped at construction time.");
+      // The piped stage is a stateless type tag : only its *type* joins the chain (the accessor
+      // carries no runtime storage), so the accumulate-and-discard is purely for the type
+      // signature.
+      (void)self;
+      (void)stage;
+      return accessor_t<Stages..., stage_t> {};
     }
 
     //==================================================================================================================
@@ -295,24 +376,38 @@ namespace kwk
     constexpr decltype(auto)
     operator()(this Self&& self, Position&& p, Shape const& sp, Stride const& sd, Read&& read)
     {
-      using sink_t = std::remove_cvref_t<decltype(kumi::get<0>(self.rules_))>;
+      // The chain is stateless : rebuild the (default-constructed) stage tuple here. Neither the
+      // accessor nor this call needs to persist it, so the accessor can stay an empty type.
+      (void)self;
+      kumi::tuple<Stages...> rules {};
+      using sink_t = std::remove_cvref_t<decltype(kumi::get<0>(rules))>;
       auto p0      = __::shift_position<sink_t>(KWK_FWD(p));
-      return __::run_stage<sizeof...(Stages) - 1>(self.rules_, p0, sp, sd, KWK_FWD(read));
-    }
 
-    kumi::tuple<Stages...> rules_ {};
+      // When the chain terminates at a generator, the accessor itself is the sink : the inner
+      // resolver, boundary and interpolator stages run as usual, but the read the resolver leaf
+      // calls is the generator (mapping the flattened index to a value), never the collection's
+      // memory read (`read` stays unused). Otherwise the collection's `read` is the terminal.
+      (void)read;
+      constexpr bool gen_terminal =
+          sizeof...(Stages) ? __::is_generator_v<decltype(kumi::get<sizeof...(Stages) - 1>(rules))>
+                            : false;
+      if constexpr(gen_terminal)
+        return __::run_stage<sizeof...(Stages) - 2>(
+            rules, p0, sp, sd, kumi::get<sizeof...(Stages) - 1>(rules));
+      else return __::run_stage<sizeof...(Stages) - 1>(rules, p0, sp, sd, KWK_FWD(read));
+    }
   };
 
   // Deduction guide : `accessor_t{ canonical }`, `accessor_t{ canonical, clamp }` deduce the piped
-  // stage types from the arguments. (`accessor_t{ some_kumi_tuple }` routes to the tuple-constructor
-  // guide below, if such an explicit CTAD is ever performed.)
+  // stage types from the arguments. (`accessor_t{ some_kumi_tuple }` routes to the
+  // tuple-constructor guide below, if such an explicit CTAD is ever performed.)
   template<typename... R> accessor_t(R&&...) -> accessor_t<std::remove_cvref_t<R>...>;
 
   namespace __
   {
-    // Build a fibre from a ready-made chain tuple `(resolver, boundary?, interpolator?)`, unwrapping
-    // each element into its own stage. Used by the builder to assemble the final accessor when some
-    // stages are absent (rather than piped as a "no-boundary" marker).
+    // Build a fibre from a ready-made chain tuple `(resolver, boundary?, interpolator?)`,
+    // unwrapping each element into its own stage. Used by the builder to assemble the final
+    // accessor when some stages are absent (rather than piped as a "no-boundary" marker).
     template<typename Tuple, std::size_t... I>
     constexpr auto accessor_from_tuple_impl(Tuple const& t, std::index_sequence<I...>)
     {
@@ -329,7 +424,7 @@ namespace kwk
   template<typename... Stages> using accessor = accessor_t<Stages...>;
 
   // Alias matching the vocabulary of the scheme: an accessor reads one fibre of a collection.
-  template<typename... Stages> using fibre = accessor_t<Stages...>;
+  template<typename... Stages> using fibre    = accessor_t<Stages...>;
 
   //====================================================================================================================
   // A named fibre wraps a plain `accessor_t` plus a runtime label. It reads exactly like the plain
@@ -339,16 +434,16 @@ namespace kwk
   //====================================================================================================================
   template<typename Accessor> struct named_fibre
   {
-    Accessor  accessor_ {};
-    kumi::str name_    {};
+    Accessor                   accessor_ {};
+    kumi::str                  name_ {};
 
     // The runtime label (the empty string when it was never set).
     constexpr kumi::str const& name() const noexcept { return name_; }
 
     // Read : transparently delegate to the underlying plain fibre.
     template<typename Position, typename Shape, typename Stride, typename Read>
-    constexpr decltype(auto) operator()(Position&& p, Shape const& sp, Stride const& sd,
-                                        Read&& read) const
+    constexpr decltype(auto)
+    operator()(Position&& p, Shape const& sp, Stride const& sd, Read&& read) const
     {
       return accessor_(KWK_FWD(p), sp, sd, KWK_FWD(read));
     }

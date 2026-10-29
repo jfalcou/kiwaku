@@ -67,3 +67,21 @@ TTS_CASE("base_index : fortran_index shifts the origin along every dimension (2D
   TTS_EQUAL(a00, 1.f);
   TTS_EQUAL(a12, 6.f);
 };
+
+TTS_CASE("base_index : a boundary clamps a below-base index before the resolver sees it")
+{
+  using namespace kwk::literals;
+
+  float ref[ 5 ] = {10.f, 20.f, 30.f, 40.f, 50.f};
+
+  // Under a 1-based origin the physical offset of logical index `i` is `i - 1`, so a below-base
+  // request like `[0]` maps to a *negative* physical offset. That must be caught by the boundary
+  // (boundaries clamp *before* the resolver), so the resolver never receives a negative offset —
+  // the D4 invariant that keeps the resolver's signed-middle non-negativity assert from firing.
+  auto  vfb      = kwk::view(kwk::source = ref, kwk::shape {5_c}, kwk::fortran_index, kwk::clamp);
+
+  TTS_EQUAL(vfb[ 0 ], 10.f); // below-base clamps to physical 0
+  TTS_EQUAL(vfb[ 1 ], 10.f);
+  TTS_EQUAL(vfb[ 5 ], 50.f); // top clamps to physical 4
+  TTS_EQUAL(vfb[ 6 ], 50.f);
+};
