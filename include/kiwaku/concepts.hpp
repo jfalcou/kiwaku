@@ -21,14 +21,11 @@ namespace kwk
 }
 
 #include <kiwaku/detail/detail.hpp>
-#include <kiwaku/concepts/static_constant.hpp>
-#include <kiwaku/concepts/arithmetic_value.hpp>
+#include <kiwaku/concepts/value.hpp>
 #include <kiwaku/concepts/extent.hpp>
-#include <kiwaku/concepts/deep_extent.hpp>
 #include <kiwaku/concepts/extremum.hpp>
 #include <kiwaku/concepts/slicer.hpp>
-#include <kiwaku/concepts/shape.hpp>
-#include <kiwaku/concepts/stride.hpp>
+#include <kiwaku/concepts/layout.hpp>
 #include <kiwaku/concepts/fully.hpp>
 #include <kiwaku/concepts/allocator.hpp>
 #include <kiwaku/concepts/pointer.hpp>

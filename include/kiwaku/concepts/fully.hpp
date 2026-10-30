@@ -8,7 +8,7 @@
 #pragma once
 
 #include <kiwaku/detail/detail.hpp>
-#include <kiwaku/concepts/static_constant.hpp>
+#include <kiwaku/concepts/value.hpp>
 #include <kiwaku/concepts/extent.hpp>
 
 namespace kwk::concepts
