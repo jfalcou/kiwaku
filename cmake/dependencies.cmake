@@ -5,6 +5,24 @@
 ##======================================================================================================================
 
 ##======================================================================================================================
+## Take the dependencies from the environment, without CPM
+##======================================================================================================================
+option(KIWAKU_EXTERNAL_DEPENDENCIES "Take dependencies from the environment instead of fetching them" OFF)
+
+if(KIWAKU_EXTERNAL_DEPENDENCIES)
+  if(NOT COPACABANA_SOURCE_DIR)
+    message(FATAL_ERROR "[KIWAKU] - KIWAKU_EXTERNAL_DEPENDENCIES needs COPACABANA_SOURCE_DIR")
+  endif()
+  if(KIWAKU_BUILD_TEST)
+    find_package(TTS CONFIG REQUIRED)
+  endif()
+  find_package(KUMI CONFIG REQUIRED)
+  find_package(RABERU CONFIG REQUIRED)
+  find_package(EVE CONFIG REQUIRED)
+  return()
+endif()
+
+##======================================================================================================================
 ## Download and setup CPM
 ##======================================================================================================================
 set(CPM_DOWNLOAD_VERSION 0.40.8)
@@ -61,4 +79,3 @@ CPMAddPackage ( NAME EVE   GITHUB_REPOSITORY jfalcou/eve
                         "EVE_BUILD_BENCHMARKS OFF"
                         "EVE_BUILD_DOCUMENTATION OFF"
               )
-
